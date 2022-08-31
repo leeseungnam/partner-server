@@ -1,4 +1,4 @@
-package kr.wrightbrothers.apps.config.interceptor;
+package kr.wrightbrothers.framework.support.interceptor;
 
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.util.WBResponse;

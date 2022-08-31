@@ -1,4 +1,4 @@
-package kr.wrightbrothers.apps.config.support;
+package kr.wrightbrothers.apps.util;
 
 import lombok.Getter;
 

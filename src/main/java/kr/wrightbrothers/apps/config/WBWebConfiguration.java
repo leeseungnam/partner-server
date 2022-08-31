@@ -1,6 +1,6 @@
 package kr.wrightbrothers.apps.config;
 
-import kr.wrightbrothers.apps.config.interceptor.WBInterceptor;
+import kr.wrightbrothers.framework.support.interceptor.WBInterceptor;
 import kr.wrightbrothers.framework.support.WBKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +11,7 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 @Configuration
 @RequiredArgsConstructor
-public class WBWebConfig implements WebMvcConfigurer {
+public class WBWebConfiguration implements WebMvcConfigurer {
 
     private final WBInterceptor wbInterceptor;
 

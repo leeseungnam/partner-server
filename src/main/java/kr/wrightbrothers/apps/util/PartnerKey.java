@@ -1,6 +1,6 @@
-package kr.wrightbrothers.apps.config.support;
+package kr.wrightbrothers.apps.util;
 
-public class AdminKey {
+public class PartnerKey {
 
 	public static final String ApplicationName = "PARTNER";
 
