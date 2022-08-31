@@ -1,0 +1,25 @@
+logging:
+  config: classpath:logback.xml
+  level:
+    org:
+      springframework:
+        boot:
+          autoconfigure: INFO
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: ERROR
+
+spring:
+  datasource-partner:
+    driver-class-name: org.mariadb.jdbc.Driver
+    jdbc-url: jdbc:mariadb://wrightbrothers-dev-admin.c9lwghctzixx.ap-northeast-2.rds.amazonaws.com:3306/wrightbrothers?useSSL=false&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&allowMultiQueries=true
+    username: admin
+    password: rBEdceIdPrQMaHrQVcZj
+    maximumPoolSize: 10
+
+cloud:
+  aws:
+    credentials:
+      accessKey: AKIARL5GKSIL5OK4DO5V
+      secretKey: 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

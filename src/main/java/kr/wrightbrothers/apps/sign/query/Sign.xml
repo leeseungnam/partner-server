@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.wrightbrothers.apps.sign.query.Sign">
+	
+	<select id="loadUserByUsername" parameterType="java.lang.String" resultMap="loadUserByUsernameMap">
+		select
+		    usr.usr_id,
+		    usr.usr_pw,
+		    role.role_cd
+		  from com_usr usr
+		 inner join com_usr_role_mapng role
+		    on role.usr_id = usr.usr_id
+		 where usr.usr_id = #{usrId}
+	</select>
+
+	<resultMap id="loadUserByUsernameMap" type="kr.wrightbrothers.apps.sign.dto.UserDto">
+		<result column="usr_id" property="usrId"/>
+		<result column="usr_pw" property="usrPw"/>
+		<collection property="authorities" ofType="kr.wrightbrothers.apps.sign.dto.AuthorityDto">
+			<result column="role_cd" property="roleCd"/>
+		</collection>
+	</resultMap>
+</mapper>
