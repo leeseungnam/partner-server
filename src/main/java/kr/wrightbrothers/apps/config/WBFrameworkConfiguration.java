@@ -38,9 +38,10 @@ public class WBFrameworkConfiguration {
 	 */
 	@Bean(PartnerKey.WBDataBase.TransactionManager.Global)
 	public PlatformTransactionManager multiTransactionManager(
-			@Qualifier(PartnerKey.WBConfig.Mybatis.DefaultTransactionManager) PlatformTransactionManager defaultTransactionManager
+			@Qualifier(PartnerKey.WBConfig.Mybatis.DefaultTransactionManager) PlatformTransactionManager defaultTransactionManager,
+			@Qualifier(PartnerKey.WBConfig.Mybatis.AdminTransactionManager) PlatformTransactionManager adminTransactionManager
 			) {
-	    return new WBMultiTransactionManager(defaultTransactionManager);
+	    return new WBMultiTransactionManager(defaultTransactionManager, adminTransactionManager);
 	}
 
 	/**
@@ -56,10 +57,12 @@ public class WBFrameworkConfiguration {
 	 */
 	@Bean
 	public WBCommonDao commonDao(
-				@Qualifier(PartnerKey.WBConfig.Mybatis.DefaultSqlSessionTemplate) SqlSession defaultSqlSession
+				@Qualifier(PartnerKey.WBConfig.Mybatis.DefaultSqlSessionTemplate) SqlSession defaultSqlSession,
+				@Qualifier(PartnerKey.WBConfig.Mybatis.AdminSqlSessionTemplate) SqlSession adminSqlSession
 			) {
 		Map<String, SqlSession> sqlSessionMap = new HashMap<String, SqlSession>();
-		sqlSessionMap.put(WBKey.WBDataBase.Alias.Default, defaultSqlSession);
+		sqlSessionMap.put(PartnerKey.WBDataBase.Alias.Default, defaultSqlSession);
+		sqlSessionMap.put(PartnerKey.WBDataBase.Alias.Admin, adminSqlSession);
 		return new WBCommonDao(sqlSessionMap);
 	}
 	

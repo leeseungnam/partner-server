@@ -6,12 +6,19 @@ public class PartnerKey {
 
 	public static class WBConfig {
 		public static class Mybatis {
-
+			// 기본 데이터 설정
 			public static final String DefaultDataSource 			= "DefaultDataSource";
 			public static final String DefaultLog4jdbcProxySource 	= "DefaultLog4jdbcProxySource";
 			public static final String DefaultSqlSessionFactory 	= "DefaultSqlSessionFactory";
 			public static final String DefaultSqlSessionTemplate 	= "DefaultSqlSessionTemplate";
 			public static final String DefaultTransactionManager 	= "DefaultTransactionManager";
+
+			// 어드민 데이터 설정
+			public static final String AdminDataSource 				= "AdminDataSource";
+			public static final String AdminLog4jdbcProxySource 	= "AdminLog4jdbcProxySource";
+			public static final String AdminSqlSessionFactory 		= "AdminSqlSessionFactory";
+			public static final String AdminSqlSessionTemplate 		= "AdminSqlSessionTemplate";
+			public static final String AdminTransactionManager 		= "AdminTransactionManager";
 
 			public static final String SessionDataSource 			= "SessionDataSource";
 			public static final String SessionTransactionManager 	= "SessionTransactionManager";
@@ -25,10 +32,12 @@ public class PartnerKey {
 
 		public static class Alias {
 			public static final String Default 	= "Default";
+			public static final String Admin	= "Admin";
 		}
 
 		public static class TransactionManager {
 			public static final String Default 		= WBConfig.Mybatis.DefaultTransactionManager;
+			public static final String Admin		= WBConfig.Mybatis.AdminTransactionManager;
 			public static final String Global 		= WBConfig.Mybatis.GlobalTransactionManager;
 		}
 	}
