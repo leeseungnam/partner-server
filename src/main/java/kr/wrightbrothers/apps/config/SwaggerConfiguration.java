@@ -1,5 +1,6 @@
 package kr.wrightbrothers.apps.config;
 
+import kr.wrightbrothers.apps.util.PartnerKey;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -19,7 +20,7 @@ public class SwaggerConfiguration {
     public Docket wbApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.any())
+                .apis(RequestHandlerSelectors.basePackage(PartnerKey.BasePackage))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo())
@@ -31,8 +32,8 @@ public class SwaggerConfiguration {
         return new ApiInfoBuilder()
                 .title("PARTNER API DOCUMENT")
                 .description("라이트브라더스 입점몰 API Server 연동 문서입니다.")
-                .version("v1")
-                .contact(new Contact("입점몰", "https://wrightbrothers.kr", "info@wrightbrothers.kr"))
+                .version("1.0.0")
+                .contact(new Contact("라이트브라더스 입점몰 Docs", "/docs/api-guide.html", null))
                 .build();
     }
 

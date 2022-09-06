@@ -28,6 +28,7 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
 
+
 cloud:
   aws:
     credentials:

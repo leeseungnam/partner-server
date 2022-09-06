@@ -2,7 +2,8 @@ package kr.wrightbrothers.apps.util;
 
 public class PartnerKey {
 
-	public static final String ApplicationName = "PARTNER";
+	public static final String ApplicationName 	= "PARTNER";
+	public static final String BasePackage		= "kr.wrightbrothers.apps";
 
 	public static class WBConfig {
 		public static class Mybatis {
