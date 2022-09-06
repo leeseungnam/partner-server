@@ -2,7 +2,7 @@ package kr.wrightbrothers.apps.config.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import kr.wrightbrothers.apps.util.PartnerKey.WBConfig;
+import kr.wrightbrothers.apps.util.PartnerKey;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.interceptor.MyBatisInterceptor;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +47,7 @@ public class DefaultDataBase {
 	@Value("${spring.datasource-partner.maximumPoolSize}")
 	private int maximumPoolSize;
 	
-	@Bean(name = WBConfig.Mybatis.DefaultDataSource)
+	@Bean(name = PartnerKey.WBConfig.Mybatis.DefaultDataSource)
 	@Primary
 	public DataSource DataSource() {
 		HikariConfig hikariConfig = new HikariConfig();
@@ -60,7 +60,7 @@ public class DefaultDataBase {
 		return new HikariDataSource(hikariConfig);
 	}
 
-	@Bean(name = WBConfig.Mybatis.DefaultLog4jdbcProxySource)
+	@Bean(name = PartnerKey.WBConfig.Mybatis.DefaultLog4jdbcProxySource)
 	@Primary
 	public Log4jdbcProxyDataSource Log4jdbcProxySource() {
 		Log4jdbcProxyDataSource proxyDataSource = new Log4jdbcProxyDataSource(DataSource());
@@ -71,7 +71,7 @@ public class DefaultDataBase {
 		return proxyDataSource;
 	}
 
-	@Bean(name = WBConfig.Mybatis.DefaultSqlSessionFactory)
+	@Bean(name = PartnerKey.WBConfig.Mybatis.DefaultSqlSessionFactory)
 	@Primary
 	public SqlSessionFactory SqlSessionFactory() throws Exception {
 		SqlSessionFactoryBean sessionFactoryBean = new SqlSessionFactoryBean();
@@ -97,13 +97,13 @@ public class DefaultDataBase {
 		return sessionFactoryBean.getObject();
 	}
 
-	@Bean(name = WBConfig.Mybatis.DefaultSqlSessionTemplate)
+	@Bean(name = PartnerKey.WBConfig.Mybatis.DefaultSqlSessionTemplate)
 	@Primary
 	public SqlSessionTemplate SqlSessionTemplate() throws Exception {
 		return new SqlSessionTemplate(SqlSessionFactory());
 	}
 
-	@Bean(name = WBConfig.Mybatis.DefaultTransactionManager)
+	@Bean(name = PartnerKey.WBConfig.Mybatis.DefaultTransactionManager)
 	@Primary
 	public PlatformTransactionManager TransactionManager() {
 		return new DataSourceTransactionManager(Log4jdbcProxySource());

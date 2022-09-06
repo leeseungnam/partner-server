@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.wrightbrothers.apps.code.query.Code">
+	
+	<select id="findCodeList" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.code.dto.CodeListDto">
+		select
+		    intg_cd_val as code_value,
+		    intg_cd_val_nm as code_name
+		  from com_intg_cd_dtl
+		 where intg_cd_id = #{codeGroup}
+		 order by intg_cd_val_dp_seq
+	</select>
+
+</mapper>

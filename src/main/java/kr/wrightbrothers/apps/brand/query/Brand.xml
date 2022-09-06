@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.wrightbrothers.apps.brand.query.Brand">
+
+	<select id="findBrandList" resultType="kr.wrightbrothers.apps.brand.dto.BrandListDto">
+		select
+		    brd_no as brandNo,
+		    brd_eng_nm as brandName
+		  from com_brd
+		 where use_flg = 'Y'
+		   and brd_eng_nm != ''
+		 order by brd_eng_nm
+	</select>
+
+</mapper>
