@@ -24,6 +24,10 @@ spring:
     password: rBEdceIdPrQMaHrQVcZj
     maximumPoolSize: 10
 
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
 cloud:
   aws:
     credentials:
