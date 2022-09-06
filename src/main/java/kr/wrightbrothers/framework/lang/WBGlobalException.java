@@ -1,7 +1,7 @@
 package kr.wrightbrothers.framework.lang;
 
 import io.jsonwebtoken.ExpiredJwtException;
-import kr.wrightbrothers.apps.util.ErrorCode;
+import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.framework.support.WBCommon;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.util.RandomKey;

@@ -1,8 +1,8 @@
-package kr.wrightbrothers.apps.config;
+package kr.wrightbrothers.apps.common.config;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.wrightbrothers.apps.util.PartnerKey;
+import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.framework.support.interceptor.WBInterceptor;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import kr.wrightbrothers.framework.support.reloader.MybatisSqlAutoReloader;

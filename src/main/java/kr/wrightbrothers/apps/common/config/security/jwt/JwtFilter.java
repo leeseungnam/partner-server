@@ -1,4 +1,4 @@
-package kr.wrightbrothers.apps.config.security.jwt;
+package kr.wrightbrothers.apps.common.config.security.jwt;
 
 import kr.wrightbrothers.framework.support.WBKey;
 import lombok.RequiredArgsConstructor;

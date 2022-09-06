@@ -1,6 +1,6 @@
 package kr.wrightbrothers.apps.sign;
 
-import kr.wrightbrothers.apps.config.security.jwt.JwtTokenProvider;
+import kr.wrightbrothers.apps.common.config.security.jwt.JwtTokenProvider;
 import kr.wrightbrothers.apps.sign.dto.SignDto;
 import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBKey;

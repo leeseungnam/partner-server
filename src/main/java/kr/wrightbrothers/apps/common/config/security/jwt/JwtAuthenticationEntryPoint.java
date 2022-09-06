@@ -1,4 +1,4 @@
-package kr.wrightbrothers.apps.config.security.jwt;
+package kr.wrightbrothers.apps.common.config.security.jwt;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;

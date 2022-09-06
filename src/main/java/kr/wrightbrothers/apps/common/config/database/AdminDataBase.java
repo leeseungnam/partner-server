@@ -1,8 +1,8 @@
-package kr.wrightbrothers.apps.config.database;
+package kr.wrightbrothers.apps.common.config.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import kr.wrightbrothers.apps.util.PartnerKey.WBConfig;
+import kr.wrightbrothers.apps.common.util.PartnerKey.WBConfig;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.interceptor.MyBatisInterceptor;
 import lombok.RequiredArgsConstructor;

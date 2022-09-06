@@ -1,4 +1,4 @@
-package kr.wrightbrothers.apps.config.security.jwt;
+package kr.wrightbrothers.apps.common.config.security.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;

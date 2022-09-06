@@ -1,6 +1,6 @@
-package kr.wrightbrothers.apps.config;
+package kr.wrightbrothers.apps.common.config;
 
-import kr.wrightbrothers.apps.util.PartnerKey;
+import kr.wrightbrothers.apps.common.util.PartnerKey;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;

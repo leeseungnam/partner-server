@@ -1,4 +1,4 @@
-package kr.wrightbrothers.apps.config.security.jwt;
+package kr.wrightbrothers.apps.common.config.security.jwt;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;

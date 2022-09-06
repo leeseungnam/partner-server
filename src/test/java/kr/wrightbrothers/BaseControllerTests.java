@@ -1,7 +1,7 @@
 package kr.wrightbrothers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.wrightbrothers.apps.config.security.jwt.JwtTokenProvider;
+import kr.wrightbrothers.apps.common.config.security.jwt.JwtTokenProvider;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,7 +1,7 @@
 package kr.wrightbrothers.apps.category.service;
 
 import kr.wrightbrothers.apps.category.dto.CategoryListDto;
-import kr.wrightbrothers.apps.util.PartnerKey;
+import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
