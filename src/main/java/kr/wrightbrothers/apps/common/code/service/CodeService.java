@@ -1,6 +1,6 @@
-package kr.wrightbrothers.apps.common.service;
+package kr.wrightbrothers.apps.common.code.service;
 
-import kr.wrightbrothers.apps.common.dto.CodeListDto;
+import kr.wrightbrothers.apps.common.code.dto.CodeListDto;
 import kr.wrightbrothers.apps.util.PartnerKey;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;

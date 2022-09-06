@@ -1,6 +1,6 @@
-package kr.wrightbrothers.apps.common;
+package kr.wrightbrothers.apps.common.code;
 
-import kr.wrightbrothers.apps.common.service.CodeService;
+import kr.wrightbrothers.apps.common.code.service.CodeService;
 import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package kr.wrightbrothers.apps.common.dto;
+package kr.wrightbrothers.apps.common.code.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
