@@ -33,7 +33,7 @@ public class SwaggerConfiguration {
                 .title("PARTNER API DOCUMENT")
                 .description("라이트브라더스 입점몰 API Server 연동 문서입니다.")
                 .version("1.0.0")
-                .contact(new Contact("라이트브라더스 입점몰 Docs", "/docs/api-guide.html", null))
+                .contact(new Contact("입점몰 Rest API Docs", "/docs/api-guide.html", null))
                 .build();
     }
 
