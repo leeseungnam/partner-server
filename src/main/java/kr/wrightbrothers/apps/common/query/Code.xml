@@ -3,7 +3,7 @@
 
 <mapper namespace="kr.wrightbrothers.apps.common.code.query.Code">
 	
-	<select id="findCodeList" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.common.code.dto.CodeListDto">
+	<select id="findCodeList" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.common.dto.CodeListDto">
 		select
 		    intg_cd_val as code_value,
 		    intg_cd_val_nm as code_name

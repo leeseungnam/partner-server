@@ -1,4 +1,4 @@
-package kr.wrightbrothers.apps.common.code;
+package kr.wrightbrothers.apps.common;
 
 import kr.wrightbrothers.BaseControllerTests;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,17 +26,8 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.requestHe
 
 class CodeControllerTest extends BaseControllerTests {
 
-    @BeforeEach
-    void setUp() {
-        SecurityContext context = SecurityContextHolder.getContext();
-        context.setAuthentication(new UsernamePasswordAuthenticationToken("test@wrightbrothers.kr", "test", List.of(new SimpleGrantedAuthority("ROLE_SUPER"))));
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        JWT_TOKEN = jwtTokenProvider.generateToken(authentication);
-    }
-
     @Test
-    @DisplayName("코드목록 조회")
+    @DisplayName("코드 목록 조회")
     void findCodeList() throws Exception {
 
         String codeGroup = "000057";
