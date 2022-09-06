@@ -1,0 +1,25 @@
+ifndef::snippets[]
+:snippets: ../../../target/generated-snippets
+endif::[]
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 3
+:sectlinks:
+
+= PARTNER API DOCUMENT
+
+[[common]]
+== 공통 API 관리
+
+
+[[common-code]]
+=== 코드 조회
+
+.HTTP request
+include::{snippets}/commons-code-list/http-request.adoc[]
+include::{snippets}/commons-code-list/request-headers.adoc[]
+include::{snippets}/commons-code-list/path-parameters.adoc[]
+.HTTP response
+include::{snippets}/commons-code-list/http-response.adoc[]
+include::{snippets}/commons-code-list/response-fields.adoc[]
