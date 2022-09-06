@@ -4,10 +4,8 @@ import kr.wrightbrothers.BaseControllerTests;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -28,7 +26,7 @@ class CategoryControllerTest extends BaseControllerTests {
         String categoryGroup = "000006";
         // 카테고리 목록 조회 API 테스트
         mockMvc.perform(get("/commons/categories")
-                    .header("X-AUTH-TOKEN", JWT_TOKEN)
+                    .header(AUTH_HEADER, JWT_TOKEN)
                     .contentType(MediaType.TEXT_HTML)
                     .queryParam("categoryGroup", categoryGroup)
                     .accept(MediaType.APPLICATION_JSON))
@@ -40,7 +38,7 @@ class CategoryControllerTest extends BaseControllerTests {
                                 requestDocument(),
                                 responseDocument(),
                                 requestHeaders(
-                                        headerWithName("X-AUTH-TOKEN").description("JWT 토큰")
+                                        headerWithName(AUTH_HEADER).description("JWT 토큰")
                                 ),
                                 requestParameters(
                                         parameterWithName("categoryGroup").description("카테고리 그룹").attributes(key("etc").value("(대)그룹코드 000006"))

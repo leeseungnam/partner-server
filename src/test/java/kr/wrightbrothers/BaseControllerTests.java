@@ -3,7 +3,6 @@ package kr.wrightbrothers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.apps.config.security.jwt.JwtTokenProvider;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
-import kr.wrightbrothers.framework.util.JwtToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +38,7 @@ public class BaseControllerTests {
 	@Autowired
 	public JwtTokenProvider jwtTokenProvider;
 
+	public final String AUTH_HEADER = "X-AUTH-TOKEN";
 	public String JWT_TOKEN = "";
 
 	public OperationRequestPreprocessor requestDocument() {

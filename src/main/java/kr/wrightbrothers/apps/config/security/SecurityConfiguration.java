@@ -34,7 +34,7 @@ public class SecurityConfiguration {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().antMatchers("/resources/**");
+        return (web) -> web.ignoring().antMatchers("/resources/**", "/docs/**");
     }
 
     @Bean
