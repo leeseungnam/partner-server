@@ -89,8 +89,8 @@ public class WBKey {
 			public static final String Partner_Img_Path 		= "partner/";
 			public static final String CPLB_Img_Path 			= "cplb/";
 			public static final String Brand_Img_Path			= "brand/";
-			public static final String Editor_Img_Path			= "editor";
-			public static final String tif_Img_Path				= "tif";
+			public static final String Editor_Img_Path			= "editor/";
+			public static final String tif_Img_Path				= "tif/";
 		}
 		public static class Sns {
 			public static final String GroupId = "WB";
