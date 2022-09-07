@@ -29,6 +29,10 @@ public class PartnerKey {
 		}
 	}
 
+	public static class Jwt {
+		public static final String HeaderName	= "X-AUTH-TOKEN";
+	}
+
 	public static class WBDataBase {
 
 		public static class Alias {
