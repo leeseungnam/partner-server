@@ -56,6 +56,22 @@ public class PartnerKey {
 		}
 	}
 
+	public static class Aws {
+		public static class A3 {
+			public static final String Product_Img_Path 		= "product/";
+			public static final String Partner_Img_Path 		= "partner/";
+			public static final String Brand_Img_Path			= "brand/";
+			public static final String Editor_Img_Path			= "editor/";
+			public static final String tif_Img_Path				= "tif/";
+		}
+		public static class Sns {
+			public static final String GroupId = "WB";
+		}
+	}
+
+	public static class Regex {
+		public static final String Date	= "^((19|20)\\d{2})(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[0-1])";
+	}
 	public static enum JwtCode {
 		DENIED,
 		ACCESS,

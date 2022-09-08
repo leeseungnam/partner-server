@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.wrightbrothers.apps.file.query.File">
+
+	<insert id="insertFile" parameterType="kr.wrightbrothers.apps.file.dto.FileUploadDto">
+		<selectKey resultType="java.lang.String" keyProperty="fileSeq" order="BEFORE">
+			select
+			    nvl(max(file_seq) + 1, 1)
+			  from com_file_upld
+			 where file_no = #{fileNo}
+		</selectKey>
+		insert into com_file_upld(file_no,
+		                          file_seq,
+		                          file_src,
+		                          file_sz,
+		                          file_orgl_nm,
+		                          file_stus,
+		                          file_desc,
+		                          dp_seq,
+		                          cre_usr_id,
+		                          upd_usr_id)
+		values(
+		    #{fileNo},
+		    #{fileSeq}
+		    #{fileSource},
+		    #{fileSize},
+		    #{fileOriginalName},
+		    #{fileStatus},
+		    #{fileDescription},
+		    #{displaySeq},
+		    'Partner-System',
+			'Partner-System'
+		    )
+	</insert>
+
+	<select id="findFileList" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.file.dto.FileListDto">
+		select
+		    file_no as fileNo,
+		    file_seq as fileSeq,
+		    file_src as fileSource,
+		    file_sz as fileSize,
+			if(file_orgl_nm is null, substr(md5(rand()),1,8), file_orgl_nm) as fileOriginalName,
+			file_stus as fileStatus,
+			file_desc as fileDescription,
+			dp_seq as displaySeq
+		  from com_file_upld
+		 where use_flg = 'Y'
+		   and file_no = #{fileNo}
+		   and file_src is not null
+		   and file_stus <![CDATA[<>]]> 'T'
+		 order by dp_seq
+	</select>
+
+</mapper>

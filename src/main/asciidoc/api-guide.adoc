@@ -75,3 +75,29 @@ include::{snippets}/model-list/path-parameters.adoc[]
 .HTTP response
 include::{snippets}/model-list/http-response.adoc[]
 include::{snippets}/model-list/response-fields.adoc[]
+
+
+[[file]]
+== 파일 관리
+
+[[file-upload-image]]
+=== 파일 이미지 업로드
+
+.HTTP request
+include::{snippets}/file-upload-image/http-request.adoc[]
+include::{snippets}/file-upload-image/request-headers.adoc[]
+include::{snippets}/file-upload-image/request-parts.adoc[]
+.HTTP response
+include::{snippets}/file-upload-image/http-response.adoc[]
+include::{snippets}/file-upload-image/response-fields.adoc[]
+
+[[file-list]]
+=== 파일 목록 조회
+
+.HTTP request
+include::{snippets}/file-list/http-request.adoc[]
+include::{snippets}/file-list/request-headers.adoc[]
+include::{snippets}/file-list/path-parameters.adoc[]
+.HTTP response
+include::{snippets}/file-list/http-response.adoc[]
+include::{snippets}/file-list/response-fields.adoc[]

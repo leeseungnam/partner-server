@@ -28,12 +28,22 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
 
-
 cloud:
   aws:
     credentials:
       accessKey: AKIARL5GKSIL5OK4DO5V
       secretKey: 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
+    s3:
+      bucket: wb-storage-dev
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
+System:
+  File:
+    Temp:
+      Path: "/partner_project/file_temp"
 
 jwt:
   secret-key: aYEFtKMCn0xCg5caH1nnFuHfdAB0lBOvdonxq80VqOGNnG6QcyagXWOLrUdqJnzexUXYceMhGNFNYsA6rblSibUEh0yRsJ3XO1um1iMdoekOPzj4zKlokcu9TxTbz5DHYVLkqX3q9JrLgbLZFXD8ynOHfRHRL5Ge64iFZBVm9X517fwZrNornOmK2L7hUz10SgZpxAz6
