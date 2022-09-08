@@ -1,9 +1,6 @@
 package kr.wrightbrothers.apps.common.config.security;
 
-import kr.wrightbrothers.apps.common.config.security.jwt.JwtAccessDeniedHandler;
-import kr.wrightbrothers.apps.common.config.security.jwt.JwtAuthenticationEntryPoint;
-import kr.wrightbrothers.apps.common.config.security.jwt.JwtFilter;
-import kr.wrightbrothers.apps.common.config.security.jwt.JwtTokenProvider;
+import kr.wrightbrothers.apps.common.config.security.jwt.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -62,9 +59,11 @@ public class SecurityConfiguration {
             .and()
                 .authorizeRequests()
                 .antMatchers("/v1/login").permitAll()
-                .anyRequest().authenticated()
-            .and()
-                .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .antMatchers("/swagger-ui.html").permitAll()
+                .anyRequest().authenticated();
+//            .and()
+//                .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+        http.apply(new JwtSecurityConfiguration(jwtTokenProvider));
 
         return http.build();
     }

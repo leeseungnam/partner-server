@@ -27,9 +27,9 @@ public class WBUserDetailService implements UserDetailsService {
 
     private User createUser(UserDto userDto) {
         List<GrantedAuthority> grantedAuthorities = userDto.getAuthorities().stream()
-                .map(authority -> new SimpleGrantedAuthority("ROLE_" + authority.getRoleCd()))
+                .map(authority -> new SimpleGrantedAuthority("ROLE_" + authority.getAuthCode()))
                 .collect(Collectors.toList());
 
-        return new User(userDto.getUsrId(), userDto.getUsrPw(), grantedAuthorities);
+        return new User(userDto.getUserId(), userDto.getUserPw(), grantedAuthorities);
     }
 }

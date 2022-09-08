@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AuthorityDto {
 
-    private String roleCd;
+    private String authCode;
 
 }

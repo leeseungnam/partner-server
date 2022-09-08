@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.sign;
 
 import kr.wrightbrothers.apps.common.config.security.jwt.JwtTokenProvider;
+import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.sign.dto.SignDto;
 import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBKey;
@@ -14,6 +15,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,7 +35,9 @@ public class SingController extends WBController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         WBModel response = new WBModel();
-        response.addObject(WBKey.Jwt.AccessTokenName, jwtTokenProvider.generateToken(authentication));
+        response.addObject(PartnerKey.Jwt.ACCESS_TOKEN, jwtTokenProvider.generateAccessToken(authentication));
+        response.addObject(PartnerKey.Jwt.REFRESH_TOKEN, jwtTokenProvider.issueRefreshToken(authentication));
+
         return  response;
     }
 

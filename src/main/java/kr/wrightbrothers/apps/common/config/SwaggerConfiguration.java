@@ -23,9 +23,9 @@ public class SwaggerConfiguration {
                 .apis(RequestHandlerSelectors.basePackage(PartnerKey.BasePackage))
                 .paths(PathSelectors.any())
                 .build()
-                .apiInfo(apiInfo())
-                .securityContexts(List.of(securityContext()))
-                .securitySchemes(List.of(apiKey()));
+                .apiInfo(apiInfo());
+//                .securityContexts(List.of(securityContext()))
+//                .securitySchemes(List.of(apiKey()));
     }
 
     private ApiInfo apiInfo() {
@@ -38,7 +38,7 @@ public class SwaggerConfiguration {
     }
 
     private ApiKey apiKey() {
-        return new ApiKey("JWT", "X-AUTH-TOKEN", "header");
+        return new ApiKey("Authorization", "Authorization", "header");
     }
 
     private SecurityContext securityContext() {
@@ -51,7 +51,7 @@ public class SwaggerConfiguration {
         AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEveryThing");
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
         authorizationScopes[0] = authorizationScope;
-        return List.of(new SecurityReference("JWT", authorizationScopes));
+        return List.of(new SecurityReference("Authorization", authorizationScopes));
     }
 
 

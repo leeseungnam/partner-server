@@ -10,8 +10,8 @@ import java.util.List;
 @NoArgsConstructor
 public class UserDto {
 
-    private String usrId;
-    private String usrPw;
+    private String userId;
+    private String userPw;
     private List<AuthorityDto> authorities;
 
 }

@@ -65,6 +65,6 @@ public class BaseControllerTests {
 		context.setAuthentication(new UsernamePasswordAuthenticationToken("test@wrightbrothers.kr", "test", List.of(new SimpleGrantedAuthority("ROLE_SUPER"))));
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		JWT_TOKEN = jwtTokenProvider.generateToken(authentication);
+		JWT_TOKEN = jwtTokenProvider.generateAccessToken(authentication);
 	}
 }
