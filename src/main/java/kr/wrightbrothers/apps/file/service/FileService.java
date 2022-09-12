@@ -2,9 +2,10 @@ package kr.wrightbrothers.apps.file.service;
 
 import kr.wrightbrothers.apps.common.util.ImageConverter;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.file.dto.FileParamDto;
+import kr.wrightbrothers.apps.file.dto.FileDto;
 import kr.wrightbrothers.apps.file.dto.FileListDto;
 import kr.wrightbrothers.apps.file.dto.FileUploadDto;
-import kr.wrightbrothers.framework.lang.WBException;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
@@ -28,13 +29,13 @@ import java.util.stream.Collectors;
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class FileService {
 
-    @Value("${System.File.Temp.Path}")
+    @Value("${system.file.temp.path}")
     private String tempPath;
     private final S3Service s3Service;
     private final WBCommonDao dao;
     private final String namespace = "kr.wrightbrothers.apps.file.query.File.";
 
-    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Admin, rollbackFor = WBException.class)
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Admin)
     public List<FileUploadDto> uploadFile(final MultipartFile[] files,
                                           final String fileNo) {
         return Arrays.stream(files).map(file -> {
@@ -52,6 +53,7 @@ public class FileService {
                         .fileOriginalName(file.getOriginalFilename())
                         .fileSource(tempFile.getAbsolutePath())
                         .fileSize(String.valueOf(file.getSize()))
+                        .fileStatus("T")
                         .build();
                 dao.insert(namespace + "insertFile", fileDto, PartnerKey.WBDataBase.Alias.Admin);
 
@@ -63,7 +65,7 @@ public class FileService {
         }).collect(Collectors.toList());
     }
 
-    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Admin, rollbackFor = WBException.class)
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Admin)
     public FileUploadDto uploadTifFile(final MultipartFile file,
                                        final String fileNo,
                                        final String productCode) {
@@ -85,6 +87,7 @@ public class FileService {
                     .fileSource(fileSource)
                     .fileSize(String.valueOf(file.getSize()))
                     .tifPath(tifFile.getPath())
+                    .fileStatus("T")
                     .build();
             dao.insert(namespace + "insertFile", fileDto, PartnerKey.WBDataBase.Alias.Admin);
 
@@ -101,5 +104,9 @@ public class FileService {
 
     public List<FileListDto> findFileList(final String fileNo) {
         return dao.selectList(namespace + "findFileList", fileNo, PartnerKey.WBDataBase.Alias.Admin);
+    }
+
+    public FileDto findFile(FileParamDto paramDto) {
+        return dao.selectOne(namespace + "findFile", paramDto, PartnerKey.WBDataBase.Alias.Admin);
     }
 }

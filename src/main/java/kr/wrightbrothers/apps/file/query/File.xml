@@ -4,7 +4,7 @@
 <mapper namespace="kr.wrightbrothers.apps.file.query.File">
 
 	<insert id="insertFile" parameterType="kr.wrightbrothers.apps.file.dto.FileUploadDto">
-		<selectKey resultType="java.lang.String" keyProperty="fileSeq" order="BEFORE">
+		<selectKey resultType="java.lang.Long" keyProperty="fileSeq" order="BEFORE">
 			select
 			    nvl(max(file_seq) + 1, 1)
 			  from com_file_upld
@@ -22,7 +22,7 @@
 		                          upd_usr_id)
 		values(
 		    #{fileNo},
-		    #{fileSeq}
+		    #{fileSeq},
 		    #{fileSource},
 		    #{fileSize},
 		    #{fileOriginalName},
@@ -51,5 +51,36 @@
 		   and file_stus <![CDATA[<>]]> 'T'
 		 order by dp_seq
 	</select>
+
+	<select id="findFile" parameterType="kr.wrightbrothers.apps.file.dto.FileParamDto" resultType="kr.wrightbrothers.apps.file.dto.FileDto">
+		select
+			file_no as fileNo,
+			file_seq as fileSeq,
+			file_src as fileSource,
+			file_sz as fileSize,
+			if(file_orgl_nm is null, substr(md5(rand()),1,8), file_orgl_nm) as fileOriginalName,
+			file_stus as fileStatus,
+			file_desc as fileDescription,
+			dp_seq as displaySeq,
+			use_flg as useFlag
+		  from com_file_upld
+		 where use_flg 	= 'Y'
+		   and file_no 	= #{fileNo}
+		   and file_seq = #{fileSeq}
+		   and file_stus <![CDATA[<>]]> 'T'
+	</select>
+
+	<update id="updateFile" parameterType="kr.wrightbrothers.apps.file.dto.FileUploadDto">
+		update com_file_upld
+		   set file_src = #{fileSource},
+		       file_stus = 'R',
+		       file_desc = #{fileDescription},
+		       dp_seq = #{displaySeq},
+		       file_nm = #{fileName},
+			   upd_dt = now(),
+			   upd_usr_id = #{userId}
+		 where file_no = #{fileNo}
+		   and file_seq = #{fileSeq}
+	</update>
 
 </mapper>

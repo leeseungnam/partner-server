@@ -2,11 +2,13 @@ package kr.wrightbrothers.apps.file.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
 @Getter
-@Builder
+@Jacksonized
+@SuperBuilder
 @AllArgsConstructor
 public class FileUploadDto {
     @ApiModelProperty(value = "파일 대표 번호")
@@ -30,6 +32,10 @@ public class FileUploadDto {
 
     public void setFileStatus(String fileStatus) {
         this.fileStatus = fileStatus;
+    }
+
+    public void setFileSource(String fileSource) {
+        this.fileSource = fileSource;
     }
 
 }
