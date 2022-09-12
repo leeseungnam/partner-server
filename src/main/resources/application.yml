@@ -27,6 +27,11 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    encoding: utf-8
+    mode: html
 
 cloud:
   aws:
@@ -40,7 +45,11 @@ cloud:
     stack:
       auto: false
 
-System:
-  File:
-    Temp:
-      Path: /Users/chals/partner_project/file_temp
+system:
+  mail:
+    # AWS SES 메일 발송자
+    sender: info@wrightbrothers.kr
+  file:
+    temp:
+      # 임시 파일 저장 위치
+      path: /Users/chals85/partner_project/file_temp

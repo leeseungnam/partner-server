@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class FileService {
 
-    @Value("${System.File.Temp.Path}")
+    @Value("${system.file.temp.path}")
     private String tempPath;
     private final S3Service s3Service;
     private final WBCommonDao dao;
