@@ -13,7 +13,6 @@ class AwsTest extends BaseControllerTests {
     @Autowired
     private AwsSesUtil awsSesUtil;
 
-    @Test
     @DisplayName("SES 메일발송 테스트")
     void SesSendTest() {
 
