@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.wrightbrothers.apps.product.query.Product">
+	
+	<select id="findProductList" parameterType="kr.wrightbrothers.apps.product.dto.ProductListDto$Param" resultType="kr.wrightbrothers.apps.product.dto.ProductListDto$Response">
+		select
+		    p.product_code,
+		    p.brand_name,
+		    p.category_one_name,
+		    p.category_two_name,
+		    p.category_thr_name,
+		    p.product_name,
+		    ps.product_status_code as product_status,
+		    if(p.display_flag = 'Y', '노출', '미노출') as display_flag,
+		    p.display_flag,
+		    ps.product_stock_qty,
+		    ps.final_sell_amount,
+			o.product_option_flag,
+			p.create_date,
+			p.update_date,
+			p.create_user_id,
+			u.user_name as create_user_name
+		  from product p
+		 inner join product_sell_info ps
+			on p.product_code = ps.product_code
+		  left join (
+		      select
+		          product_code,
+		          if(count(product_code) = 0, 'N', 'Y') as product_option_flag
+		        from product_option
+			   group by product_code
+		) o on p.product_code = o.product_code
+		  left join users u
+			on p.create_user_id = u.user_id
+		<where>
+			<choose>
+				<when test="rangeType == 'PRODUCT'.toString()">
+		   and p.create_date between concat(#{startDay}, '00:00:00.0') and concat(#{endDay}, '23:59:59.9')
+				</when>
+				<when test="rangeType == 'SALE'.toString()">
+		   and ps.product_sell_start_date between concat(#{startDay}, '00:00:00.0') and concat(#{endDay}, '23:59:59.9')
+				</when>
+			</choose>
+			-- 전시상태
+			<foreach collection="displayFlag" item="item" index="index" open="and p.display_flag in (" separator="," close=")">
+				#{item}
+			</foreach>
+			-- 상품상태
+			<foreach collection="status" item="item" index="index" open="and ps.product_status_code in (" separator="," close=")">
+				#{item}
+			</foreach>
+			-- 조회기간
+			<if test="keywordValue != null and keywordValue != ''">
+				<choose>
+					<when test="keywordType == 'NAME'.toString()">
+						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+							p.product_name like #{item} '%'
+						</foreach>
+					</when>
+					<when test="keywordType == 'CODE'.toString()">
+						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+							p.product_code like #{item} '%'
+						</foreach>
+					</when>
+				</choose>
+			</if>
+		</where>
+		order by p.create_date desc
+	</select>
+
+</mapper>

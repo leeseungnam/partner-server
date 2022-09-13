@@ -147,3 +147,18 @@ include::{snippets}/file-download/request-headers.adoc[]
 include::{snippets}/file-download/request-parameters.adoc[]
 .HTTP response
 include::{snippets}/file-download/http-response.adoc[]
+
+
+[[product]]
+== 상품 API 관리
+
+[[product-list]]
+=== 상품 목록 조회
+
+.HTTP request
+include::{snippets}/product-list/http-request.adoc[]
+include::{snippets}/product-list/request-headers.adoc[]
+include::{snippets}/product-list/request-parameters.adoc[]
+.HTTP response
+include::{snippets}/product-list/http-response.adoc[]
+include::{snippets}/product-list/response-fields.adoc[]
