@@ -2,7 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="kr.wrightbrothers.apps.product.query.Product">
-	
+
+	<select id="findProductGroupCode" parameterType="java.lang.String" resultType="java.lang.String">
+		select
+		    prdt_grp_cd
+		  from com_cagy
+		 where cagy_cd = #{categoryCode}
+	</select>
+
 	<select id="findProductList" parameterType="kr.wrightbrothers.apps.product.dto.ProductListDto$Param" resultType="kr.wrightbrothers.apps.product.dto.ProductListDto$Response">
 		select
 		    p.product_code,
@@ -67,5 +74,54 @@
 		</where>
 		order by p.create_date desc
 	</select>
+
+	<insert id="insertProduct" parameterType="kr.wrightbrothers.apps.product.dto.ProductDto$ReqBody">
+		insert into product(product_code,
+							partner_code,
+							product_type,
+							category_one_code,
+							category_one_name,
+							category_two_code,
+							category_two_name,
+							category_thr_code,
+							category_thr_name,
+							product_name,
+							brand_no,
+							brand_name,
+							model_code,
+							model_name,
+							model_year,
+							youtube_url,
+							product_barcode,
+							product_file_no,
+							product_description,
+							create_user_id,
+							create_date,
+							update_user_id,
+							update_date)
+		values(#{productCode},
+			   #{partnerCode},
+			   #{productType},
+			   #{categoryOneCode},
+			   #{categoryOneName},
+			   #{categoryTwoCode},
+			   #{categoryTwoName},
+			   #{categoryThrCode},
+			   #{categoryThrName},
+			   #{productName},
+			   #{brandNo},
+			   #{brandName},
+			   #{modelCode},
+			   #{modelName},
+			   #{modelYear},
+			   #{youtubeUrl},
+			   #{productBarcode},
+			   #{productFileNo},
+			   #{productDescription},
+			   #{userId},
+			   now(),
+			   #{userId},
+		       now())
+	</insert>
 
 </mapper>

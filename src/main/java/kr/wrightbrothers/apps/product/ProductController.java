@@ -1,14 +1,13 @@
 package kr.wrightbrothers.apps.product;
 
+import kr.wrightbrothers.apps.product.dto.ProductInsertDto;
 import kr.wrightbrothers.apps.product.dto.ProductListDto;
 import kr.wrightbrothers.apps.product.service.ProductService;
 import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -50,8 +49,17 @@ public class ProductController extends WBController {
         return response;
     }
 
+    @PostMapping("/products")
+    public WBModel insertProduct(@RequestBody ProductInsertDto paramDto) {
+        // Security Custom UserDetail 객체를 통해 파트너 코드, 아이디 정보 추출
+        paramDto.setUserId("test@wrightbrothers.kr");
+        paramDto.getProduct().setPartnerCode("PT0000001");
+        paramDto.setProductCode(
+                productService.generateProductCode(paramDto.getProduct().getCategoryTwoCode())
+        );
 
-    public WBModel insertProduct() {
+        // 상품정보 등록
+        productService.insertProduct(paramDto);
 
         return noneDataResponse();
     }

@@ -32,7 +32,7 @@ public class InfoNoticeDto {
     @EqualsAndHashCode(callSuper = false)
     public static class ReqBody extends InfoNotice {
         @JsonIgnore
-        private String partnerCode;         // 파트너 코드
+        private String productCode;         // 상품 코드
         @JsonIgnore
         private String userId;              // 작성자 아이디
     }

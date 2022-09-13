@@ -12,6 +12,7 @@ public class ProductDto {
     @Jacksonized
     @SuperBuilder
     public static class Product {
+        private String productType;         // 상품 유형
         private String categoryOneCode;     // 대 카테고리 코드
         private String categoryOneName;     // 대 카테고리 이름
         private String categoryTwoCode;     // 중 카테고리 코드
@@ -37,6 +38,8 @@ public class ProductDto {
     public static class ReqBody extends Product {
         @JsonIgnore
         private String partnerCode;         // 파트너 코드
+        @JsonIgnore
+        private String productCode;         // 상품 코드
         @JsonIgnore
         private String userId;              // 작성자 아이디
     }
