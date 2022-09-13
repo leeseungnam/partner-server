@@ -50,4 +50,10 @@ public class ProductController extends WBController {
         return response;
     }
 
+
+    public WBModel insertProduct() {
+
+        return noneDataResponse();
+    }
+
 }
