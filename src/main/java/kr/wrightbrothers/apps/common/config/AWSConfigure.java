@@ -16,9 +16,9 @@ import software.amazon.awssdk.services.ses.SesClient;
 @RequiredArgsConstructor
 public class AWSConfigure {
 
-    @Value("${cloud.aws.credentials.accessKey}")
+    @Value("${cloud.aws.ses.accessKey}")
     private String accessKey;
-    @Value("${cloud.aws.credentials.secretKey}")
+    @Value("${cloud.aws.ses.secretKey}")
     private String secretKey;
 
     @Bean

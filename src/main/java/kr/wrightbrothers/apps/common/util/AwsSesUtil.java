@@ -26,6 +26,19 @@ public class AwsSesUtil {
     /**
      * 메일 발송 처리
      *
+     * 사용 예
+     *
+     * private final AwsSesUtil awsSesUtil;
+     *
+     * ...
+     * String subject = "라이트브라더스 메일 인증 요청";
+     *
+     * Context context = new Context();
+     * context.setVariable("템플릿 내 변수 키", "템플릿 내 변수 값");
+     *
+     * awsSesUtil.singleSend("수신자", subject, "템플릿 파일 명", context);
+     * // 템플릿 파일은 resources/templates 해당 파일을 저장 후 사용하도록 한다.
+     *
      * @param to 수신자
      * @param subject 메일 발송 제목
      * @param template 메일 템플릿
