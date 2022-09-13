@@ -2,6 +2,7 @@ package kr.wrightbrothers.framework.lang;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
+import kr.wrightbrothers.apps.common.util.RandomUtil;
 import kr.wrightbrothers.framework.support.WBCommon;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.util.RandomKey;
@@ -39,21 +40,11 @@ public class WBGlobalException {
     private ResponseEntity<JSONObject> customerException(WBBusinessException ex) {
         if (ObjectUtils.isEmpty(ex)) ex.getCause();
 
-        if (ex.getErrorCode() == ErrorCode.INVALID_PARAM.getErrCode()) {
-            return new ResponseEntity<>(
-                    exceptionValidResponse(
-                            ex.getMsgConvert()[0],  // 필드 값
-                            ex.getMsgConvert()[1]   // 에러 메시지
-                    ),
-                    HttpStatus.OK
-            );
-        }
-
-        log.error("= WBBusiness Error. ===============================");
-        log.error("uuid, {}", RandomKey.getUUID());
-        log.error("errorCode, {}", ex.getErrorCode());
-        log.error("errorType, {}", ex.getType());
-        log.error("errorMsg, {}", StaticContextAccessor.getBean(WBMessage.class)
+        log.error("= WBBusiness ERROR. ===============================");
+        log.error("UUID, {}", RandomUtil.getUUID());
+        log.error("ERROR CODE, {}", ex.getErrorCode());
+        log.error("ERROR TYPE, {}", ex.getType());
+        log.error("ERROR MESSAGE, {}", StaticContextAccessor.getBean(WBMessage.class)
                 .getMessage(
                         ex.getErrorCode(),
                         ex.getType(),
@@ -88,12 +79,11 @@ public class WBGlobalException {
         StringWriter writer = new StringWriter();
         ex.printStackTrace(new PrintWriter(writer));
 
-        if (!(ex instanceof WBValidateException | ex instanceof MethodArgumentNotValidException)) {
-            log.error("= Internal Server Error. ==========================");
-            log.error("UUID, {}", RandomKey.getUUID());
-            log.error("EXCEPTION, {}", writer);
-            log.error("===================================================");
-        }
+        log.error("= INTERNAL SERVER ERROR. ==========================");
+        log.error("UUID, {}", RandomUtil.getUUID());
+        log.error("EXCEPTION, {}", writer);
+        log.error("===================================================");
+
         // 세션 종료에 따른 매시지 처리
         if (ex instanceof NullPointerException) {
             HttpServletRequest request =
@@ -107,29 +97,6 @@ public class WBGlobalException {
             }
         }
 
-        // 커스텀 유효성 검사 에러
-        if (ex instanceof WBValidateException) {
-            Errors errors = ((WBValidateException) ex).getErrors();
-            return new ResponseEntity<>(
-                    exceptionValidResponse(
-                            errors.getFieldErrors().get(0).getField(),      // 필드 값
-                            Objects.requireNonNull(errors.getFieldErrors().get(0).getCodes())[Objects.requireNonNull(errors.getFieldErrors().get(0).getCodes()).length-1]    // 에러 메시지
-                    ),
-                    HttpStatus.OK
-            );
-        }
-
-        // 파라미터 유효성 검사 에러
-        if (ex instanceof MethodArgumentNotValidException) {
-            BindingResult bindingResult = ((MethodArgumentNotValidException) ex).getBindingResult();
-            return new ResponseEntity<>(
-                    exceptionValidResponse(
-                            bindingResult.getAllErrors().get(0).getObjectName(),
-                            bindingResult.getAllErrors().get(0).getDefaultMessage()
-                    ),
-                    HttpStatus.OK);
-        }
-        
         return new ResponseEntity<>(
                 exceptionResponse(0, WBKey.Message.Type.Error),
                 HttpStatus.OK
@@ -146,7 +113,7 @@ public class WBGlobalException {
     /**
      * 예외 Api Response
      */
-    private JSONObject exceptionResponse(int errorCode, String errorType, String[] convert) {
+    public static JSONObject exceptionResponse(int errorCode, String errorType, String[] convert) {
         JSONObject json = new JSONObject();
         json.put("WBCommon",
                 WBCommon.builder()
@@ -166,36 +133,6 @@ public class WBGlobalException {
                                                 convert
                                         )
                         )
-                        .build()
-        );
-
-        return json;
-    }
-
-    /**
-     * 유효성 검사 API Response
-     */
-	private JSONObject exceptionValidResponse(String field, String message) {
-
-        log.error("= Validation Error. ===============================");
-        log.error("UUID, {}", RandomKey.getUUID());
-        log.error("PARAMETER, {}", field);
-        log.error("MESSAGE, {}", message);
-        log.error("===================================================");
-
-        JSONObject json = new JSONObject();
-        json.put("WBCommon",
-                WBCommon.builder()
-                        .state(WBKey.Error)
-                        .uuid(RandomKey.getUUID())
-                        .token(
-                                ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
-                                        .getRequest().getHeader(WBKey.Jwt.HeaderName)
-                        )
-                        .msgCode(String.valueOf(ErrorCode.INVALID_PARAM.getErrCode()))
-                        .msgType(WBKey.Message.Type.Error)
-                        //.message(String.format("[%s]%s", field, message))
-                        .message(message)
                         .build()
         );
 
