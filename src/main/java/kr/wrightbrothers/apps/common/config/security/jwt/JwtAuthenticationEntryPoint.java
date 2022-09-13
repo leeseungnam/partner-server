@@ -1,5 +1,9 @@
 package kr.wrightbrothers.apps.common.config.security.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.wrightbrothers.framework.lang.WBGlobalException;
+import kr.wrightbrothers.framework.support.WBKey;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -15,6 +19,12 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request,
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setStatus(HttpStatus.OK.value());
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(
+                new ObjectMapper().writeValueAsString(
+                        WBGlobalException.exceptionResponse(401, WBKey.Message.Type.Error, null))
+        );
     }
 }
