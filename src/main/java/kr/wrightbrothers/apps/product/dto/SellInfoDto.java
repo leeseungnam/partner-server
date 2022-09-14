@@ -20,8 +20,6 @@ public class SellInfoDto {
         private Long finalSellAmount;
         private String productStatusCode;
         private int productStockQty;
-        private String productSellStartDate;
-        private String productSellEndDate;
     }
 
     @Data

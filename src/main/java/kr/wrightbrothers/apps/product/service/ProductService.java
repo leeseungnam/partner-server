@@ -1,13 +1,17 @@
 package kr.wrightbrothers.apps.product.service;
 
 import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.file.service.FileService;
+import kr.wrightbrothers.apps.file.service.S3Service;
 import kr.wrightbrothers.apps.product.dto.ProductInsertDto;
 import kr.wrightbrothers.apps.product.dto.ProductListDto;
+import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 
@@ -17,6 +21,7 @@ public class ProductService {
 
     private final WBCommonDao dao;
     private final String namespace = "kr.wrightbrothers.apps.product.query.Product.";
+    private final FileService fileService;
 
     public String generateProductCode(String categoryTwoCode) {
         StringBuilder productCode = new StringBuilder();
@@ -37,9 +42,32 @@ public class ProductService {
         return dao.selectList(namespace + "findProductList" ,paramDto);
     }
 
-    @Transactional
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void insertProduct(ProductInsertDto paramDto) {
-        // 상품 기본정보 등록
-        dao.insert(namespace + "insertProduct", paramDto.getProduct());
+        try {
+            // 상품 기본정보 등록
+            dao.insert(namespace + "insertProduct", paramDto.getProduct());
+            // 상품 기본스펙
+            if (ObjectUtils.isEmpty(paramDto.getBasicSpec())) {
+                dao.insert(namespace + "insertBasicSpec", paramDto.getBasicSpec());
+                // 연령 등록
+                dao.insert(namespace + "insertBasicSpecAge", paramDto.getBasicSpec());
+            }
+            // 판매 정보
+            dao.insert(namespace + "insertSellInfo", paramDto.getSellInfo());
+            // 옵션 정보
+            paramDto.getOptionList().forEach(option -> dao.insert(namespace + "insertOption", option));
+            // 배송 정보
+            dao.insert(namespace + "insertDelivery", paramDto.getDelivery());
+            // 정보 고시
+            dao.insert(namespace + "insertInfoNotice", paramDto.getInfoNotice());
+            // 안내 정보
+            dao.insert(namespace + "insertGuide", paramDto.getGuide());
+            // 임시저장 파일 AWS S3 업로드
+            fileService.s3FileUpload(paramDto.getFileList(), WBKey.Aws.A3.Product_Img_Path + paramDto.getProduct().getProductCode(), true);
+        } catch (Exception e) {
+            fileService.s3FileRollBack(WBKey.Aws.A3.Product_Img_Path + paramDto.getProduct().getProductCode());
+            throw e;
+        }
     }
 }

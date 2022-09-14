@@ -70,7 +70,7 @@
 		   and file_stus <![CDATA[<>]]> 'T'
 	</select>
 
-	<update id="updateFile" parameterType="kr.wrightbrothers.apps.file.dto.FileUploadDto">
+	<update id="updateFile" parameterType="kr.wrightbrothers.apps.file.dto.FileUpdateDto">
 		update com_file_upld
 		   set file_src = #{fileSource},
 		       file_stus = 'R',
@@ -81,6 +81,28 @@
 			   upd_usr_id = #{userId}
 		 where file_no = #{fileNo}
 		   and file_seq = #{fileSeq}
+	</update>
+
+	<delete id="deleteFile" parameterType="kr.wrightbrothers.apps.file.dto.FileUpdateDto">
+		update com_file_upld
+		   set file_stus = 'D',
+		       use_flg = 'N',
+		       upd_dt = now(),
+		       upd_usr_id = #{userId},
+		       dp_seq = #{fileSeq}
+		 where file_no = #{fileNo}
+		   and file_seq = #{fileSeq}
+	</delete>
+
+	<update id="updateFileDisplaySeq" parameterType="kr.wrightbrothers.apps.file.dto.FileUpdateDto">
+		update com_file_upld
+		   set file_desc = #{fileDescription},
+		       dp_seq = #{displaySeq},
+		       upd_dt = now(),
+			   upd_usr_id = #{userId}
+		where file_no = #{fileNo}
+		   and file_seq = #{fileSeq}
+		   and file_stus <![CDATA[<>]]> 'T'
 	</update>
 
 </mapper>

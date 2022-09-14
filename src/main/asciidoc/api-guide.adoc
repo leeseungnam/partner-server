@@ -162,3 +162,14 @@ include::{snippets}/product-list/request-parameters.adoc[]
 .HTTP response
 include::{snippets}/product-list/http-response.adoc[]
 include::{snippets}/product-list/response-fields.adoc[]
+
+[[product-insert]]
+=== 상품 등록
+
+.HTTP request
+include::{snippets}/product-insert/http-request.adoc[]
+include::{snippets}/product-insert/request-headers.adoc[]
+include::{snippets}/product-insert/request-fields.adoc[]
+.HTTP response
+include::{snippets}/product-insert/http-response.adoc[]
+include::{snippets}/product-insert/response-fields.adoc[]

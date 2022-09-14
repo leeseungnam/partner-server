@@ -96,9 +96,7 @@
 							product_file_no,
 							product_description,
 							create_user_id,
-							create_date,
-							update_user_id,
-							update_date)
+							update_user_id)
 		values(#{productCode},
 			   #{partnerCode},
 			   #{productType},
@@ -119,9 +117,182 @@
 			   #{productFileNo},
 			   #{productDescription},
 			   #{userId},
-			   now(),
-			   #{userId},
-		       now())
+			   #{userId})
 	</insert>
 
+	<insert id="insertBasicSpec" parameterType="kr.wrightbrothers.apps.product.dto.BasicSpecDto$ReqBody">
+		insert into product_basic_spec(product_code,
+		                               sales_category_code,
+		                               drivetrain_type_code,
+		                               frame_material_code,
+		                               frame_size_code,
+		                               brake_type_code,
+		                               purpose_theme_code,
+		                               wheel_size_code,
+		                               suspension_type_code,
+		                               min_height_person,
+		                               max_height_person,
+		                               bike_weight,
+		                               create_user_id,
+		                               update_user_id)
+		values(#{productCode},
+			   #{salesCategoryCode},
+			   #{drivetrainTypeCode},
+			   #{frameMaterialCode},
+			   #{frameSizeCode},
+			   #{brakeTypeCode},
+			   #{purposeThemeCode},
+			   #{wheelSizeCode},
+			   #{suspensionTypeCode},
+			   #{minHeightPerson},
+			   #{maxHeightPerson},
+			   #{bikeWeight},
+			   #{userId},
+			   #{userId})
+	</insert>
+
+	<insert id="insertBasicSpecAge" parameterType="kr.wrightbrothers.apps.product.dto.BasicSpecDto$ReqBody">
+		insert into product_embark_age(product_code,
+		                               embark_age,
+		                               create_user_id)
+		values
+		<foreach collection="ageList" item="item" index="index" separator=",">
+			(#{productCode}, #{item}, #{userId})
+		</foreach>
+	</insert>
+
+	<insert id="insertSellInfo" parameterType="kr.wrightbrothers.apps.product.dto.SellInfoDto$ReqBody">
+		insert into product_sell_info(product_code,
+		                              product_amount,
+		                              discount_flag,
+		                              discount_type,
+		                              discount_amount,
+		                              final_sell_amount,
+									  display_flag,
+									  product_status_code,
+		                              product_stock_qty,
+		                              create_user_id,
+		                              update_user_id)
+		values(#{productCode},
+			   #{productAmount},
+			   #{discountFlag},
+			   #{discountType},
+			   #{discountAmount},
+			   #{finalSellAmount},
+		       #{displayFlag},
+			   #{productStatusCode},
+			   #{productStockQty},
+			   #{userId},
+			   #{userId})
+	</insert>
+	
+	<insert id="insertOption" parameterType="kr.wrightbrothers.apps.product.dto.OptionDto$ReqBody">
+		insert into product_option(product_code,
+		                           option_seq,
+		                           option_name,
+		                           option_value,
+		                           option_surcharge,
+		                           option_stock_qty,
+		                           create_user_id,
+		                           update_user_id)
+		values(#{productCode},
+			   #{optionSeq},
+			   #{optionName},
+			   #{optionValue},
+			   #{optionSurcharge},
+			   #{optionStockQty},
+			   #{userId},
+			   #{userId})
+	</insert>
+
+	<insert id="insertDelivery" parameterType="kr.wrightbrothers.apps.product.dto.DeliveryDto$ReqBody">
+		insert into product_delivery(product_code,
+		                             delivery_type,
+		                             visit_flag,
+		                             quick_service_flag,
+		                             delivery_bundle_flag,
+		                             charge_type,
+		                             charge_base,
+		                             terms_free_charge,
+		                             payment_type,
+		                             surcharge_flag,
+		                             area_code,
+		                             surcharge_jejudo,
+		                             surcharge_isolated,
+		                             unstoring_address,
+		                             return_address,
+		                             return_charge,
+		                             return_delivery_company_code,
+		                             create_user_id,
+		                             update_user_id)
+		values(#{productCode},
+			   #{deliveryType},
+			   #{visitFlag},
+			   #{quickServiceFlag},
+			   #{deliveryBundleFlag},
+			   #{chargeType},
+			   #{chargeBase},
+			   #{termsFreeCharge},
+			   #{paymentType},
+			   #{surchargeFlag},
+			   #{areaCode},
+			   #{surchargeJejudo},
+			   #{surchargeIsolated},
+			   #{unstoringAddress},
+			   #{returnAddress},
+			   #{returnCharge},
+			   #{returnDeliveryCompanyCode},
+			   #{userId},
+			   #{userId})
+	</insert>
+
+	<insert id="insertInfoNotice" parameterType="kr.wrightbrothers.apps.product.dto.InfoNoticeDto$ReqBody">
+		insert into product_info_notice(product_code,
+										category_code,
+										model_name,
+										product_size,
+										product_weight,
+										product_material,
+										product_component,
+										model_year,
+										model_month,
+										product_mfr,
+										detail_spec,
+										qa_standard,
+										as_phone,
+										create_user_id,
+										update_user_id)
+		values(#{productCode},
+			   #{categoryCode},
+			   #{modelName},
+			   #{productSize},
+			   #{productWeight},
+			   #{productMaterial},
+			   #{productComponent},
+			   #{modelYear},
+			   #{modelMonth},
+			   #{productMfr},
+			   #{detailSpec},
+			   #{qaStandard},
+			   #{asPhone},
+			   #{userId},
+			   #{userId})
+	</insert>
+
+	<insert id="insertGuide" parameterType="kr.wrightbrothers.apps.product.dto.GuideDto$ReqBody">
+		insert into product_guide(product_code,
+		                          product_guide,
+		                          delivery_guide,
+		                          exchange_return_guide,
+		                          as_guide,
+		                          create_user_id,
+		                          update_user_id)
+		values(#{productCode},
+			   #{productGuide},
+			   #{deliveryGuide},
+			   #{exchangeReturnGuide},
+			   #{asGuide},
+			   #{userId},
+			   #{userId})
+	</insert>
 </mapper>

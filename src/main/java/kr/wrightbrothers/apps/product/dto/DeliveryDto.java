@@ -17,17 +17,17 @@ public class DeliveryDto {
         private String quickServiceFlag;
         private String deliveryBundleFlag;
         private String chargeType;
-        private String chargeBase;
-        private String termsFreeCharge;
+        private Integer chargeBase;
+        private Long termsFreeCharge;
         private String paymentType;
         private String surchargeFlag;
         private String areaCode;
-        private String surchargeJejudo;
-        private String surchargeIsolated;
+        private Integer surchargeJejudo;
+        private Integer surchargeIsolated;
         private String unstoringAddress;
         private String returnAddress;
-        private String returnCharge;
-        private String returnDeliveryCompany;
+        private Integer returnCharge;
+        private String returnDeliveryCompanyCode;
     }
 
     @Data

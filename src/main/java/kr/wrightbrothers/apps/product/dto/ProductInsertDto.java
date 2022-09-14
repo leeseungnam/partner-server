@@ -1,13 +1,18 @@
 package kr.wrightbrothers.apps.product.dto;
 
+import kr.wrightbrothers.apps.file.dto.FileUpdateDto;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 
 @Getter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductInsertDto {
     private ProductDto.ReqBody product;         // 상품 기본 정보
     private BasicSpecDto.ReqBody basicSpec;     // 기본 스펙 정보
@@ -16,6 +21,7 @@ public class ProductInsertDto {
     private DeliveryDto.ReqBody delivery;       // 배송 정보
     private InfoNoticeDto.ReqBody infoNotice;   // 상품 정보 고시
     private GuideDto.ReqBody guide;             // 안내사항 정보
+    private List<FileUpdateDto> fileList;       // 상품 등록 이미지
 
     public void setUserId(String userId) {
         // 필수 데이터 입력 부분
@@ -25,7 +31,7 @@ public class ProductInsertDto {
         infoNotice.setUserId(userId);
         guide.setUserId(userId);
         optionList.forEach(option -> option.setUserId(userId));
-
+        fileList.forEach(file -> file.setUserId(userId));
         if (!ObjectUtils.isEmpty(basicSpec))
             basicSpec.setUserId(userId);
     }

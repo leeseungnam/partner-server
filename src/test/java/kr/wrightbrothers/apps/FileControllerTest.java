@@ -70,6 +70,7 @@ public class FileControllerTest extends BaseControllerTests {
     }
 
     @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Admin)
     @DisplayName("파일 목록 조회")
     void findFileList() throws Exception {
         // 파일 목록 조회 API 테스트
@@ -157,6 +158,7 @@ public class FileControllerTest extends BaseControllerTests {
     }
 
     @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Admin)
     @DisplayName("파일 업로드(TIF 전용)")
     void uploadTifFile() throws Exception {
         // 업로드 파일

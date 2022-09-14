@@ -15,8 +15,8 @@ public class OptionDto {
         private int optionSeq;
         private String optionName;
         private String optionValue;
-        private String optionSurcharge;
-        private Long optionStockQty;
+        private Long optionSurcharge;
+        private int optionStockQty;
     }
 
     @Data

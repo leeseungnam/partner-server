@@ -6,6 +6,8 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.List;
+
 public class BasicSpecDto {
 
     @Data
@@ -23,6 +25,7 @@ public class BasicSpecDto {
         private String minHeightPerson;
         private String maxHeightPerson;
         private String bikeWeight;
+        private List<String> ageList;
     }
 
     @Data
