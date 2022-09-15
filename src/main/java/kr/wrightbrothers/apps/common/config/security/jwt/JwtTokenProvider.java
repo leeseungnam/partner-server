@@ -22,9 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.security.Key;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -62,14 +60,18 @@ public class JwtTokenProvider implements InitializingBean {
     }
 
     public String generateAccessToken(Authentication authentication) {
-        return doGenerateToken(authentication, ACCESS_TOKEN_VALIDATION_SECOND);
+        Claims claims = Jwts.claims();
+//        claims.put("","");
+        return createJsonWebToken(authentication, claims, ACCESS_TOKEN_VALIDATION_SECOND);
     }
 
     public String generateRefreshToken(Authentication authentication) {
-        return doGenerateToken(authentication, REFRESH_TOKEN_VALIDATION_SECOND);
+        Claims claims = Jwts.claims();
+        claims.put("value", createRefreshTokenHash(authentication, REFRESH_TOKEN_VALIDATION_SECOND));
+        return createJsonWebToken(authentication, claims, REFRESH_TOKEN_VALIDATION_SECOND);
     }
 
-    public String doGenerateToken(Authentication authentication, long expireTime) {
+    public String createJsonWebToken(Authentication authentication, Claims claims, long expireTime) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
@@ -80,9 +82,26 @@ public class JwtTokenProvider implements InitializingBean {
         return Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
+                .addClaims(claims)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .setExpiration(validity)
                 .compact();
+    }
+
+    // refresh JWT 사용 X
+    // base64 encoding hash -> JWT 사용 해야 할 경우 JWT payload에 담아서 사용
+    public String createRefreshTokenHash(Authentication authentication, long expireTime) {
+
+        log.info("[createResfreshToken] method in START");
+
+        String refreshToken = String.format("%s.%s.%s", authentication.getName(), UUID.randomUUID(), expireTime);
+        log.info("[createResfreshToken] string format={}",refreshToken);
+
+        refreshToken = Base64.getEncoder().encodeToString(refreshToken.getBytes());
+        log.info("[createResfreshToken] base64 encoding={}",refreshToken);
+
+        log.info("[createResfreshToken] method in END");
+        return refreshToken;
     }
 
     public Authentication getAuthentication(String token) {
@@ -116,19 +135,24 @@ public class JwtTokenProvider implements InitializingBean {
         } catch (IllegalArgumentException | JwtException e) {
             log.info("JWT 토큰이 잘못 되었습니다.");
         }
+        log.info("JWT 토큰이 거부 되었습니다.");
         return PartnerKey.JwtCode.DENIED;
     }
-    @Transactional
+    @Transactional(value = "DefaultTransactionManager")
     public String issueRefreshToken(Authentication authentication){
         String newRefreshToken = generateRefreshToken(authentication);
 
+        log.debug("newRefreshToken={}",newRefreshToken);
         RefreshTokenDto refreshTokenDto = refreshTokenService.findById(authentication.getName());
 
         if(!ObjectUtils.isEmpty(refreshTokenDto)){
+            log.debug("changeToken");
             // set newRefreshToken
             refreshTokenDto.changeToken(newRefreshToken);
+            refreshTokenService.update(refreshTokenDto);
         }else{
-            //
+            log.debug("newToken");
+            log.debug("{},{}",authentication.getName(),newRefreshToken);
             RefreshTokenDto token = RefreshTokenDto.createToken(authentication.getName(), newRefreshToken);
             refreshTokenService.insert(token);
         }
@@ -137,14 +161,14 @@ public class JwtTokenProvider implements InitializingBean {
 
     @Transactional
     public String reissueRefreshToken(String refreshToken) throws RuntimeException{
-        // refresh token을 디비의 그것과 비교해보기
+        // check data refresh token
         Authentication authentication = getAuthentication(refreshToken);
 
         RefreshTokenDto findRefreshToken = refreshTokenService.findById(authentication.getName());
 
         if(ObjectUtils.isEmpty(findRefreshToken)) new UsernameNotFoundException("userId : " + authentication.getName() + " was not found");
 
-        if(findRefreshToken.getToken().equals(refreshToken)){
+        if(findRefreshToken.getRefreshToken().equals(refreshToken)){
             // 새로운거 생성
             String newRefreshToken = generateRefreshToken(authentication);
             findRefreshToken.changeToken(newRefreshToken);

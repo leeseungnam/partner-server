@@ -1,16 +1,15 @@
-package kr.wrightbrothers.apps.sign.dto;
+package kr.wrightbrothers.apps.user.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Getter
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthorityDto {
-
+public class UserAuthDto {
     private String authCode;
-
+    private String partnerCode;
 }

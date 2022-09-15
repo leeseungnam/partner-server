@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="kr.wrightbrothers.apps.code.query.User">
+<mapper namespace="kr.wrightbrothers.apps.user.query.User">
 	
 	<select id="findById" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.user.dto.UserDto">
 		select
 		    *
 		  from users
-		 where usr_id = #{usrId}
+		 where user_id = #{userId}
 	</select>
 
+	<select id="findAuthById" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.user.dto.UserAuthDto">
+		select
+			role.auth_code as auth_code,
+			role.partner_code as partner_code
+		from users user
+		inner join users_partner role
+		on role.user_id = user.user_id
+		where user.user_id = #{userId}
+	</select>
 </mapper>

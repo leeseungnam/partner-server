@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SignDto {
 
-    private String usrId;
-    private String usrPw;
+    private String userId;
+    private String userPwd;
 
 }

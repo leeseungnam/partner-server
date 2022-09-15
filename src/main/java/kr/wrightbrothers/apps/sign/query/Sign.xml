@@ -7,18 +7,21 @@
 		select
 			user.user_id,
 			user.user_pwd,
-		    role.auth_code
+		    ifnull(role.auth_code, 'ROLE_USER') as auth_code,
+			ifnull(role.partner_code, '') as partner_code
 		  from users user
-		 inner join users_auth role
+		 left outer join users_partner role
 		    on role.user_id = user.user_id
 		 where user.user_id = #{userId}
+		limit 1
 	</select>
 
-	<resultMap id="loadUserByUsernameMap" type="kr.wrightbrothers.apps.sign.dto.UserDto">
+	<resultMap id="loadUserByUsernameMap" type="kr.wrightbrothers.apps.sign.dto.UserDetailDto">
 		<result column="user_id" property="userId"/>
 		<result column="user_pwd" property="userPwd"/>
-		<collection property="authorities" ofType="kr.wrightbrothers.apps.sign.dto.AuthorityDto">
+		<collection property="authorities" ofType="kr.wrightbrothers.apps.user.dto.UserAuthDto">
 			<result column="auth_code" property="authCode"/>
+			<result column="partner_code" property="partnerCode"/>
 		</collection>
 	</resultMap>
 </mapper>

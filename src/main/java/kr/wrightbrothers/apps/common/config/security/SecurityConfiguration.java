@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.common.config.security;
 
 import kr.wrightbrothers.apps.common.config.security.jwt.*;
+import kr.wrightbrothers.apps.common.util.PartnerKey;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -38,11 +39,12 @@ public class SecurityConfiguration {
                 "/resources/**",
                 "/docs/**",                 // RestDocs
                 "/swagger-resources/**",    // Swagger
-                "/swagger-ui/**",           // Swagger
+                "/swagger-ui/**",         // Swagger
                 "/v2/api-docs/**",          // Swagger
                 "/swagger/**"               // Swagger
         );
     }
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -59,12 +61,14 @@ public class SecurityConfiguration {
             .and()
                 .authorizeRequests()
                 .antMatchers("/v1/login").permitAll()
-                .antMatchers("/swagger-ui.html").permitAll()
-                .anyRequest().authenticated();
-//            .and()
+                .anyRequest().authenticated()
+            .and()
 //                .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
-        http.apply(new JwtSecurityConfiguration(jwtTokenProvider));
+                .apply(new JwtSecurityConfiguration(jwtTokenProvider));
 
+        http.logout()
+                .logoutUrl("/v1/logout")
+                .deleteCookies(PartnerKey.Jwt.REFRESH_TOKEN);
         return http.build();
     }
 
