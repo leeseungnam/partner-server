@@ -38,7 +38,7 @@ public class BaseControllerTests {
 	@Autowired
 	public JwtTokenProvider jwtTokenProvider;
 
-	public final String AUTH_HEADER = "X-AUTH-TOKEN";
+	public final String AUTH_HEADER = "Authorization";
 	public String JWT_TOKEN = "";
 
 	public OperationRequestPreprocessor requestDocument() {

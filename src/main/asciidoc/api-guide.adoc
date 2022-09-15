@@ -173,3 +173,14 @@ include::{snippets}/product-insert/request-fields.adoc[]
 .HTTP response
 include::{snippets}/product-insert/http-response.adoc[]
 include::{snippets}/product-insert/response-fields.adoc[]
+
+[[product-find]]
+=== 상품 조회
+
+.HTTP request
+include::{snippets}/product-find/http-request.adoc[]
+include::{snippets}/product-find/request-headers.adoc[]
+include::{snippets}/product-find/path-parameters.adoc[]
+.HTTP response
+include::{snippets}/product-find/http-response.adoc[]
+include::{snippets}/product-find/response-fields.adoc[]

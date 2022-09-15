@@ -1,8 +1,7 @@
 package kr.wrightbrothers.apps.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -11,6 +10,8 @@ public class ProductDto {
     @Data
     @Jacksonized
     @SuperBuilder
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class Product {
         private String productType;         // 상품 유형
         private String categoryOneCode;     // 대 카테고리 코드
@@ -42,5 +43,14 @@ public class ProductDto {
         private String productCode;         // 상품 코드
         @JsonIgnore
         private String userId;              // 작성자 아이디
+    }
+
+    @Getter
+    @Jacksonized
+    @SuperBuilder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class ResBody extends Product {
+        private String productCode;
     }
 }

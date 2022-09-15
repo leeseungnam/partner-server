@@ -10,12 +10,14 @@ import kr.wrightbrothers.apps.file.dto.FileUploadDto;
 import kr.wrightbrothers.apps.file.service.FileService;
 import kr.wrightbrothers.apps.file.service.S3Service;
 import kr.wrightbrothers.apps.product.dto.*;
+import kr.wrightbrothers.apps.product.service.ProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,8 +31,7 @@ import static org.springframework.restdocs.headers.HeaderDocumentation.headerWit
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -42,9 +43,10 @@ class ProductControllerTest extends BaseControllerTests {
     private FileService fileService;
     @Autowired
     private S3Service s3Service;
+    @Autowired
+    private ProductService productService;
 
-    private FileUpdateDto fileUpdate;
-    private String fileNo;
+    private ProductInsertDto productDto;
 
     @BeforeEach
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
@@ -63,7 +65,7 @@ class ProductControllerTest extends BaseControllerTests {
         // 파일 S3 업로드
         fileUpload.setFileSource(s3Service.uploadFile(new File(fileUpload.getFileSource()), PartnerKey.Aws.A3.Partner_Img_Path));
         // 파일 수정
-        fileUpdate = FileUpdateDto.builder()
+        FileUpdateDto fileUpdate = FileUpdateDto.builder()
                 .fileNo(fileUpload.getFileNo())
                 .fileSeq(fileUpload.getFileSeq())
                 .fileSource(fileUpload.getFileSource())
@@ -75,7 +77,92 @@ class ProductControllerTest extends BaseControllerTests {
                 .build();
         dao.update("kr.wrightbrothers.apps.file.query.File.updateFile", fileUpdate, PartnerKey.WBDataBase.Alias.Admin);
 
-        fileNo = fileUpload.getFileNo();
+        String fileNo = fileUpload.getFileNo();
+
+        // 상품등록 데이터 가공
+        productDto = ProductInsertDto.builder()
+                .fileList(List.of(fileUpdate))
+                .product(ProductDto.ReqBody.builder()
+                        .productType("P05")
+                        .categoryOneCode("B0001")
+                        .categoryOneName("자전거")
+                        .categoryTwoCode("BA001")
+                        .categoryTwoName("로드")
+                        .categoryThrCode("51794")
+                        .categoryThrName("로드")
+                        .productName("Propel Advanced Disc 2")
+                        .brandNo("72")
+                        .brandName("Giant")
+                        .modelCode("958F7839DB")
+                        .modelName("Propel Advanced Disc 2")
+                        .modelYear("2022")
+                        .productFileNo(fileNo)
+                        .productDescription("상품 상세 설명")
+                        .build())
+                .basicSpec(BasicSpecDto.ReqBody.builder()
+                        .salesCategoryCode("S01")
+                        .drivetrainTypeCode("D06")
+                        .frameMaterialCode("F03")
+                        .frameSizeCode("S")
+                        .brakeTypeCode("T02")
+                        .purposeThemeCode("T03")
+                        .wheelSizeCode("WH1")
+                        .suspensionTypeCode("S04")
+                        .minHeightPerson("168")
+                        .maxHeightPerson("175")
+                        .bikeWeight("9.2")
+                        .ageList(List.of("A01"))
+                        .build())
+                .sellInfo(SellInfoDto.ReqBody.builder()
+                        .productAmount(2900000L)
+                        .displayFlag("N")
+                        .discountFlag("N")
+                        .discountType("2")
+                        .discountAmount("0")
+                        .displayFlag("N")
+                        .finalSellAmount(2900000L)
+                        .productStatusCode(ProductStatusCode.PRODUCT_INSPECTION.getCode())
+                        .productStockQty(1)
+                        .build())
+                .optionList(List.of(OptionDto.ReqBody.builder()
+                        .optionSeq(1)
+                        .optionName("색상")
+                        .optionValue("기본")
+                        .optionSurcharge(0L)
+                        .optionStockQty(1)
+                        .build()))
+                .delivery(DeliveryDto.ReqBody.builder()
+                        .deliveryType("D01")
+                        .visitFlag("N")
+                        .quickServiceFlag("N")
+                        .deliveryBundleFlag("N")
+                        .chargeType("CT2")
+                        .chargeBase(3000)
+                        .termsFreeCharge(10000000L)
+                        .paymentType("P02")
+                        .surchargeFlag("N")
+                        .unstoringAddress("서울특별시 강남구 강남대로 154길 37, 주경빌딩 2층 (06035)")
+                        .returnAddress("서울특별시 강남구 강남대로 154길 37, 주경빌딩 1층 (06035)")
+                        .returnCharge(1000000)
+                        .returnDeliveryCompanyCode("cjgls")
+                        .build())
+                .infoNotice(InfoNoticeDto.ReqBody.builder()
+                        .categoryCode("11")
+                        .modelName("Propel Advanced Disc 2")
+                        .productSize("S")
+                        .productWeight("9.2")
+                        .modelYear("2022")
+                        .modelMonth("05")
+                        .productMfr("(주)라이트브라더스")
+                        .asPhone("02-000-0000")
+                        .build())
+                .guide(GuideDto.ReqBody.builder()
+                        .productGuide("상품 안내 사항")
+                        .deliveryGuide("배송 안내 사항")
+                        .exchangeReturnGuide("교환/반품 안내 사항")
+                        .asGuide("A/S 안내")
+                        .build())
+                .build();
     }
 
     @Test
@@ -166,97 +253,12 @@ class ProductControllerTest extends BaseControllerTests {
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     @DisplayName("상품 등록")
     void insertProduct() throws Exception {
-        // 등록 파라미터 데이터 정의
-        ProductInsertDto productDto = ProductInsertDto.builder()
-                .fileList(List.of(fileUpdate))
-                .product(ProductDto.ReqBody.builder()
-                        .productType("P05")
-                        .categoryOneCode("B0001")
-                        .categoryOneName("자전거")
-                        .categoryTwoCode("BA001")
-                        .categoryTwoName("로드")
-                        .categoryThrCode("51794")
-                        .categoryThrName("로드")
-                        .productName("Propel Advanced Disc 2")
-                        .brandNo("72")
-                        .brandName("Giant")
-                        .modelCode("958F7839DB")
-                        .modelName("Propel Advanced Disc 2")
-                        .modelYear("2022")
-                        .productFileNo(fileNo)
-                        .productDescription("상품 상세 설명")
-                        .build())
-                .basicSpec(BasicSpecDto.ReqBody.builder()
-                        .salesCategoryCode("S01")
-                        .drivetrainTypeCode("D06")
-                        .frameMaterialCode("F03")
-                        .frameSizeCode("S")
-                        .brakeTypeCode("T02")
-                        .purposeThemeCode("T03")
-                        .wheelSizeCode("WH1")
-                        .suspensionTypeCode("S04")
-                        .minHeightPerson("168")
-                        .maxHeightPerson("175")
-                        .bikeWeight("9.2")
-                        .ageList(List.of("A01"))
-                        .build())
-                .sellInfo(SellInfoDto.ReqBody.builder()
-                        .productAmount(2900000L)
-                        .displayFlag("N")
-                        .discountFlag("N")
-                        .discountType("2")
-                        .discountAmount("0")
-                        .displayFlag("N")
-                        .finalSellAmount(2900000L)
-                        .productStatusCode(ProductStatusCode.PRODUCT_INSPECTION.getCode())
-                        .productStockQty(1)
-                        .build())
-                .optionList(List.of(OptionDto.ReqBody.builder()
-                                .optionSeq(1)
-                                .optionName("색상")
-                                .optionValue("기본")
-                                .optionSurcharge(0L)
-                                .optionStockQty(1)
-                        .build()))
-                .delivery(DeliveryDto.ReqBody.builder()
-                        .deliveryType("D01")
-                        .visitFlag("N")
-                        .quickServiceFlag("N")
-                        .deliveryBundleFlag("N")
-                        .chargeType("CT2")
-                        .chargeBase(3000)
-                        .termsFreeCharge(10000000L)
-                        .paymentType("P02")
-                        .surchargeFlag("N")
-                        .unstoringAddress("서울특별시 강남구 강남대로 154길 37, 주경빌딩 2층 (06035)")
-                        .returnAddress("서울특별시 강남구 강남대로 154길 37, 주경빌딩 1층 (06035)")
-                        .returnCharge(1000000)
-                        .returnDeliveryCompanyCode("cjgls")
-                        .build())
-                .infoNotice(InfoNoticeDto.ReqBody.builder()
-                        .categoryCode("11")
-                        .modelName("Propel Advanced Disc 2")
-                        .productSize("S")
-                        .productWeight("9.2")
-                        .modelYear("2022")
-                        .modelMonth("05")
-                        .productMfr("(주)라이트브라더스")
-                        .asPhone("02-000-0000")
-                        .build())
-                .guide(GuideDto.ReqBody.builder()
-                        .productGuide("상품 안내 사항")
-                        .deliveryGuide("배송 안내 사항")
-                        .exchangeReturnGuide("교환/반품 안내 사항")
-                        .asGuide("A/S 안내")
-                        .build())
-                .build();
-
         // 상품 등록 API 테스트
         mockMvc.perform(post("/products")
-                .header(AUTH_HEADER, JWT_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(productDto))
-                .accept(MediaType.APPLICATION_JSON))
+                    .header(AUTH_HEADER, JWT_TOKEN)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(new ObjectMapper().writeValueAsString(productDto))
+                    .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.WBCommon.state").value("S"))
@@ -285,6 +287,8 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("product.youtubeUrl").type(JsonFieldType.STRING).description("유튜브 URL").optional().attributes(key("etc").value("")),
                                         fieldWithPath("product.productBarcode").type(JsonFieldType.STRING).description("상품 바코드").optional().attributes(key("etc").value("")),
                                         fieldWithPath("product.modelName").type(JsonFieldType.STRING).description("모델 명").attributes(key("etc").value("")),
+                                        fieldWithPath("product.productFileNo").type(JsonFieldType.STRING).description("상품 이미지 파일 대표 번호").attributes(key("etc").value("")),
+                                        fieldWithPath("product.productDescription").type(JsonFieldType.STRING).description("상품 상세 설명").attributes(key("etc").value("")),
                                         fieldWithPath("basicSpec").type(JsonFieldType.OBJECT).description("기본 스펙").optional().attributes(key("etc").value("")),
                                         fieldWithPath("basicSpec.salesCategoryCode").type(JsonFieldType.STRING).description("완차구분").attributes(key("etc").value("공통코드 000009")),
                                         fieldWithPath("basicSpec.drivetrainTypeCode").type(JsonFieldType.STRING).description("구동계").attributes(key("etc").value("공통코드 000010")),
@@ -364,6 +368,128 @@ class ProductControllerTest extends BaseControllerTests {
                                 )
                 ))
                 ;
+    }
+
+    @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @DisplayName("상품 상세 조회")
+    void findProduct() throws Exception {
+        // 기초 데이터 초기화 처리
+        productDto.setUserId("test@wrightbrothers.kr");
+        productDto.getProduct().setPartnerCode("PT0000001");
+        productDto.setProductCode(
+                productService.generateProductCode(productDto.getProduct().getCategoryTwoCode())
+        );
+        // 상품 등록
+        productService.insertProduct(productDto);
+
+        // 상품 상세 API 조회
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/products/{productCode}", productDto.getProduct().getProductCode())
+                .header(AUTH_HEADER, JWT_TOKEN)
+                .contentType(MediaType.TEXT_HTML)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.WBCommon.state").value("S"))
+                .andDo(
+                        document("product-find",
+                                requestDocument(),
+                                responseDocument(),
+                                requestHeaders(
+                                        headerWithName(AUTH_HEADER).description("JWT 토큰")
+                                ),
+                                pathParameters(
+                                        parameterWithName("productCode").description("상품 코드")
+                                ),
+                                responseFields(
+                                        fieldWithPath("data.product").type(JsonFieldType.OBJECT).description("상품 기본 정보"),
+                                        fieldWithPath("data.product.productCode").type(JsonFieldType.STRING).description("상품 코드"),
+                                        fieldWithPath("data.product.productType").type(JsonFieldType.STRING).description("상품 유형"),
+                                        fieldWithPath("data.product.categoryOneCode").type(JsonFieldType.STRING).description("대 카테고리 코드"),
+                                        fieldWithPath("data.product.categoryOneName").type(JsonFieldType.STRING).description("대 카테고리 명"),
+                                        fieldWithPath("data.product.categoryTwoCode").type(JsonFieldType.STRING).description("중 카테고리 코드"),
+                                        fieldWithPath("data.product.categoryTwoName").type(JsonFieldType.STRING).description("중 카테고리 명"),
+                                        fieldWithPath("data.product.categoryThrCode").type(JsonFieldType.STRING).description("소 카테고리 코드"),
+                                        fieldWithPath("data.product.categoryThrName").type(JsonFieldType.STRING).description("소 카테고리 명"),
+                                        fieldWithPath("data.product.productName").type(JsonFieldType.STRING).description("상품명"),
+                                        fieldWithPath("data.product.brandNo").type(JsonFieldType.STRING).description("브랜드 번호"),
+                                        fieldWithPath("data.product.brandName").type(JsonFieldType.STRING).description("브랜드 명"),
+                                        fieldWithPath("data.product.modelCode").type(JsonFieldType.STRING).description("모델 코드"),
+                                        fieldWithPath("data.product.modelName").type(JsonFieldType.STRING).description("모델 명"),
+                                        fieldWithPath("data.product.modelYear").type(JsonFieldType.STRING).description("연식"),
+                                        fieldWithPath("data.product.youtubeUrl").type(JsonFieldType.STRING).description("유튜브 URL").optional(),
+                                        fieldWithPath("data.product.productBarcode").type(JsonFieldType.STRING).description("상품 바코드").optional(),
+                                        fieldWithPath("data.product.productDescription").type(JsonFieldType.STRING).description("상품 상세 설명"),
+                                        fieldWithPath("data.product.productFileNo").type(JsonFieldType.STRING).description("상품 이미지 파일 대표 번호"),
+                                        fieldWithPath("data.basicSpec").type(JsonFieldType.OBJECT).description("기본 스펙").optional(),
+                                        fieldWithPath("data.basicSpec.salesCategoryCode").type(JsonFieldType.STRING).description("완차구분"),
+                                        fieldWithPath("data.basicSpec.drivetrainTypeCode").type(JsonFieldType.STRING).description("구동계"),
+                                        fieldWithPath("data.basicSpec.frameMaterialCode").type(JsonFieldType.STRING).description("프레임소재"),
+                                        fieldWithPath("data.basicSpec.frameSizeCode").type(JsonFieldType.STRING).description("프레임사이즈"),
+                                        fieldWithPath("data.basicSpec.brakeTypeCode").type(JsonFieldType.STRING).description("브레이크타입"),
+                                        fieldWithPath("data.basicSpec.purposeThemeCode").type(JsonFieldType.STRING).description("용도테마"),
+                                        fieldWithPath("data.basicSpec.wheelSizeCode").type(JsonFieldType.STRING).description("휠사이즈"),
+                                        fieldWithPath("data.basicSpec.suspensionTypeCode").type(JsonFieldType.STRING).description("서스펜션"),
+                                        fieldWithPath("data.basicSpec.minHeightPerson").type(JsonFieldType.STRING).description("호환키(최소)"),
+                                        fieldWithPath("data.basicSpec.maxHeightPerson").type(JsonFieldType.STRING).description("호환키(최대)"),
+                                        fieldWithPath("data.basicSpec.bikeWeight").type(JsonFieldType.STRING).description("무게"),
+                                        fieldWithPath("data.basicSpec.ageList").type(JsonFieldType.ARRAY).description("탑승 연령대"),
+                                        fieldWithPath("data.sellInfo").type(JsonFieldType.OBJECT).description("판매 정보"),
+                                        fieldWithPath("data.sellInfo.productAmount").type(JsonFieldType.NUMBER).description("상품금액"),
+                                        fieldWithPath("data.sellInfo.discountFlag").type(JsonFieldType.STRING).description("할인 여부"),
+                                        fieldWithPath("data.sellInfo.discountType").type(JsonFieldType.STRING).description("할인 구분").optional(),
+                                        fieldWithPath("data.sellInfo.discountAmount").type(JsonFieldType.STRING).description("할인 금액").optional(),
+                                        fieldWithPath("data.sellInfo.finalSellAmount").type(JsonFieldType.NUMBER).description("판매가"),
+                                        fieldWithPath("data.sellInfo.productStatusCode").type(JsonFieldType.STRING).description("상품상태"),
+                                        fieldWithPath("data.sellInfo.displayFlag").type(JsonFieldType.STRING).description("전시상태"),
+                                        fieldWithPath("data.sellInfo.productStockQty").type(JsonFieldType.NUMBER).description("재고"),
+                                        fieldWithPath("data.optionList[]").type(JsonFieldType.ARRAY).description("옵션 정보").optional(),
+                                        fieldWithPath("data.optionList[].optionSeq").type(JsonFieldType.NUMBER).description("옵션 번호").optional(),
+                                        fieldWithPath("data.optionList[].optionName").type(JsonFieldType.STRING).description("옵션 명").optional(),
+                                        fieldWithPath("data.optionList[].optionValue").type(JsonFieldType.STRING).description("옵션 항목").optional(),
+                                        fieldWithPath("data.optionList[].optionSurcharge").type(JsonFieldType.NUMBER).description("변동 금액").optional(),
+                                        fieldWithPath("data.optionList[].optionStockQty").type(JsonFieldType.NUMBER).description("옵션 재고 수량").optional(),
+                                        fieldWithPath("data.delivery").type(JsonFieldType.OBJECT).description("배송 정보"),
+                                        fieldWithPath("data.delivery.deliveryType").type(JsonFieldType.STRING).description("배송방법"),
+                                        fieldWithPath("data.delivery.visitFlag").type(JsonFieldType.STRING).description("방문수령"),
+                                        fieldWithPath("data.delivery.quickServiceFlag").type(JsonFieldType.STRING).description("퀵서비스"),
+                                        fieldWithPath("data.delivery.deliveryBundleFlag").type(JsonFieldType.STRING).description("묶음배송"),
+                                        fieldWithPath("data.delivery.chargeType").type(JsonFieldType.STRING).description("배송비 설정"),
+                                        fieldWithPath("data.delivery.chargeBase").type(JsonFieldType.NUMBER).description("기본 배송비"),
+                                        fieldWithPath("data.delivery.termsFreeCharge").type(JsonFieldType.NUMBER).description("(무료)배송비 기준 금액"),
+                                        fieldWithPath("data.delivery.paymentType").type(JsonFieldType.STRING).description("결제방식"),
+                                        fieldWithPath("data.delivery.surchargeFlag").type(JsonFieldType.STRING).description("제주/도서산간 배송비 추가 여부"),
+                                        fieldWithPath("data.delivery.areaCode").type(JsonFieldType.STRING).description("권역").optional(),
+                                        fieldWithPath("data.delivery.surchargeJejudo").type(JsonFieldType.NUMBER).description("제주도 추가 배송비").optional(),
+                                        fieldWithPath("data.delivery.surchargeIsolated").type(JsonFieldType.NUMBER).description("도서산간 추가 배송비").optional(),
+                                        fieldWithPath("data.delivery.unstoringAddress").type(JsonFieldType.STRING).description("출고지"),
+                                        fieldWithPath("data.delivery.returnAddress").type(JsonFieldType.STRING).description("반품지"),
+                                        fieldWithPath("data.delivery.returnCharge").type(JsonFieldType.NUMBER).description("반품배송비(편도)"),
+                                        fieldWithPath("data.delivery.returnDeliveryCompanyCode").type(JsonFieldType.STRING).description("반품/교환 택배사 코드"),
+                                        fieldWithPath("data.infoNotice").type(JsonFieldType.OBJECT).description("상품 정보 고시"),
+                                        fieldWithPath("data.infoNotice.categoryCode").type(JsonFieldType.STRING).description("상품 구분"),
+                                        fieldWithPath("data.infoNotice.modelName").type(JsonFieldType.STRING).description("품명/모델명"),
+                                        fieldWithPath("data.infoNotice.productSize").type(JsonFieldType.STRING).description("크기").optional(),
+                                        fieldWithPath("data.infoNotice.productWeight").type(JsonFieldType.STRING).description("중량").optional(),
+                                        fieldWithPath("data.infoNotice.productMaterial").type(JsonFieldType.STRING).description("재질").optional(),
+                                        fieldWithPath("data.infoNotice.productComponent").type(JsonFieldType.STRING).description("제품구성").optional(),
+                                        fieldWithPath("data.infoNotice.modelYear").type(JsonFieldType.STRING).description("출시연도"),
+                                        fieldWithPath("data.infoNotice.modelMonth").type(JsonFieldType.STRING).description("출시월"),
+                                        fieldWithPath("data.infoNotice.productMfr").type(JsonFieldType.STRING).description("제조자(사)"),
+                                        fieldWithPath("data.infoNotice.detailSpec").type(JsonFieldType.STRING).description("세부사양").optional(),
+                                        fieldWithPath("data.infoNotice.qaStandard").type(JsonFieldType.STRING).description("품질보증기준").optional(),
+                                        fieldWithPath("data.infoNotice.asPhone").type(JsonFieldType.STRING).description("AS 연락처"),
+                                        fieldWithPath("data.guide").type(JsonFieldType.OBJECT).description("안내 정보"),
+                                        fieldWithPath("data.guide.productGuide").type(JsonFieldType.STRING).description("상품 안내 사항"),
+                                        fieldWithPath("data.guide.deliveryGuide").type(JsonFieldType.STRING).description("배송 안내 사항"),
+                                        fieldWithPath("data.guide.exchangeReturnGuide").type(JsonFieldType.STRING).description("교환/반품 안내 사항"),
+                                        fieldWithPath("data.guide.asGuide").type(JsonFieldType.STRING).description("A/S 안내"),
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                )
+
+                ))
+                ;
+
     }
 
 }
