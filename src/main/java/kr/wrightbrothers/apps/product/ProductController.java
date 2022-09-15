@@ -3,11 +3,14 @@ package kr.wrightbrothers.apps.product;
 import kr.wrightbrothers.apps.product.dto.ProductFindDto;
 import kr.wrightbrothers.apps.product.dto.ProductInsertDto;
 import kr.wrightbrothers.apps.product.dto.ProductListDto;
+import kr.wrightbrothers.apps.product.dto.ProductUpdateDto;
 import kr.wrightbrothers.apps.product.service.ProductService;
+import kr.wrightbrothers.apps.sign.dto.UserDetailDto;
 import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,11 +28,12 @@ public class ProductController extends WBController {
                                    @RequestParam String keywordType,
                                    @RequestParam(required = false) String keywordValue,
                                    @RequestParam int count,
-                                   @RequestParam int page
+                                   @RequestParam int page,
+                                   @AuthenticationPrincipal UserDetailDto user
     ) {
         WBModel response = new WBModel();
         ProductListDto.Param paramDto = ProductListDto.Param.builder()
-                .partnerCode("PT0000001")
+                .partnerCode(user.getUserAuth().getPartnerCode())
                 .displayFlag(displayFlag)
                 .status(status)
                 .rangeType(rangeType)
@@ -51,10 +55,11 @@ public class ProductController extends WBController {
     }
 
     @PostMapping("/products")
-    public WBModel insertProduct(@RequestBody ProductInsertDto paramDto) {
+    public WBModel insertProduct(@RequestBody ProductInsertDto paramDto,
+                                 @AuthenticationPrincipal UserDetailDto user) {
         // Security Custom UserDetail 객체를 통해 파트너 코드, 아이디 정보 추출
-        paramDto.setUserId("test@wrightbrothers.kr");
-        paramDto.getProduct().setPartnerCode("PT0000001");
+        paramDto.setUserId(user.getUserId());
+        paramDto.getProduct().setPartnerCode(user.getUserAuth().getPartnerCode());
         paramDto.setProductCode(
                 productService.generateProductCode(paramDto.getProduct().getCategoryTwoCode())
         );
@@ -66,15 +71,30 @@ public class ProductController extends WBController {
     }
 
     @GetMapping("/products/{productCode}")
-    public WBModel findProduct(@PathVariable String productCode) {
+    public WBModel findProduct(@PathVariable String productCode,
+                               @AuthenticationPrincipal UserDetailDto user) {
         // 상품 상세 정보
         return defaultResponse(productService.findProduct(
                 ProductFindDto.Param.builder()
                         // Security Custom UserDetail 객체를 통해 파트너 코드 추출
-                        .partnerCode("PT0000001")
+                        .partnerCode(user.getUserAuth().getPartnerCode())
                         .productCode(productCode)
                 .build()
         ));
+    }
+
+    @PutMapping("/products")
+    public WBModel updateProduct(@RequestBody ProductUpdateDto paramDto,
+                                 @AuthenticationPrincipal UserDetailDto user) {
+        // Security Custom UserDetail 객체를 통해 파트너 코드, 아이디 정보 추출
+        paramDto.setUserId(user.getUserId());
+        paramDto.getProduct().setPartnerCode(user.getUserAuth().getPartnerCode());
+        paramDto.setProductCode(paramDto.getProductCode());
+
+        // 상품정보 수정
+        productService.updateProduct(paramDto);
+
+        return noneDataResponse();
     }
 
 }

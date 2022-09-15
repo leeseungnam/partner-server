@@ -2,6 +2,8 @@ package kr.wrightbrothers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.apps.common.config.security.jwt.JwtTokenProvider;
+import kr.wrightbrothers.apps.sign.dto.UserDetailDto;
+import kr.wrightbrothers.apps.user.dto.UserAuthDto;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,7 +64,16 @@ public class BaseControllerTests {
 	@BeforeEach
 	void setUp() {
 		SecurityContext context = SecurityContextHolder.getContext();
-		context.setAuthentication(new UsernamePasswordAuthenticationToken("test@wrightbrothers.kr", "test", List.of(new SimpleGrantedAuthority("ROLE_SUPER"))));
+		UserDetailDto userDetailDto = UserDetailDto.builder()
+				.userId("test@wrightbrothers.kr")
+				.userPwd("1q2w3e4r5t")
+				.userAuth(UserAuthDto.builder()
+								.partnerCode("PT0000001")
+								.authCode("ROLE_ADMIN")
+						.build())
+				.build();
+
+		context.setAuthentication(new UsernamePasswordAuthenticationToken(userDetailDto, "1q2w3e4r5t", List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))));
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		JWT_TOKEN = jwtTokenProvider.generateAccessToken(authentication);

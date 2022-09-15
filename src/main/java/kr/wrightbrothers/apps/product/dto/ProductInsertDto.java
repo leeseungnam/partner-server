@@ -2,15 +2,17 @@ package kr.wrightbrothers.apps.product.dto;
 
 import kr.wrightbrothers.apps.file.dto.FileUpdateDto;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 
 @Getter
-@Builder
+@Jacksonized
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductInsertDto {
