@@ -23,7 +23,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
     public static final String REFRESH_HEADER = "Refresh";
-    private final static long REFRESH_TOKEN_VALIDATION_SECOND = 1000L * 60 * 60 * 2;
+    private final static long REFRESH_TOKEN_VALIDATION_SECOND = 60 * 60 * 2;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override

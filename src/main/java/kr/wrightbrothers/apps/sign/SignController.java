@@ -27,7 +27,7 @@ public class SignController extends WBController {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final static long REFRESH_TOKEN_VALIDATION_SECOND = 1000L * 60 * 60 * 2;
+    private final static long REFRESH_TOKEN_VALIDATION_SECOND = 60 * 60 * 2;
     public static final String AUTHORIZATION_HEADER = "Authorization";
     private final UserService userService;
 
