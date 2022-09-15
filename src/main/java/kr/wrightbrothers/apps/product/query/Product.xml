@@ -277,8 +277,6 @@
 	<insert id="mergeDelivery" parameterType="kr.wrightbrothers.apps.product.dto.DeliveryDto$ReqBody">
 		insert into product_delivery(product_code,
 		                             delivery_type,
-		                             visit_flag,
-		                             quick_service_flag,
 		                             delivery_bundle_flag,
 		                             charge_type,
 		                             charge_base,
@@ -296,9 +294,7 @@
 		                             update_user_id)
 		values(#{productCode},
 			   #{deliveryType},
-			   #{visitFlag},
-			   #{quickServiceFlag},
-			   #{deliveryBundleFlag},
+		       #{deliveryBundleFlag},
 			   #{chargeType},
 			   #{chargeBase},
 			   #{termsFreeCharge},
@@ -316,8 +312,6 @@
 		on duplicate key
 		update
 			delivery_type					= #{deliveryType},
-			visit_flag						= #{visitFlag},
-			quick_service_flag				= #{quickServiceFlag},
 			delivery_bundle_flag			= #{deliveryBundleFlag},
 			charge_type						= #{chargeType},
 			charge_base						= #{chargeBase},
@@ -498,8 +492,6 @@
 	<select id="findDelivery" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.product.dto.DeliveryDto$ResBody">
 		select
 			delivery_type,
-			visit_flag,
-			quick_service_flag,
             delivery_bundle_flag,
             charge_type,
             charge_base,

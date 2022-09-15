@@ -14,8 +14,6 @@ public class DeliveryDto {
     @NoArgsConstructor
     public static class Delivery {
         private String deliveryType;
-        private String visitFlag;
-        private String quickServiceFlag;
         private String deliveryBundleFlag;
         private String chargeType;
         private Integer chargeBase;
