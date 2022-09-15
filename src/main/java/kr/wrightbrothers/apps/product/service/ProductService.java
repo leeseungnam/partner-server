@@ -1,10 +1,14 @@
 package kr.wrightbrothers.apps.product.service;
 
+import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.file.service.FileService;
 import kr.wrightbrothers.apps.file.service.S3Service;
+import kr.wrightbrothers.apps.product.dto.ProductDto;
+import kr.wrightbrothers.apps.product.dto.ProductFindDto;
 import kr.wrightbrothers.apps.product.dto.ProductInsertDto;
 import kr.wrightbrothers.apps.product.dto.ProductListDto;
+import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +52,7 @@ public class ProductService {
             // 상품 기본정보 등록
             dao.insert(namespace + "insertProduct", paramDto.getProduct());
             // 상품 기본스펙
-            if (ObjectUtils.isEmpty(paramDto.getBasicSpec())) {
+            if (!ObjectUtils.isEmpty(paramDto.getBasicSpec())) {
                 dao.insert(namespace + "insertBasicSpec", paramDto.getBasicSpec());
                 // 연령 등록
                 dao.insert(namespace + "insertBasicSpecAge", paramDto.getBasicSpec());
@@ -69,5 +73,21 @@ public class ProductService {
             fileService.s3FileRollBack(WBKey.Aws.A3.Product_Img_Path + paramDto.getProduct().getProductCode());
             throw e;
         }
+    }
+
+    public ProductFindDto.ResBody findProduct(ProductFindDto.Param paramDto) {
+        // 입점몰 등록 상품 여부 확인
+        if (dao.selectOne(namespace + "isProductAuth", paramDto))
+            throw new WBBusinessException(ErrorCode.FORBIDDEN.getErrCode());
+
+        return ProductFindDto.ResBody.builder()
+                .product(dao.selectOne(namespace + "findProduct", paramDto.getProductCode()))
+                .basicSpec(dao.selectOne(namespace + "findBasicSpec", paramDto.getProductCode()))
+                .sellInfo(dao.selectOne(namespace + "findSellInfo", paramDto.getProductCode()))
+                .optionList(dao.selectList(namespace + "findOptionList", paramDto.getProductCode()))
+                .delivery(dao.selectOne(namespace + "findDelivery", paramDto.getProductCode()))
+                .infoNotice(dao.selectOne(namespace + "findInfoNotice", paramDto.getProductCode()))
+                .guide(dao.selectOne(namespace + "findGuide", paramDto.getProductCode()))
+                .build();
     }
 }

@@ -1,8 +1,7 @@
 package kr.wrightbrothers.apps.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -13,6 +12,8 @@ public class BasicSpecDto {
     @Data
     @Jacksonized
     @SuperBuilder
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class BasicSpec {
         private String salesCategoryCode;
         private String drivetrainTypeCode;
@@ -38,4 +39,10 @@ public class BasicSpecDto {
         @JsonIgnore
         private String userId;
     }
+
+    @Getter
+    @Jacksonized
+    @SuperBuilder
+    @NoArgsConstructor
+    public static class ResBody extends BasicSpec {}
 }

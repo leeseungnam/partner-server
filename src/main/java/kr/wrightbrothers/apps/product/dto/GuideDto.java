@@ -1,8 +1,7 @@
 package kr.wrightbrothers.apps.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -11,6 +10,8 @@ public class GuideDto {
     @Data
     @Jacksonized
     @SuperBuilder
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class Guide {
         private String productGuide;
         private String deliveryGuide;
@@ -28,4 +29,11 @@ public class GuideDto {
         @JsonIgnore
         private String userId;
     }
+
+    @Getter
+    @Jacksonized
+    @SuperBuilder
+    @NoArgsConstructor
+    public static class ResBody extends Guide {}
+
 }

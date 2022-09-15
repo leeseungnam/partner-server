@@ -1,5 +1,6 @@
 package kr.wrightbrothers.apps.product;
 
+import kr.wrightbrothers.apps.product.dto.ProductFindDto;
 import kr.wrightbrothers.apps.product.dto.ProductInsertDto;
 import kr.wrightbrothers.apps.product.dto.ProductListDto;
 import kr.wrightbrothers.apps.product.service.ProductService;
@@ -62,6 +63,18 @@ public class ProductController extends WBController {
         productService.insertProduct(paramDto);
 
         return noneDataResponse();
+    }
+
+    @GetMapping("/products/{productCode}")
+    public WBModel findProduct(@PathVariable String productCode) {
+        // 상품 상세 정보
+        return defaultResponse(productService.findProduct(
+                ProductFindDto.Param.builder()
+                        // Security Custom UserDetail 객체를 통해 파트너 코드 추출
+                        .partnerCode("PT0000001")
+                        .productCode(productCode)
+                .build()
+        ));
     }
 
 }
