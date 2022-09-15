@@ -38,6 +38,9 @@ cloud:
     credentials:
       accessKey: AKIARL5GKSIL5OK4DO5V
       secretKey: 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
+    ses:
+      accessKey: AKIARL5GKSILRUJFMCMR
+      secretKey: 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
     s3:
       bucket: wb-storage-dev
     region:
@@ -52,7 +55,7 @@ system:
   file:
     temp:
       # 임시 파일 저장 위치
-      path: /Users/chals85/partner_project/file_temp
+      path: /Users/chals/partner_project/file_temp
 
 jwt:
   secret-key: aYEFtKMCn0xCg5caH1nnFuHfdAB0lBOvdonxq80VqOGNnG6QcyagXWOLrUdqJnzexUXYceMhGNFNYsA6rblSibUEh0yRsJ3XO1um1iMdoekOPzj4zKlokcu9TxTbz5DHYVLkqX3q9JrLgbLZFXD8ynOHfRHRL5Ge64iFZBVm9X517fwZrNornOmK2L7hUz10SgZpxAz6

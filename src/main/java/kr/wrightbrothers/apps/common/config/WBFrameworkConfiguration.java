@@ -2,11 +2,14 @@ package kr.wrightbrothers.apps.common.config;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.wrightbrothers.apps.common.config.dto.MessageDto;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.framework.support.interceptor.WBInterceptor;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import kr.wrightbrothers.framework.support.reloader.MybatisSqlAutoReloader;
 import kr.wrightbrothers.framework.support.transaction.WBMultiTransactionManager;
+import kr.wrightbrothers.framework.util.StaticContextAccessor;
+import kr.wrightbrothers.framework.util.WBMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSession;
@@ -17,6 +20,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 @Configuration
@@ -30,6 +34,11 @@ public class WBFrameworkConfiguration {
 	@Bean
 	public ObjectMapper objectMapper() {
 		return new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+	}
+
+	@Bean
+	public StaticContextAccessor staticContextAccessor() {
+		return new StaticContextAccessor(ac);
 	}
 
 	/**
@@ -76,5 +85,22 @@ public class WBFrameworkConfiguration {
 		reloader.setMapperLocations("/kr/wrightbrothers/apps/**");
 		return reloader;
 	}
-	
+
+	/**
+	 * 공통 메세지 생성
+	 */
+	@Bean
+	public WBMessage commonMessage(@Qualifier(PartnerKey.WBConfig.Mybatis.DefaultSqlSessionTemplate) SqlSession defaultSqlSession) {
+		WBMessage wbMessage = new WBMessage();
+		Locale.setDefault(new Locale("KR"));
+		defaultSqlSession.selectList(namespace + "findMessageList")
+				.stream()
+				.map(message -> (MessageDto) message)
+				.forEach(message -> wbMessage.addMessageFormat(
+						message.getMessageNo(),
+						new MessageFormat(message.getMessageContent(), Locale.getDefault()))
+				);
+
+		return wbMessage;
+	}
 }

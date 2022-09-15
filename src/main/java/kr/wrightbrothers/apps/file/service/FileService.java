@@ -2,10 +2,8 @@ package kr.wrightbrothers.apps.file.service;
 
 import kr.wrightbrothers.apps.common.util.ImageConverter;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
-import kr.wrightbrothers.apps.file.dto.FileParamDto;
-import kr.wrightbrothers.apps.file.dto.FileDto;
-import kr.wrightbrothers.apps.file.dto.FileListDto;
-import kr.wrightbrothers.apps.file.dto.FileUploadDto;
+import kr.wrightbrothers.apps.file.dto.*;
+import kr.wrightbrothers.framework.lang.WBException;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +11,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -108,5 +107,42 @@ public class FileService {
 
     public FileDto findFile(FileParamDto paramDto) {
         return dao.selectOne(namespace + "findFile", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+    }
+
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Admin)
+    public void s3FileUpload(List<FileUpdateDto> fileList, String path, Boolean isThumbnail) {
+        if (ObjectUtils.isEmpty(fileList)) return;
+
+        fileList.forEach(fileDto -> {
+
+            switch (fileDto.getFileStatus()) {
+                case WBKey.TransactionType.Insert:
+                    File file = ObjectUtils.isEmpty(fileDto.getTifPath()) ?
+                            new File(fileDto.getFileSource()) : new File(fileDto.getTifPath());
+
+                    if (!file.exists()) return;
+                    try {
+                        // AWS S3 파일 업로드 후 경로 DTO 저장
+                        fileDto.setFileSource(isThumbnail ?
+                                s3Service.uploadThumbImage(file, path) : s3Service.uploadFile(file, path)
+                        );
+                        // 상태 R 변경
+                        dao.update(namespace + "updateFile", fileDto, PartnerKey.WBDataBase.Alias.Admin);
+                        file.delete();
+                    } catch (IOException e) {
+                        throw new WBException(e);
+                    }
+                case WBKey.TransactionType.Delete:
+                    dao.delete(namespace + "deleteFile", fileDto);
+                    s3Service.fileDelete(fileDto.getFileSource());
+                case WBKey.TransactionType.Read:
+                    dao.update(namespace + "updateFileDisplaySeq", fileDto);
+            }
+        });
+
+    }
+
+    public void s3FileRollBack(String s3Key) {
+        s3Service.folderDelete(s3Key);
     }
 }

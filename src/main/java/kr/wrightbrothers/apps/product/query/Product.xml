@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.wrightbrothers.apps.product.query.Product">
+
+	<select id="findProductGroupCode" parameterType="java.lang.String" resultType="java.lang.String">
+		select
+		    prdt_grp_cd
+		  from com_cagy
+		 where cagy_cd = #{categoryCode}
+	</select>
+
+	<select id="findProductList" parameterType="kr.wrightbrothers.apps.product.dto.ProductListDto$Param" resultType="kr.wrightbrothers.apps.product.dto.ProductListDto$Response">
+		select
+		    p.product_code,
+		    p.brand_name,
+		    p.category_one_name,
+		    p.category_two_name,
+		    p.category_thr_name,
+		    p.product_name,
+		    ps.product_status_code as product_status,
+		    if(ps.display_flag = 'Y', '노출', '미노출') as display_flag,
+		    ps.product_stock_qty,
+		    ps.final_sell_amount,
+			o.product_option_flag,
+			p.create_date,
+			p.update_date,
+			p.create_user_id,
+			u.user_name as create_user_name
+		  from product p
+		 inner join product_sell_info ps
+			on p.product_code = ps.product_code
+		  left join (
+		      select
+		          product_code,
+		          if(count(product_code) = 0, 'N', 'Y') as product_option_flag
+		        from product_option
+			   group by product_code
+		) o on p.product_code = o.product_code
+		  left join users u
+			on p.create_user_id = u.user_id
+		<where>
+			<choose>
+				<when test="rangeType == 'PRODUCT'.toString()">
+		   and p.create_date between concat(#{startDay}, '00:00:00.0') and concat(#{endDay}, '23:59:59.9')
+				</when>
+				<when test="rangeType == 'SALE'.toString()">
+		   and ps.product_sell_start_date between concat(#{startDay}, '00:00:00.0') and concat(#{endDay}, '23:59:59.9')
+				</when>
+			</choose>
+			-- 전시상태
+			<foreach collection="displayFlag" item="item" index="index" open="and ps.display_flag in (" separator="," close=")">
+				#{item}
+			</foreach>
+			-- 상품상태
+			<foreach collection="status" item="item" index="index" open="and ps.product_status_code in (" separator="," close=")">
+				#{item}
+			</foreach>
+			-- 조회기간
+			<if test="keywordValue != null and keywordValue != ''">
+				<choose>
+					<when test="keywordType == 'NAME'.toString()">
+						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+							p.product_name like #{item} '%'
+						</foreach>
+					</when>
+					<when test="keywordType == 'CODE'.toString()">
+						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+							p.product_code like #{item} '%'
+						</foreach>
+					</when>
+				</choose>
+			</if>
+		</where>
+		order by p.create_date desc
+	</select>
+
+	<insert id="insertProduct" parameterType="kr.wrightbrothers.apps.product.dto.ProductDto$ReqBody">
+		insert into product(product_code,
+							partner_code,
+							product_type,
+							category_one_code,
+							category_one_name,
+							category_two_code,
+							category_two_name,
+							category_thr_code,
+							category_thr_name,
+							product_name,
+							brand_no,
+							brand_name,
+							model_code,
+							model_name,
+							model_year,
+							youtube_url,
+							product_barcode,
+							product_file_no,
+							product_description,
+							create_user_id,
+							update_user_id)
+		values(#{productCode},
+			   #{partnerCode},
+			   #{productType},
+			   #{categoryOneCode},
+			   #{categoryOneName},
+			   #{categoryTwoCode},
+			   #{categoryTwoName},
+			   #{categoryThrCode},
+			   #{categoryThrName},
+			   #{productName},
+			   #{brandNo},
+			   #{brandName},
+			   #{modelCode},
+			   #{modelName},
+			   #{modelYear},
+			   #{youtubeUrl},
+			   #{productBarcode},
+			   #{productFileNo},
+			   #{productDescription},
+			   #{userId},
+			   #{userId})
+	</insert>
+
+	<insert id="insertBasicSpec" parameterType="kr.wrightbrothers.apps.product.dto.BasicSpecDto$ReqBody">
+		insert into product_basic_spec(product_code,
+		                               sales_category_code,
+		                               drivetrain_type_code,
+		                               frame_material_code,
+		                               frame_size_code,
+		                               brake_type_code,
+		                               purpose_theme_code,
+		                               wheel_size_code,
+		                               suspension_type_code,
+		                               min_height_person,
+		                               max_height_person,
+		                               bike_weight,
+		                               create_user_id,
+		                               update_user_id)
+		values(#{productCode},
+			   #{salesCategoryCode},
+			   #{drivetrainTypeCode},
+			   #{frameMaterialCode},
+			   #{frameSizeCode},
+			   #{brakeTypeCode},
+			   #{purposeThemeCode},
+			   #{wheelSizeCode},
+			   #{suspensionTypeCode},
+			   #{minHeightPerson},
+			   #{maxHeightPerson},
+			   #{bikeWeight},
+			   #{userId},
+			   #{userId})
+	</insert>
+
+	<insert id="insertBasicSpecAge" parameterType="kr.wrightbrothers.apps.product.dto.BasicSpecDto$ReqBody">
+		insert into product_embark_age(product_code,
+		                               embark_age,
+		                               create_user_id)
+		values
+		<foreach collection="ageList" item="item" index="index" separator=",">
+			(#{productCode}, #{item}, #{userId})
+		</foreach>
+	</insert>
+
+	<insert id="insertSellInfo" parameterType="kr.wrightbrothers.apps.product.dto.SellInfoDto$ReqBody">
+		insert into product_sell_info(product_code,
+		                              product_amount,
+		                              discount_flag,
+		                              discount_type,
+		                              discount_amount,
+		                              final_sell_amount,
+									  display_flag,
+									  product_status_code,
+		                              product_stock_qty,
+		                              create_user_id,
+		                              update_user_id)
+		values(#{productCode},
+			   #{productAmount},
+			   #{discountFlag},
+			   #{discountType},
+			   #{discountAmount},
+			   #{finalSellAmount},
+		       #{displayFlag},
+			   #{productStatusCode},
+			   #{productStockQty},
+			   #{userId},
+			   #{userId})
+	</insert>
+	
+	<insert id="insertOption" parameterType="kr.wrightbrothers.apps.product.dto.OptionDto$ReqBody">
+		insert into product_option(product_code,
+		                           option_seq,
+		                           option_name,
+		                           option_value,
+		                           option_surcharge,
+		                           option_stock_qty,
+		                           create_user_id,
+		                           update_user_id)
+		values(#{productCode},
+			   #{optionSeq},
+			   #{optionName},
+			   #{optionValue},
+			   #{optionSurcharge},
+			   #{optionStockQty},
+			   #{userId},
+			   #{userId})
+	</insert>
+
+	<insert id="insertDelivery" parameterType="kr.wrightbrothers.apps.product.dto.DeliveryDto$ReqBody">
+		insert into product_delivery(product_code,
+		                             delivery_type,
+		                             visit_flag,
+		                             quick_service_flag,
+		                             delivery_bundle_flag,
+		                             charge_type,
+		                             charge_base,
+		                             terms_free_charge,
+		                             payment_type,
+		                             surcharge_flag,
+		                             area_code,
+		                             surcharge_jejudo,
+		                             surcharge_isolated,
+		                             unstoring_address,
+		                             return_address,
+		                             return_charge,
+		                             return_delivery_company_code,
+		                             create_user_id,
+		                             update_user_id)
+		values(#{productCode},
+			   #{deliveryType},
+			   #{visitFlag},
+			   #{quickServiceFlag},
+			   #{deliveryBundleFlag},
+			   #{chargeType},
+			   #{chargeBase},
+			   #{termsFreeCharge},
+			   #{paymentType},
+			   #{surchargeFlag},
+			   #{areaCode},
+			   #{surchargeJejudo},
+			   #{surchargeIsolated},
+			   #{unstoringAddress},
+			   #{returnAddress},
+			   #{returnCharge},
+			   #{returnDeliveryCompanyCode},
+			   #{userId},
+			   #{userId})
+	</insert>
+
+	<insert id="insertInfoNotice" parameterType="kr.wrightbrothers.apps.product.dto.InfoNoticeDto$ReqBody">
+		insert into product_info_notice(product_code,
+										category_code,
+										model_name,
+										product_size,
+										product_weight,
+										product_material,
+										product_component,
+										model_year,
+										model_month,
+										product_mfr,
+										detail_spec,
+										qa_standard,
+										as_phone,
+										create_user_id,
+										update_user_id)
+		values(#{productCode},
+			   #{categoryCode},
+			   #{modelName},
+			   #{productSize},
+			   #{productWeight},
+			   #{productMaterial},
+			   #{productComponent},
+			   #{modelYear},
+			   #{modelMonth},
+			   #{productMfr},
+			   #{detailSpec},
+			   #{qaStandard},
+			   #{asPhone},
+			   #{userId},
+			   #{userId})
+	</insert>
+
+	<insert id="insertGuide" parameterType="kr.wrightbrothers.apps.product.dto.GuideDto$ReqBody">
+		insert into product_guide(product_code,
+		                          product_guide,
+		                          delivery_guide,
+		                          exchange_return_guide,
+		                          as_guide,
+		                          create_user_id,
+		                          update_user_id)
+		values(#{productCode},
+			   #{productGuide},
+			   #{deliveryGuide},
+			   #{exchangeReturnGuide},
+			   #{asGuide},
+			   #{userId},
+			   #{userId})
+	</insert>
+</mapper>
