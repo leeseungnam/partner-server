@@ -20,7 +20,7 @@
 		     update_date)
 		values
 		    (#{userId},
-		     #{token},
+		     #{refreshToken},
 			 'admin',
 		     current_timestamp,
 			 'admin',
