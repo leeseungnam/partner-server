@@ -1,10 +1,12 @@
 package kr.wrightbrothers.apps.sign.dto;
 
 import kr.wrightbrothers.apps.user.dto.UserAuthDto;
+import kr.wrightbrothers.apps.user.dto.UserDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,27 +17,31 @@ public class UserPrincipal implements UserDetails {
 
     private String password;
 
-    private List<UserAuthDto> userAuthDtoList;
+    private UserAuthDto userAuth;
 
     private Collection<? extends GrantedAuthority> authorities;
 
     public UserPrincipal(UserDetailDto userDetailDto, Collection<? extends GrantedAuthority> authorities) {
         this.username = userDetailDto.getUserId();
         this.password = userDetailDto.getUserPwd();
-        this.userAuthDtoList = userDetailDto.getAuthorities();
+        this.userAuth = userDetailDto.getUserAuth();
         this.authorities = authorities;
     }
 
     public static UserPrincipal createUser(UserDetailDto userDetailDto) {
-        List<GrantedAuthority> grantedAuthorities = userDetailDto.getAuthorities().stream()
-                .map(authority -> new SimpleGrantedAuthority(authority.getAuthCode()))
-                .collect(Collectors.toList());
+        List<GrantedAuthority> grantedAuthorities = Arrays.asList(new SimpleGrantedAuthority(userDetailDto.getUserAuth().getAuthCode()));
 
         return new UserPrincipal(userDetailDto, grantedAuthorities);
     }
 
-    public List<UserAuthDto> getUserAuthDtoList() {
-        return userAuthDtoList;
+    public static UserPrincipal modifyUser(UserDetailDto userDetailDto) {
+        List<GrantedAuthority> grantedAuthorities = Arrays.asList(new SimpleGrantedAuthority(userDetailDto.getUserAuth().getAuthCode()));
+
+        return new UserPrincipal(userDetailDto, grantedAuthorities);
+    }
+
+    public UserAuthDto getUserAuth() {
+        return userAuth;
     }
 
     @Override

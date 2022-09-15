@@ -14,6 +14,6 @@ public class UserDetailDto {
 
     private String userId;
     private String userPwd;
-    private List<UserAuthDto> authorities;
+    private UserAuthDto userAuth;
 
 }
