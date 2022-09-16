@@ -2,7 +2,7 @@ package kr.wrightbrothers.apps.product;
 
 import kr.wrightbrothers.apps.product.dto.ChangeInfoListDto;
 import kr.wrightbrothers.apps.product.service.ChangeInfoService;
-import kr.wrightbrothers.apps.sign.dto.UserDetailDto;
+import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class ChangeInfoController extends WBController {
 
     @GetMapping("/products/{productCode}/change-history")
     public WBModel findProductChangeHistory(@PathVariable String productCode,
-                                            @AuthenticationPrincipal UserDetailDto user) {
+                                            @AuthenticationPrincipal UserPrincipal user) {
         return defaultResponse(
                 // 상품 상태 변경 이력
                 changeInfoService.findProductChangeHistory(

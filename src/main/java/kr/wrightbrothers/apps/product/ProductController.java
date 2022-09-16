@@ -6,11 +6,13 @@ import kr.wrightbrothers.apps.product.dto.ProductListDto;
 import kr.wrightbrothers.apps.product.dto.ProductUpdateDto;
 import kr.wrightbrothers.apps.product.service.ProductService;
 import kr.wrightbrothers.apps.sign.dto.UserDetailDto;
+import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,7 +32,7 @@ public class ProductController extends WBController {
                                    @RequestParam(required = false) String keywordValue,
                                    @RequestParam int count,
                                    @RequestParam int page,
-                                   @AuthenticationPrincipal UserDetailDto user
+                                   @AuthenticationPrincipal UserPrincipal user
     ) {
         WBModel response = new WBModel();
         ProductListDto.Param paramDto = ProductListDto.Param.builder()
@@ -57,9 +59,9 @@ public class ProductController extends WBController {
 
     @PostMapping("/products")
     public WBModel insertProduct(@RequestBody ProductInsertDto paramDto,
-                                 @AuthenticationPrincipal UserDetailDto user) {
+                                 @AuthenticationPrincipal UserPrincipal user) {
         // Security Custom UserDetail 객체를 통해 파트너 코드, 아이디 정보 추출
-        paramDto.setUserId(user.getUserId());
+        paramDto.setUserId(user.getUsername());
         paramDto.getProduct().setPartnerCode(user.getUserAuth().getPartnerCode());
         paramDto.setProductCode(
                 productService.generateProductCode(paramDto.getProduct().getCategoryTwoCode())
@@ -73,7 +75,7 @@ public class ProductController extends WBController {
 
     @GetMapping("/products/{productCode}")
     public WBModel findProduct(@PathVariable String productCode,
-                               @AuthenticationPrincipal UserDetailDto user) {
+                               @AuthenticationPrincipal UserPrincipal user) {
         // 상품 상세 정보
         return defaultResponse(productService.findProduct(
                 ProductFindDto.Param.builder()
@@ -86,9 +88,9 @@ public class ProductController extends WBController {
 
     @PutMapping("/products")
     public WBModel updateProduct(@RequestBody ProductUpdateDto paramDto,
-                                 @AuthenticationPrincipal UserDetailDto user) {
+                                 @AuthenticationPrincipal UserPrincipal user) {
         // Security Custom UserDetail 객체를 통해 파트너 코드, 아이디 정보 추출
-        paramDto.setUserId(user.getUserId());
+        paramDto.setUserId(user.getUsername());
         paramDto.getProduct().setPartnerCode(user.getUserAuth().getPartnerCode());
         paramDto.setProductCode(paramDto.getProductCode());
 
