@@ -75,7 +75,8 @@ public class BaseControllerTests {
 						.build())
 				.build();
 
-		context.setAuthentication(new UsernamePasswordAuthenticationToken(new UserPrincipal(userDetailDto, List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))), "", List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))));
+		UserPrincipal principal = new UserPrincipal("test@wrightbrothers.kr", "", List.of(new SimpleGrantedAuthority("ROLE_ADMIN")), UserAuthDto.builder().authCode("ROLE_ADMIN").partnerCode("PT0000001").build());
+		context.setAuthentication(new UsernamePasswordAuthenticationToken(principal, "", List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))));
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		JWT_TOKEN = jwtTokenProvider.generateAccessToken(authentication);
