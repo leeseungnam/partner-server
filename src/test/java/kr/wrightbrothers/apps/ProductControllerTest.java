@@ -44,9 +44,9 @@ class ProductControllerTest extends BaseControllerTests {
     @Autowired
     private S3Service s3Service;
     @Autowired
-    private ProductService productService;
+    protected ProductService productService;
 
-    private ProductInsertDto productDto;
+    protected ProductInsertDto productDto;
 
     @BeforeEach
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
@@ -161,6 +161,15 @@ class ProductControllerTest extends BaseControllerTests {
                         .asGuide("A/S 안내")
                         .build())
                 .build();
+
+        // 기초 데이터 초기화 처리
+        productDto.setUserId("test@wrightbrothers.kr");
+        productDto.getProduct().setPartnerCode("PT0000001");
+        productDto.setProductCode(
+                productService.generateProductCode(productDto.getProduct().getCategoryTwoCode())
+        );
+        // 상품 등록
+        productService.insertProduct(productDto);
     }
 
     @Test
@@ -370,14 +379,7 @@ class ProductControllerTest extends BaseControllerTests {
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     @DisplayName("상품 상세 조회")
     void findProduct() throws Exception {
-        // 기초 데이터 초기화 처리
-        productDto.setUserId("test@wrightbrothers.kr");
-        productDto.getProduct().setPartnerCode("PT0000001");
-        productDto.setProductCode(
-                productService.generateProductCode(productDto.getProduct().getCategoryTwoCode())
-        );
-        // 상품 등록
-        productService.insertProduct(productDto);
+
 
         // 상품 상세 API 조회
         mockMvc.perform(RestDocumentationRequestBuilders.get("/products/{productCode}", productDto.getProduct().getProductCode())
@@ -490,15 +492,6 @@ class ProductControllerTest extends BaseControllerTests {
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     @DisplayName("상품 수정")
     void updateProduct() throws Exception {
-        // 기초 데이터 초기화 처리
-        productDto.setUserId("test@wrightbrothers.kr");
-        productDto.getProduct().setPartnerCode("PT0000001");
-        productDto.setProductCode(
-                productService.generateProductCode(productDto.getProduct().getCategoryTwoCode())
-        );
-        // 상품 등록
-        productService.insertProduct(productDto);
-
         // 상품 등록 API 테스트
         mockMvc.perform(put("/products")
                         .header(AUTH_HEADER, JWT_TOKEN)

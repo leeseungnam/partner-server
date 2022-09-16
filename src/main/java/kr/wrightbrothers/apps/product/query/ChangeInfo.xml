@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.wrightbrothers.apps.product.query.ChangeInfo">
+
+	<insert id="insertChangeInfo" parameterType="kr.wrightbrothers.apps.product.dto.ChangeInfoDto$ReqBody">
+		insert into product_change_info(product_code,
+		                                product_status_code,
+		                                product_log_code,
+		                                product_log,
+		                                create_user_id)
+		values(#{productCode},
+		       #{productStatusCode},
+		       #{productLogCode},
+		       #{productLog},
+		       #{userId})
+	</insert>
+
+	<select id="findProductChangeHistory" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.product.dto.ChangeInfoDto$ResBody">
+		select
+		    p.product_log,
+		    p.product_log_code,
+			p.product_status_code,
+			if(u.user_name is null, '라이트브라더스', u.user_name) as createUserName,
+		    p.create_date
+		  from product_change_info p
+		  left join users u
+		      on p.create_user_id = u.user_id
+		 where product_code = #{productCode}
+		 order by create_date desc
+	</select>
+
+</mapper>
