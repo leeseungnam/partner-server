@@ -127,7 +127,30 @@
 			   #{userId})
 	</insert>
 
-	<insert id="insertBasicSpec" parameterType="kr.wrightbrothers.apps.product.dto.BasicSpecDto$ReqBody">
+	<update id="updateProduct" parameterType="kr.wrightbrothers.apps.product.dto.ProductDto$ReqBody">
+		update product
+		   set category_one_code = #{categoryOneCode},
+			   category_one_name = #{categoryOneName},
+			   category_two_code = #{categoryTwoCode},
+			   category_two_name = #{categoryTwoName},
+			   category_thr_code = #{categoryThrCode},
+			   category_thr_name = #{categoryThrName},
+			   product_name = #{productName},
+			   brand_no = #{brandNo},
+			   brand_name = #{brandName},
+			   model_code = #{modelCode},
+			   model_name = #{modelName},
+			   model_year = #{modelYear},
+			   youtube_url = #{youtubeUrl},
+			   product_barcode = #{productBarcode},
+			   product_file_no = #{productFileNo},
+			   product_description = #{productDescription},
+			   update_user_id = #{userId},
+			   update_date = now()
+	     where product_code = #{productCode}
+	</update>
+
+	<insert id="mergeBasicSpec" parameterType="kr.wrightbrothers.apps.product.dto.BasicSpecDto$ReqBody">
 		insert into product_basic_spec(product_code,
 		                               sales_category_code,
 		                               drivetrain_type_code,
@@ -156,6 +179,21 @@
 			   #{bikeWeight},
 			   #{userId},
 			   #{userId})
+		on duplicate key
+		update
+			sales_category_code = #{salesCategoryCode},
+			drivetrain_type_code = #{drivetrainTypeCode},
+			frame_material_code = #{frameMaterialCode},
+			frame_size_code = #{frameSizeCode},
+			brake_type_code = #{brakeTypeCode},
+			purpose_theme_code = #{purposeThemeCode},
+			wheel_size_code = #{wheelSizeCode},
+			suspension_type_code = #{suspensionTypeCode},
+			min_height_person = #{minHeightPerson},
+			max_height_person = #{maxHeightPerson},
+			bike_weight = #{bikeWeight},
+		    update_user_id = #{userId},
+		    update_date = now()
 	</insert>
 
 	<insert id="insertBasicSpecAge" parameterType="kr.wrightbrothers.apps.product.dto.BasicSpecDto$ReqBody">
@@ -168,7 +206,13 @@
 		</foreach>
 	</insert>
 
-	<insert id="insertSellInfo" parameterType="kr.wrightbrothers.apps.product.dto.SellInfoDto$ReqBody">
+	<delete id="deleteBasicSpecAge" parameterType="java.lang.String">
+		delete
+		  from product_embark_age
+		 where product_code = #{productCode}
+	</delete>
+
+	<insert id="mergeSellInfo" parameterType="kr.wrightbrothers.apps.product.dto.SellInfoDto$ReqBody">
 		insert into product_sell_info(product_code,
 		                              product_amount,
 		                              discount_flag,
@@ -191,6 +235,18 @@
 			   #{productStockQty},
 			   #{userId},
 			   #{userId})
+		on duplicate key
+		update
+			product_amount		= #{productAmount},
+			discount_flag		= #{discountFlag},
+			discount_type		= #{discountType},
+			discount_amount		= #{discountAmount},
+			final_sell_amount	= #{finalSellAmount},
+			display_flag		= #{displayFlag},
+			product_status_code	= #{productStatusCode},
+			product_stock_qty	= #{productStockQty},
+		    update_user_id		= #{userId},
+		    update_date			= now()
 	</insert>
 	
 	<insert id="insertOption" parameterType="kr.wrightbrothers.apps.product.dto.OptionDto$ReqBody">
@@ -212,11 +268,15 @@
 			   #{userId})
 	</insert>
 
-	<insert id="insertDelivery" parameterType="kr.wrightbrothers.apps.product.dto.DeliveryDto$ReqBody">
+	<delete id="deleteOption" parameterType="java.lang.String">
+		delete
+		  from product_option
+		 where product_code = #{productCode}
+	</delete>
+
+	<insert id="mergeDelivery" parameterType="kr.wrightbrothers.apps.product.dto.DeliveryDto$ReqBody">
 		insert into product_delivery(product_code,
 		                             delivery_type,
-		                             visit_flag,
-		                             quick_service_flag,
 		                             delivery_bundle_flag,
 		                             charge_type,
 		                             charge_base,
@@ -234,9 +294,7 @@
 		                             update_user_id)
 		values(#{productCode},
 			   #{deliveryType},
-			   #{visitFlag},
-			   #{quickServiceFlag},
-			   #{deliveryBundleFlag},
+		       #{deliveryBundleFlag},
 			   #{chargeType},
 			   #{chargeBase},
 			   #{termsFreeCharge},
@@ -251,9 +309,27 @@
 			   #{returnDeliveryCompanyCode},
 			   #{userId},
 			   #{userId})
+		on duplicate key
+		update
+			delivery_type					= #{deliveryType},
+			delivery_bundle_flag			= #{deliveryBundleFlag},
+			charge_type						= #{chargeType},
+			charge_base						= #{chargeBase},
+			terms_free_charge				= #{termsFreeCharge},
+			payment_type					= #{paymentType},
+			surcharge_flag					= #{surchargeFlag},
+			area_code						= #{areaCode},
+			surcharge_jejudo				= #{surchargeJejudo},
+			surcharge_isolated				= #{surchargeIsolated},
+			unstoring_address				= #{unstoringAddress},
+			return_address					= #{returnAddress},
+			return_charge					= #{returnCharge},
+			return_delivery_company_code	= #{returnDeliveryCompanyCode},
+		    update_user_id					= #{userId},
+		    update_date						= now()
 	</insert>
 
-	<insert id="insertInfoNotice" parameterType="kr.wrightbrothers.apps.product.dto.InfoNoticeDto$ReqBody">
+	<insert id="mergeInfoNotice" parameterType="kr.wrightbrothers.apps.product.dto.InfoNoticeDto$ReqBody">
 		insert into product_info_notice(product_code,
 										category_code,
 										model_name,
@@ -284,9 +360,25 @@
 			   #{asPhone},
 			   #{userId},
 			   #{userId})
+		on duplicate key
+		update
+			category_code		= #{categoryCode},
+			model_name			= #{modelName},
+			product_size		= #{productSize},
+			product_weight		= #{productWeight},
+			product_material	= #{productMaterial},
+			product_component	= #{productComponent},
+			model_year			= #{modelYear},
+			model_month			= #{modelMonth},
+			product_mfr			= #{productMfr},
+			detail_spec			= #{detailSpec},
+			qa_standard			= #{qaStandard},
+			as_phone			= #{asPhone},
+		    update_user_id		= #{userId},
+		    update_date			= now()
 	</insert>
 
-	<insert id="insertGuide" parameterType="kr.wrightbrothers.apps.product.dto.GuideDto$ReqBody">
+	<insert id="mergeGuide" parameterType="kr.wrightbrothers.apps.product.dto.GuideDto$ReqBody">
 		insert into product_guide(product_code,
 		                          product_guide,
 		                          delivery_guide,
@@ -301,6 +393,14 @@
 			   #{asGuide},
 			   #{userId},
 			   #{userId})
+		on duplicate key
+		update
+			product_guide			= #{productGuide},
+			delivery_guide			= #{deliveryGuide},
+			exchange_return_guide	= #{exchangeReturnGuide},
+			as_guide				= #{asGuide},
+		    update_user_id			= #{userId},
+		    update_date				= now()
 	</insert>
 
 	<select id="findProduct" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.product.dto.ProductDto$ResBody">
@@ -392,8 +492,6 @@
 	<select id="findDelivery" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.product.dto.DeliveryDto$ResBody">
 		select
 			delivery_type,
-			visit_flag,
-			quick_service_flag,
             delivery_bundle_flag,
             charge_type,
             charge_base,
@@ -438,4 +536,5 @@
 		  from product_guide
 		 where product_code = #{productCode}
 	</select>
+
 </mapper>

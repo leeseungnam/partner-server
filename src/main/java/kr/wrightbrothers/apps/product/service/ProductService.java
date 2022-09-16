@@ -3,11 +3,7 @@ package kr.wrightbrothers.apps.product.service;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.file.service.FileService;
-import kr.wrightbrothers.apps.file.service.S3Service;
-import kr.wrightbrothers.apps.product.dto.ProductDto;
-import kr.wrightbrothers.apps.product.dto.ProductFindDto;
-import kr.wrightbrothers.apps.product.dto.ProductInsertDto;
-import kr.wrightbrothers.apps.product.dto.ProductListDto;
+import kr.wrightbrothers.apps.product.dto.*;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
@@ -48,31 +44,26 @@ public class ProductService {
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void insertProduct(ProductInsertDto paramDto) {
-        try {
-            // 상품 기본정보 등록
-            dao.insert(namespace + "insertProduct", paramDto.getProduct());
-            // 상품 기본스펙
-            if (!ObjectUtils.isEmpty(paramDto.getBasicSpec())) {
-                dao.insert(namespace + "insertBasicSpec", paramDto.getBasicSpec());
-                // 연령 등록
-                dao.insert(namespace + "insertBasicSpecAge", paramDto.getBasicSpec());
-            }
-            // 판매 정보
-            dao.insert(namespace + "insertSellInfo", paramDto.getSellInfo());
-            // 옵션 정보
-            paramDto.getOptionList().forEach(option -> dao.insert(namespace + "insertOption", option));
-            // 배송 정보
-            dao.insert(namespace + "insertDelivery", paramDto.getDelivery());
-            // 정보 고시
-            dao.insert(namespace + "insertInfoNotice", paramDto.getInfoNotice());
-            // 안내 정보
-            dao.insert(namespace + "insertGuide", paramDto.getGuide());
-            // 임시저장 파일 AWS S3 업로드
-            fileService.s3FileUpload(paramDto.getFileList(), WBKey.Aws.A3.Product_Img_Path + paramDto.getProduct().getProductCode(), true);
-        } catch (Exception e) {
-            fileService.s3FileRollBack(WBKey.Aws.A3.Product_Img_Path + paramDto.getProduct().getProductCode());
-            throw e;
+        // 상품 기본정보 등록
+        dao.insert(namespace + "insertProduct", paramDto.getProduct());
+        // 상품 기본스펙
+        if (!ObjectUtils.isEmpty(paramDto.getBasicSpec())) {
+            dao.insert(namespace + "mergeBasicSpec", paramDto.getBasicSpec());
+            // 연령 등록
+            dao.insert(namespace + "insertBasicSpecAge", paramDto.getBasicSpec());
         }
+        // 판매 정보
+        dao.insert(namespace + "mergeSellInfo", paramDto.getSellInfo());
+        // 옵션 정보
+        paramDto.getOptionList().forEach(option -> dao.insert(namespace + "insertOption", option));
+        // 배송 정보
+        dao.insert(namespace + "mergeDelivery", paramDto.getDelivery());
+        // 정보 고시
+        dao.insert(namespace + "mergeInfoNotice", paramDto.getInfoNotice());
+        // 안내 정보
+        dao.insert(namespace + "mergeGuide", paramDto.getGuide());
+        // 임시저장 파일 AWS S3 업로드
+        fileService.s3FileUpload(paramDto.getFileList(), WBKey.Aws.A3.Product_Img_Path + paramDto.getProduct().getProductCode(), true);
     }
 
     public ProductFindDto.ResBody findProduct(ProductFindDto.Param paramDto) {
@@ -89,5 +80,32 @@ public class ProductService {
                 .infoNotice(dao.selectOne(namespace + "findInfoNotice", paramDto.getProductCode()))
                 .guide(dao.selectOne(namespace + "findGuide", paramDto.getProductCode()))
                 .build();
+    }
+
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    public void updateProduct(ProductUpdateDto paramDto) {
+        // 상품 기본정보 수정
+        dao.update(namespace + "updateProduct", paramDto.getProduct());
+        // 상품 기본스펙 수정
+        if (!ObjectUtils.isEmpty(paramDto.getBasicSpec())) {
+            dao.insert(namespace + "mergeBasicSpec", paramDto.getBasicSpec());
+            // 연령 삭제
+            dao.delete(namespace + "deleteBasicSpecAge", paramDto.getProductCode());
+            // 연령 등록
+            dao.insert(namespace + "insertBasicSpecAge", paramDto.getBasicSpec());
+        }
+        // 판매 정보 수정
+        dao.insert(namespace + "mergeSellInfo", paramDto.getSellInfo());
+        // 옵션 정보 수정
+        dao.delete(namespace + "deleteOption", paramDto.getProductCode());
+        paramDto.getOptionList().forEach(option -> dao.update(namespace + "insertOption", option));
+        // 배송 정보
+        dao.insert(namespace + "mergeDelivery", paramDto.getDelivery());
+        // 정보 고시
+        dao.insert(namespace + "mergeInfoNotice", paramDto.getInfoNotice());
+        // 안내 정보
+        dao.insert(namespace + "mergeGuide", paramDto.getGuide());
+        // 임시저장 파일 AWS S3 업로드
+        fileService.s3FileUpload(paramDto.getFileList(), WBKey.Aws.A3.Product_Img_Path + paramDto.getProduct().getProductCode(), true);
     }
 }
