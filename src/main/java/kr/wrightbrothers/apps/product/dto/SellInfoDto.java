@@ -5,7 +5,6 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -26,6 +25,8 @@ public class SellInfoDto {
         private String discountAmount;
         @NotBlank(message = "전시상태")
         private String displayFlag;
+        @NotBlank(message = "옵션여부")
+        private String productOptionFlag;
         @NotNull(message = "판매가")
         private Long finalSellAmount;
         @NotBlank(message = "상품상태")

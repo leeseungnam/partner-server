@@ -25,7 +25,7 @@ class CategoryControllerTest extends BaseControllerTests {
         // 기본 카테고리 그룹 코드
         String categoryGroup = "000006";
         // 카테고리 목록 조회 API 테스트
-        mockMvc.perform(get("/categories")
+        mockMvc.perform(get("/v1/categories")
                     .header(AUTH_HEADER, JWT_TOKEN)
                     .contentType(MediaType.TEXT_HTML)
                     .queryParam("categoryGroup", categoryGroup)

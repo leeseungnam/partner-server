@@ -74,7 +74,7 @@ public class FileControllerTest extends BaseControllerTests {
     @DisplayName("파일 목록 조회")
     void findFileList() throws Exception {
         // 파일 목록 조회 API 테스트
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/files/{fileNo}", fileNo)
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/files/{fileNo}", fileNo)
                     .header(AUTH_HEADER, JWT_TOKEN)
                     .contentType(MediaType.TEXT_HTML)
                     .accept(MediaType.APPLICATION_JSON))
@@ -118,7 +118,7 @@ public class FileControllerTest extends BaseControllerTests {
                 "<<png data>>".getBytes()
         );
         // 파일 업로드 API 테스트
-        mockMvc.perform(RestDocumentationRequestBuilders.multipart("/files/upload/{fileNo}", "0")
+        mockMvc.perform(RestDocumentationRequestBuilders.multipart("/v1/files/upload/{fileNo}", "0")
                     .file(files)
                     .header(AUTH_HEADER, JWT_TOKEN)
                     .accept(MediaType.APPLICATION_JSON))
@@ -169,7 +169,7 @@ public class FileControllerTest extends BaseControllerTests {
                 new FileInputStream("src/test/resources/upload/test.jpeg")
         );
         // TIF 파일 업로드 API 테스트
-        mockMvc.perform(RestDocumentationRequestBuilders.multipart("/files/upload-tif/{fileNo}/{productCode}", "0", "0000000000")
+        mockMvc.perform(RestDocumentationRequestBuilders.multipart("/v1/files/upload-tif/{fileNo}/{productCode}", "0", "0000000000")
                     .file(file)
                     .header(AUTH_HEADER, JWT_TOKEN)
                     .accept(MediaType.APPLICATION_JSON))
@@ -220,7 +220,7 @@ public class FileControllerTest extends BaseControllerTests {
                 "<<png data>>".getBytes()
         );
         // 이미지 파일 업로드 API 테스트
-        mockMvc.perform(multipart("/files/upload-image")
+        mockMvc.perform(multipart("/v1/files/upload-image")
                     .file(file)
                     .header(AUTH_HEADER, JWT_TOKEN)
                     .accept(MediaType.APPLICATION_JSON))
@@ -251,7 +251,7 @@ public class FileControllerTest extends BaseControllerTests {
     @DisplayName("파일 다운로드")
     void downloadFile() throws Exception {
         // 파일 다운로드 API 테스트
-        mockMvc.perform(get("/files/download")
+        mockMvc.perform(get("/v1/files/download")
                     .header(AUTH_HEADER, JWT_TOKEN)
                     .contentType(MediaType.TEXT_HTML)
                         .queryParam("fileNo", fileNo)

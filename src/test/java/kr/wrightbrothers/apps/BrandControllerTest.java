@@ -21,7 +21,7 @@ class BrandControllerTest extends BaseControllerTests {
     @DisplayName("브랜드 목록 조회")
     void findBrandList() throws Exception {
         // 브랜드 목록 조회 API 테스트
-        mockMvc.perform(get("/brands")
+        mockMvc.perform(get("/v1/brands")
                     .header(AUTH_HEADER, JWT_TOKEN)
                     .contentType(MediaType.TEXT_HTML)
                     .accept(MediaType.APPLICATION_JSON))

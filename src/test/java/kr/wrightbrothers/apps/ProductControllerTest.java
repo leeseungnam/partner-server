@@ -44,9 +44,9 @@ class ProductControllerTest extends BaseControllerTests {
     @Autowired
     private S3Service s3Service;
     @Autowired
-    private ProductService productService;
+    protected ProductService productService;
 
-    private ProductInsertDto productDto;
+    protected ProductInsertDto productDto;
 
     @BeforeEach
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
@@ -120,6 +120,7 @@ class ProductControllerTest extends BaseControllerTests {
                         .discountType("2")
                         .discountAmount("0")
                         .displayFlag("N")
+                        .productOptionFlag("Y")
                         .finalSellAmount(2900000L)
                         .productStatusCode(ProductStatusCode.PRODUCT_INSPECTION.getCode())
                         .productStockQty(1)
@@ -161,6 +162,15 @@ class ProductControllerTest extends BaseControllerTests {
                         .asGuide("A/S 안내")
                         .build())
                 .build();
+
+        // 기초 데이터 초기화 처리
+        productDto.setUserId("test@wrightbrothers.kr");
+        productDto.getProduct().setPartnerCode("PT0000001");
+        productDto.setProductCode(
+                productService.generateProductCode(productDto.getProduct().getCategoryTwoCode())
+        );
+        // 상품 등록
+        productService.insertProduct(productDto);
     }
 
     @Test
@@ -186,7 +196,7 @@ class ProductControllerTest extends BaseControllerTests {
                 .build();
 
         // 상품 목록 조회 API 테스트
-        mockMvc.perform(get("/products")
+        mockMvc.perform(get("/v1/products")
                     .header(AUTH_HEADER, JWT_TOKEN)
                     .contentType(MediaType.TEXT_HTML)
                         .queryParam("displayFlag", paramDto.getDisplayFlag())
@@ -252,7 +262,7 @@ class ProductControllerTest extends BaseControllerTests {
     @DisplayName("상품 등록")
     void insertProduct() throws Exception {
         // 상품 등록 API 테스트
-        mockMvc.perform(post("/products")
+        mockMvc.perform(post("/v1/products")
                     .header(AUTH_HEADER, JWT_TOKEN)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(new ObjectMapper().writeValueAsString(productDto))
@@ -308,6 +318,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("sellInfo.finalSellAmount").type(JsonFieldType.NUMBER).description("판매가").attributes(key("etc").value("")),
                                         fieldWithPath("sellInfo.productStatusCode").type(JsonFieldType.STRING).description("상품상태").attributes(key("etc").value("")),
                                         fieldWithPath("sellInfo.displayFlag").type(JsonFieldType.STRING).description("전시상태").attributes(key("etc").value("")),
+                                        fieldWithPath("sellInfo.productOptionFlag").type(JsonFieldType.STRING).description("옵션여부").attributes(key("etc").value("")),
                                         fieldWithPath("sellInfo.productStockQty").type(JsonFieldType.NUMBER).description("재고").attributes(key("etc").value("")),
                                         fieldWithPath("optionList[]").type(JsonFieldType.ARRAY).description("옵션 정보").optional().attributes(key("etc").value("")),
                                         fieldWithPath("optionList[].optionSeq").type(JsonFieldType.NUMBER).description("옵션 번호").optional().attributes(key("etc").value("")),
@@ -370,17 +381,10 @@ class ProductControllerTest extends BaseControllerTests {
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     @DisplayName("상품 상세 조회")
     void findProduct() throws Exception {
-        // 기초 데이터 초기화 처리
-        productDto.setUserId("test@wrightbrothers.kr");
-        productDto.getProduct().setPartnerCode("PT0000001");
-        productDto.setProductCode(
-                productService.generateProductCode(productDto.getProduct().getCategoryTwoCode())
-        );
-        // 상품 등록
-        productService.insertProduct(productDto);
+
 
         // 상품 상세 API 조회
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/products/{productCode}", productDto.getProduct().getProductCode())
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/products/{productCode}", productDto.getProduct().getProductCode())
                 .header(AUTH_HEADER, JWT_TOKEN)
                 .contentType(MediaType.TEXT_HTML)
                 .accept(MediaType.APPLICATION_JSON))
@@ -438,6 +442,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.sellInfo.finalSellAmount").type(JsonFieldType.NUMBER).description("판매가"),
                                         fieldWithPath("data.sellInfo.productStatusCode").type(JsonFieldType.STRING).description("상품상태"),
                                         fieldWithPath("data.sellInfo.displayFlag").type(JsonFieldType.STRING).description("전시상태"),
+                                        fieldWithPath("data.sellInfo.productOptionFlag").type(JsonFieldType.STRING).description("옵션여부"),
                                         fieldWithPath("data.sellInfo.productStockQty").type(JsonFieldType.NUMBER).description("재고"),
                                         fieldWithPath("data.optionList[]").type(JsonFieldType.ARRAY).description("옵션 정보").optional(),
                                         fieldWithPath("data.optionList[].optionSeq").type(JsonFieldType.NUMBER).description("옵션 번호").optional(),
@@ -490,17 +495,8 @@ class ProductControllerTest extends BaseControllerTests {
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     @DisplayName("상품 수정")
     void updateProduct() throws Exception {
-        // 기초 데이터 초기화 처리
-        productDto.setUserId("test@wrightbrothers.kr");
-        productDto.getProduct().setPartnerCode("PT0000001");
-        productDto.setProductCode(
-                productService.generateProductCode(productDto.getProduct().getCategoryTwoCode())
-        );
-        // 상품 등록
-        productService.insertProduct(productDto);
-
         // 상품 등록 API 테스트
-        mockMvc.perform(put("/products")
+        mockMvc.perform(put("/v1/products")
                         .header(AUTH_HEADER, JWT_TOKEN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(
@@ -562,6 +558,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("sellInfo.finalSellAmount").type(JsonFieldType.NUMBER).description("판매가").attributes(key("etc").value("")),
                                         fieldWithPath("sellInfo.productStatusCode").type(JsonFieldType.STRING).description("상품상태").attributes(key("etc").value("")),
                                         fieldWithPath("sellInfo.displayFlag").type(JsonFieldType.STRING).description("전시상태").attributes(key("etc").value("")),
+                                        fieldWithPath("sellInfo.productOptionFlag").type(JsonFieldType.STRING).description("옵션여부").attributes(key("etc").value("")),
                                         fieldWithPath("sellInfo.productStockQty").type(JsonFieldType.NUMBER).description("재고").attributes(key("etc").value("")),
                                         fieldWithPath("optionList[]").type(JsonFieldType.ARRAY).description("옵션 정보").optional().attributes(key("etc").value("")),
                                         fieldWithPath("optionList[].optionSeq").type(JsonFieldType.NUMBER).description("옵션 번호").optional().attributes(key("etc").value("")),
@@ -663,6 +660,7 @@ class ProductControllerTest extends BaseControllerTests {
                         .discountType("2")
                         .discountAmount("0")
                         .displayFlag("N")
+                        .productOptionFlag("Y")
                         .finalSellAmount(2900000L)
                         .productStatusCode(ProductStatusCode.PRODUCT_INSPECTION.getCode())
                         .productStockQty(1)

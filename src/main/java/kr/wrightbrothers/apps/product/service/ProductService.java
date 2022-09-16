@@ -22,6 +22,7 @@ public class ProductService {
     private final WBCommonDao dao;
     private final String namespace = "kr.wrightbrothers.apps.product.query.Product.";
     private final FileService fileService;
+    private final ChangeInfoService changeInfoService;
 
     public String generateProductCode(String categoryTwoCode) {
         StringBuilder productCode = new StringBuilder();
@@ -37,9 +38,20 @@ public class ProductService {
         return productCode.toString();
     }
 
+    /**
+     * 스토어 소유의 등록된 상품인지 유효성 체크를 한다.
+     *
+     * @param paramDto 상품체크 객체 정보(파트너코드, 상품코드)
+     */
+    public void ownProductCheck(ProductCheckDto paramDto) {
+        // 입점몰 등록 상품 여부 확인
+        if (dao.selectOne(namespace + "isProductAuth", paramDto))
+            throw new WBBusinessException(ErrorCode.FORBIDDEN.getErrCode());
+    }
+
     public List<ProductListDto.Response> findProductList(ProductListDto.Param paramDto) {
         // 상품목록 조회
-        return dao.selectList(namespace + "findProductList" ,paramDto);
+        return dao.selectList(namespace + "findProductList" ,paramDto, paramDto.getRowBounds());
     }
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
@@ -62,14 +74,15 @@ public class ProductService {
         dao.insert(namespace + "mergeInfoNotice", paramDto.getInfoNotice());
         // 안내 정보
         dao.insert(namespace + "mergeGuide", paramDto.getGuide());
+        // 변경 이력 등록
+        changeInfoService.insertChangeInfo(paramDto.toChangeInfo());
         // 임시저장 파일 AWS S3 업로드
         fileService.s3FileUpload(paramDto.getFileList(), WBKey.Aws.A3.Product_Img_Path + paramDto.getProduct().getProductCode(), true);
     }
 
     public ProductFindDto.ResBody findProduct(ProductFindDto.Param paramDto) {
         // 입점몰 등록 상품 여부 확인
-        if (dao.selectOne(namespace + "isProductAuth", paramDto))
-            throw new WBBusinessException(ErrorCode.FORBIDDEN.getErrCode());
+        ownProductCheck(new ProductCheckDto(paramDto.getPartnerCode(), paramDto.getProductCode()));
 
         return ProductFindDto.ResBody.builder()
                 .product(dao.selectOne(namespace + "findProduct", paramDto.getProductCode()))
@@ -84,28 +97,35 @@ public class ProductService {
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void updateProduct(ProductUpdateDto paramDto) {
+        // 입점몰 등록 상품 여부 확인
+        ownProductCheck(new ProductCheckDto(paramDto.getProduct().getPartnerCode(), paramDto.getProductCode()));
+
         // 상품 기본정보 수정
         dao.update(namespace + "updateProduct", paramDto.getProduct());
         // 상품 기본스펙 수정
         if (!ObjectUtils.isEmpty(paramDto.getBasicSpec())) {
-            dao.insert(namespace + "mergeBasicSpec", paramDto.getBasicSpec());
+            dao.update(namespace + "mergeBasicSpec", paramDto.getBasicSpec());
             // 연령 삭제
             dao.delete(namespace + "deleteBasicSpecAge", paramDto.getProductCode());
             // 연령 등록
             dao.insert(namespace + "insertBasicSpecAge", paramDto.getBasicSpec());
         }
         // 판매 정보 수정
-        dao.insert(namespace + "mergeSellInfo", paramDto.getSellInfo());
+        dao.update(namespace + "mergeSellInfo", paramDto.getSellInfo());
         // 옵션 정보 수정
         dao.delete(namespace + "deleteOption", paramDto.getProductCode());
-        paramDto.getOptionList().forEach(option -> dao.update(namespace + "insertOption", option));
+        paramDto.getOptionList().forEach(option -> dao.insert(namespace + "insertOption", option));
         // 배송 정보
-        dao.insert(namespace + "mergeDelivery", paramDto.getDelivery());
+        dao.update(namespace + "mergeDelivery", paramDto.getDelivery());
         // 정보 고시
-        dao.insert(namespace + "mergeInfoNotice", paramDto.getInfoNotice());
+        dao.update(namespace + "mergeInfoNotice", paramDto.getInfoNotice());
         // 안내 정보
-        dao.insert(namespace + "mergeGuide", paramDto.getGuide());
+        dao.update(namespace + "mergeGuide", paramDto.getGuide());
+        // 상품 상태 변경 이력
+        changeInfoService.insertChangeInfo(paramDto.toChangeInfo());
         // 임시저장 파일 AWS S3 업로드
         fileService.s3FileUpload(paramDto.getFileList(), WBKey.Aws.A3.Product_Img_Path + paramDto.getProduct().getProductCode(), true);
     }
+
+
 }

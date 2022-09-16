@@ -10,10 +10,12 @@ import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Api(tags = {"브랜드"})
 @RestController
+@RequestMapping("/v1")
 @RequiredArgsConstructor
 public class BrandController extends WBController {
 

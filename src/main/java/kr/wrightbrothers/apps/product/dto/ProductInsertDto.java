@@ -1,5 +1,7 @@
 package kr.wrightbrothers.apps.product.dto;
 
+import kr.wrightbrothers.apps.common.type.ProductLogCode;
+import kr.wrightbrothers.apps.common.type.ProductStatusCode;
 import kr.wrightbrothers.apps.file.dto.FileUpdateDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -53,5 +55,21 @@ public class ProductInsertDto {
 
         if (!ObjectUtils.isEmpty(productCode))
             basicSpec.setProductCode(productCode);
+    }
+
+    /**
+     * 상품 등록 시 상품 변경이력 정보에 상품 등록으로 처리한다.
+     * 상태값은 이력 로그 코드는 등록, 상품 상태 코드는 검수대기 처리한다.
+     *
+     * @return 상품 변경 이력 DTO
+     */
+    public ChangeInfoDto.ReqBody toChangeInfo() {
+        return ChangeInfoDto.ReqBody.builder()
+                .productCode(this.getProduct().getProductCode())
+                .productStatusCode(ProductStatusCode.PRODUCT_INSPECTION.getCode())
+                .productLogCode(ProductLogCode.REGISTER.getCode())
+                .productLog("상품 등록")
+                .userId(this.getProduct().getUserId())
+                .build();
     }
 }
