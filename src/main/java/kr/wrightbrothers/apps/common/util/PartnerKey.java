@@ -30,9 +30,14 @@ public class PartnerKey {
 	}
 
 	public static class Jwt {
-		public static final String HeaderName	= "X-AUTH-TOKEN";
-		public static final String ACCESS_TOKEN = "ACCESS_TOKEN";
-		public static final String REFRESH_TOKEN = "REFRESH_TOKEN";
+		public static class Alias {
+			public static final String ACCESS_TOKEN = "ACCESS_TOKEN";
+			public static final String REFRESH_TOKEN = "REFRESH_TOKEN";
+		}
+		public static class Header {
+			public static final String X_AUTH_TOKEN	= "X-AUTH-TOKEN";
+			public static final String AUTHORIZATION = "Authorization";
+		}
 	}
 
 	public static class WBDataBase {

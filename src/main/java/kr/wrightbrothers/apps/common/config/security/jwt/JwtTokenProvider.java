@@ -37,8 +37,8 @@ public class JwtTokenProvider implements InitializingBean {
     private final WBUserDetailService wbUserDetailService;
 
     public JwtTokenProvider(@Value("${jwt.secret-key}") String secretKey,
-                            @Value("${jwt.validation-time.token}") long accessTokenMin,
-                            @Value("${jwt.validation-time.refresh-token}") long refreshTokenMin,
+                            @Value("${jwt.validation-time.access-token-min}") long accessTokenMin,
+                            @Value("${jwt.validation-time.refresh-token-min}") long refreshTokenMin,
                             WBUserDetailService wbUserDetailService,
                             RefreshTokenService refreshTokenService) {
         this.secretKey = secretKey;
@@ -138,7 +138,7 @@ public class JwtTokenProvider implements InitializingBean {
         log.info("JWT 토큰이 거부 되었습니다.");
         return PartnerKey.JwtCode.DENIED;
     }
-    @Transactional(value = "DefaultTransactionManager")
+    @Transactional(value = PartnerKey.WBDataBase.TransactionManager.Default)
     public String issueRefreshToken(Authentication authentication){
         String newRefreshToken = generateRefreshToken(authentication);
 
@@ -159,7 +159,7 @@ public class JwtTokenProvider implements InitializingBean {
         return newRefreshToken;
     }
 
-    @Transactional(value = "DefaultTransactionManager")
+    @Transactional(value = PartnerKey.WBDataBase.TransactionManager.Default)
     public String reissueRefreshToken(String refreshToken) throws RuntimeException{
         // check data refresh token
         Authentication authentication = getAuthentication(refreshToken);

@@ -68,7 +68,7 @@ public class SecurityConfiguration {
 
         http.logout()
                 .logoutUrl("/v1/logout")
-                .deleteCookies(PartnerKey.Jwt.REFRESH_TOKEN);
+                .deleteCookies(PartnerKey.Jwt.Alias.REFRESH_TOKEN);
         return http.build();
     }
 
