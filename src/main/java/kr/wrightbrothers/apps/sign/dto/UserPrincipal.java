@@ -2,6 +2,7 @@ package kr.wrightbrothers.apps.sign.dto;
 
 import kr.wrightbrothers.apps.user.dto.UserAuthDto;
 import kr.wrightbrothers.apps.user.dto.UserDto;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,6 +12,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Getter
 public class UserPrincipal implements UserDetails {
 
     private String username;
@@ -20,6 +22,17 @@ public class UserPrincipal implements UserDetails {
     private UserAuthDto userAuth;
 
     private Collection<? extends GrantedAuthority> authorities;
+
+    public void changeUserAuth(UserAuthDto userAuth) {
+        this.userAuth = userAuth;
+    }
+
+    public UserPrincipal(String userId, String userPwd, Collection<? extends GrantedAuthority> authorities, UserAuthDto userAuth) {
+        this.username = userId;
+        this.password = userPwd;
+        this.authorities = authorities;
+        this.userAuth = userAuth;
+    }
 
     public UserPrincipal(UserDetailDto userDetailDto, Collection<? extends GrantedAuthority> authorities) {
         this.username = userDetailDto.getUserId();

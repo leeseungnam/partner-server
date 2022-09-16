@@ -2,6 +2,7 @@ package kr.wrightbrothers.framework.lang;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
+import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.RandomUtil;
 import kr.wrightbrothers.framework.support.WBCommon;
 import kr.wrightbrothers.framework.support.WBKey;
@@ -118,11 +119,13 @@ public class WBGlobalException {
         json.put("WBCommon",
                 WBCommon.builder()
                         .state(WBKey.Error)
+                        /* 입점몰에서 token response body 사용X - snlee.20220916
                         .uuid(RandomKey.getUUID())
                         .token(
                                 ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
                                         .getRequest().getHeader(WBKey.Jwt.HeaderName)
                         )
+                        */
                         .msgCode(StringUtils.leftPad(String.valueOf(errorCode), 4, "0"))
                         .msgType(errorType)
                         .message(

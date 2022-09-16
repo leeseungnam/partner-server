@@ -4,9 +4,11 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import kr.wrightbrothers.apps.sign.service.WBUserDetailService;
 import kr.wrightbrothers.apps.token.dto.RefreshTokenDto;
 import kr.wrightbrothers.apps.token.service.RefreshTokenService;
+import kr.wrightbrothers.apps.user.dto.UserAuthDto;
 import kr.wrightbrothers.apps.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
@@ -116,7 +118,11 @@ public class JwtTokenProvider implements InitializingBean {
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
-        User principal = new User(claims.getSubject(), "", authorities);
+        UserAuthDto userAuthDto = null;
+        if(!ObjectUtils.isEmpty(claims.get("userAuth"))) userAuthDto = (UserAuthDto) claims.get("userAuth");
+
+        UserPrincipal principal = new UserPrincipal(claims.getSubject(), "", authorities, userAuthDto);
+//        User principal = new User(claims.getSubject(), "", authorities);
 
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
