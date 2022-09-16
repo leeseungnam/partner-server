@@ -77,10 +77,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         log.info("[resolveTokenInCookie]::value={}", cookie.getValue());
         String token = cookie.getValue();
 
-        // token check
-        if (token != null && token.startsWith("Bearer ")) {
-            return token.substring(7);
-        }
-        return null;
+        return token;
     }
 }

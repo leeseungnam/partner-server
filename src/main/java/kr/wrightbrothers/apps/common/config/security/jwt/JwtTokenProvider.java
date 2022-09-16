@@ -159,7 +159,7 @@ public class JwtTokenProvider implements InitializingBean {
         return newRefreshToken;
     }
 
-    @Transactional
+    @Transactional(value = "DefaultTransactionManager")
     public String reissueRefreshToken(String refreshToken) throws RuntimeException{
         // check data refresh token
         Authentication authentication = getAuthentication(refreshToken);
