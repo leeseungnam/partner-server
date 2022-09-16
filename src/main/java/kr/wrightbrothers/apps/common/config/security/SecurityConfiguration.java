@@ -60,7 +60,7 @@ public class SecurityConfiguration {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
                 .authorizeRequests()
-                .antMatchers("/v1/login").permitAll()
+                .antMatchers("/v1/sign/*").permitAll()
                 .anyRequest().authenticated()
             .and()
 //                .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
