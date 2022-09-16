@@ -196,7 +196,7 @@ class ProductControllerTest extends BaseControllerTests {
                 .build();
 
         // 상품 목록 조회 API 테스트
-        mockMvc.perform(get("/products")
+        mockMvc.perform(get("/v1/products")
                     .header(AUTH_HEADER, JWT_TOKEN)
                     .contentType(MediaType.TEXT_HTML)
                         .queryParam("displayFlag", paramDto.getDisplayFlag())
@@ -262,7 +262,7 @@ class ProductControllerTest extends BaseControllerTests {
     @DisplayName("상품 등록")
     void insertProduct() throws Exception {
         // 상품 등록 API 테스트
-        mockMvc.perform(post("/products")
+        mockMvc.perform(post("/v1/products")
                     .header(AUTH_HEADER, JWT_TOKEN)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(new ObjectMapper().writeValueAsString(productDto))
@@ -384,7 +384,7 @@ class ProductControllerTest extends BaseControllerTests {
 
 
         // 상품 상세 API 조회
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/products/{productCode}", productDto.getProduct().getProductCode())
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/products/{productCode}", productDto.getProduct().getProductCode())
                 .header(AUTH_HEADER, JWT_TOKEN)
                 .contentType(MediaType.TEXT_HTML)
                 .accept(MediaType.APPLICATION_JSON))
@@ -496,7 +496,7 @@ class ProductControllerTest extends BaseControllerTests {
     @DisplayName("상품 수정")
     void updateProduct() throws Exception {
         // 상품 등록 API 테스트
-        mockMvc.perform(put("/products")
+        mockMvc.perform(put("/v1/products")
                         .header(AUTH_HEADER, JWT_TOKEN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(

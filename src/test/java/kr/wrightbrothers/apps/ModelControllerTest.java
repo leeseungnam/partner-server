@@ -24,7 +24,7 @@ class ModelControllerTest extends BaseControllerTests {
     void findModelList() throws Exception {
         String brandNo = "1020";
         // 모델 목록 조회 API 테스트
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/brands/{brandNo}/models", brandNo)
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/brands/{brandNo}/models", brandNo)
                         .header(AUTH_HEADER, JWT_TOKEN)
                         .contentType(MediaType.TEXT_HTML)
                         .accept(MediaType.APPLICATION_JSON))

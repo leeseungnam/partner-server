@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 
 @Api(tags = {"파일"})
 @RestController
+@RequestMapping("/v1")
 @RequiredArgsConstructor
 public class FileController extends WBController {
 

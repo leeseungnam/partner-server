@@ -24,7 +24,7 @@ class CodeControllerTest extends BaseControllerTests {
 
         String codeGroup = "000057";
         // 코드 목록 조회 API 테스트
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/master-code/{codeGroup}/codes", codeGroup)
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/master-code/{codeGroup}/codes", codeGroup)
                     .header(AUTH_HEADER, JWT_TOKEN)
                     .contentType(MediaType.TEXT_HTML)
                     .accept(MediaType.APPLICATION_JSON))

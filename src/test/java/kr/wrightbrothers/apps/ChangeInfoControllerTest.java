@@ -26,7 +26,7 @@ public class ChangeInfoControllerTest extends ProductControllerTest {
     void findProductChangeHistory() throws Exception {
 
         // 이력 조회 API 테스트
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/products/{productCode}/change-history", productDto.getProduct().getProductCode())
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/products/{productCode}/change-history", productDto.getProduct().getProductCode())
                 .header(AUTH_HEADER, JWT_TOKEN)
                 .contentType(MediaType.TEXT_HTML)
                 .accept(MediaType.APPLICATION_JSON))
