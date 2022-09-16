@@ -38,7 +38,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
             log.info("Security Context {} 인증 정보 저장 완료.", authentication.getName());
         } else if (accessToken != null && jwtTokenProvider.validateToken(accessToken) == PartnerKey.JwtCode.EXPIRED) {
-            String refreshToken = resolveTokenInCookie(request, REFRESH_HEADER);
+            String refreshToken = resolveTokenInCookie(request, PartnerKey.Jwt.REFRESH_TOKEN);
 
             // 재발급
             if(refreshToken != null && jwtTokenProvider.validateToken(refreshToken) == PartnerKey.JwtCode.ACCESS) {
@@ -72,7 +72,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     }
 
     private String resolveTokenInCookie(HttpServletRequest request, String name) {
+        log.info("[resolveTokenInCookie]::name={}", name);
         Cookie cookie = CookieUtil.getCookie(request, name);
+        log.info("[resolveTokenInCookie]::value={}", cookie.getValue());
         String token = cookie.getValue();
 
         // token check
