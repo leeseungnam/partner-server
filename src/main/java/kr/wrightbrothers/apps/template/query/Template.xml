@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.wrightbrothers.apps.template.query.Template">
+
+	<select id="findTemplateList" parameterType="kr.wrightbrothers.apps.template.dto.TemplateListDto$Param" resultType="kr.wrightbrothers.apps.template.dto.TemplateListDto$Response">
+		select
+		    template_no,
+		    template_type,
+		    template_name,
+		    create_date
+		  from template
+		 where partner_code = #{partnerCode}
+		-- 템플릿 구분
+		<foreach collection="templateType" item="item" index="index" open="and template_type in (" separator="," close=")">
+			#{item}
+		</foreach>
+		 order by create_date desc
+	</select>
+
+</mapper>

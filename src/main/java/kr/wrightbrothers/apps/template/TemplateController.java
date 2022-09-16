@@ -1,7 +1,7 @@
 package kr.wrightbrothers.apps.template;
 
-import kr.wrightbrothers.apps.sign.dto.UserDetailDto;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
+import kr.wrightbrothers.apps.template.dto.TemplateListDto;
 import kr.wrightbrothers.apps.template.service.TemplateService;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.WBModel;
@@ -20,14 +20,26 @@ public class TemplateController {
     private final TemplateService templateService;
 
     @GetMapping("/templates")
-    private WBModel findTemplateList(@RequestParam String[] templateType,
-                                     @AuthenticationPrincipal UserPrincipal user) {
+    public WBModel findTemplateList(@RequestParam String[] templateType,
+                                    @RequestParam int count,
+                                    @RequestParam int page,
+                                    @AuthenticationPrincipal UserPrincipal user
+    ) {
         WBModel response = new WBModel();
+        TemplateListDto.Param paramDto = TemplateListDto.Param.builder()
+                .partnerCode(user.getUserAuth().getPartnerCode())
+                .templateType(templateType)
+                .count(count)
+                .page(page)
+                .build();
 
         // 템플릿 목록 조회
-        //response.addObject(WBKey.WBModel.DefaultDataKey, templateService.findTemplateList());
+        response.addObject(WBKey.WBModel.DefaultDataKey, templateService.findTemplateList(paramDto));
+        response.addObject(WBKey.WBModel.DefaultDataTotalCountKey, paramDto.getTotalItems());
 
         return response;
     }
+
+
 
 }
