@@ -30,7 +30,7 @@
 		    if(ps.display_flag = 'Y', '노출', '미노출') as display_flag,
 		    ps.product_stock_qty,
 		    ps.final_sell_amount,
-			o.product_option_flag,
+			ps.product_option_flag,
 			p.create_date,
 			p.update_date,
 			p.create_user_id,
@@ -38,13 +38,6 @@
 		  from product p
 		 inner join product_sell_info ps
 			on p.product_code = ps.product_code
-		  left join (
-		      select
-		          product_code,
-		          if(count(product_code) = 0, 'N', 'Y') as product_option_flag
-		        from product_option
-			   group by product_code
-		) o on p.product_code = o.product_code
 		  left join users u
 			on p.create_user_id = u.user_id
 		 where p.partner_code = #{partnerCode}
@@ -220,6 +213,7 @@
 		                              discount_amount,
 		                              final_sell_amount,
 									  display_flag,
+		                              product_option_flag,
 									  product_status_code,
 		                              product_stock_qty,
 		                              create_user_id,
@@ -231,6 +225,7 @@
 			   #{discountAmount},
 			   #{finalSellAmount},
 		       #{displayFlag},
+		       #{productOptionFlag},
 			   #{productStatusCode},
 			   #{productStockQty},
 			   #{userId},
@@ -243,6 +238,7 @@
 			discount_amount		= #{discountAmount},
 			final_sell_amount	= #{finalSellAmount},
 			display_flag		= #{displayFlag},
+		    product_option_flag	= #{productOptionFlag},
 			product_status_code	= #{productStatusCode},
 			product_stock_qty	= #{productStockQty},
 		    update_user_id		= #{userId},
@@ -471,6 +467,7 @@
 			discount_type,
             discount_amount,
             display_flag,
+            product_option_flag,
             final_sell_amount,
             product_status_code,
             product_stock_qty

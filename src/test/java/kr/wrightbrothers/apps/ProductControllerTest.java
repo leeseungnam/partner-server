@@ -120,6 +120,7 @@ class ProductControllerTest extends BaseControllerTests {
                         .discountType("2")
                         .discountAmount("0")
                         .displayFlag("N")
+                        .productOptionFlag("Y")
                         .finalSellAmount(2900000L)
                         .productStatusCode(ProductStatusCode.PRODUCT_INSPECTION.getCode())
                         .productStockQty(1)
@@ -317,6 +318,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("sellInfo.finalSellAmount").type(JsonFieldType.NUMBER).description("판매가").attributes(key("etc").value("")),
                                         fieldWithPath("sellInfo.productStatusCode").type(JsonFieldType.STRING).description("상품상태").attributes(key("etc").value("")),
                                         fieldWithPath("sellInfo.displayFlag").type(JsonFieldType.STRING).description("전시상태").attributes(key("etc").value("")),
+                                        fieldWithPath("sellInfo.productOptionFlag").type(JsonFieldType.STRING).description("옵션여부").attributes(key("etc").value("")),
                                         fieldWithPath("sellInfo.productStockQty").type(JsonFieldType.NUMBER).description("재고").attributes(key("etc").value("")),
                                         fieldWithPath("optionList[]").type(JsonFieldType.ARRAY).description("옵션 정보").optional().attributes(key("etc").value("")),
                                         fieldWithPath("optionList[].optionSeq").type(JsonFieldType.NUMBER).description("옵션 번호").optional().attributes(key("etc").value("")),
@@ -440,6 +442,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.sellInfo.finalSellAmount").type(JsonFieldType.NUMBER).description("판매가"),
                                         fieldWithPath("data.sellInfo.productStatusCode").type(JsonFieldType.STRING).description("상품상태"),
                                         fieldWithPath("data.sellInfo.displayFlag").type(JsonFieldType.STRING).description("전시상태"),
+                                        fieldWithPath("data.sellInfo.productOptionFlag").type(JsonFieldType.STRING).description("옵션여부"),
                                         fieldWithPath("data.sellInfo.productStockQty").type(JsonFieldType.NUMBER).description("재고"),
                                         fieldWithPath("data.optionList[]").type(JsonFieldType.ARRAY).description("옵션 정보").optional(),
                                         fieldWithPath("data.optionList[].optionSeq").type(JsonFieldType.NUMBER).description("옵션 번호").optional(),
@@ -555,6 +558,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("sellInfo.finalSellAmount").type(JsonFieldType.NUMBER).description("판매가").attributes(key("etc").value("")),
                                         fieldWithPath("sellInfo.productStatusCode").type(JsonFieldType.STRING).description("상품상태").attributes(key("etc").value("")),
                                         fieldWithPath("sellInfo.displayFlag").type(JsonFieldType.STRING).description("전시상태").attributes(key("etc").value("")),
+                                        fieldWithPath("sellInfo.productOptionFlag").type(JsonFieldType.STRING).description("옵션여부").attributes(key("etc").value("")),
                                         fieldWithPath("sellInfo.productStockQty").type(JsonFieldType.NUMBER).description("재고").attributes(key("etc").value("")),
                                         fieldWithPath("optionList[]").type(JsonFieldType.ARRAY).description("옵션 정보").optional().attributes(key("etc").value("")),
                                         fieldWithPath("optionList[].optionSeq").type(JsonFieldType.NUMBER).description("옵션 번호").optional().attributes(key("etc").value("")),
@@ -656,6 +660,7 @@ class ProductControllerTest extends BaseControllerTests {
                         .discountType("2")
                         .discountAmount("0")
                         .displayFlag("N")
+                        .productOptionFlag("Y")
                         .finalSellAmount(2900000L)
                         .productStatusCode(ProductStatusCode.PRODUCT_INSPECTION.getCode())
                         .productStockQty(1)
