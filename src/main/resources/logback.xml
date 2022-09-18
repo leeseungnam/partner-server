@@ -16,6 +16,9 @@
 	<logger name="jdbc.resultset" level="error">
 		<appender-ref ref="Console" />
 	</logger>
+	<logger name="jdbc.sqltiming" level="error">
+		<appender-ref ref="Console" />
+	</logger>
 	<logger name="org.springframework.web.filter.CommonsRequestLoggingFilter" level="debug"/>
 	<root level="info">
 		<appender-ref ref="Console" />

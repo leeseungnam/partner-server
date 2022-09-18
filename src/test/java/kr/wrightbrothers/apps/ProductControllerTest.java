@@ -50,7 +50,7 @@ class ProductControllerTest extends BaseControllerTests {
 
     @BeforeEach
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
-    void setUpFile() throws IOException {
+    void setUpTest() throws IOException {
         // 전송파일
         MockMultipartFile[] file = new MockMultipartFile[1];
         file[0] = new MockMultipartFile(

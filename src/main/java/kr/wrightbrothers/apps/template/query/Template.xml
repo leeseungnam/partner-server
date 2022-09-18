@@ -18,4 +18,153 @@
 		 order by create_date desc
 	</select>
 
+	<insert id="insertTemplate" parameterType="kr.wrightbrothers.apps.template.dto.TemplateInsertDto" useGeneratedKeys="true" keyProperty="templateNo" keyColumn="template_no">
+		insert into template(partner_code,
+		                     template_type,
+		                     template_name,
+		                     create_user_id,
+		                     update_user_id
+		                     )
+		values(#{partnerCode},
+		       #{templateType},
+		       #{templateName},
+		       #{userId},
+		       #{userId}
+		       )
+	</insert>
+
+	<update id="updateTemplate" parameterType="kr.wrightbrothers.apps.template.dto.TemplateUpdateDto">
+		update template
+		   set template_name = #{templateName},
+		       update_user_id = #{userId},
+		       update_date = now()
+		 where template_no = #{templateNo}
+	</update>
+
+	<insert id="insertTemplateDelivery" parameterType="kr.wrightbrothers.apps.template.dto.TemplateInsertDto">
+		insert into template_delivery(template_no,
+		                              delivery_type,
+									  delivery_bundle_flag,
+		                              charge_type,
+		                              charge_base,
+		                              terms_free_charge,
+		                              payment_type,
+		                              surcharge_flag,
+		                              area_code,
+		                              surcharge_jejudo,
+		                              surcharge_isolated,
+		                              unstoring_address,
+		                              return_address,
+		                              return_charge,
+		                              return_delivery_company_code,
+		                              create_user_id,
+		                              update_user_id)
+		values(#{templateNo},
+			   #{delivery.deliveryType},
+			   #{delivery.deliveryBundleFlag},
+			   #{delivery.chargeType},
+			   #{delivery.chargeBase},
+			   #{delivery.termsFreeCharge},
+			   #{delivery.paymentType},
+			   #{delivery.surchargeFlag},
+			   #{delivery.areaCode},
+			   #{delivery.surchargeJejudo},
+			   #{delivery.surchargeIsolated},
+			   #{delivery.unstoringAddress},
+			   #{delivery.returnAddress},
+			   #{delivery.returnCharge},
+			   #{delivery.returnDeliveryCompanyCode},
+			   #{userId},
+			   #{userId})
+	</insert>
+
+	<update id="updateTemplateDelivery" parameterType="kr.wrightbrothers.apps.template.dto.TemplateUpdateDto">
+		update template_delivery
+		   set delivery_type					= #{delivery.deliveryType},
+			   delivery_bundle_flag				= #{delivery.deliveryBundleFlag},
+			   charge_type						= #{delivery.chargeType},
+			   charge_base						= #{delivery.chargeBase},
+			   terms_free_charge				= #{delivery.termsFreeCharge},
+			   payment_type						= #{delivery.paymentType},
+			   surcharge_flag					= #{delivery.surchargeFlag},
+			   area_code						= #{delivery.areaCode},
+			   surcharge_jejudo					= #{delivery.surchargeJejudo},
+			   surcharge_isolated				= #{delivery.surchargeIsolated},
+			   unstoring_address				= #{delivery.unstoringAddress},
+			   return_address					= #{delivery.returnAddress},
+			   return_charge					= #{delivery.returnCharge},
+			   return_delivery_company_code		= #{delivery.returnDeliveryCompanyCode},
+			   update_user_id					= #{userId},
+			   update_date						= now()
+		 where template_no						= #{templateNo}
+	</update>
+
+	<insert id="insertTemplateGuide" parameterType="kr.wrightbrothers.apps.template.dto.TemplateInsertDto">
+		insert into template_guide(template_no,
+		                           template_guide,
+		                           create_user_id,
+		                           update_user_id)
+		values(#{templateNo},
+		       #{templateGuide},
+		       #{userId},
+		       #{userId})
+	</insert>
+
+	<update id="updateTemplateGuide" parameterType="kr.wrightbrothers.apps.template.dto.TemplateUpdateDto">
+		update template_guide
+		   set template_guide = #{templateGuide},
+		       update_user_id = #{userId},
+		       update_date	  = now()
+		 where template_no = #{templateNo}
+	</update>
+
+	<select id="findTemplate" parameterType="java.lang.Long" resultMap="findTemplateMap">
+		select
+		    t.template_type,
+		    t.template_name,
+		    g.template_guide,
+			d.delivery_type,
+			d.delivery_bundle_flag,
+			d.charge_type,
+            d.charge_base,
+            d.terms_free_charge,
+            d.payment_type,
+            d.surcharge_flag,
+            d.area_code,
+            d.surcharge_jejudo,
+            d.surcharge_isolated,
+            d.unstoring_address,
+            d.return_address,
+            d.return_charge,
+            d.return_delivery_company_code
+		  from template t
+		  left join template_guide g
+			on t.template_no = g.template_no
+		  left join template_delivery d
+			on t.template_no = d.template_no
+		 where t.template_no = #{templateNo}
+	</select>
+
+	<resultMap id="findTemplateMap" type="kr.wrightbrothers.apps.template.dto.TemplateFindDto$Response">
+		<id column="template_type" property="templateType" />
+		<id column="template_name" property="templateName" />
+		<id column="template_guide" property="templateGuide" />
+		<association property="delivery" javaType="kr.wrightbrothers.apps.product.dto.DeliveryDto$ResBody">
+			<result column="delivery_type" property="deliveryType" />
+			<result column="delivery_bundle_flag" property="deliveryBundleFlag" />
+			<result column="charge_type" property="chargeType" />
+			<result column="charge_base" property="chargeBase" />
+			<result column="terms_free_charge" property="termsFreeCharge" />
+			<result column="payment_type" property="paymentType" />
+			<result column="surcharge_flag" property="surchargeFlag" />
+			<result column="area_code" property="areaCode" />
+			<result column="surcharge_jejudo" property="surchargeJejudo" />
+			<result column="surcharge_isolated" property="surchargeIsolated" />
+			<result column="unstoring_address" property="unstoringAddress" />
+			<result column="return_address" property="returnAddress" />
+			<result column="return_charge" property="returnCharge" />
+			<result column="return_delivery_company_code" property="returnDeliveryCompanyCode" />
+		</association>
+	</resultMap>
+
 </mapper>

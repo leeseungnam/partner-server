@@ -1,21 +1,22 @@
 package kr.wrightbrothers.apps.template;
 
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
+import kr.wrightbrothers.apps.template.dto.TemplateFindDto;
+import kr.wrightbrothers.apps.template.dto.TemplateInsertDto;
 import kr.wrightbrothers.apps.template.dto.TemplateListDto;
+import kr.wrightbrothers.apps.template.dto.TemplateUpdateDto;
 import kr.wrightbrothers.apps.template.service.TemplateService;
+import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1")
 @RequiredArgsConstructor
-public class TemplateController {
+public class TemplateController extends WBController {
 
     private final TemplateService templateService;
 
@@ -40,6 +41,43 @@ public class TemplateController {
         return response;
     }
 
+    @PostMapping("/templates")
+    public WBModel insetTemplate(@RequestBody TemplateInsertDto paramDto,
+                                 @AuthenticationPrincipal UserPrincipal user) {
+        // Security Custom UserDetail 객체를 통해 파트너 코드, 아이디 정보 추출
+        paramDto.setUserId(user.getUsername());
+        paramDto.setPartnerCode(user.getUserAuth().getPartnerCode());
 
+        // 템플릿 등록
+        templateService.insertTemplate(paramDto);
+
+        return noneDataResponse();
+    }
+
+    @GetMapping("/templates/{templateNo}")
+    public WBModel findTemplate(@PathVariable Long templateNo,
+                                @AuthenticationPrincipal UserPrincipal user) {
+        return defaultResponse(
+                templateService.findTemplate(
+                        TemplateFindDto.Param.builder()
+                                .partnerCode(user.getUserAuth().getPartnerCode())
+                                .templateNo(templateNo)
+                                .build())
+        );
+
+    }
+
+    @PutMapping("/templates")
+    public WBModel updateTemplate(@RequestBody TemplateUpdateDto paramDto,
+                                  @AuthenticationPrincipal UserPrincipal user) {
+        // Security Custom UserDetail 객체를 통해 파트너 코드, 아이디 정보 추출
+        paramDto.setUserId(user.getUsername());
+        paramDto.setPartnerCode(user.getUserAuth().getPartnerCode());
+
+        // 템플릿 수정
+        templateService.updateTemplate(paramDto);
+
+        return noneDataResponse();
+    }
 
 }
