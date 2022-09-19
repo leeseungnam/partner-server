@@ -18,7 +18,7 @@ public class TemplateUpdateDto {
     private String templateType;
     private String templateName;
     private String templateGuide;
-    private DeliveryDto.ReqBody delivery;
+    private TemplateDeliveryDto delivery;
     @JsonIgnore
     private String partnerCode;
     @JsonIgnore

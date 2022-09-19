@@ -1,10 +1,7 @@
 package kr.wrightbrothers.apps.template;
 
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
-import kr.wrightbrothers.apps.template.dto.TemplateFindDto;
-import kr.wrightbrothers.apps.template.dto.TemplateInsertDto;
-import kr.wrightbrothers.apps.template.dto.TemplateListDto;
-import kr.wrightbrothers.apps.template.dto.TemplateUpdateDto;
+import kr.wrightbrothers.apps.template.dto.*;
 import kr.wrightbrothers.apps.template.service.TemplateService;
 import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBKey;
@@ -76,6 +73,21 @@ public class TemplateController extends WBController {
 
         // 템플릿 수정
         templateService.updateTemplate(paramDto);
+
+        return noneDataResponse();
+    }
+
+    @DeleteMapping("/templates")
+    public WBModel deleteTemplate(@RequestParam Long[] templateNoList,
+                                  @AuthenticationPrincipal UserPrincipal user) {
+        // 템플릿 등록 데이터 삭제
+        templateService.deleteTemplate(
+                TemplateDeleteDto.builder()
+                        .templateNoList(templateNoList)
+                        .partnerCode(user.getUserAuth().getPartnerCode())
+                        .userId(user.getUsername())
+                        .build()
+        );
 
         return noneDataResponse();
     }

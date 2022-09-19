@@ -4,9 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.BaseControllerTests;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.product.dto.DeliveryDto;
-import kr.wrightbrothers.apps.template.dto.TemplateInsertDto;
-import kr.wrightbrothers.apps.template.dto.TemplateListDto;
-import kr.wrightbrothers.apps.template.dto.TemplateUpdateDto;
+import kr.wrightbrothers.apps.template.dto.*;
 import kr.wrightbrothers.apps.template.service.TemplateService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +14,9 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.transaction.annotation.Transactional;
+import springfox.documentation.spring.web.json.Json;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
@@ -41,7 +41,7 @@ class TemplateControllerTest extends BaseControllerTests {
                 .partnerCode("PT0000001")
                 .templateType("T01")
                 .templateName("첫번째 배송 등록 테스트")
-                .delivery(DeliveryDto.ReqBody.builder()
+                .delivery(TemplateDeliveryDto.builder()
                         .deliveryType("D01")
                         .deliveryBundleFlag("N")
                         .chargeType("CT2")
@@ -49,8 +49,12 @@ class TemplateControllerTest extends BaseControllerTests {
                         .termsFreeCharge(10000000L)
                         .paymentType("P02")
                         .surchargeFlag("N")
-                        .unstoringAddress("서울특별시 강남구 강남대로 154길 37, 주경빌딩 2층 (06035)")
-                        .returnAddress("서울특별시 강남구 강남대로 154길 37, 주경빌딩 1층 (06035)")
+                        .unstoringZipCode("06035")
+                        .unstoringAddress("서울특별시 강남구 강남대로 154길 37")
+                        .unstoringAddressDetail("주경빌딩 2층")
+                        .returnZipCode("06035")
+                        .returnAddress("서울특별시 강남구 강남대로 154길 37")
+                        .returnAddressDetail("주경빌딩 1층")
                         .returnCharge(1000000)
                         .returnDeliveryCompanyCode("cjgls")
                         .build())
@@ -112,7 +116,7 @@ class TemplateControllerTest extends BaseControllerTests {
         TemplateInsertDto paramDto = TemplateInsertDto.builder()
                 .templateType("T01")
                 .templateName("첫번째 배송 등록 테스트")
-                .delivery(DeliveryDto.ReqBody.builder()
+                .delivery(TemplateDeliveryDto.builder()
                         .deliveryType("D01")
                         .deliveryBundleFlag("N")
                         .chargeType("CT2")
@@ -120,8 +124,12 @@ class TemplateControllerTest extends BaseControllerTests {
                         .termsFreeCharge(10000000L)
                         .paymentType("P02")
                         .surchargeFlag("N")
-                        .unstoringAddress("서울특별시 강남구 강남대로 154길 37, 주경빌딩 2층 (06035)")
-                        .returnAddress("서울특별시 강남구 강남대로 154길 37, 주경빌딩 1층 (06035)")
+                        .unstoringZipCode("06035")
+                        .unstoringAddress("서울특별시 강남구 강남대로 154길 37")
+                        .unstoringAddressDetail("주경빌딩 1층")
+                        .returnZipCode("06035")
+                        .returnAddress("서울특별시 강남구 강남대로 154길 37")
+                        .returnAddressDetail("주경빌딩 1층")
                         .returnCharge(1000000)
                         .returnDeliveryCompanyCode("cjgls")
                         .build())
@@ -144,7 +152,7 @@ class TemplateControllerTest extends BaseControllerTests {
                                         headerWithName(AUTH_HEADER).description("JWT 토큰")
                                 ),
                                 relaxedRequestFields(
-                                        fieldWithPath("templateType").type(JsonFieldType.STRING).description("템플릿 구분").attributes(key("etc").value("")),
+                                        fieldWithPath("templateType").type(JsonFieldType.STRING).description("템플릿 구분").attributes(key("etc").value("T01 배송지, T02 A/S 안내, T03 배송 안내, T04 반품 안내")),
                                         fieldWithPath("templateName").type(JsonFieldType.STRING).description("템플릿 명").attributes(key("etc").value("")),
                                         fieldWithPath("templateGuide").type(JsonFieldType.STRING).description("템플릿 안내사항").optional().attributes(key("etc").value("")),
                                         fieldWithPath("delivery").type(JsonFieldType.OBJECT).description("템플릿 배송 정보").optional().attributes(key("etc").value("")),
@@ -158,8 +166,12 @@ class TemplateControllerTest extends BaseControllerTests {
                                         fieldWithPath("delivery.areaCode").type(JsonFieldType.STRING).description("권역").optional().attributes(key("etc").value("")),
                                         fieldWithPath("delivery.surchargeJejudo").type(JsonFieldType.NUMBER).description("제주도 추가 배송비").optional().attributes(key("etc").value("")),
                                         fieldWithPath("delivery.surchargeIsolated").type(JsonFieldType.NUMBER).description("도서산간 추가 배송비").optional().attributes(key("etc").value("")),
-                                        fieldWithPath("delivery.unstoringAddress").type(JsonFieldType.STRING).description("출고지").attributes(key("etc").value("")),
-                                        fieldWithPath("delivery.returnAddress").type(JsonFieldType.STRING).description("반품지").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.unstoringZipCode").type(JsonFieldType.STRING).description("출고지 우편번호").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.unstoringAddress").type(JsonFieldType.STRING).description("출고지 주소").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.unstoringAddressDetail").type(JsonFieldType.STRING).description("출고지 상세주소").optional().attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.returnZipCode").type(JsonFieldType.STRING).description("반품지 우편번호").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.returnAddress").type(JsonFieldType.STRING).description("반품지 주소").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.returnAddressDetail").type(JsonFieldType.STRING).description("반품지 상세주소").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.returnCharge").type(JsonFieldType.NUMBER).description("반품배송비(편도)").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.returnDeliveryCompanyCode").type(JsonFieldType.STRING).description("반품/교환 택배사 코드").attributes(key("etc").value("공통코드 000044"))
                                 ),
@@ -198,8 +210,12 @@ class TemplateControllerTest extends BaseControllerTests {
                 .andExpect(jsonPath("$.data.delivery.areaCode").value(paramDto.getDelivery().getAreaCode()))
                 .andExpect(jsonPath("$.data.delivery.surchargeJejudo").value(paramDto.getDelivery().getSurchargeJejudo()))
                 .andExpect(jsonPath("$.data.delivery.surchargeIsolated").value(paramDto.getDelivery().getSurchargeIsolated()))
+                .andExpect(jsonPath("$.data.delivery.unstoringZipCode").value(paramDto.getDelivery().getUnstoringZipCode()))
                 .andExpect(jsonPath("$.data.delivery.unstoringAddress").value(paramDto.getDelivery().getUnstoringAddress()))
+                .andExpect(jsonPath("$.data.delivery.unstoringAddressDetail").value(paramDto.getDelivery().getUnstoringAddressDetail()))
+                .andExpect(jsonPath("$.data.delivery.returnZipCode").value(paramDto.getDelivery().getReturnZipCode()))
                 .andExpect(jsonPath("$.data.delivery.returnAddress").value(paramDto.getDelivery().getReturnAddress()))
+                .andExpect(jsonPath("$.data.delivery.returnAddressDetail").value(paramDto.getDelivery().getReturnAddressDetail()))
                 .andExpect(jsonPath("$.data.delivery.returnCharge").value(paramDto.getDelivery().getReturnCharge()))
                 .andExpect(jsonPath("$.data.delivery.returnDeliveryCompanyCode").value(paramDto.getDelivery().getReturnDeliveryCompanyCode()))
                 .andDo(
@@ -228,8 +244,12 @@ class TemplateControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.delivery.areaCode").type(JsonFieldType.STRING).description("권역").optional(),
                                         fieldWithPath("data.delivery.surchargeJejudo").type(JsonFieldType.STRING).description("제주 추가 배송비").optional(),
                                         fieldWithPath("data.delivery.surchargeIsolated").type(JsonFieldType.STRING).description("도서산간 추가 배송비").optional(),
-                                        fieldWithPath("data.delivery.unstoringAddress").type(JsonFieldType.STRING).description("출고지"),
-                                        fieldWithPath("data.delivery.returnAddress").type(JsonFieldType.STRING).description("반품지"),
+                                        fieldWithPath("data.delivery.unstoringZipCode").type(JsonFieldType.STRING).description("출고지 우편번호"),
+                                        fieldWithPath("data.delivery.unstoringAddress").type(JsonFieldType.STRING).description("출고지 주소"),
+                                        fieldWithPath("data.delivery.unstoringAddressDetail").type(JsonFieldType.STRING).description("출고지 상세주소").optional(),
+                                        fieldWithPath("data.delivery.returnZipCode").type(JsonFieldType.STRING).description("반품지 우편번호"),
+                                        fieldWithPath("data.delivery.returnAddress").type(JsonFieldType.STRING).description("반품지 주소"),
+                                        fieldWithPath("data.delivery.returnAddressDetail").type(JsonFieldType.STRING).description("반품지 상세주소"),
                                         fieldWithPath("data.delivery.returnCharge").type(JsonFieldType.NUMBER).description("반품 배송비"),
                                         fieldWithPath("data.delivery.returnDeliveryCompanyCode").type(JsonFieldType.STRING).description("반품/교환 택배사 코드"),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
@@ -247,17 +267,21 @@ class TemplateControllerTest extends BaseControllerTests {
                 .templateNo(paramDto.getTemplateNo())
                 .templateType("T01")
                 .templateName("첫번째 배송 등록 테스트 수정")
-                .delivery(DeliveryDto.ReqBody.builder()
+                .delivery(TemplateDeliveryDto.builder()
                         .deliveryType("D01")
                         .deliveryBundleFlag("N")
                         .chargeType("CT2")
                         .chargeBase(3000)
                         .termsFreeCharge(10000000L)
-                        .paymentType("P02")
+                        .paymentType("P01")
                         .surchargeFlag("N")
-                        .unstoringAddress("수정 서울특별시 강남구 강남대로 154길 37, 주경빌딩 2층 (06035)")
-                        .returnAddress("수정 서울특별시 강남구 강남대로 154길 37, 주경빌딩 1층 (06035)")
-                        .returnCharge(2000000)
+                        .unstoringZipCode("11111")
+                        .unstoringAddress("수정 서울특별시 강남구 강남대로 154길 37")
+                        .unstoringAddressDetail("수정 주경빌딩 2층")
+                        .returnZipCode("00000")
+                        .returnAddress("수정 서울특별시 강남구 강남대로 154길 37")
+                        .returnAddressDetail("수정 주경빌딩 1층")
+                        .returnCharge(9000000)
                         .returnDeliveryCompanyCode("cjgls")
                         .build())
                 .build();
@@ -292,10 +316,74 @@ class TemplateControllerTest extends BaseControllerTests {
                                         fieldWithPath("delivery.areaCode").type(JsonFieldType.STRING).description("권역").optional().attributes(key("etc").value("")),
                                         fieldWithPath("delivery.surchargeJejudo").type(JsonFieldType.NUMBER).description("제주도 추가 배송비").optional().attributes(key("etc").value("")),
                                         fieldWithPath("delivery.surchargeIsolated").type(JsonFieldType.NUMBER).description("도서산간 추가 배송비").optional().attributes(key("etc").value("")),
-                                        fieldWithPath("delivery.unstoringAddress").type(JsonFieldType.STRING).description("출고지").attributes(key("etc").value("")),
-                                        fieldWithPath("delivery.returnAddress").type(JsonFieldType.STRING).description("반품지").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.unstoringZipCode").type(JsonFieldType.STRING).description("출고지 우편번호").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.unstoringAddress").type(JsonFieldType.STRING).description("출고지 주소").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.unstoringAddressDetail").type(JsonFieldType.STRING).description("출고지 상세주소").optional().attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.returnZipCode").type(JsonFieldType.STRING).description("반품지 우편번호").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.returnAddress").type(JsonFieldType.STRING).description("반품지 주소").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.returnAddressDetail").type(JsonFieldType.STRING).description("반품지 상세주소").optional().attributes(key("etc").value("")),
                                         fieldWithPath("delivery.returnCharge").type(JsonFieldType.NUMBER).description("반품배송비(편도)").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.returnDeliveryCompanyCode").type(JsonFieldType.STRING).description("반품/교환 택배사 코드").attributes(key("etc").value("공통코드 000044"))
+                                ),
+                                responseFields(
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                )
+                ))
+                ;
+
+        // 데이터 검증
+        TemplateFindDto.Response findDto = templateService.findTemplate(
+                TemplateFindDto.Param.builder()
+                        .partnerCode("PT0000001")
+                        .templateNo(updateDto.getTemplateNo())
+                        .build());
+
+        // 안내사항 수정 검증
+        assertEquals(updateDto.getTemplateName(), findDto.getTemplateName());
+        assertEquals(updateDto.getTemplateGuide(), findDto.getTemplateGuide());
+        // 배송사항 수정 검증
+        assertEquals(updateDto.getDelivery().getDeliveryType(), findDto.getDelivery().getDeliveryType());
+        assertEquals(updateDto.getDelivery().getDeliveryBundleFlag(), findDto.getDelivery().getDeliveryBundleFlag());
+        assertEquals(updateDto.getDelivery().getChargeType(), findDto.getDelivery().getChargeType());
+        assertEquals(updateDto.getDelivery().getChargeBase(), findDto.getDelivery().getChargeBase());
+        assertEquals(updateDto.getDelivery().getTermsFreeCharge(), findDto.getDelivery().getTermsFreeCharge());
+        assertEquals(updateDto.getDelivery().getPaymentType(), findDto.getDelivery().getPaymentType());
+        assertEquals(updateDto.getDelivery().getSurchargeFlag(), findDto.getDelivery().getSurchargeFlag());
+        assertEquals(updateDto.getDelivery().getAreaCode(), findDto.getDelivery().getAreaCode());
+        assertEquals(updateDto.getDelivery().getSurchargeIsolated(), findDto.getDelivery().getSurchargeIsolated());
+        assertEquals(updateDto.getDelivery().getSurchargeJejudo(), findDto.getDelivery().getSurchargeJejudo());
+        assertEquals(updateDto.getDelivery().getUnstoringZipCode(), findDto.getDelivery().getUnstoringZipCode());
+        assertEquals(updateDto.getDelivery().getUnstoringAddress(), findDto.getDelivery().getUnstoringAddress());
+        assertEquals(updateDto.getDelivery().getUnstoringAddressDetail(), findDto.getDelivery().getUnstoringAddressDetail());
+        assertEquals(updateDto.getDelivery().getReturnZipCode(), findDto.getDelivery().getReturnZipCode());
+        assertEquals(updateDto.getDelivery().getReturnAddress(), findDto.getDelivery().getReturnAddress());
+        assertEquals(updateDto.getDelivery().getReturnAddressDetail(), findDto.getDelivery().getReturnAddressDetail());
+        assertEquals(updateDto.getDelivery().getReturnCharge(), findDto.getDelivery().getReturnCharge());
+        assertEquals(updateDto.getDelivery().getReturnDeliveryCompanyCode(), findDto.getDelivery().getReturnDeliveryCompanyCode());
+    }
+
+    @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @DisplayName("템플릿 삭제")
+    void deleteTemplate() throws Exception {
+        // 템플릿 삭제 API 테스트
+        mockMvc.perform(delete("/v1/templates")
+                .header(AUTH_HEADER, JWT_TOKEN)
+                .contentType(MediaType.TEXT_HTML)
+                        .queryParam("templateNoList", new String[]{String.valueOf(paramDto.getTemplateNo())})
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.WBCommon.state").value("S"))
+                .andDo(
+                        document("template-delete",
+                                requestDocument(),
+                                responseDocument(),
+                                requestHeaders(
+                                        headerWithName(AUTH_HEADER).description("JWT 토큰")
+                                ),
+                                requestParameters(
+                                        parameterWithName("templateNoList").description("템플릿 번호").attributes(key("etc").value("여러 건일경우 배열로 보낼 것"))
                                 ),
                                 responseFields(
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")

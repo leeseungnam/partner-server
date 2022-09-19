@@ -1,15 +1,15 @@
 package kr.wrightbrothers.apps.template.service;
 
+import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
-import kr.wrightbrothers.apps.template.dto.TemplateFindDto;
-import kr.wrightbrothers.apps.template.dto.TemplateInsertDto;
-import kr.wrightbrothers.apps.template.dto.TemplateListDto;
-import kr.wrightbrothers.apps.template.dto.TemplateUpdateDto;
+import kr.wrightbrothers.apps.template.dto.*;
+import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -57,5 +57,25 @@ public class TemplateService {
 
         // 템플릿 안내정보 수정
         dao.update(namespace + "updateTemplateGuide", paramDto);
+    }
+
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Default)
+    public void deleteTemplate(TemplateDeleteDto paramDto) {
+        Arrays.stream(paramDto.getTemplateNoList()).forEach(
+                templateNo -> {
+                    // 입점몰 등록 템플릿 여부 확인
+                    if (dao.selectOne(namespace + "isTemplateAuth",
+                            TemplateAuthDto.builder()
+                                    .partnerCode(paramDto.getPartnerCode())
+                                    .templateNo(templateNo)
+                                    .build()))
+                        throw new WBBusinessException(ErrorCode.FORBIDDEN.getErrCode());
+
+                    // 템플릿 삭제
+                    dao.delete(namespace + "deleteTemplateDelivery", templateNo);
+                    dao.delete(namespace + "deleteTemplateGuide", templateNo);
+                    dao.delete(namespace + "deleteTemplate", templateNo);
+                }
+        );
     }
 }

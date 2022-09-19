@@ -11,8 +11,8 @@ public class TemplateFindDto {
     @Getter
     @Builder
     public static class Param {
-        private String partnerCode;         // 스토어 코드
-        private Long templateNo;            // 템플릿 번호
+        private String partnerCode;             // 스토어 코드
+        private Long templateNo;                // 템플릿 번호
     }
 
     @Data
@@ -21,7 +21,7 @@ public class TemplateFindDto {
         private String templateType;            // 템플릿 구분
         private String templateName;            // 템플릿 이름
         private String templateGuide;           // 템플릿 안내 설명
-        private DeliveryDto.ResBody delivery;   // 배송
+        private TemplateDeliveryDto delivery;   // 배송
     }
 
 }
