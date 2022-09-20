@@ -27,26 +27,14 @@ public class ProductService {
     public String generateProductCode(String categoryTwoCode) {
         StringBuilder productCode = new StringBuilder();
         String productGroupCode = dao.selectOne(namespace + "findProductGroupCode", categoryTwoCode, PartnerKey.WBDataBase.Alias.Admin);
-        // 파트너 신품 코드 영문 숫자조합 10자리
-        // PA + 카테고리 상품 그룹코드 2자리 + FE + 영문/숫자 1자리 + 숫자 3
+        // 파트너 신품 코드 영문 숫자조합 11자리
+        // PA + 카테고리 상품 그룹코드 2자리 + FE + 영문/숫자 5자리
         productCode.append("PA");
         productCode.append(productGroupCode);
         productCode.append("FE");
-        productCode.append(RandomStringUtils.randomAlphanumeric(1).toUpperCase());
-        productCode.append(RandomStringUtils.randomNumeric(3));
+        productCode.append(RandomStringUtils.randomAlphanumeric(5).toUpperCase());
 
         return productCode.toString();
-    }
-
-    /**
-     * 스토어 소유의 등록된 상품인지 유효성 체크를 한다.
-     *
-     * @param paramDto 상품체크 객체 정보(파트너코드, 상품코드)
-     */
-    public void ownProductCheck(ProductCheckDto paramDto) {
-        // 입점몰 등록 상품 여부 확인
-        if (dao.selectOne(namespace + "isProductAuth", paramDto))
-            throw new WBBusinessException(ErrorCode.FORBIDDEN.getErrCode());
     }
 
     public List<ProductListDto.Response> findProductList(ProductListDto.Param paramDto) {
@@ -81,9 +69,6 @@ public class ProductService {
     }
 
     public ProductFindDto.ResBody findProduct(ProductFindDto.Param paramDto) {
-        // 입점몰 등록 상품 여부 확인
-        ownProductCheck(new ProductCheckDto(paramDto.getPartnerCode(), paramDto.getProductCode()));
-
         return ProductFindDto.ResBody.builder()
                 .product(dao.selectOne(namespace + "findProduct", paramDto.getProductCode()))
                 .basicSpec(dao.selectOne(namespace + "findBasicSpec", paramDto.getProductCode()))
@@ -97,9 +82,6 @@ public class ProductService {
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void updateProduct(ProductUpdateDto paramDto) {
-        // 입점몰 등록 상품 여부 확인
-        ownProductCheck(new ProductCheckDto(paramDto.getProduct().getPartnerCode(), paramDto.getProductCode()));
-
         // 상품 기본정보 수정
         dao.update(namespace + "updateProduct", paramDto.getProduct());
         // 상품 기본스펙 수정

@@ -193,6 +193,7 @@ class ProductControllerTest extends BaseControllerTests {
                 .endDay(new SimpleDateFormat("yyyyMMdd").format(new Date()))
                 .keywordType("NAME")
                 .keywordValue("")
+                .sortType("CRE")
                 .build();
 
         // 상품 목록 조회 API 테스트
@@ -206,6 +207,7 @@ class ProductControllerTest extends BaseControllerTests {
                         .queryParam("endDay", paramDto.getEndDay())
                         .queryParam("keywordType", paramDto.getKeywordType())
                         .queryParam("keywordValue", paramDto.getKeywordValue())
+                        .queryParam("sortType", paramDto.getSortType())
                         .queryParam("count", String.valueOf(1))
                         .queryParam("page", String.valueOf(1))
                     .accept(MediaType.APPLICATION_JSON))
@@ -227,6 +229,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         parameterWithName("endDay").description("검색 종료 일자").attributes(key("etc").value("YYYYMMDD 예)20220913")),
                                         parameterWithName("keywordType").description("키워드 구분").attributes(key("etc").value("NAME 상품명, CODE 상품코드")),
                                         parameterWithName("keywordValue").description("키워드 값").optional().attributes(key("etc").value("")),
+                                        parameterWithName("sortType").description("정렬 구분").attributes(key("etc").value("CRE 등록일순, UPD 수정일순, HSAMT 판매가 높은순, LSAMT 판매가 낮은순")),
                                         parameterWithName("count").description("페이지 ROW 수").attributes(key("etc").value("")),
                                         parameterWithName("page").description("페이지").attributes(key("etc").value(""))
                                 ),

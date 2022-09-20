@@ -3,6 +3,14 @@
 
 <mapper namespace="kr.wrightbrothers.apps.template.query.Template">
 
+	<select id="isTemplateAuth" parameterType="kr.wrightbrothers.apps.template.dto.TemplateAuthDto" resultType="boolean">
+		select
+		    if(count(template_no) = 0, true, false) as isTemplateAuth
+		  from template
+		 where partner_code = #{partnerCode}
+		   and template_no = #{templateNo}
+	</select>
+
 	<select id="findTemplateList" parameterType="kr.wrightbrothers.apps.template.dto.TemplateListDto$Param" resultType="kr.wrightbrothers.apps.template.dto.TemplateListDto$Response">
 		select
 		    template_no,
@@ -53,8 +61,12 @@
 		                              area_code,
 		                              surcharge_jejudo,
 		                              surcharge_isolated,
+		                              unstoring_zip_code,
 		                              unstoring_address,
+		                              unstoring_address_detail,
+		                              return_zip_code,
 		                              return_address,
+		                              return_address_detail,
 		                              return_charge,
 		                              return_delivery_company_code,
 		                              create_user_id,
@@ -70,8 +82,12 @@
 			   #{delivery.areaCode},
 			   #{delivery.surchargeJejudo},
 			   #{delivery.surchargeIsolated},
+			   #{delivery.unstoringZipCode},
 			   #{delivery.unstoringAddress},
+			   #{delivery.unstoringAddressDetail},
+			   #{delivery.returnZipCode},
 			   #{delivery.returnAddress},
+			   #{delivery.returnAddressDetail},
 			   #{delivery.returnCharge},
 			   #{delivery.returnDeliveryCompanyCode},
 			   #{userId},
@@ -90,8 +106,12 @@
 			   area_code						= #{delivery.areaCode},
 			   surcharge_jejudo					= #{delivery.surchargeJejudo},
 			   surcharge_isolated				= #{delivery.surchargeIsolated},
+			   unstoring_zip_code				= #{delivery.unstoringZipCode},
 			   unstoring_address				= #{delivery.unstoringAddress},
+			   unstoring_address_detail			= #{delivery.unstoringAddressDetail},
+			   return_zip_code					= #{delivery.returnZipCode},
 			   return_address					= #{delivery.returnAddress},
+			   return_address_detail			= #{delivery.returnAddressDetail},
 			   return_charge					= #{delivery.returnCharge},
 			   return_delivery_company_code		= #{delivery.returnDeliveryCompanyCode},
 			   update_user_id					= #{userId},
@@ -133,8 +153,12 @@
             d.area_code,
             d.surcharge_jejudo,
             d.surcharge_isolated,
+            d.unstoring_zip_code,
             d.unstoring_address,
+            d.unstoring_address_detail,
+            d.return_zip_code,
             d.return_address,
+            d.return_address_detail,
             d.return_charge,
             d.return_delivery_company_code
 		  from template t
@@ -149,7 +173,7 @@
 		<id column="template_type" property="templateType" />
 		<id column="template_name" property="templateName" />
 		<id column="template_guide" property="templateGuide" />
-		<association property="delivery" javaType="kr.wrightbrothers.apps.product.dto.DeliveryDto$ResBody">
+		<association property="delivery" javaType="kr.wrightbrothers.apps.template.dto.TemplateDeliveryDto">
 			<result column="delivery_type" property="deliveryType" />
 			<result column="delivery_bundle_flag" property="deliveryBundleFlag" />
 			<result column="charge_type" property="chargeType" />
@@ -160,11 +184,33 @@
 			<result column="area_code" property="areaCode" />
 			<result column="surcharge_jejudo" property="surchargeJejudo" />
 			<result column="surcharge_isolated" property="surchargeIsolated" />
+			<result column="unstoring_zip_code" property="unstoringZipCode" />
 			<result column="unstoring_address" property="unstoringAddress" />
+			<result column="unstoring_address_detail" property="unstoringAddressDetail" />
+			<result column="return_zip_code" property="returnZipCode" />
 			<result column="return_address" property="returnAddress" />
+			<result column="return_address_detail" property="returnAddressDetail" />
 			<result column="return_charge" property="returnCharge" />
 			<result column="return_delivery_company_code" property="returnDeliveryCompanyCode" />
 		</association>
 	</resultMap>
+
+	<delete id="deleteTemplate" parameterType="java.lang.Long">
+		delete
+		  from template
+		 where template_no = #{templateNo}
+	</delete>
+
+	<delete id="deleteTemplateDelivery" parameterType="java.lang.Long">
+		delete
+		  from template_delivery
+		 where template_no = #{templateNo}
+	</delete>
+
+	<delete id="deleteTemplateGuide" parameterType="java.lang.Long">
+		delete
+		  from template_guide
+		 where template_no = #{templateNo}
+	</delete>
 
 </mapper>

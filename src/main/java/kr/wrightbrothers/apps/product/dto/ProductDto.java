@@ -53,9 +53,7 @@ public class ProductDto {
     @SuperBuilder
     @EqualsAndHashCode(callSuper = false)
     public static class ReqBody extends Product {
-        @JsonIgnore
         private String partnerCode;         // 파트너 코드
-        @JsonIgnore
         private String productCode;         // 상품 코드
         @JsonIgnore
         private String userId;              // 작성자 아이디
