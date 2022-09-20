@@ -18,6 +18,13 @@
 		 where cagy_cd = #{categoryCode}
 	</select>
 
+	<select id="findProductStatus" parameterType="java.lang.String" resultType="java.lang.String">
+		select
+		    product_status_code
+		  from product_sell_info
+		 where product_code = #{productCode}
+	</select>
+
 	<select id="findProductList" parameterType="kr.wrightbrothers.apps.product.dto.ProductListDto$Param" resultType="kr.wrightbrothers.apps.product.dto.ProductListDto$Response">
 		select
 		    p.product_code,

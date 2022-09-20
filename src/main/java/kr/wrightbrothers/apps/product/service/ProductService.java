@@ -1,5 +1,6 @@
 package kr.wrightbrothers.apps.product.service;
 
+import kr.wrightbrothers.apps.common.type.ProductStatusCode;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.file.service.FileService;
@@ -109,5 +110,23 @@ public class ProductService {
         fileService.s3FileUpload(paramDto.getFileList(), WBKey.Aws.A3.Product_Img_Path + paramDto.getProduct().getProductCode(), true);
     }
 
+    public void validStatusChange(String productNo, String changeStatusCode) {
+        String currentStatusCode = dao.selectOne(namespace + "findProductStatus", productNo);
+
+        switch (ProductStatusCode.of(changeStatusCode)) {
+            case SALE:
+                if (!(
+                        ProductStatusCode.END_OF_SALE.getCode().equals(currentStatusCode) ||
+                                ProductStatusCode.RESERVATION.getCode().equals(changeStatusCode)
+                    ))
+                    throw new WBBusinessException(ErrorCode.VALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매종료/예약중인"});
+            case END_OF_SALE:
+                if (!ProductStatusCode.SALE.getCode().equals(changeStatusCode))
+                    throw new WBBusinessException(ErrorCode.VALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매중인"});
+            case RESERVATION:
+                if (!ProductStatusCode.SALE.getCode().equals(changeStatusCode))
+                    throw new WBBusinessException(ErrorCode.VALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매중인"});
+        }
+    }
 
 }

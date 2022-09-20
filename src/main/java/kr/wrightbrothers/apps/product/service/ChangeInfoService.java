@@ -37,6 +37,7 @@ public class ChangeInfoService {
     }
 
     public void updateProductStatus(StatusUpdateDto paramDto) {
+        // 상태값 변경
 
     }
 }

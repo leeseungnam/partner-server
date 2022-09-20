@@ -6,7 +6,8 @@ import lombok.Getter;
 public enum ErrorCode {
 
     FORBIDDEN(403),
-    UNAUTHORIZED(401)
+    UNAUTHORIZED(401),
+    VALID_PRODUCT_STATUS(4001)
     ;
 
     final int errCode;
