@@ -2,11 +2,9 @@ package kr.wrightbrothers.framework.lang;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
-import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.RandomUtil;
 import kr.wrightbrothers.framework.support.WBCommon;
 import kr.wrightbrothers.framework.support.WBKey;
-import kr.wrightbrothers.framework.util.RandomKey;
 import kr.wrightbrothers.framework.util.StaticContextAccessor;
 import kr.wrightbrothers.framework.util.WBMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -14,10 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.ObjectUtils;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -96,6 +92,14 @@ public class WBGlobalException {
                         HttpStatus.OK
                 );
             }
+        }
+
+        // 접근 거부 메시지 처리
+        if (ex instanceof AccessDeniedException) {
+            return new ResponseEntity<>(
+                    exceptionResponse(ErrorCode.FORBIDDEN.getErrCode(), WBKey.Message.Type.Error),
+                    HttpStatus.OK
+            );
         }
 
         return new ResponseEntity<>(
