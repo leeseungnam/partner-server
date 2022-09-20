@@ -25,6 +25,7 @@ public class ProductListDto {
         private String endDay;                  // 종료 일자
         private String keywordType;             // 키워드 종류
         private String keywordValue;            // 키워드 값
+        private String sortType;                // 정렬 타입
         private String[] keywordValueList;      // 여러검색 조건
 
         // 여러 상품 검색을 위해 구분자인 ; Split 처리

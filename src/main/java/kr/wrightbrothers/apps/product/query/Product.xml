@@ -72,7 +72,20 @@
 				</when>
 			</choose>
 		</if>
+		<choose>
+			<when test="sortType == 'CRE'.toString()">
 		order by p.create_date desc
+			</when>
+			<when test="sortType == 'UPD'.toString()">
+		order by p.update_date desc
+			</when>
+			<when test="sortType == 'LSAMT'.toString()">
+		order by ps.final_sell_amount
+			</when>
+			<when test="sortType == 'HSAMT'.toString()">
+		order by ps.final_sell_amount desc
+			</when>
+		</choose>
 	</select>
 
 	<insert id="insertProduct" parameterType="kr.wrightbrothers.apps.product.dto.ProductDto$ReqBody">

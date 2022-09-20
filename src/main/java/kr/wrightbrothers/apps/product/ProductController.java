@@ -30,6 +30,7 @@ public class ProductController extends WBController {
                                    @RequestParam String endDay,
                                    @RequestParam String keywordType,
                                    @RequestParam(required = false) String keywordValue,
+                                   @RequestParam String sortType,
                                    @RequestParam int count,
                                    @RequestParam int page,
                                    @AuthenticationPrincipal UserPrincipal user
@@ -44,6 +45,7 @@ public class ProductController extends WBController {
                 .endDay(endDay)
                 .keywordType(keywordType)
                 .keywordValue(keywordValue)
+                .sortType(sortType)
                 .count(count)
                 .page(page)
                 .build();
