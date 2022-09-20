@@ -1,5 +1,6 @@
 package kr.wrightbrothers.apps.common.config.security.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -10,7 +11,6 @@ import kr.wrightbrothers.apps.sign.service.WBUserDetailService;
 import kr.wrightbrothers.apps.token.dto.RefreshTokenDto;
 import kr.wrightbrothers.apps.token.service.RefreshTokenService;
 import kr.wrightbrothers.apps.user.dto.UserAuthDto;
-import kr.wrightbrothers.apps.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,14 +18,15 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.security.Key;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -105,7 +106,10 @@ public class JwtTokenProvider implements InitializingBean {
                         .collect(Collectors.toList());
 
         UserAuthDto userAuthDto = null;
-        if(!ObjectUtils.isEmpty(claims.get("userAuth"))) userAuthDto = (UserAuthDto) claims.get("userAuth");
+
+        ObjectMapper mapper = new ObjectMapper();
+        if(!ObjectUtils.isEmpty(claims.get("userAuth"))) userAuthDto = mapper.convertValue(claims.get("userAuth"), UserAuthDto.class);
+
 
         UserPrincipal principal = new UserPrincipal(claims.getSubject(), "", authorities, userAuthDto);
 
