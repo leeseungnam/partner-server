@@ -1,8 +1,10 @@
 package kr.wrightbrothers.apps;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.apps.common.type.ProductLogCode;
 import kr.wrightbrothers.apps.common.type.ProductStatusCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.product.dto.StatusUpdateDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -12,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -63,6 +66,29 @@ public class ChangeInfoControllerTest extends ProductControllerTest {
 
                 ))
                 ;
+    }
+
+    @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @DisplayName("상품 상태 일괄 변경")
+    void updateProductStatus() throws Exception {
+        // 변경 요청 바디 생성
+        StatusUpdateDto statusParam = StatusUpdateDto.builder()
+                .productCodeList(new String[]{productDto.getProduct().getProductCode()})
+                .changeType("C01")
+                .changeValue("S02")
+                .build();
+
+        // 일괄 변경 API 테스트
+        mockMvc.perform(patch("/v1/products")
+                    .header(AUTH_HEADER, JWT_TOKEN)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(new ObjectMapper().writeValueAsString(statusParam))
+                    .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.WBCommon.state").value("S"))
+        ;
     }
 
 }
