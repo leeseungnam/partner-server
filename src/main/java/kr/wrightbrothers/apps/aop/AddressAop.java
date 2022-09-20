@@ -1,12 +1,10 @@
 package kr.wrightbrothers.apps.aop;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.apps.address.dto.AddressAuthDto;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
-import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
+import kr.wrightbrothers.framework.util.JsonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -21,9 +19,10 @@ import java.util.Arrays;
 @Aspect
 @Configuration
 @RequiredArgsConstructor
-public class ServiceBeforeAop {
+public class AddressAop {
 
     private final WBCommonDao dao;
+    private final String namespace = "kr.wrightbrothers.apps.address.query.Address.";
 
     /**
      * 스토어 소유의 등록된 주소록인지 유효성 체크
@@ -34,18 +33,19 @@ public class ServiceBeforeAop {
             "execution(* kr.wrightbrothers.apps.address.service.*Service.findAddress(..)) ||" +
             "execution(* kr.wrightbrothers.apps.address.service.*Service.delete*(..))"
     )
-    public void ownAddressCheck(JoinPoint joinPoint) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        JSONObject jsonObject = new JSONObject(objectMapper.writeValueAsString(Arrays.stream(joinPoint.getArgs()).findFirst().orElseThrow()));
+    public void ownAddressCheck(JoinPoint joinPoint) throws Exception {
+        JSONObject object = new JSONObject(JsonUtil.ToString(Arrays.stream(joinPoint.getArgs()).findFirst().orElseThrow()));
 
-        if (dao.selectOne(
-                "kr.wrightbrothers.apps.address.query.Address.isAddressAuth",
-                AddressAuthDto.builder()
-                        .partnerCode(jsonObject.getString("partnerCode"))
-                        .addressNo(jsonObject.getLong("addressNo"))
-                        .build())
-        )
+        if (dao.selectOne(namespace + "isAddressAuth", AddressAuthDto.builder()
+                .partnerCode(object.getString("partnerCode"))
+                .addressNo(object.getLong("addressNo"))
+                .build())) {
+
+            log.error("Address Auth Error.");
+            log.error("PartnerCode::{}, AddressNo::{}", object.getString("partnerCode"), object.getLong("addressNo"));
             throw new WBBusinessException(ErrorCode.FORBIDDEN.getErrCode());
+        }
+
     }
 
 

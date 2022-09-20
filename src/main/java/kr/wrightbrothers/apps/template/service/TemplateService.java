@@ -39,7 +39,6 @@ public class TemplateService {
     }
 
     public TemplateFindDto.Response findTemplate(TemplateFindDto.Param paramDto) {
-
         // 템플릿 정보 조회
         return dao.selectOne(namespace + "findTemplate", paramDto.getTemplateNo());
     }

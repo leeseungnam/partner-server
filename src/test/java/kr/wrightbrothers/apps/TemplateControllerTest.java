@@ -3,7 +3,6 @@ package kr.wrightbrothers.apps;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.BaseControllerTests;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
-import kr.wrightbrothers.apps.product.dto.DeliveryDto;
 import kr.wrightbrothers.apps.template.dto.*;
 import kr.wrightbrothers.apps.template.service.TemplateService;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.transaction.annotation.Transactional;
-import springfox.documentation.spring.web.json.Json;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;

@@ -37,17 +37,6 @@ public class ProductService {
         return productCode.toString();
     }
 
-    /**
-     * 스토어 소유의 등록된 상품인지 유효성 체크를 한다.
-     *
-     * @param paramDto 상품체크 객체 정보(파트너코드, 상품코드)
-     */
-    public void ownProductCheck(ProductCheckDto paramDto) {
-        // 입점몰 등록 상품 여부 확인
-        if (dao.selectOne(namespace + "isProductAuth", paramDto))
-            throw new WBBusinessException(ErrorCode.FORBIDDEN.getErrCode());
-    }
-
     public List<ProductListDto.Response> findProductList(ProductListDto.Param paramDto) {
         // 상품목록 조회
         return dao.selectList(namespace + "findProductList" ,paramDto, paramDto.getRowBounds());
@@ -80,9 +69,6 @@ public class ProductService {
     }
 
     public ProductFindDto.ResBody findProduct(ProductFindDto.Param paramDto) {
-        // 입점몰 등록 상품 여부 확인
-        ownProductCheck(new ProductCheckDto(paramDto.getPartnerCode(), paramDto.getProductCode()));
-
         return ProductFindDto.ResBody.builder()
                 .product(dao.selectOne(namespace + "findProduct", paramDto.getProductCode()))
                 .basicSpec(dao.selectOne(namespace + "findBasicSpec", paramDto.getProductCode()))
@@ -96,9 +82,6 @@ public class ProductService {
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void updateProduct(ProductUpdateDto paramDto) {
-        // 입점몰 등록 상품 여부 확인
-        ownProductCheck(new ProductCheckDto(paramDto.getProduct().getPartnerCode(), paramDto.getProductCode()));
-
         // 상품 기본정보 수정
         dao.update(namespace + "updateProduct", paramDto.getProduct());
         // 상품 기본스펙 수정

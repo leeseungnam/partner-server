@@ -3,7 +3,7 @@
 
 <mapper namespace="kr.wrightbrothers.apps.product.query.Product">
 
-	<select id="isProductAuth" parameterType="kr.wrightbrothers.apps.product.dto.ProductFindDto$Param" resultType="boolean">
+	<select id="isProductAuth" parameterType="kr.wrightbrothers.apps.product.dto.ProductAuthDto" resultType="boolean">
 		select
 			if(count(product_code) = 0, true, false) as isProductAuth
 		  from product

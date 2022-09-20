@@ -19,7 +19,6 @@ public class TemplateUpdateDto {
     private String templateName;
     private String templateGuide;
     private TemplateDeliveryDto delivery;
-    @JsonIgnore
     private String partnerCode;
     @JsonIgnore
     private String userId;
