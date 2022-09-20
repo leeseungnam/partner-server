@@ -31,8 +31,14 @@ public class WBUserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(final String userId) throws UsernameNotFoundException {
         UserDetailDto user = dao.selectOne(namespace + "loadUserByUsername", userId);
 
-        // [todo] AbstractUserDetailsauthenticationProvider 분리
-        if(ObjectUtils.isEmpty(user)) throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
+        // [todo] 분리
+        if(ObjectUtils.isEmpty(user)) throw new UsernameNotFoundException("입력하신 이메일주소 및 비밀번호를 확인해주세요.");
+
+        if(PartnerKey.Code.User.Status.DROP_REQUEST.equals(user.getUserStatusCode())) {
+            throw new UsernameNotFoundException("탈퇴 진행 중인 사용자 입니다.");
+        } else if(PartnerKey.Code.User.Status.DROP_COMPLETE.equals(user.getUserStatusCode())) {
+            throw new UsernameNotFoundException("탈퇴한 파트너 센터 아이디 입니다.");
+        }
         return UserPrincipal.createUser(user);
     }
 }

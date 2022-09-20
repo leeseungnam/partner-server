@@ -7,6 +7,7 @@
 		select
 			user.user_id,
 			user.user_pwd,
+			user.user_status_code,
 		    ifnull(role.auth_code, 'ROLE_USER') as auth_code,
 			ifnull(role.partner_code, '') as partner_code
 		  from users user

@@ -1,9 +1,16 @@
 package kr.wrightbrothers.apps.common.config.security;
 
-import kr.wrightbrothers.apps.common.config.security.jwt.*;
+import kr.wrightbrothers.apps.common.config.security.jwt.JwtAccessDeniedHandler;
+import kr.wrightbrothers.apps.common.config.security.jwt.JwtAuthenticationEntryPoint;
+import kr.wrightbrothers.apps.common.config.security.jwt.JwtSecurityConfiguration;
+import kr.wrightbrothers.apps.common.config.security.jwt.JwtTokenProvider;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.token.service.BlackListService;
+import kr.wrightbrothers.apps.token.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -12,11 +19,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -24,6 +33,8 @@ import java.util.List;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration {
 
+    private final BlackListService blackListService;
+    private final RefreshTokenService refreshTokenService;
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -60,16 +71,26 @@ public class SecurityConfiguration {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
                 .authorizeRequests()
-                .antMatchers("/v1/sign/*").permitAll()
+                .antMatchers("/v1/sign/login").permitAll()
                 .anyRequest().authenticated()
             .and()
 //                .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
                 .apply(new JwtSecurityConfiguration(jwtTokenProvider));
-
+        /*
         http.logout()
-                .logoutUrl("/v1/logout")
+                .logoutUrl("/v1/sign/logout")
+                .addLogoutHandler(new WBLogoutHandler(jwtTokenProvider, blackListService, refreshTokenService))
+                .logoutSuccessUrl("/v1/sign/loginform")
+                .clearAuthentication(true)
+                .invalidateHttpSession(true)
                 .deleteCookies(PartnerKey.Jwt.Alias.REFRESH_TOKEN);
+        */
         return http.build();
+    }
+
+    @Bean
+    AuthenticationManager authenticationManager (AuthenticationConfiguration authenticationConfiguration) throws Exception{
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean

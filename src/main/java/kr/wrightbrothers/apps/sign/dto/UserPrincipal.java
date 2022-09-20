@@ -1,7 +1,6 @@
 package kr.wrightbrothers.apps.sign.dto;
 
 import kr.wrightbrothers.apps.user.dto.UserAuthDto;
-import kr.wrightbrothers.apps.user.dto.UserDto;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,7 +9,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 public class UserPrincipal implements UserDetails {
@@ -18,6 +16,8 @@ public class UserPrincipal implements UserDetails {
     private String username;
 
     private String password;
+
+    private String userStatusCode;
 
     private UserAuthDto userAuth;
 
@@ -51,6 +51,10 @@ public class UserPrincipal implements UserDetails {
         List<GrantedAuthority> grantedAuthorities = Arrays.asList(new SimpleGrantedAuthority(userDetailDto.getUserAuth().getAuthCode()));
 
         return new UserPrincipal(userDetailDto, grantedAuthorities);
+    }
+
+    public String getUserStatusCode() {
+        return userStatusCode;
     }
 
     public UserAuthDto getUserAuth() {

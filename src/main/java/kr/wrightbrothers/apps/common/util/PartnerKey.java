@@ -38,6 +38,10 @@ public class PartnerKey {
 			public static final String X_AUTH_TOKEN	= "X-AUTH-TOKEN";
 			public static final String AUTHORIZATION = "Authorization";
 		}
+
+		public static class Type {
+			public static final String BEARER = "Bearer ";
+		}
 	}
 
 	public static class WBDataBase {
@@ -72,6 +76,18 @@ public class PartnerKey {
 		public static class Sns {
 			public static final String GroupId = "WB";
 		}
+	}
+
+	public static class Code {
+		public static class User {
+			public static class Status {
+				public static final String JOIN = "U01";
+				public static final String DROP_REQUEST = "U02";
+				public static final String DROP_COMPLETE = "U03";
+			}
+
+		}
+
 	}
 
 	public static class Regex {

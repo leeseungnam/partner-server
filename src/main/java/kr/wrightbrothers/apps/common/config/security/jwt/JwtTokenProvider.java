@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.common.util.TokenUtil;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import kr.wrightbrothers.apps.sign.service.WBUserDetailService;
 import kr.wrightbrothers.apps.token.dto.RefreshTokenDto;
@@ -63,13 +64,14 @@ public class JwtTokenProvider implements InitializingBean {
 
     public String generateAccessToken(Authentication authentication) {
         Claims claims = Jwts.claims();
-//        claims.put("","");
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        claims.put("userAuth", userPrincipal.getUserAuth());
         return createJsonWebToken(authentication, claims, ACCESS_TOKEN_VALIDATION_SECOND);
     }
 
     public String generateRefreshToken(Authentication authentication) {
         Claims claims = Jwts.claims();
-        claims.put("value", createRefreshTokenHash(authentication, REFRESH_TOKEN_VALIDATION_SECOND));
+        claims.put("value", TokenUtil.createRefreshTokenHash(authentication, REFRESH_TOKEN_VALIDATION_SECOND));
         return createJsonWebToken(authentication, claims, REFRESH_TOKEN_VALIDATION_SECOND);
     }
 
@@ -90,22 +92,6 @@ public class JwtTokenProvider implements InitializingBean {
                 .compact();
     }
 
-    // refresh JWT 사용 X
-    // base64 encoding hash -> JWT 사용 해야 할 경우 JWT payload에 담아서 사용
-    public String createRefreshTokenHash(Authentication authentication, long expireTime) {
-
-        log.info("[createResfreshToken] method in START");
-
-        String refreshToken = String.format("%s.%s.%s", authentication.getName(), UUID.randomUUID(), expireTime);
-        log.info("[createResfreshToken] string format={}",refreshToken);
-
-        refreshToken = Base64.getEncoder().encodeToString(refreshToken.getBytes());
-        log.info("[createResfreshToken] base64 encoding={}",refreshToken);
-
-        log.info("[createResfreshToken] method in END");
-        return refreshToken;
-    }
-
     public Authentication getAuthentication(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
@@ -122,7 +108,6 @@ public class JwtTokenProvider implements InitializingBean {
         if(!ObjectUtils.isEmpty(claims.get("userAuth"))) userAuthDto = (UserAuthDto) claims.get("userAuth");
 
         UserPrincipal principal = new UserPrincipal(claims.getSubject(), "", authorities, userAuthDto);
-//        User principal = new User(claims.getSubject(), "", authorities);
 
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }

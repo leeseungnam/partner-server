@@ -1,9 +1,9 @@
-package kr.wrightbrothers.apps.sign;
+package kr.wrightbrothers.apps.user;
 
 import kr.wrightbrothers.apps.common.config.security.jwt.JwtTokenProvider;
 import kr.wrightbrothers.apps.common.util.TokenUtil;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
-import kr.wrightbrothers.apps.sign.dto.SignDto;
+import kr.wrightbrothers.apps.sign.dto.UserDetailDto;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import kr.wrightbrothers.apps.user.dto.UserAuthDto;
 import kr.wrightbrothers.apps.user.service.UserService;
@@ -18,54 +18,37 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@RestController()
-@RequestMapping(value = "/v1/sign")
+@RestController
 @RequiredArgsConstructor
-public class SignController extends WBController {
+public class UserController extends WBController {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final static long REFRESH_TOKEN_VALIDATION_SECOND = 60 * 60 * 2;
     private final UserService userService;
 
-    @PostMapping("/login")
-    public WBModel signIn(@RequestBody SignDto paramDto, HttpServletResponse response) {
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(paramDto.getUserId(), paramDto.getUserPwd());
-
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+    @PostMapping("/v1/user")
+    public WBModel userJoin(@RequestBody UserDetailDto userDetailDto
+            , HttpServletResponse response) {
 
         WBModel wbResponse = new WBModel();
 
-        String accessToken = jwtTokenProvider.generateAccessToken(authentication);
-        String refreshToken = jwtTokenProvider.issueRefreshToken(authentication);
 
-        log.debug("access token={}",accessToken);
-        log.debug("refresh token={}",refreshToken);
-
-        wbResponse.addObject("UserAuth", userService.findAuthById(authentication.getName()));
-
-
-        response.setHeader(PartnerKey.Jwt.Header.AUTHORIZATION, PartnerKey.Jwt.Type.BEARER + accessToken);
-        response.addCookie(TokenUtil.createCookie(PartnerKey.Jwt.Alias.REFRESH_TOKEN, refreshToken, REFRESH_TOKEN_VALIDATION_SECOND));
 
         return  wbResponse;
     }
 
     // [todo] old token 파기
     // [todo] set userAuth validation
-    @PostMapping("/auth")
+    @PostMapping("/v1/user/auth")
     public WBModel setAuthentic(@RequestHeader(PartnerKey.Jwt.Header.AUTHORIZATION) String accessToken
                                     , @CookieValue(PartnerKey.Jwt.Alias.REFRESH_TOKEN) String refreshToke
                                     , @AuthenticationPrincipal UserPrincipal userPrincipal
