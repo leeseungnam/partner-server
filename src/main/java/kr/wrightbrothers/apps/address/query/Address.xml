@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.wrightbrothers.apps.address.query.Address">
+	
+	<select id="isAddressAuth" parameterType="kr.wrightbrothers.apps.address.dto.AddressAuthDto" resultType="boolean">
+		select
+		    if(count(address_no) = 0, true, false) as isAddressAuth
+		  from address
+		 where partner_code = #{partnerCode}
+		   and address_no = #{addressNo}
+	</select>
+	
+	<select id="findAddressList" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.address.dto.AddressListDto$Response">
+		select
+		    address_no,
+		    address_name,
+		    concat(address, ',', address_detail, '(', address_zip_code, ')') as address,
+		    address_phone,
+		    rep_unstoring_flag,
+		    rep_return_flag
+		from address
+	   where partner_code = #{partnerCode}
+	   order by create_date desc
+	</select>
+
+	<insert id="insertAddress" parameterType="kr.wrightbrothers.apps.address.dto.AddressInsertDto" useGeneratedKeys="true" keyProperty="addressNo" keyColumn="address_no">
+		insert into address(partner_code,
+		                    address_name,
+		                    address_zip_code,
+		                    address,
+		                    address_detail,
+		                    address_phone,
+		                    rep_unstoring_flag,
+		                    rep_return_flag,
+		                    create_user_id,
+		                    update_user_id)
+		values(#{partnerCode},
+			   #{addressName},
+			   #{addressZipCode},
+			   #{address},
+			   #{addressDetail},
+			   #{addressPhone},
+			   #{repUnstoringFlag},
+			   #{repReturnFlag},
+			   #{userId},
+			   #{userId})
+	</insert>
+
+	<select id="findAddress" parameterType="java.lang.Long" resultType="kr.wrightbrothers.apps.address.dto.AddressFindDto$Response">
+		select
+		    address_no,
+		    address_name,
+		    address_zip_code,
+		    address,
+		    address_detail,
+		    address_phone,
+		    rep_unstoring_flag,
+		    rep_return_flag
+		  from address
+		 where address_no = #{addressNo}
+	</select>
+
+	<update id="updateAddress" parameterType="kr.wrightbrothers.apps.address.dto.AddressUpdateDto">
+		update address
+		   set address_name 		= #{addressName},
+			   address_zip_code		= #{addressZipCode},
+			   address				= #{address},
+			   address_detail		= #{addressDetail},
+			   address_phone		= #{addressPhone},
+			   rep_unstoring_flag	= #{repUnstoringFlag},
+			   rep_return_flag		= #{repReturnFlag},
+			   update_user_id		= #{userId},
+			   update_date			= now()
+		 where address_no = #{addressNo}
+	</update>
+
+	<update id="removeReqUnstoringFlag" parameterType="java.lang.String">
+		update address
+		   set rep_unstoring_flag = 'N'
+		 where partner_code = #{partnerCode}
+	</update>
+	
+	<update id="removeReqReturnFlag" parameterType="java.lang.String">
+		update address
+		   set rep_return_flag = 'N'
+		 where partner_code = #{partnerCode}
+	</update>
+
+	<delete id="deleteAddress" parameterType="kr.wrightbrothers.apps.address.dto.AddressDeleteDto">
+		delete
+		  from address
+		 where address_no = #{addressNo}
+	</delete>
+
+</mapper>

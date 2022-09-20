@@ -191,9 +191,9 @@ class TemplateControllerTest extends BaseControllerTests {
 
         // 템플릿 조회 API 테스트
         mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/templates/{templateNo}", paramDto.getTemplateNo())
-                .header(AUTH_HEADER, JWT_TOKEN)
-                .contentType(MediaType.TEXT_HTML)
-                .accept(MediaType.APPLICATION_JSON))
+                    .header(AUTH_HEADER, JWT_TOKEN)
+                    .contentType(MediaType.TEXT_HTML)
+                    .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.WBCommon.state").value("S"))
@@ -287,10 +287,10 @@ class TemplateControllerTest extends BaseControllerTests {
                 .build();
 
         mockMvc.perform(put("/v1/templates")
-                .header(AUTH_HEADER, JWT_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(updateDto))
-                .accept(MediaType.APPLICATION_JSON))
+                    .header(AUTH_HEADER, JWT_TOKEN)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(new ObjectMapper().writeValueAsString(updateDto))
+                    .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.WBCommon.state").value("S"))
@@ -334,7 +334,7 @@ class TemplateControllerTest extends BaseControllerTests {
         // 데이터 검증
         TemplateFindDto.Response findDto = templateService.findTemplate(
                 TemplateFindDto.Param.builder()
-                        .partnerCode("PT0000001")
+                        .partnerCode(paramDto.getPartnerCode())
                         .templateNo(updateDto.getTemplateNo())
                         .build());
 
