@@ -20,6 +20,7 @@
 	<resultMap id="loadUserByUsernameMap" type="kr.wrightbrothers.apps.sign.dto.UserDetailDto">
 		<result column="user_id" property="userId"/>
 		<result column="user_pwd" property="userPwd"/>
+		<result column="user_status_code" property="userStatusCode"/>
 		<collection property="userAuth" ofType="kr.wrightbrothers.apps.user.dto.UserAuthDto">
 			<result column="auth_code" property="authCode"/>
 			<result column="partner_code" property="partnerCode"/>
