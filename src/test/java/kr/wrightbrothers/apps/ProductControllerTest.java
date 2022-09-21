@@ -706,4 +706,45 @@ class ProductControllerTest extends BaseControllerTests {
                         .build())
                 .build();
     }
+
+
+    @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @DisplayName("상품 상태 일괄 변경")
+    void updateProductStatus() throws Exception {
+        // 변경 요청 바디 생성
+        StatusUpdateDto statusParam = StatusUpdateDto.builder()
+                .productCodeList(new String[]{productDto.getProduct().getProductCode()})
+                .statusType("DP")
+                .statusValue("Y")
+                .build();
+
+        // 일괄 변경 API 테스트
+        mockMvc.perform(patch("/v1/products")
+                        .header(AUTH_HEADER, JWT_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(statusParam))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.WBCommon.state").value("S"))
+                .andDo(
+                        document("product-status",
+                                requestDocument(),
+                                responseDocument(),
+                                requestHeaders(
+                                        headerWithName(AUTH_HEADER).description("JWT 토큰")
+                                ),
+                                relaxedRequestFields(
+                                        fieldWithPath("productCodeList").type(JsonFieldType.ARRAY).description("변경 상품 코드").attributes(key("etc").value("")),
+                                        fieldWithPath("statusType").type(JsonFieldType.STRING).description("상품 변경 구분").attributes(key("etc").value("DP 노출 여부, ST 상품 상태 코드")),
+                                        fieldWithPath("statusValue").type(JsonFieldType.STRING).description("상품 변경 값").attributes(key("etc").value("DP(Y 노출, N 미노출), ST(S01 판매시작, S08 판매종료, S02 예약중)"))
+                                ),
+                                responseFields(
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                )
+                ))
+        ;
+    }
+
 }

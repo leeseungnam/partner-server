@@ -1,11 +1,8 @@
 package kr.wrightbrothers.apps.product.service;
 
-import kr.wrightbrothers.apps.common.type.ProductStatusCode;
-import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.file.service.FileService;
 import kr.wrightbrothers.apps.product.dto.*;
-import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -25,6 +23,17 @@ public class ProductService {
     private final FileService fileService;
     private final ChangeInfoService changeInfoService;
 
+    /**
+     * 상품코드 자리수 11 자리
+     * 상품 코드 생성 조합 규칙
+     *
+     * 파트너 구분 코드 2자리 : PA
+     * 카테고리 그룹 코드 2자리
+     * 정산 구분 코드 2자리 : FE
+     * 숫자 + 알파벳 5자리 : A0B0H
+     *
+     * 예: PABFFEA0B0H
+     */
     public String generateProductCode(String categoryTwoCode) {
         StringBuilder productCode = new StringBuilder();
         String productGroupCode = dao.selectOne(namespace + "findProductGroupCode", categoryTwoCode, PartnerKey.WBDataBase.Alias.Admin);
@@ -104,29 +113,34 @@ public class ProductService {
         dao.update(namespace + "mergeInfoNotice", paramDto.getInfoNotice());
         // 안내 정보
         dao.update(namespace + "mergeGuide", paramDto.getGuide());
-        // 상품 상태 변경 이력
+        // 상품 변경 이력
         changeInfoService.insertChangeInfo(paramDto.toChangeInfo());
         // 임시저장 파일 AWS S3 업로드
         fileService.s3FileUpload(paramDto.getFileList(), WBKey.Aws.A3.Product_Img_Path + paramDto.getProduct().getProductCode(), true);
     }
 
-    public void validStatusChange(String productNo, String changeStatusCode) {
-        String currentStatusCode = dao.selectOne(namespace + "findProductStatus", productNo);
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Default)
+    public void updateProductStatus(StatusUpdateDto paramDto) {
+        // 이력정보 등록
+        Arrays.stream(paramDto.getProductCodeList())
+                .forEach(productCode -> {
+                    String currentStatus = dao.selectOne(namespace + "findProductStatus", productCode);
+                    // 상품 변경 이력
+                    changeInfoService.insertChangeInfo(
+                            paramDto.toChangeInfo(
+                                    productCode,
+                                    "DP".equals(paramDto.getStatusType()) ? currentStatus : paramDto.getStatusValue()
+                            )
+                    );
+                });
 
-        switch (ProductStatusCode.of(changeStatusCode)) {
-            case SALE:
-                if (!(
-                        ProductStatusCode.END_OF_SALE.getCode().equals(currentStatusCode) ||
-                                ProductStatusCode.RESERVATION.getCode().equals(changeStatusCode)
-                    ))
-                    throw new WBBusinessException(ErrorCode.VALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매종료/예약중인"});
-            case END_OF_SALE:
-                if (!ProductStatusCode.SALE.getCode().equals(changeStatusCode))
-                    throw new WBBusinessException(ErrorCode.VALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매중인"});
-            case RESERVATION:
-                if (!ProductStatusCode.SALE.getCode().equals(changeStatusCode))
-                    throw new WBBusinessException(ErrorCode.VALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매중인"});
+        // 상태값 변경
+        if ("DP".equals(paramDto.getStatusType())) {
+            dao.update(namespace + "bulkUpdateProductDisplay", paramDto);
+            return;
         }
+
+        dao.update(namespace + "bulkUpdateProductStatus", paramDto);
     }
 
 }

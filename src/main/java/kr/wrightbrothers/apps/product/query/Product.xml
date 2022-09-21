@@ -25,6 +25,13 @@
 		 where product_code = #{productCode}
 	</select>
 
+	<select id="findProductDisplayFlag" parameterType="java.lang.String" resultType="java.lang.String">
+		select
+		    display_flag
+		  from product_sell_info
+		 where product_code = #{productCode}
+	</select>
+
 	<select id="findProductList" parameterType="kr.wrightbrothers.apps.product.dto.ProductListDto$Param" resultType="kr.wrightbrothers.apps.product.dto.ProductListDto$Response">
 		select
 		    p.product_code,
@@ -553,5 +560,27 @@
 		  from product_guide
 		 where product_code = #{productCode}
 	</select>
+
+	<update id="bulkUpdateProductDisplay" parameterType="kr.wrightbrothers.apps.product.dto.StatusUpdateDto">
+		update product_sell_info
+		   set display_flag	  = #{statusValue},
+		       update_user_id = #{userId},
+		       update_date	  = now()
+		 where 1 = 1
+		<foreach collection="productCodeList" item="item" index="index" open="and product_code in (" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+
+	<update id="bulkUpdateProductStatus" parameterType="kr.wrightbrothers.apps.product.dto.StatusUpdateDto">
+		update product_sell_info
+		   set product_status_code = #{statusValue},
+		       update_user_id	   = #{userId},
+		       update_date		   = now()
+		 where 1 = 1
+		<foreach collection="productCodeList" item="item" index="index" open="and product_code in (" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
 
 </mapper>

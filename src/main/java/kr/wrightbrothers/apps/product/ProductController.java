@@ -1,9 +1,6 @@
 package kr.wrightbrothers.apps.product;
 
-import kr.wrightbrothers.apps.product.dto.ProductFindDto;
-import kr.wrightbrothers.apps.product.dto.ProductInsertDto;
-import kr.wrightbrothers.apps.product.dto.ProductListDto;
-import kr.wrightbrothers.apps.product.dto.ProductUpdateDto;
+import kr.wrightbrothers.apps.product.dto.*;
 import kr.wrightbrothers.apps.product.service.ProductService;
 import kr.wrightbrothers.apps.sign.dto.UserDetailDto;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
@@ -98,6 +95,19 @@ public class ProductController extends WBController {
 
         // 상품정보 수정
         productService.updateProduct(paramDto);
+
+        return noneDataResponse();
+    }
+
+    @PatchMapping("/products")
+    public WBModel updateProductStatus(@RequestBody StatusUpdateDto paramDto,
+                                       @AuthenticationPrincipal UserPrincipal user) {
+        // Security Custom UserDetail 객체를 통해 파트너 코드, 아이디 정보 추출
+        paramDto.setUserId(user.getUsername());
+        paramDto.setPartnerCode(user.getUserAuth().getPartnerCode());
+
+        // 상품 일괄 상태 변경
+        productService.updateProductStatus(paramDto);
 
         return noneDataResponse();
     }

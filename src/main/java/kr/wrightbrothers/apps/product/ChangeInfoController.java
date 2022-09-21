@@ -30,17 +30,5 @@ public class ChangeInfoController extends WBController {
                 ));
     }
 
-    @PatchMapping("/products")
-    public WBModel updateProductStatus(@RequestBody StatusUpdateDto paramDto,
-                                       @AuthenticationPrincipal UserPrincipal user) {
-        // Security Custom UserDetail 객체를 통해 파트너 코드, 아이디 정보 추출
-        paramDto.setUserId(user.getUsername());
-        paramDto.setPartnerCode(user.getUserAuth().getPartnerCode());
-
-        // 상품 일괄 상태 변경
-        changeInfoService.updateProductStatus(paramDto);
-
-        return noneDataResponse();
-    }
 
 }

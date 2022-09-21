@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.aop;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.wrightbrothers.apps.common.type.ProductStatusCode;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.product.dto.ProductAuthDto;
 import kr.wrightbrothers.apps.product.dto.StatusUpdateDto;
@@ -37,6 +38,55 @@ public class ProductAop {
         }
     }
 
+    /**
+     * 상품 전시 여부에 대한 변경 유효성 체크
+     *
+     * @param productNo 상품코드
+     * @param changeDisplayFlag 변경 전시 여부
+     */
+    private void validDisplayChange(String productNo, String changeDisplayFlag) {
+        if (changeDisplayFlag.equals(dao.selectOne(namespace + "findProductDisplayFlag", productNo))) {
+            log.error("Product Display Change Error.");
+            log.error("ProductCode::{}, ChangeDisplayFlag::{}", productNo, changeDisplayFlag);
+            throw new WBBusinessException(
+                    ErrorCode.VALID_PRODUCT_DISPLAY.getErrCode(),
+                    new String[]{changeDisplayFlag.equals("Y") ? "미노출" : "노출"}
+            );
+        }
+
+    }
+
+    /**
+     * 상품 상태 값 변경 유효성 체크
+     *
+     * 상품 판매 : 판매종료 / 예약 중 상태에서만 변경 가능
+     * 판매 종료, 예약 중 : 판매중인 상태에서만 변경 가능
+     *
+     * @param productNo 상품코드
+     * @param changeStatusCode 변경 상태코드
+     */
+    private void validStatusChange(String productNo, String changeStatusCode) {
+        // 현재 상품 상태 코드
+        String currentStatusCode = dao.selectOne(namespace + "findProductStatus", productNo);
+        log.debug("Product Current Status::{}", currentStatusCode);
+        log.debug("Product Change Status::{}", changeStatusCode);
+
+        switch (ProductStatusCode.of(changeStatusCode)) {
+            case SALE:
+                if (!(
+                        ProductStatusCode.END_OF_SALE.getCode().equals (currentStatusCode) ||
+                                ProductStatusCode.RESERVATION.getCode().equals(changeStatusCode)
+                ))
+                    throw new WBBusinessException(ErrorCode.VALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매종료/예약중인"});
+            case END_OF_SALE:
+                if (!ProductStatusCode.SALE.getCode().equals(changeStatusCode))
+                    throw new WBBusinessException(ErrorCode.VALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매중인"});
+            case RESERVATION:
+                if (!ProductStatusCode.SALE.getCode().equals(changeStatusCode))
+                    throw new WBBusinessException(ErrorCode.VALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매중인"});
+        }
+    }
+
     @Before(value =
             "execution(* kr.wrightbrothers.apps.product.service.*Service.update*(..)) ||" +
             "execution(* kr.wrightbrothers.apps.product.service.*Service.findProduct(..))"
@@ -67,6 +117,34 @@ public class ProductAop {
                     .partnerCode(object.getString("partnerCode"))
                     .productCode(object.getString("productCode"))
                     .build());
+    }
+
+    @Before(value = "execution(* kr.wrightbrothers.apps.product.service.*Service.update*(..))")
+    public void productStatusCheck(JoinPoint joinPoint) throws Exception {
+        JSONObject object = new JSONObject(JsonUtil.ToString(Arrays.stream(joinPoint.getArgs()).findFirst().orElseThrow()));
+
+        // 상품 상태 / 노출 일괄 변경 유효성 체크
+        if (object.has("productCodeList"))
+            Arrays.stream(new ObjectMapper()
+                            .convertValue(Arrays.stream(joinPoint.getArgs()).findFirst().orElseThrow(), StatusUpdateDto.class)
+                            .getProductCodeList()
+                    )
+                    .forEach(productCode -> {
+                        // 노출 상태 변경
+                        if (object.getString("statusType").equals("DP")) {
+                            validDisplayChange(productCode, object.getString("statusValue"));
+                            return;
+                        }
+
+                        // 판매 상태 변경
+                        validStatusChange(productCode, object.getString("statusValue"));
+                    });
+        // 상품 상태 변경 유효성 체크
+        else if (object.has("product"))
+            validStatusChange(
+                    object.getJSONObject("product").getString("productCode"),
+                    object.getJSONObject("sellInfo").getString("productStatusCode")
+            );
     }
 
 }
