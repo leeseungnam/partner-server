@@ -18,29 +18,31 @@ public class DeliveryDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Delivery {
-        @NotBlank
+        @NotBlank(message = "배송방법")
         private String deliveryType;
-        @NotBlank
+        @NotBlank(message = "묶음배송")
         private String deliveryBundleFlag;
-        @NotBlank
+        @NotBlank(message = "배송비 설정")
         private String chargeType;
-        @NotNull
+        @NotNull(message = "기본 배송비")
         @Min(value = 100, message = "기본 배송비")
         @Max(value = 100000000, message = "기본 배송비")
         private Integer chargeBase;
         private Long termsFreeCharge;
-        @NotBlank
+        @NotBlank(message = "결제방식")
         private String paymentType;
-        @NotBlank
+        @NotBlank(message = "제주/도서산간 추가 배송비")
         private String surchargeFlag;
         private String areaCode;
         private Integer surchargeJejudo;
         private Integer surchargeIsolated;
-        @NotBlank
+        @NotBlank(message = "출고지")
         private String unstoringAddress;
-        @NotBlank
+        @NotBlank(message = "반품지")
         private String returnAddress;
-        @NotNull
+        @NotNull(message = "교환배송비")
+        private Integer exchangeCharge;
+        @NotNull(message = "반품배송비(편도)")
         private Integer returnCharge;
         private String returnDeliveryCompanyCode;
     }

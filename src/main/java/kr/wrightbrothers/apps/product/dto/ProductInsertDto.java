@@ -10,6 +10,7 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import org.springframework.util.ObjectUtils;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -19,15 +20,22 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductInsertDto {
-    @NotNull
+    @Valid
+    @NotNull(message = "상품 정보")
     private ProductDto.ReqBody product;         // 상품 기본 정보
     private BasicSpecDto.ReqBody basicSpec;     // 기본 스펙 정보
-    @NotNull
+    @Valid
+    @NotNull(message = "판매 정보")
     private SellInfoDto.ReqBody sellInfo;       // 판매 정보
     private List<OptionDto.ReqBody> optionList; // 옵션 정보
-    @NotNull
+    @Valid
+    @NotNull(message = "배송 정보")
     private DeliveryDto.ReqBody delivery;       // 배송 정보
+    @Valid
+    @NotNull(message = "상품 정보 고시")
     private InfoNoticeDto.ReqBody infoNotice;   // 상품 정보 고시
+    @Valid
+    @NotNull(message = "안내 사항 정보")
     private GuideDto.ReqBody guide;             // 안내사항 정보
     private List<FileUpdateDto> fileList;       // 상품 등록 이미지
 

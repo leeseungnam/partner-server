@@ -1,19 +1,16 @@
 package kr.wrightbrothers.apps.product;
 
-import kr.wrightbrothers.apps.product.dto.ProductFindDto;
-import kr.wrightbrothers.apps.product.dto.ProductInsertDto;
-import kr.wrightbrothers.apps.product.dto.ProductListDto;
-import kr.wrightbrothers.apps.product.dto.ProductUpdateDto;
+import kr.wrightbrothers.apps.product.dto.*;
 import kr.wrightbrothers.apps.product.service.ProductService;
-import kr.wrightbrothers.apps.sign.dto.UserDetailDto;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/v1")
@@ -60,7 +57,7 @@ public class ProductController extends WBController {
     }
 
     @PostMapping("/products")
-    public WBModel insertProduct(@RequestBody ProductInsertDto paramDto,
+    public WBModel insertProduct(@Valid @RequestBody ProductInsertDto paramDto,
                                  @AuthenticationPrincipal UserPrincipal user) {
         // Security Custom UserDetail 객체를 통해 파트너 코드, 아이디 정보 추출
         paramDto.setUserId(user.getUsername());
@@ -89,7 +86,7 @@ public class ProductController extends WBController {
     }
 
     @PutMapping("/products")
-    public WBModel updateProduct(@RequestBody ProductUpdateDto paramDto,
+    public WBModel updateProduct(@Valid @RequestBody ProductUpdateDto paramDto,
                                  @AuthenticationPrincipal UserPrincipal user) {
         // Security Custom UserDetail 객체를 통해 파트너 코드, 아이디 정보 추출
         paramDto.setUserId(user.getUsername());
@@ -98,6 +95,19 @@ public class ProductController extends WBController {
 
         // 상품정보 수정
         productService.updateProduct(paramDto);
+
+        return noneDataResponse();
+    }
+
+    @PatchMapping("/products")
+    public WBModel updateProductStatus(@Valid @RequestBody StatusUpdateDto paramDto,
+                                       @AuthenticationPrincipal UserPrincipal user) {
+        // Security Custom UserDetail 객체를 통해 파트너 코드, 아이디 정보 추출
+        paramDto.setUserId(user.getUsername());
+        paramDto.setPartnerCode(user.getUserAuth().getPartnerCode());
+
+        // 상품 일괄 상태 변경
+        productService.updateProductStatus(paramDto);
 
         return noneDataResponse();
     }

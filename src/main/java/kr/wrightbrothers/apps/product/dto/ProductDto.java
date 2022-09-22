@@ -6,6 +6,7 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 public class ProductDto {
@@ -30,8 +31,8 @@ public class ProductDto {
         private String categoryThrCode;     // 소 카테고리 코드
         @NotBlank(message = "소 카테고리")
         private String categoryThrName;     // 소 카테고리 이름
-        @NotBlank(message = "상품 이름")
-        @Size(min = 2, max = 50, message = "상품 이름")
+        @NotBlank(message = "상품명")
+        @Size(min = 2, max = 50, message = "상품명")
         private String productName;         // 상품 이름
         @NotBlank(message = "브랜드")
         private String brandNo;             // 브랜드 번호
@@ -45,6 +46,7 @@ public class ProductDto {
         private String productBarcode;      // 상품 바코드
         @NotBlank(message = "상품 이미지")
         private String productFileNo;       // 상품 파일 번호
+        @NotBlank(message = "상품 상세설명")
         private String productDescription;  // 상품 상세 설명
     }
 

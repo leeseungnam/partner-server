@@ -46,8 +46,10 @@ public class ProductListDto {
         private String categoryTwoName;         // 중 카테고리
         private String categoryThrName;         // 소 카테고리
         private String productName;             // 상품명
-        private String productStatus;           // 상품 상태
+        private String productStatusCode;       // 상품 상태 코드
+        private String productStatusName;       // 상품 상태 명
         private String displayFlag;             // 전시 상태
+        private String displayFlagName;         // 전시 상태 명
         private int productStockQty;            // 재고 수량
         private Long finalSellAmount;           // 판매가
         private String productOptionFlag;       // 옵션 여부
@@ -57,8 +59,8 @@ public class ProductListDto {
         private String createUserName;          // 등록자 이름
 
         // 상품 상태 ENUM 처리
-        public void setProductStatus(String productStatus) {
-            this.productStatus = ProductStatusCode.of(productStatus).getName();
+        public void setProductStatusName(String productStatusName) {
+            this.productStatusName = ProductStatusCode.of(productStatusName).getName();
         }
     }
 

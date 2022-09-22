@@ -67,6 +67,7 @@
 		                              return_zip_code,
 		                              return_address,
 		                              return_address_detail,
+		                              exchange_charge,
 		                              return_charge,
 		                              return_delivery_company_code,
 		                              create_user_id,
@@ -88,6 +89,7 @@
 			   #{delivery.returnZipCode},
 			   #{delivery.returnAddress},
 			   #{delivery.returnAddressDetail},
+		       #{delivery.exchangeCharge},
 			   #{delivery.returnCharge},
 			   #{delivery.returnDeliveryCompanyCode},
 			   #{userId},
@@ -112,6 +114,7 @@
 			   return_zip_code					= #{delivery.returnZipCode},
 			   return_address					= #{delivery.returnAddress},
 			   return_address_detail			= #{delivery.returnAddressDetail},
+			   exchange_charge					= #{delivery.exchangeCharge},
 			   return_charge					= #{delivery.returnCharge},
 			   return_delivery_company_code		= #{delivery.returnDeliveryCompanyCode},
 			   update_user_id					= #{userId},
@@ -159,6 +162,7 @@
             d.return_zip_code,
             d.return_address,
             d.return_address_detail,
+            d.exchange_charge,
             d.return_charge,
             d.return_delivery_company_code
 		  from template t
@@ -190,6 +194,7 @@
 			<result column="return_zip_code" property="returnZipCode" />
 			<result column="return_address" property="returnAddress" />
 			<result column="return_address_detail" property="returnAddressDetail" />
+			<result column="exchange_charge" property="exchangeCharge" />
 			<result column="return_charge" property="returnCharge" />
 			<result column="return_delivery_company_code" property="returnDeliveryCompanyCode" />
 		</association>

@@ -18,6 +18,20 @@
 		 where cagy_cd = #{categoryCode}
 	</select>
 
+	<select id="findProductStatus" parameterType="java.lang.String" resultType="java.lang.String">
+		select
+		    product_status_code
+		  from product_sell_info
+		 where product_code = #{productCode}
+	</select>
+
+	<select id="findProductDisplayFlag" parameterType="java.lang.String" resultType="java.lang.String">
+		select
+		    display_flag
+		  from product_sell_info
+		 where product_code = #{productCode}
+	</select>
+
 	<select id="findProductList" parameterType="kr.wrightbrothers.apps.product.dto.ProductListDto$Param" resultType="kr.wrightbrothers.apps.product.dto.ProductListDto$Response">
 		select
 		    p.product_code,
@@ -26,8 +40,10 @@
 		    p.category_two_name,
 		    p.category_thr_name,
 		    p.product_name,
-		    ps.product_status_code as product_status,
-		    if(ps.display_flag = 'Y', '노출', '미노출') as display_flag,
+		    ps.product_status_code,
+		    ps.product_status_code as product_status_name,
+			ps.display_flag,
+		    if(ps.display_flag = 'Y', '노출', '미노출') as display_name,
 		    ps.product_stock_qty,
 		    ps.final_sell_amount,
 			ps.product_option_flag,
@@ -43,10 +59,10 @@
 		 where p.partner_code = #{partnerCode}
 		<choose>
 			<when test="rangeType == 'PRODUCT'.toString()">
-		   and p.create_date between concat(#{startDay}, '00:00:00.0') and concat(#{endDay}, '23:59:59.9')
+		   and p.create_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
 			</when>
 			<when test="rangeType == 'SALE'.toString()">
-		   and ps.product_sell_start_date between concat(#{startDay}, '00:00:00.0') and concat(#{endDay}, '23:59:59.9')
+		   and ps.product_sell_start_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
 			</when>
 		</choose>
 		-- 전시상태
@@ -224,6 +240,7 @@
 		                              discount_flag,
 		                              discount_type,
 		                              discount_amount,
+		                              supply_amount,
 		                              final_sell_amount,
 									  display_flag,
 		                              product_option_flag,
@@ -236,6 +253,7 @@
 			   #{discountFlag},
 			   #{discountType},
 			   #{discountAmount},
+		       #{supplyAmount},
 			   #{finalSellAmount},
 		       #{displayFlag},
 		       #{productOptionFlag},
@@ -249,6 +267,7 @@
 			discount_flag		= #{discountFlag},
 			discount_type		= #{discountType},
 			discount_amount		= #{discountAmount},
+		    supply_amount		= #{supplyAmount},
 			final_sell_amount	= #{finalSellAmount},
 			display_flag		= #{displayFlag},
 		    product_option_flag	= #{productOptionFlag},
@@ -297,6 +316,7 @@
 		                             surcharge_isolated,
 		                             unstoring_address,
 		                             return_address,
+		                             exchange_charge,
 		                             return_charge,
 		                             return_delivery_company_code,
 		                             create_user_id,
@@ -314,6 +334,7 @@
 			   #{surchargeIsolated},
 			   #{unstoringAddress},
 			   #{returnAddress},
+		       #{exchangeCharge},
 			   #{returnCharge},
 			   #{returnDeliveryCompanyCode},
 			   #{userId},
@@ -332,6 +353,7 @@
 			surcharge_isolated				= #{surchargeIsolated},
 			unstoring_address				= #{unstoringAddress},
 			return_address					= #{returnAddress},
+		    exchange_charge					= #{exchangeCharge},
 			return_charge					= #{returnCharge},
 			return_delivery_company_code	= #{returnDeliveryCompanyCode},
 		    update_user_id					= #{userId},
@@ -481,6 +503,7 @@
             discount_amount,
             display_flag,
             product_option_flag,
+            supply_amount,
             final_sell_amount,
             product_status_code,
             product_stock_qty
@@ -513,6 +536,7 @@
             surcharge_isolated,
             unstoring_address,
             return_address,
+            exchange_charge,
             return_charge,
             return_delivery_company_code
 		  from product_delivery
@@ -546,5 +570,31 @@
 		  from product_guide
 		 where product_code = #{productCode}
 	</select>
+
+	<update id="bulkUpdateProductDisplay" parameterType="kr.wrightbrothers.apps.product.dto.StatusUpdateDto">
+		<if test="productCodeList.length != 0">
+		update product_sell_info
+		   set display_flag	  = #{statusValue},
+		       update_user_id = #{userId},
+		       update_date	  = now()
+		 where 1 = 1
+			<foreach collection="productCodeList" item="item" index="index" open="and product_code in (" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</update>
+
+	<update id="bulkUpdateProductStatus" parameterType="kr.wrightbrothers.apps.product.dto.StatusUpdateDto">
+		<if test="productCodeList.length != 0">
+		update product_sell_info
+		   set product_status_code = #{statusValue},
+		       update_user_id	   = #{userId},
+		       update_date		   = now()
+		 where 1 = 1
+			<foreach collection="productCodeList" item="item" index="index" open="and product_code in (" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</update>
 
 </mapper>

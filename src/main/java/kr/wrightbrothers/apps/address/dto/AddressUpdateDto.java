@@ -8,6 +8,8 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
+import javax.validation.constraints.NotNull;
+
 @Getter
 @Setter
 @Jacksonized
@@ -15,6 +17,7 @@ import lombok.extern.jackson.Jacksonized;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddressUpdateDto extends AddressDto {
+    @NotNull(message = "주소록 번호")
     private Long addressNo;
     private String partnerCode;
     @JsonIgnore

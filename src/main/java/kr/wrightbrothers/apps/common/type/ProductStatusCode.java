@@ -13,10 +13,8 @@ import java.util.stream.Stream;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum ProductStatusCode {
     PRODUCT_INSPECTION("S06", "검수대기"),
-    WAIT_FOR_SALE("S05", "판매대기"),
     SALE("S01", "판매중"),
     RESERVATION("S02", "예약중"),
-    STOP_SALE("S04", "판매중지"),
     SOLD_OUT("S03", "판매완료"),
     END_OF_SALE("S08", "판매종료"),
     REJECT_INSPECTION("S10", "검수반려"),

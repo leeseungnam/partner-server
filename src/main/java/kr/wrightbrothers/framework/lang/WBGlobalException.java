@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.ObjectUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -81,29 +83,56 @@ public class WBGlobalException {
         log.error("EXCEPTION, {}", writer);
         log.error("===================================================");
 
-        // 세션 종료에 따른 매시지 처리
-        if (ex instanceof NullPointerException) {
-            HttpServletRequest request =
-                    ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
-            if (request.getAttribute(WBKey.JWTExpired) != null && (boolean) request.getAttribute(WBKey.JWTExpired)) {
-                request.removeAttribute(WBKey.JWTExpired);
-                return new ResponseEntity<>(
-                        exceptionResponse(3, WBKey.Message.Type.Notification),
-                        HttpStatus.OK
-                );
+        int errorCode = ErrorCode.INTERNAL_SERVER.getErrCode();
+        String[] convert = null;
+
+        // 접근 거부 메시지 처리
+        if (ex instanceof AccessDeniedException)
+            errorCode = ErrorCode.FORBIDDEN.getErrCode();
+
+        if (ex instanceof MethodArgumentNotValidException) {
+            BindingResult bindingResult = ((MethodArgumentNotValidException) ex).getBindingResult();
+            errorCode = ErrorCode.INVALID_PARAM.getErrCode();
+            convert = new String[]{bindingResult.getAllErrors().get(0).getDefaultMessage()};
+            // 금액 컴럼 Contains 적용 문자
+            String[] moneyParam = {"Amount", "Charge", "chargeBase"};
+
+            if ("Size".equals(bindingResult.getAllErrors().get(0).getCode())) {
+                errorCode = ErrorCode.INVALID_TEXT_SIZE.getErrCode();
+                convert = new String[]{
+                        bindingResult.getAllErrors().get(0).getDefaultMessage(),
+                        String.valueOf(Objects.requireNonNull(bindingResult.getAllErrors().get(0).getArguments())[2]),
+                        String.valueOf(Objects.requireNonNull(bindingResult.getAllErrors().get(0).getArguments())[1])
+                };
+            }
+
+            if ("Min".equals(bindingResult.getAllErrors().get(0).getCode())) {
+                errorCode = StringUtils.containsAny(Objects.requireNonNull(bindingResult.getFieldError()).getField(), moneyParam) ?
+                        ErrorCode.INVALID_MONEY_MIN.getErrCode() : ErrorCode.INVALID_NUMBER_MIN.getErrCode();
+                convert = new String[]{
+                        bindingResult.getAllErrors().get(0).getDefaultMessage(),
+                        String.valueOf(Objects.requireNonNull(bindingResult.getAllErrors().get(0).getArguments())[1])
+                };
+            }
+
+            if ("Max".equals(bindingResult.getAllErrors().get(0).getCode())) {
+                errorCode = StringUtils.containsAny(Objects.requireNonNull(bindingResult.getFieldError()).getField(), moneyParam) ?
+                        ErrorCode.INVALID_MONEY_MAX.getErrCode() : ErrorCode.INVALID_NUMBER_MAX.getErrCode();
+                convert = new String[]{
+                        bindingResult.getAllErrors().get(0).getDefaultMessage(),
+                        String.valueOf(Objects.requireNonNull(bindingResult.getAllErrors().get(0).getArguments())[1])
+                };
+            }
+
+            // 정규표현식에 대한 유효성 에러는 해당 에러 message 처리 한다.
+            if ("Pattern".equals(bindingResult.getAllErrors().get(0).getCode())) {
+                errorCode = 9999;
+                convert = new String[]{bindingResult.getAllErrors().get(0).getDefaultMessage()};
             }
         }
 
-        // 접근 거부 메시지 처리
-        if (ex instanceof AccessDeniedException) {
-            return new ResponseEntity<>(
-                    exceptionResponse(ErrorCode.FORBIDDEN.getErrCode(), WBKey.Message.Type.Error),
-                    HttpStatus.OK
-            );
-        }
-
         return new ResponseEntity<>(
-                exceptionResponse(0, WBKey.Message.Type.Error),
+                exceptionResponse(errorCode, WBKey.Message.Type.Error, convert),
                 HttpStatus.OK
         );
     }
