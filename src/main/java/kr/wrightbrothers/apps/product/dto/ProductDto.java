@@ -45,6 +45,7 @@ public class ProductDto {
         private String productBarcode;      // 상품 바코드
         @NotBlank(message = "상품 이미지")
         private String productFileNo;       // 상품 파일 번호
+        @NotBlank(message = "상품 상세설명")
         private String productDescription;  // 상품 상세 설명
     }
 

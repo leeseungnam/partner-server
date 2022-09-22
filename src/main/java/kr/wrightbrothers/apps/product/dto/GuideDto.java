@@ -5,6 +5,8 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
+import javax.validation.constraints.NotBlank;
+
 public class GuideDto {
 
     @Data
@@ -13,9 +15,13 @@ public class GuideDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Guide {
+        @NotBlank(message = "안내 사항")
         private String productGuide;
+        @NotBlank(message = "배송 안내")
         private String deliveryGuide;
+        @NotBlank(message = "교환/반품 안내")
         private String exchangeReturnGuide;
+        @NotBlank(message = "A/S 안내")
         private String asGuide;
     }
 
