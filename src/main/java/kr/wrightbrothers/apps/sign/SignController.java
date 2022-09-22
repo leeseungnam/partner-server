@@ -1,10 +1,11 @@
 package kr.wrightbrothers.apps.sign;
 
 import kr.wrightbrothers.apps.common.config.security.jwt.JwtTokenProvider;
-import kr.wrightbrothers.apps.common.util.TokenUtil;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.common.util.TokenUtil;
 import kr.wrightbrothers.apps.sign.dto.SignDto;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
+import kr.wrightbrothers.apps.sign.service.SignService;
 import kr.wrightbrothers.apps.user.dto.UserAuthDto;
 import kr.wrightbrothers.apps.user.service.UserService;
 import kr.wrightbrothers.framework.support.WBController;
@@ -18,7 +19,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,12 +34,13 @@ import java.util.List;
 public class SignController extends WBController {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final SignService signService;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final static long REFRESH_TOKEN_VALIDATION_SECOND = 60 * 60 * 2;
     private final UserService userService;
 
     @PostMapping("/login")
-    public WBModel signIn(@RequestBody SignDto paramDto, HttpServletResponse response) {
+    public WBModel signIn(@RequestBody SignDto paramDto, HttpServletRequest request, HttpServletResponse response) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(paramDto.getUserId(), paramDto.getUserPwd());
 
@@ -61,6 +62,53 @@ public class SignController extends WBController {
         response.addCookie(TokenUtil.createCookie(PartnerKey.Jwt.Alias.REFRESH_TOKEN, refreshToken, REFRESH_TOKEN_VALIDATION_SECOND));
 
         return  wbResponse;
+    }
+/*
+
+    @PostMapping("/logout")
+    public WBModel signOut(HttpServletRequest request
+            , HttpServletResponse response
+            , @RequestHeader(PartnerKey.Jwt.Header.AUTHORIZATION) String accessToken
+            , @CookieValue(PartnerKey.Jwt.Alias.REFRESH_TOKEN) String refreshToke
+            , @AuthenticationPrincipal UserPrincipal userPrincipal
+    ) {
+        String [] parts = JwtUtil.splitJwt(accessToken);
+        JSONObject payload = new JSONObject(JwtUtil.base64Decode(parts[1]));
+
+        Date expireDate =  new Date(payload.getLong("exp") * 1000);
+
+        log.info("[WBLogoutHandler]::logout::blacklist proc");
+
+        // insert blacklist token
+        signService.logout(
+                BlackListDto.builder()
+                        .accessToken(accessToken)
+                        .expireDate(expireDate.toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDateTime().toString())
+                        .build()
+                , RefreshTokenDto.builder()
+                        .userId(userPrincipal.getUsername())
+                        .refreshToken("")
+                        .build()
+                );
+
+        // auth clear
+        SecurityContext context = SecurityContextHolder.getContext();
+        SecurityContextHolder.clearContext();
+        context.setAuthentication((Authentication)null);
+
+        //remove token
+        response.addCookie(TokenUtil.removeCookie(request, PartnerKey.Jwt.Alias.REFRESH_TOKEN));
+        return  noneDataResponse();
+    }
+*/
+
+    @GetMapping("/logout/response")
+    public WBModel signOutSuccess(HttpServletRequest request
+            , HttpServletResponse response
+    ) {
+        return  noneDataResponse();
     }
 
     // [todo] old token 파기

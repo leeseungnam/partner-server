@@ -24,14 +24,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class WBUserDetailService implements UserDetailsService {
 
-    private final WBCommonDao dao;
-    private final String namespace = "kr.wrightbrothers.apps.sign.query.Sign.";
+    private final SignService signService;
 
     @Override
     public UserDetails loadUserByUsername(final String userId) throws UsernameNotFoundException {
-        UserDetailDto user = dao.selectOne(namespace + "loadUserByUsername", userId);
 
-        // [todo] 분리
+        UserDetailDto user = signService.loadUserByUsername(userId);
+
         if(ObjectUtils.isEmpty(user)) throw new UsernameNotFoundException("입력하신 이메일주소 및 비밀번호를 확인해주세요.");
 
         if(PartnerKey.Code.User.Status.DROP_REQUEST.equals(user.getUserStatusCode())) {

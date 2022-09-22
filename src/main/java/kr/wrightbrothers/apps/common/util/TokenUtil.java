@@ -3,6 +3,7 @@ package kr.wrightbrothers.apps.common.util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -63,13 +64,24 @@ public class TokenUtil {
         return cookie;
     }
 
-    public static Cookie getCookie(HttpServletRequest req, String cookieName){
-        final Cookie[] cookies = req.getCookies();
+    public static Cookie getCookie(HttpServletRequest request, String cookieName){
+        final Cookie[] cookies = request.getCookies();
         if(cookies==null) return null;
         for(Cookie cookie : cookies){
             if(cookie.getName().equals(cookieName))
                 return cookie;
         }
         return null;
+    }
+
+    public static Cookie removeCookie(HttpServletRequest request, String cookieName) {
+        Cookie cookie = new Cookie(cookieName, (String)null);
+        String contextPath = request.getContextPath();
+        String cookiePath = StringUtils.hasText(contextPath) ? contextPath : "/";
+        cookie.setPath(cookiePath);
+        cookie.setMaxAge(0);
+        cookie.setSecure(request.isSecure());
+
+        return cookie;
     }
 }
