@@ -49,7 +49,7 @@ public class ProductAop {
             log.error("Product Display Change Error.");
             log.error("ProductCode::{}, ChangeDisplayFlag::{}", productNo, changeDisplayFlag);
             throw new WBBusinessException(
-                    ErrorCode.VALID_PRODUCT_DISPLAY.getErrCode(),
+                    ErrorCode.INVALID_PRODUCT_DISPLAY.getErrCode(),
                     new String[]{changeDisplayFlag.equals("Y") ? "미노출" : "노출"}
             );
         }
@@ -77,13 +77,13 @@ public class ProductAop {
                         ProductStatusCode.END_OF_SALE.getCode().equals (currentStatusCode) ||
                                 ProductStatusCode.RESERVATION.getCode().equals(changeStatusCode)
                 ))
-                    throw new WBBusinessException(ErrorCode.VALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매종료/예약중인"});
+                    throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매종료/예약중인"});
             case END_OF_SALE:
                 if (!ProductStatusCode.SALE.getCode().equals(changeStatusCode))
-                    throw new WBBusinessException(ErrorCode.VALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매중인"});
+                    throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매중인"});
             case RESERVATION:
                 if (!ProductStatusCode.SALE.getCode().equals(changeStatusCode))
-                    throw new WBBusinessException(ErrorCode.VALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매중인"});
+                    throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매중인"});
         }
     }
 

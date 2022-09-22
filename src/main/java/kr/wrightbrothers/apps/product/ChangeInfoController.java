@@ -1,7 +1,6 @@
 package kr.wrightbrothers.apps.product;
 
 import kr.wrightbrothers.apps.product.dto.ChangeInfoListDto;
-import kr.wrightbrothers.apps.product.dto.StatusUpdateDto;
 import kr.wrightbrothers.apps.product.service.ChangeInfoService;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import kr.wrightbrothers.framework.support.WBController;

@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/v1")
 @RequiredArgsConstructor
@@ -36,7 +38,7 @@ public class AddressController extends WBController {
     }
 
     @PostMapping("/addresses")
-    public WBModel insertAddress(@RequestBody AddressInsertDto paramDto,
+    public WBModel insertAddress(@Valid @RequestBody AddressInsertDto paramDto,
                                  @AuthenticationPrincipal UserPrincipal user) {
         // Security Custom UserDetail 객체를 통해 파트너 코드, 아이디 정보 추출
         paramDto.setUserId(user.getUsername());
@@ -61,7 +63,7 @@ public class AddressController extends WBController {
     }
 
     @PutMapping("/addresses")
-    public WBModel updateAddress(@RequestBody AddressUpdateDto paramDto,
+    public WBModel updateAddress(@Valid @RequestBody AddressUpdateDto paramDto,
                                  @AuthenticationPrincipal UserPrincipal user) {
         // Security Custom UserDetail 객체를 통해 파트너 코드, 아이디 정보 추출
         paramDto.setUserId(user.getUsername());

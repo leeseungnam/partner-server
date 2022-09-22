@@ -8,12 +8,15 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.validation.constraints.NotNull;
+
 @Getter
 @Jacksonized
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductUpdateDto extends ProductInsertDto {
+    @NotNull(message = "상품 코드")
     private String productCode;     // 상품 코드
     private String[] changeLogList; // 변경 로그
 

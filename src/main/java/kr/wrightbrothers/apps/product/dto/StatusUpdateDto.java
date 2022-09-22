@@ -7,14 +7,20 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class StatusUpdateDto {
+    @NotEmpty(message = "변경 상품 코드")
     private String[] productCodeList;   // 변경 상품 코드
     private String partnerCode;         // 스토어 코드
+    @NotBlank(message = "변경 구분")
     private String statusType;          // 변경 구분
+    @NotBlank(message = "변경 값")
     private String statusValue;         // 변경 값
 
     @JsonIgnore

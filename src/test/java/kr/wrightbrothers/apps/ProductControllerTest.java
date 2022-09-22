@@ -157,10 +157,10 @@ class ProductControllerTest extends BaseControllerTests {
                         .asPhone("02-000-0000")
                         .build())
                 .guide(GuideDto.ReqBody.builder()
-                        .productGuide("상품 안내 사항")
-                        .deliveryGuide("배송 안내 사항")
-                        .exchangeReturnGuide("교환/반품 안내 사항")
-                        .asGuide("A/S 안내")
+                        .productGuide("상품 안내 사항 ..............................")
+                        .deliveryGuide("배송 안내 사항 ..............................")
+                        .exchangeReturnGuide("교환/반품 안내 사항 ..............................")
+                        .asGuide("A/S 안내 ..............................")
                         .build())
                 .build();
 
@@ -688,7 +688,7 @@ class ProductControllerTest extends BaseControllerTests {
                         .deliveryType("D01")
                         .deliveryBundleFlag("N")
                         .chargeType("CT2")
-                        .chargeBase(3000)
+                        .chargeBase(100000)
                         .termsFreeCharge(10000000L)
                         .paymentType("P02")
                         .surchargeFlag("N")
@@ -709,10 +709,10 @@ class ProductControllerTest extends BaseControllerTests {
                         .asPhone("02-000-0000")
                         .build())
                 .guide(GuideDto.ReqBody.builder()
-                        .productGuide("상품 안내 사항")
-                        .deliveryGuide("배송 안내 사항")
-                        .exchangeReturnGuide("교환/반품 안내 사항")
-                        .asGuide("A/S 안내")
+                        .productGuide("상품 안내 사항 ..............................")
+                        .deliveryGuide("배송 안내 사항 ..............................")
+                        .exchangeReturnGuide("교환/반품 안내 사항 ..............................")
+                        .asGuide("A/S 안내 ..............................")
                         .build())
                 .build();
     }
