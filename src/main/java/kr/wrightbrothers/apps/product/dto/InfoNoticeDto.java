@@ -6,6 +6,7 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 public class InfoNoticeDto {
 
@@ -27,10 +28,12 @@ public class InfoNoticeDto {
         private String modelYear;
         @NotBlank(message = "출시 월")
         private String modelMonth;
+        @Size(min = 2, max = 50, message = "제조자(사)")
         @NotBlank(message = "제조자(사)")
         private String productMfr;
         private String detailSpec;
         private String qaStandard;
+        @Size(min = 2, max = 20, message = "AS 연락처")
         @NotBlank(message = "AS 연락처")
         private String asPhone;
     }

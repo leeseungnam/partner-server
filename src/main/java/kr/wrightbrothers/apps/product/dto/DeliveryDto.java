@@ -25,7 +25,6 @@ public class DeliveryDto {
         @NotBlank(message = "배송비 설정")
         private String chargeType;
         @NotNull(message = "기본 배송비")
-        @Min(value = 100, message = "기본 배송비")
         @Max(value = 100000000, message = "기본 배송비")
         private Integer chargeBase;
         private Long termsFreeCharge;
@@ -41,9 +40,12 @@ public class DeliveryDto {
         @NotBlank(message = "반품지")
         private String returnAddress;
         @NotNull(message = "교환배송비")
+        @Max(value = 10000000, message = "교환배송비")
         private Integer exchangeCharge;
         @NotNull(message = "반품배송비(편도)")
+        @Max(value = 10000000, message = "반품배송비(편도)")
         private Integer returnCharge;
+        @NotBlank(message = "반품/교환 택배사")
         private String returnDeliveryCompanyCode;
     }
 

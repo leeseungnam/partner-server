@@ -23,6 +23,7 @@ public class GuideDto {
         @Size(min = 30, max = 2000, message = "배송 안내")
         private String deliveryGuide;
         @NotBlank(message = "교환/반품 안내")
+        @Size(min = 30, max = 2000, message = "교환/반품 안내")
         private String exchangeReturnGuide;
         @NotBlank(message = "A/S 안내")
         private String asGuide;
