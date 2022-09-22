@@ -41,6 +41,8 @@ public class DeliveryDto {
         @NotBlank
         private String returnAddress;
         @NotNull
+        private Integer exchangeCharge;
+        @NotNull
         private Integer returnCharge;
         private String returnDeliveryCompanyCode;
     }

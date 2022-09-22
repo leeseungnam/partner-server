@@ -142,6 +142,7 @@ class ProductControllerTest extends BaseControllerTests {
                         .surchargeFlag("N")
                         .unstoringAddress("서울특별시 강남구 강남대로 154길 37, 주경빌딩 2층 (06035)")
                         .returnAddress("서울특별시 강남구 강남대로 154길 37, 주경빌딩 1층 (06035)")
+                        .exchangeCharge(100000)
                         .returnCharge(1000000)
                         .returnDeliveryCompanyCode("cjgls")
                         .build())
@@ -318,6 +319,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("sellInfo.discountFlag").type(JsonFieldType.STRING).description("할인 여부").attributes(key("etc").value("Y 설정, N 설정안함")),
                                         fieldWithPath("sellInfo.discountType").type(JsonFieldType.STRING).description("할인 구분").optional().attributes(key("etc").value("공통코드 000061")),
                                         fieldWithPath("sellInfo.discountAmount").type(JsonFieldType.STRING).description("할인 금액").optional().attributes(key("etc").value("")),
+                                        fieldWithPath("sellInfo.supplyAmount").type(JsonFieldType.NUMBER).description("공급 금액").optional().attributes(key("etc").value("")),
                                         fieldWithPath("sellInfo.finalSellAmount").type(JsonFieldType.NUMBER).description("판매가").attributes(key("etc").value("")),
                                         fieldWithPath("sellInfo.productStatusCode").type(JsonFieldType.STRING).description("상품상태").attributes(key("etc").value("")),
                                         fieldWithPath("sellInfo.displayFlag").type(JsonFieldType.STRING).description("전시상태").attributes(key("etc").value("")),
@@ -342,6 +344,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("delivery.surchargeIsolated").type(JsonFieldType.NUMBER).description("도서산간 추가 배송비").optional().attributes(key("etc").value("")),
                                         fieldWithPath("delivery.unstoringAddress").type(JsonFieldType.STRING).description("출고지").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.returnAddress").type(JsonFieldType.STRING).description("반품지").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.exchangeCharge").type(JsonFieldType.NUMBER).description("교환배송비").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.returnCharge").type(JsonFieldType.NUMBER).description("반품배송비(편도)").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.returnDeliveryCompanyCode").type(JsonFieldType.STRING).description("반품/교환 택배사 코드").attributes(key("etc").value("공통코드 000044")),
                                         fieldWithPath("infoNotice").type(JsonFieldType.OBJECT).description("상품 정보 고시").attributes(key("etc").value("")),
@@ -442,6 +445,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.sellInfo.discountFlag").type(JsonFieldType.STRING).description("할인 여부"),
                                         fieldWithPath("data.sellInfo.discountType").type(JsonFieldType.STRING).description("할인 구분").optional(),
                                         fieldWithPath("data.sellInfo.discountAmount").type(JsonFieldType.STRING).description("할인 금액").optional(),
+                                        fieldWithPath("data.sellInfo.supplyAmount").type(JsonFieldType.NUMBER).description("공급 금액").optional(),
                                         fieldWithPath("data.sellInfo.finalSellAmount").type(JsonFieldType.NUMBER).description("판매가"),
                                         fieldWithPath("data.sellInfo.productStatusCode").type(JsonFieldType.STRING).description("상품상태"),
                                         fieldWithPath("data.sellInfo.displayFlag").type(JsonFieldType.STRING).description("전시상태"),
@@ -466,6 +470,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.delivery.surchargeIsolated").type(JsonFieldType.NUMBER).description("도서산간 추가 배송비").optional(),
                                         fieldWithPath("data.delivery.unstoringAddress").type(JsonFieldType.STRING).description("출고지"),
                                         fieldWithPath("data.delivery.returnAddress").type(JsonFieldType.STRING).description("반품지"),
+                                        fieldWithPath("data.delivery.exchangeCharge").type(JsonFieldType.NUMBER).description("교환배송비"),
                                         fieldWithPath("data.delivery.returnCharge").type(JsonFieldType.NUMBER).description("반품배송비(편도)"),
                                         fieldWithPath("data.delivery.returnDeliveryCompanyCode").type(JsonFieldType.STRING).description("반품/교환 택배사 코드"),
                                         fieldWithPath("data.infoNotice").type(JsonFieldType.OBJECT).description("상품 정보 고시"),
@@ -558,6 +563,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("sellInfo.discountFlag").type(JsonFieldType.STRING).description("할인 여부").attributes(key("etc").value("Y 설정, N 설정안함")),
                                         fieldWithPath("sellInfo.discountType").type(JsonFieldType.STRING).description("할인 구분").optional().attributes(key("etc").value("공통코드 000061")),
                                         fieldWithPath("sellInfo.discountAmount").type(JsonFieldType.STRING).description("할인 금액").optional().attributes(key("etc").value("")),
+                                        fieldWithPath("sellInfo.supplyAmount").type(JsonFieldType.NUMBER).description("공급 금액").optional().attributes(key("etc").value("")),
                                         fieldWithPath("sellInfo.finalSellAmount").type(JsonFieldType.NUMBER).description("판매가").attributes(key("etc").value("")),
                                         fieldWithPath("sellInfo.productStatusCode").type(JsonFieldType.STRING).description("상품상태").attributes(key("etc").value("")),
                                         fieldWithPath("sellInfo.displayFlag").type(JsonFieldType.STRING).description("전시상태").attributes(key("etc").value("")),
@@ -582,6 +588,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("delivery.surchargeIsolated").type(JsonFieldType.NUMBER).description("도서산간 추가 배송비").optional().attributes(key("etc").value("")),
                                         fieldWithPath("delivery.unstoringAddress").type(JsonFieldType.STRING).description("출고지").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.returnAddress").type(JsonFieldType.STRING).description("반품지").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.exchangeCharge").type(JsonFieldType.NUMBER).description("교환배송비").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.returnCharge").type(JsonFieldType.NUMBER).description("반품배송비(편도)").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.returnDeliveryCompanyCode").type(JsonFieldType.STRING).description("반품/교환 택배사 코드").attributes(key("etc").value("공통코드 000044")),
                                         fieldWithPath("infoNotice").type(JsonFieldType.OBJECT).description("상품 정보 고시").attributes(key("etc").value("")),
@@ -685,6 +692,7 @@ class ProductControllerTest extends BaseControllerTests {
                         .surchargeFlag("N")
                         .unstoringAddress("서울특별시 강남구 강남대로 154길 37, 주경빌딩 2층 (06035)")
                         .returnAddress("서울특별시 강남구 강남대로 154길 37, 주경빌딩 1층 (06035)")
+                        .exchangeCharge(10000)
                         .returnCharge(1000000)
                         .returnDeliveryCompanyCode("cjgls")
                         .build())

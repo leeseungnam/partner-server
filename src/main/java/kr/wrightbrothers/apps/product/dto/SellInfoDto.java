@@ -27,6 +27,7 @@ public class SellInfoDto {
         private String displayFlag;
         @NotBlank(message = "옵션여부")
         private String productOptionFlag;
+        private Long supplyAmount;
         @NotNull(message = "판매가")
         private Long finalSellAmount;
         @NotBlank(message = "상품상태")

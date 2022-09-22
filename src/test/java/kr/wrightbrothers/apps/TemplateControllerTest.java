@@ -53,6 +53,7 @@ class TemplateControllerTest extends BaseControllerTests {
                         .returnZipCode("06035")
                         .returnAddress("서울특별시 강남구 강남대로 154길 37")
                         .returnAddressDetail("주경빌딩 1층")
+                        .exchangeCharge(10000)
                         .returnCharge(1000000)
                         .returnDeliveryCompanyCode("cjgls")
                         .build())
@@ -128,6 +129,7 @@ class TemplateControllerTest extends BaseControllerTests {
                         .returnZipCode("06035")
                         .returnAddress("서울특별시 강남구 강남대로 154길 37")
                         .returnAddressDetail("주경빌딩 1층")
+                        .exchangeCharge(100000)
                         .returnCharge(1000000)
                         .returnDeliveryCompanyCode("cjgls")
                         .build())
@@ -170,6 +172,7 @@ class TemplateControllerTest extends BaseControllerTests {
                                         fieldWithPath("delivery.returnZipCode").type(JsonFieldType.STRING).description("반품지 우편번호").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.returnAddress").type(JsonFieldType.STRING).description("반품지 주소").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.returnAddressDetail").type(JsonFieldType.STRING).description("반품지 상세주소").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.exchangeCharge").type(JsonFieldType.NUMBER).description("교환배송비").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.returnCharge").type(JsonFieldType.NUMBER).description("반품배송비(편도)").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.returnDeliveryCompanyCode").type(JsonFieldType.STRING).description("반품/교환 택배사 코드").attributes(key("etc").value("공통코드 000044"))
                                 ),
@@ -214,6 +217,7 @@ class TemplateControllerTest extends BaseControllerTests {
                 .andExpect(jsonPath("$.data.delivery.returnZipCode").value(paramDto.getDelivery().getReturnZipCode()))
                 .andExpect(jsonPath("$.data.delivery.returnAddress").value(paramDto.getDelivery().getReturnAddress()))
                 .andExpect(jsonPath("$.data.delivery.returnAddressDetail").value(paramDto.getDelivery().getReturnAddressDetail()))
+                .andExpect(jsonPath("$.data.delivery.exchangeCharge").value(paramDto.getDelivery().getExchangeCharge()))
                 .andExpect(jsonPath("$.data.delivery.returnCharge").value(paramDto.getDelivery().getReturnCharge()))
                 .andExpect(jsonPath("$.data.delivery.returnDeliveryCompanyCode").value(paramDto.getDelivery().getReturnDeliveryCompanyCode()))
                 .andDo(
@@ -248,7 +252,8 @@ class TemplateControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.delivery.returnZipCode").type(JsonFieldType.STRING).description("반품지 우편번호"),
                                         fieldWithPath("data.delivery.returnAddress").type(JsonFieldType.STRING).description("반품지 주소"),
                                         fieldWithPath("data.delivery.returnAddressDetail").type(JsonFieldType.STRING).description("반품지 상세주소"),
-                                        fieldWithPath("data.delivery.returnCharge").type(JsonFieldType.NUMBER).description("반품 배송비"),
+                                        fieldWithPath("data.delivery.exchangeCharge").type(JsonFieldType.NUMBER).description("교환배송비"),
+                                        fieldWithPath("data.delivery.returnCharge").type(JsonFieldType.NUMBER).description("반품배송비(편도)"),
                                         fieldWithPath("data.delivery.returnDeliveryCompanyCode").type(JsonFieldType.STRING).description("반품/교환 택배사 코드"),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
                                 )
@@ -279,6 +284,7 @@ class TemplateControllerTest extends BaseControllerTests {
                         .returnZipCode("00000")
                         .returnAddress("수정 서울특별시 강남구 강남대로 154길 37")
                         .returnAddressDetail("수정 주경빌딩 1층")
+                        .exchangeCharge(20000)
                         .returnCharge(9000000)
                         .returnDeliveryCompanyCode("cjgls")
                         .build())
@@ -320,6 +326,7 @@ class TemplateControllerTest extends BaseControllerTests {
                                         fieldWithPath("delivery.returnZipCode").type(JsonFieldType.STRING).description("반품지 우편번호").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.returnAddress").type(JsonFieldType.STRING).description("반품지 주소").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.returnAddressDetail").type(JsonFieldType.STRING).description("반품지 상세주소").optional().attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.exchangeCharge").type(JsonFieldType.NUMBER).description("교환배송비").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.returnCharge").type(JsonFieldType.NUMBER).description("반품배송비(편도)").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.returnDeliveryCompanyCode").type(JsonFieldType.STRING).description("반품/교환 택배사 코드").attributes(key("etc").value("공통코드 000044"))
                                 ),
@@ -356,6 +363,7 @@ class TemplateControllerTest extends BaseControllerTests {
         assertEquals(updateDto.getDelivery().getReturnZipCode(), findDto.getDelivery().getReturnZipCode());
         assertEquals(updateDto.getDelivery().getReturnAddress(), findDto.getDelivery().getReturnAddress());
         assertEquals(updateDto.getDelivery().getReturnAddressDetail(), findDto.getDelivery().getReturnAddressDetail());
+        assertEquals(updateDto.getDelivery().getExchangeCharge(), findDto.getDelivery().getExchangeCharge());
         assertEquals(updateDto.getDelivery().getReturnCharge(), findDto.getDelivery().getReturnCharge());
         assertEquals(updateDto.getDelivery().getReturnDeliveryCompanyCode(), findDto.getDelivery().getReturnDeliveryCompanyCode());
     }

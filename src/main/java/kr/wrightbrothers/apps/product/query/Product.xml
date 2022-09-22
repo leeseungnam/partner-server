@@ -57,10 +57,10 @@
 		 where p.partner_code = #{partnerCode}
 		<choose>
 			<when test="rangeType == 'PRODUCT'.toString()">
-		   and p.create_date between concat(#{startDay}, '00:00:00.0') and concat(#{endDay}, '23:59:59.9')
+		   and p.create_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
 			</when>
 			<when test="rangeType == 'SALE'.toString()">
-		   and ps.product_sell_start_date between concat(#{startDay}, '00:00:00.0') and concat(#{endDay}, '23:59:59.9')
+		   and ps.product_sell_start_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
 			</when>
 		</choose>
 		-- 전시상태
@@ -238,6 +238,7 @@
 		                              discount_flag,
 		                              discount_type,
 		                              discount_amount,
+		                              supply_amount,
 		                              final_sell_amount,
 									  display_flag,
 		                              product_option_flag,
@@ -250,6 +251,7 @@
 			   #{discountFlag},
 			   #{discountType},
 			   #{discountAmount},
+		       #{supplyAmount},
 			   #{finalSellAmount},
 		       #{displayFlag},
 		       #{productOptionFlag},
@@ -263,6 +265,7 @@
 			discount_flag		= #{discountFlag},
 			discount_type		= #{discountType},
 			discount_amount		= #{discountAmount},
+		    supply_amount		= #{supplyAmount},
 			final_sell_amount	= #{finalSellAmount},
 			display_flag		= #{displayFlag},
 		    product_option_flag	= #{productOptionFlag},
@@ -311,6 +314,7 @@
 		                             surcharge_isolated,
 		                             unstoring_address,
 		                             return_address,
+		                             exchange_charge,
 		                             return_charge,
 		                             return_delivery_company_code,
 		                             create_user_id,
@@ -328,6 +332,7 @@
 			   #{surchargeIsolated},
 			   #{unstoringAddress},
 			   #{returnAddress},
+		       #{exchangeCharge},
 			   #{returnCharge},
 			   #{returnDeliveryCompanyCode},
 			   #{userId},
@@ -346,6 +351,7 @@
 			surcharge_isolated				= #{surchargeIsolated},
 			unstoring_address				= #{unstoringAddress},
 			return_address					= #{returnAddress},
+		    exchange_charge					= #{exchangeCharge},
 			return_charge					= #{returnCharge},
 			return_delivery_company_code	= #{returnDeliveryCompanyCode},
 		    update_user_id					= #{userId},
@@ -495,6 +501,7 @@
             discount_amount,
             display_flag,
             product_option_flag,
+            supply_amount,
             final_sell_amount,
             product_status_code,
             product_stock_qty
@@ -527,6 +534,7 @@
             surcharge_isolated,
             unstoring_address,
             return_address,
+            exchange_charge,
             return_charge,
             return_delivery_company_code
 		  from product_delivery
@@ -562,25 +570,29 @@
 	</select>
 
 	<update id="bulkUpdateProductDisplay" parameterType="kr.wrightbrothers.apps.product.dto.StatusUpdateDto">
+		<if test="productCodeList.length != 0">
 		update product_sell_info
 		   set display_flag	  = #{statusValue},
 		       update_user_id = #{userId},
 		       update_date	  = now()
 		 where 1 = 1
-		<foreach collection="productCodeList" item="item" index="index" open="and product_code in (" separator="," close=")">
-			#{item}
-		</foreach>
+			<foreach collection="productCodeList" item="item" index="index" open="and product_code in (" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
 	</update>
 
 	<update id="bulkUpdateProductStatus" parameterType="kr.wrightbrothers.apps.product.dto.StatusUpdateDto">
+		<if test="productCodeList.length != 0">
 		update product_sell_info
 		   set product_status_code = #{statusValue},
 		       update_user_id	   = #{userId},
 		       update_date		   = now()
 		 where 1 = 1
-		<foreach collection="productCodeList" item="item" index="index" open="and product_code in (" separator="," close=")">
-			#{item}
-		</foreach>
+			<foreach collection="productCodeList" item="item" index="index" open="and product_code in (" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
 	</update>
 
 </mapper>
