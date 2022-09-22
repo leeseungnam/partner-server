@@ -86,7 +86,7 @@ public class JwtTokenProvider implements InitializingBean {
 
         return Jwts.builder()
                 .setSubject(authentication.getName())
-                .claim(AUTHORITIES_KEY, authorities)
+                .claim(PartnerKey.Jwt.Alias.AUTH, authorities)
                 .addClaims(claims)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .setExpiration(validity)
@@ -101,15 +101,14 @@ public class JwtTokenProvider implements InitializingBean {
                 .getBody();
 
         Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
+                Arrays.stream(claims.get(PartnerKey.Jwt.Alias.AUTH).toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
         UserAuthDto userAuthDto = null;
 
         ObjectMapper mapper = new ObjectMapper();
-        if(!ObjectUtils.isEmpty(claims.get("userAuth"))) userAuthDto = mapper.convertValue(claims.get("userAuth"), UserAuthDto.class);
-
+        if(!ObjectUtils.isEmpty(claims.get(PartnerKey.Jwt.Alias.USER_AUTH))) userAuthDto = mapper.convertValue(claims.get(PartnerKey.Jwt.Alias.USER_AUTH), UserAuthDto.class);
 
         UserPrincipal principal = new UserPrincipal(claims.getSubject(), "", authorities, userAuthDto);
 

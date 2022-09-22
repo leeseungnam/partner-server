@@ -2,10 +2,14 @@ package kr.wrightbrothers.apps.common.config.security.jwt;
 
 import kr.wrightbrothers.apps.common.util.TokenUtil;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.sign.service.SignService;
+import kr.wrightbrothers.apps.token.dto.BlackListDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -19,6 +23,7 @@ import java.io.IOException;
 public class JwtTokenFilter extends OncePerRequestFilter {
 
     private final static long REFRESH_TOKEN_VALIDATION_SECOND = 60 * 60 * 2;
+    private final SignService signService;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
@@ -28,7 +33,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         log.info("[JwtTokenFilter]::doFilterInternal");
         String accessToken = TokenUtil.resolveTokenInHeader(request, PartnerKey.Jwt.Header.AUTHORIZATION);
 
-        if (accessToken != null && jwtTokenProvider.validateToken(accessToken) == PartnerKey.JwtCode.ACCESS) {
+        if (ObjectUtils.isEmpty(signService.findById(accessToken)) && accessToken != null && jwtTokenProvider.validateToken(accessToken) == PartnerKey.JwtCode.ACCESS) {
             Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
 

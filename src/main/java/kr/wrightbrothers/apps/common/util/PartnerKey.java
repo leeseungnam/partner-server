@@ -33,6 +33,8 @@ public class PartnerKey {
 		public static class Alias {
 			public static final String ACCESS_TOKEN = "ACCESS_TOKEN";
 			public static final String REFRESH_TOKEN = "REFRESH_TOKEN";
+			public static final String AUTH = "auth";
+			public static final String USER_AUTH = "userAuth";
 		}
 		public static class Header {
 			public static final String X_AUTH_TOKEN	= "X-AUTH-TOKEN";

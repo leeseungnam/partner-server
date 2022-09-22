@@ -5,6 +5,7 @@ import kr.wrightbrothers.apps.common.config.security.jwt.JwtAuthenticationEntryP
 import kr.wrightbrothers.apps.common.config.security.jwt.JwtSecurityConfiguration;
 import kr.wrightbrothers.apps.common.config.security.jwt.JwtTokenProvider;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.sign.service.SignService;
 import kr.wrightbrothers.apps.token.service.BlackListService;
 import kr.wrightbrothers.apps.token.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ import java.util.List;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration {
 
+    private final SignService signService;
     private final BlackListService blackListService;
     private final RefreshTokenService refreshTokenService;
     private final JwtTokenProvider jwtTokenProvider;
@@ -56,7 +58,6 @@ public class SecurityConfiguration {
         );
     }
 
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -71,20 +72,19 @@ public class SecurityConfiguration {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
                 .authorizeRequests()
-                .antMatchers("/v1/sign/login").permitAll()
+                .antMatchers("/v1/sign/login","/v1/sign/logout/response").permitAll()
                 .anyRequest().authenticated()
             .and()
 //                .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
-                .apply(new JwtSecurityConfiguration(jwtTokenProvider));
-        /*
+                .apply(new JwtSecurityConfiguration(signService, jwtTokenProvider));
         http.logout()
-                .logoutUrl("/v1/sign/logout")
+//                .logoutUrl("/v1/sign/logout")
+                .logoutRequestMatcher(new AntPathRequestMatcher("/v1/sign/logout"))
                 .addLogoutHandler(new WBLogoutHandler(jwtTokenProvider, blackListService, refreshTokenService))
-                .logoutSuccessUrl("/v1/sign/loginform")
+                .logoutSuccessUrl("/v1/sign/logout/response")
                 .clearAuthentication(true)
                 .invalidateHttpSession(true)
                 .deleteCookies(PartnerKey.Jwt.Alias.REFRESH_TOKEN);
-        */
         return http.build();
     }
 

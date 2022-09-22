@@ -5,7 +5,8 @@
 	
 	<select id="findById" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.token.dto.BlackListDto">
 		select
-		    *
+		    access_token as accessToken,
+		    expire_date as expireDate
 		  from token_blacklist
 		where access_token = #{accessToken}
 	</select>
