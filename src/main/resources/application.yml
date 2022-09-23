@@ -32,6 +32,7 @@ cloud:
       secretKey: Pi158OVC5K7lotVOiLuuuwkvAlPq6H5g29mR532H
 
 system:
+  name: PARTNER
   mail:
     # AWS SES 메일 발송자
     sender: info@wrightbrothers.kr
