@@ -17,11 +17,13 @@ public class AddressService {
     private final String namespace = "kr.wrightbrothers.apps.address.query.Address.";
 
     /**
+     * <pre>
      * 대표 설정 여부에 따라 등록 되어있는 주소록 데이터에 해당 대표 설정 여부의 값을
      * N 값으로 일괄 처리 하도록 한다.
      *
      * 해당 처리 프로세스 이유는 출고지, 반품/교환지 대표는 스토어 한개의 주소록에 설정 할 수 있기에
      * 대표 설정 값이 넘어올 경우 이전 데이터는 N 으로 변경 함.
+     * </pre>
      *
      * @param repUnstoringFlag 대표 출고지 지정 여부
      * @param repReturnFlag 대표 반품/교환지 지정 여부

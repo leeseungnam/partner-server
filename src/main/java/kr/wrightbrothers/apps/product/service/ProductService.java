@@ -14,6 +14,15 @@ import org.springframework.util.ObjectUtils;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * <pre>
+ *     상품의 권한, 상태값 변경의 유효성 검사와, SNS 발송 처리에 대한 로직은 공통 되는 부분으로 해당 서비스에
+ *     구현 내용이 없습니다. 관련 처리 로직은 전처리 AOP, 후처리 AOP 각각 분리하여 구현 하였으니 관련 부분 확인 부탁 드립니다.
+ *
+ *     ProductBeforeAop.java : 스토어 소유권 체크, 상픔 상태 변경 가능 검사
+ *     ProductAfterAop.java : 스토어 상품 등록 / 변경 시 상품 정보 ADMIN 2.0 Message Queue 발송
+ * </pre>
+ */
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -24,15 +33,17 @@ public class ProductService {
     private final ChangeInfoService changeInfoService;
 
     /**
-     * 상품코드 자리수 11 자리
-     * 상품 코드 생성 조합 규칙
+     * <pre>
+     *     상품코드 자리수 11 자리
+     *     상품 코드 생성 조합 규칙
      *
-     * 파트너 구분 코드 2자리 : PA
-     * 카테고리 그룹 코드 2자리
-     * 정산 구분 코드 2자리 : FE
-     * 숫자 + 알파벳 5자리 : A0B0H
+     *     파트너 구분 코드 2자리 : PA
+     *     카테고리 그룹 코드 2자리
+     *     정산 구분 코드 2자리 : FE
+     *     숫자 + 알파벳 5자리 : A0B0H
      *
-     * 예: PABFFEA0B0H
+     *     예: PABFFEA0B0H
+     * </pre>
      */
     public String generateProductCode(String categoryTwoCode) {
         StringBuilder productCode = new StringBuilder();

@@ -25,9 +25,15 @@ public class TemplateBeforeAop {
     private final String namespace = "kr.wrightbrothers.apps.template.query.Template.";
 
     /**
-     * 스토어 소유의 등록된 템플릿인지 유효성 체크
-     * 소유에 대한 유효성 포인트는 조회, 수정 요청 기능에 대해 체크 함
-     * 삭제 요청은 일괄 변경으로 별도 Service 에서 처리.
+     * <pre>
+     *     스토어 소유의 등록된 템플릿인지 유효성 체크
+     *     소유에 대한 유효성 포인트는 조회, 수정 요청 기능에 대해 체크 합니다.
+     *
+     *     현재 PointCut 영역은 패키지 template -> service 아래 함수 네이밍으로 되어 있습니다.
+     *     추가적인 템플릿 파트너 소유권 시 아래 구조를 참고하여 작업 하시기 바랍니다.
+     *
+     *     Object 필수 데이터 : partnerCode, templateNo
+     * </pre>
      */
     @Before(value =
             "execution(* kr.wrightbrothers.apps.template.service.*Service.update*(..)) ||" +
