@@ -22,7 +22,7 @@ import java.util.Arrays;
 @Aspect
 @Configuration
 @RequiredArgsConstructor
-public class ProductAop {
+public class ProductBeforeAop {
 
     private final WBCommonDao dao;
     private final String namespace = "kr.wrightbrothers.apps.product.query.Product.";
