@@ -68,8 +68,6 @@ public class ProductDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ResBody extends Product {
-        @NotBlank(message = "상품 코드")
-        @Size(min = 10, max = 10, message = "상품 코드")
         private String productCode;
     }
 }
