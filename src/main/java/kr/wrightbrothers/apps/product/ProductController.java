@@ -65,7 +65,8 @@ public class ProductController extends WBController {
         paramDto.setProductCode(
                 productService.generateProductCode(paramDto.getProduct().getCategoryTwoCode())
         );
-
+        // 추가 유효성 검사
+        paramDto.validProduct();
         // 상품정보 등록
         productService.insertProduct(paramDto);
 
@@ -92,7 +93,8 @@ public class ProductController extends WBController {
         paramDto.setUserId(user.getUsername());
         paramDto.getProduct().setPartnerCode(user.getUserAuth().getPartnerCode());
         paramDto.setProductCode(paramDto.getProductCode());
-
+        // 추가 유효성 검사
+        paramDto.validProduct();
         // 상품정보 수정
         productService.updateProduct(paramDto);
 

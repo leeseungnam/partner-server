@@ -285,7 +285,7 @@ class ProductControllerTest extends BaseControllerTests {
                                 ),
                                 relaxedRequestFields(
                                         fieldWithPath("product").type(JsonFieldType.OBJECT).description("상품 기본 정보").attributes(key("etc").value("")),
-                                        fieldWithPath("product.productType").type(JsonFieldType.STRING).description("상품 유형").attributes(key("etc").value("P05 기본값")),
+                                        fieldWithPath("product.productType").type(JsonFieldType.STRING).description("상품 유형").attributes(key("etc").value("P05 신품, P04 재생")),
                                         fieldWithPath("product.categoryOneCode").type(JsonFieldType.STRING).description("대 카테고리 코드").attributes(key("etc").value("")),
                                         fieldWithPath("product.categoryOneName").type(JsonFieldType.STRING).description("대 카테고리 명").attributes(key("etc").value("")),
                                         fieldWithPath("product.categoryTwoCode").type(JsonFieldType.STRING).description("중 카테고리 코드").attributes(key("etc").value("")),
@@ -529,7 +529,7 @@ class ProductControllerTest extends BaseControllerTests {
                                 relaxedRequestFields(
                                         fieldWithPath("productCode").type(JsonFieldType.STRING).description("상품 코드").attributes(key("etc").value("")),
                                         fieldWithPath("product").type(JsonFieldType.OBJECT).description("상품 기본 정보").attributes(key("etc").value("")),
-                                        fieldWithPath("product.productType").type(JsonFieldType.STRING).description("상품 유형").attributes(key("etc").value("P05 기본값")),
+                                        fieldWithPath("product.productType").type(JsonFieldType.STRING).description("상품 유형").attributes(key("etc").value("P05 신품, P04 재생")),
                                         fieldWithPath("product.categoryOneCode").type(JsonFieldType.STRING).description("대 카테고리 코드").attributes(key("etc").value("")),
                                         fieldWithPath("product.categoryOneName").type(JsonFieldType.STRING).description("대 카테고리 명").attributes(key("etc").value("")),
                                         fieldWithPath("product.categoryTwoCode").type(JsonFieldType.STRING).description("중 카테고리 코드").attributes(key("etc").value("")),
