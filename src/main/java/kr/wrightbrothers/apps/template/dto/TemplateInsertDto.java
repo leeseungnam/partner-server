@@ -14,11 +14,11 @@ import lombok.extern.jackson.Jacksonized;
 @NoArgsConstructor
 public class TemplateInsertDto extends TemplateDto {
     @JsonIgnore
-    private Long templateNo;
+    private Long templateNo;        // 템플릿 번호
     @JsonIgnore
-    private String partnerCode;
+    private String partnerCode;     // 파트너 코드
     @JsonIgnore
-    private String userId;
+    private String userId;          // 사용자 아이디
 
     public void setPartnerCode(String partnerCode) {
         this.partnerCode = partnerCode;

@@ -21,7 +21,8 @@ public class AddressUpdateDto extends AddressDto {
     @ApiModelProperty(value = "주소록 번호")
     @NotNull(message = "주소록 번호")
     private Long addressNo;
-    private String partnerCode;
+
+    private String partnerCode;     // 파트너 코드
     @JsonIgnore
-    private String userId;
+    private String userId;          // 사용자 아이디
 }

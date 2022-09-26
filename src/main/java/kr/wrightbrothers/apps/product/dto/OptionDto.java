@@ -16,12 +16,16 @@ public class OptionDto {
     public static class Option {
         @ApiModelProperty(value = "옵션 번호")
         private int optionSeq;
+
         @ApiModelProperty(value = "옵션 명")
         private String optionName;
+
         @ApiModelProperty(value = "옵션 항목")
         private String optionValue;
+
         @ApiModelProperty(value = "변동 금액")
         private Long optionSurcharge;
+
         @ApiModelProperty(value = "옵션 재고 수량")
         private int optionStockQty;
     }

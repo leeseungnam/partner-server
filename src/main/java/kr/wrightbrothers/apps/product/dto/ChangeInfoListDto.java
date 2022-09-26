@@ -12,17 +12,17 @@ public class ChangeInfoListDto {
     @Builder
     @AllArgsConstructor
     public static class Param {
-        private String partnerCode;
-        private String productCode;
+        private String partnerCode;     // 파트너 코드
+        private String productCode;     // 상품 코드
     }
 
     @Getter
     @Builder
     @AllArgsConstructor
     public static class Response {
-        private String productCode;
-        private String productName;
-        private List<ChangeInfoDto.ResBody> changeHistory;
+        private String productCode;     // 상품 코드
+        private String productName;     // 상품 이름
+        private List<ChangeInfoDto.ResBody> changeHistory;  // 변경 내역
     }
 
 }

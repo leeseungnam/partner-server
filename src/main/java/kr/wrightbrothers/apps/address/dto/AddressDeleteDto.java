@@ -6,6 +6,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class AddressDeleteDto {
-    private String partnerCode;
-    private Long addressNo;
+    private String partnerCode;     // 파트너 코드
+    private Long addressNo;         // 주소록 번호
 }

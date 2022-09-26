@@ -1,5 +1,6 @@
 package kr.wrightbrothers.apps.product.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 import kr.wrightbrothers.apps.common.type.ProductLogCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,8 +17,11 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductUpdateDto extends ProductInsertDto {
+    @ApiModelProperty(value = "상품 코드", required = true)
     @NotNull(message = "상품 코드")
     private String productCode;     // 상품 코드
+
+    @ApiModelProperty(value = "변경 로그")
     private String[] changeLogList; // 변경 로그
 
     /**

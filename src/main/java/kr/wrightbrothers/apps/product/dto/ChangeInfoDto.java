@@ -15,7 +15,7 @@ public class ChangeInfoDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ChangeInfo {
-        private String productLog;
+        private String productLog;          // 상품 로그
     }
 
     @Data
@@ -23,12 +23,12 @@ public class ChangeInfoDto {
     @SuperBuilder
     @EqualsAndHashCode(callSuper = false)
     public static class ReqBody extends ChangeInfo {
-        private String productStatusCode;
-        private String productLogCode;
+        private String productStatusCode;   // 상품 상태 코드
+        private String productLogCode;      // 상품 로그 코드
         @JsonIgnore
-        private String productCode;
+        private String productCode;         // 상품 코드
         @JsonIgnore
-        private String userId;
+        private String userId;              // 사용자 아이디
     }
 
     @Getter
@@ -37,10 +37,10 @@ public class ChangeInfoDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ResBody extends ChangeInfo {
-        private String productStatusCode;
-        private String productLogCode;
-        private String createUserName;
-        private String createDate;
+        private String productStatusCode;   // 상품 상태 코드
+        private String productLogCode;      // 상품 로그 코드
+        private String createUserName;      // 작성자
+        private String createDate;          // 작성일시
 
         // 상품 상태 ENUM 처리
         public void setProductStatusCode(String productStatusCode) {
