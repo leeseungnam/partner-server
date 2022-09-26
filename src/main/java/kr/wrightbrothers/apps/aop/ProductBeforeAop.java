@@ -72,6 +72,8 @@ public class ProductBeforeAop {
         String currentStatusCode = dao.selectOne(namespace + "findProductStatus", productNo);
         log.debug("Product Current Status::{}", currentStatusCode);
         log.debug("Product Change Status::{}", changeStatusCode);
+        // 상태 변경 아닐 시 종료
+        if (currentStatusCode.equals(changeStatusCode)) return;
 
         switch (ProductStatusCode.of(changeStatusCode)) {
             case SALE:
