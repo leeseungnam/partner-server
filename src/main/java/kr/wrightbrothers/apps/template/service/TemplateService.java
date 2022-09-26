@@ -1,5 +1,6 @@
 package kr.wrightbrothers.apps.template.service;
 
+import kr.wrightbrothers.apps.common.type.TemplateType;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.template.dto.*;
@@ -49,7 +50,7 @@ public class TemplateService {
         dao.update(namespace + "updateTemplate", paramDto);
 
         // 템플릿 배송정보 수정
-        if ("T01".equals(paramDto.getTemplateType())) {
+        if (TemplateType.DELIVERY.getType().equals(paramDto.getTemplateType())) {
             dao.update(namespace + "updateTemplateDelivery", paramDto);
             return;
         }

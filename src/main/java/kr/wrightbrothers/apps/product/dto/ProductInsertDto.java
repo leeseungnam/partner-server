@@ -47,30 +47,7 @@ public class ProductInsertDto {
         // 재생자전거 유효성 검사 제외
         if (ProductType.RECYCLING.getType().equals(this.product.getProductType())) return;
         // 배송정보 유효성 검사
-        if (ObjectUtils.isEmpty(delivery))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"배송 정보"});
-        if (ObjectUtils.isEmpty(delivery.getDeliveryType()))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"배송방법"});
-        if (ObjectUtils.isEmpty(delivery.getDeliveryBundleFlag()))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"묶음배송"});
-        if (ObjectUtils.isEmpty(delivery.getChargeType()))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"배송비 설정"});
-        if (ObjectUtils.isEmpty(delivery.getChargeBase()))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"기본 배송비"});
-        if (ObjectUtils.isEmpty(delivery.getPaymentType()))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"결제방식"});
-        if (ObjectUtils.isEmpty(delivery.getSurchargeFlag()))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"제주/도서산간 추가 배송비 여부"});
-        if (ObjectUtils.isEmpty(delivery.getUnstoringAddress()))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"출고지"});
-        if (ObjectUtils.isEmpty(delivery.getReturnAddress()))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"반품지"});
-        if (ObjectUtils.isEmpty(delivery.getExchangeCharge()))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"교환배송비"});
-        if (ObjectUtils.isEmpty(delivery.getReturnCharge()))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"반품배송비(편도)"});
-        if (ObjectUtils.isEmpty(delivery.getReturnDeliveryCompanyCode()))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"반품/교환 택배사"});
+        delivery.validDelivery();
     }
 
     // 자전거 상품 추가 유효성 검사
