@@ -161,6 +161,7 @@ class ProductControllerTest extends BaseControllerTests {
                         .deliveryGuide("배송 안내 사항 ..............................")
                         .exchangeReturnGuide("교환/반품 안내 사항 ..............................")
                         .asGuide("A/S 안내 ..............................")
+                        .qnaGuide("")
                         .build())
                 .build();
 
@@ -365,8 +366,9 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("guide").type(JsonFieldType.OBJECT).description("안내 정보").attributes(key("etc").value("")),
                                         fieldWithPath("guide.productGuide").type(JsonFieldType.STRING).description("상품 안내 사항").attributes(key("etc").value("")),
                                         fieldWithPath("guide.deliveryGuide").type(JsonFieldType.STRING).description("배송 안내 사항").attributes(key("etc").value("")),
-                                        fieldWithPath("guide.exchangeReturnGuide").type(JsonFieldType.STRING).description("교환/반품 안내 사항").attributes(key("etc").value("")),
+                                        fieldWithPath("guide.exchangeReturnGuide").type(JsonFieldType.STRING).description("교환/반품 안내 사항").optional().attributes(key("etc").value("")),
                                         fieldWithPath("guide.asGuide").type(JsonFieldType.STRING).description("A/S 안내").attributes(key("etc").value("")),
+                                        fieldWithPath("guide.qnaGuide").type(JsonFieldType.STRING).description("자주 묻는 질문").optional().attributes(key("etc").value("")),
                                         fieldWithPath("fileList[]").type(JsonFieldType.ARRAY).description("상품 이미지 파일").attributes(key("etc").value("")),
                                         fieldWithPath("fileList[].fileNo").type(JsonFieldType.STRING).description("파일 대표 번호").attributes(key("etc").value("")),
                                         fieldWithPath("fileList[].fileSeq").type(JsonFieldType.NUMBER).description("파일 번호").attributes(key("etc").value("")),
@@ -491,8 +493,9 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.guide").type(JsonFieldType.OBJECT).description("안내 정보"),
                                         fieldWithPath("data.guide.productGuide").type(JsonFieldType.STRING).description("상품 안내 사항"),
                                         fieldWithPath("data.guide.deliveryGuide").type(JsonFieldType.STRING).description("배송 안내 사항"),
-                                        fieldWithPath("data.guide.exchangeReturnGuide").type(JsonFieldType.STRING).description("교환/반품 안내 사항"),
+                                        fieldWithPath("data.guide.exchangeReturnGuide").type(JsonFieldType.STRING).description("교환/반품 안내 사항").optional(),
                                         fieldWithPath("data.guide.asGuide").type(JsonFieldType.STRING).description("A/S 안내"),
+                                        fieldWithPath("data.guide.qnaGuide").type(JsonFieldType.STRING).description("자주 묻는 질문"),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
                                 )
 
@@ -609,8 +612,9 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("guide").type(JsonFieldType.OBJECT).description("안내 정보").attributes(key("etc").value("")),
                                         fieldWithPath("guide.productGuide").type(JsonFieldType.STRING).description("상품 안내 사항").attributes(key("etc").value("")),
                                         fieldWithPath("guide.deliveryGuide").type(JsonFieldType.STRING).description("배송 안내 사항").attributes(key("etc").value("")),
-                                        fieldWithPath("guide.exchangeReturnGuide").type(JsonFieldType.STRING).description("교환/반품 안내 사항").attributes(key("etc").value("")),
+                                        fieldWithPath("guide.exchangeReturnGuide").type(JsonFieldType.STRING).description("교환/반품 안내 사항").optional().attributes(key("etc").value("")),
                                         fieldWithPath("guide.asGuide").type(JsonFieldType.STRING).description("A/S 안내").attributes(key("etc").value("")),
+                                        fieldWithPath("guide.qnaGuide").type(JsonFieldType.STRING).description("자주 묻는 질문").optional().attributes(key("etc").value("")),
                                         fieldWithPath("fileList[]").type(JsonFieldType.ARRAY).description("상품 이미지 파일").attributes(key("etc").value("")),
                                         fieldWithPath("fileList[].fileNo").type(JsonFieldType.STRING).description("파일 대표 번호").attributes(key("etc").value("")),
                                         fieldWithPath("fileList[].fileSeq").type(JsonFieldType.NUMBER).description("파일 번호").attributes(key("etc").value("")),
@@ -713,6 +717,7 @@ class ProductControllerTest extends BaseControllerTests {
                         .deliveryGuide("배송 안내 사항 ..............................")
                         .exchangeReturnGuide("교환/반품 안내 사항 ..............................")
                         .asGuide("A/S 안내 ..............................")
+                        .qnaGuide("")
                         .build())
                 .build();
     }

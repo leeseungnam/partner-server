@@ -16,6 +16,7 @@ public enum TemplateType {
     AS_GUIDE("T02", "A/S안내"),
     DELIVERY_GUIDE("T03", "배송안내"),
     RETURN_GUIDE("T04", "반품안내"),
+    QNA_GUIDE("T05", "자주묻는질문"),
     NULL("", "");
     ;
 

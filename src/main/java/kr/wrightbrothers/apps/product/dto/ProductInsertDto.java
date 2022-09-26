@@ -54,7 +54,19 @@ public class ProductInsertDto {
         // 자전거 상품 추가 유효성 검사
         validBike();
         // 재생자전거 유효성 검사 제외
-        if (ProductType.RECYCLING.getType().equals(this.product.getProductType())) return;
+        if (ProductType.RECYCLING.getType().equals(this.product.getProductType())) {
+            if (ObjectUtils.isEmpty(this.guide.getQnaGuide()))
+                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"자주 묻는 질문"});
+            if (this.guide.getQnaGuide().length() < 30)
+                throw new WBBusinessException(ErrorCode.INVALID_TEXT_SIZE.getErrCode(), new String[]{"자주 묻는 질문", "30", "2000"});
+            return;
+        }
+
+        if (ObjectUtils.isEmpty(this.guide.getExchangeReturnGuide()))
+            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"교환/반품 안내"});
+        if (this.guide.getExchangeReturnGuide().length() < 30)
+            throw new WBBusinessException(ErrorCode.INVALID_TEXT_SIZE.getErrCode(), new String[]{"교환/반품 안내", "30", "2000"});
+
         // 배송정보 유효성 검사
         delivery.validDelivery();
     }
