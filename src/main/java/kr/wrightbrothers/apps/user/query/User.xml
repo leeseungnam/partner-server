@@ -19,4 +19,37 @@
 		on role.user_id = user.user_id
 		where user.user_id = #{userId}
 	</select>
+
+	<insert id="insertUser" parameterType="kr.wrightbrothers.apps.user.dto.UserInsertDto">
+		insert into users
+			(user_id
+			, user_pwd
+			, user_name
+			, user_phone
+			, user_status_code
+			, terms_agreed_flag
+			, collection_agreed_flag
+			, promotion_agreed_flag
+			, login_fail_count
+			, create_user_id
+			, create_date
+			, update_user_id
+			, update_date
+			)
+		values
+			(#{userId}
+			, #{userPwd}
+			, #{userName}
+			, #{userPhone}
+			, #{userStatusCode}
+			, #{termsAgreedFlag}
+			, #{collectionAgreedFlag}
+			, #{promotionAgreedFlag}
+			, 0
+			, 'admin'
+			, current_timestamp
+			, 'admin'
+			, current_timestamp
+			)
+	</insert>
 </mapper>

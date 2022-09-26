@@ -40,7 +40,9 @@ public class SignController extends WBController {
     private final UserService userService;
 
     @PostMapping("/login")
-    public WBModel signIn(@RequestBody SignDto paramDto, HttpServletRequest request, HttpServletResponse response) {
+    public WBModel signIn(@RequestBody SignDto paramDto
+            , HttpServletRequest request
+            , HttpServletResponse response) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(paramDto.getUserId(), paramDto.getUserPwd());
 
@@ -103,57 +105,10 @@ public class SignController extends WBController {
         return  noneDataResponse();
     }
 */
-
     @GetMapping("/logout/response")
     public WBModel signOutSuccess(HttpServletRequest request
             , HttpServletResponse response
     ) {
         return  noneDataResponse();
     }
-
-    // [todo] old token 파기
-    // [todo] set userAuth validation
-    @PostMapping("/auth")
-    public WBModel setAuthentic(@RequestHeader(PartnerKey.Jwt.Header.AUTHORIZATION) String accessToken
-                                    , @CookieValue(PartnerKey.Jwt.Alias.REFRESH_TOKEN) String refreshToke
-                                    , @AuthenticationPrincipal UserPrincipal userPrincipal
-                                    , @RequestBody UserAuthDto userAuth
-                                    , HttpServletResponse response
-                                    ) {
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        List<GrantedAuthority> updateAuthorities = new ArrayList<>();
-        updateAuthorities.add(new SimpleGrantedAuthority(userAuth.getAuthCode()));
-
-        userPrincipal.changeUserAuth(userAuth);
-
-        Authentication newAuth = new UsernamePasswordAuthenticationToken(userPrincipal, authentication.getCredentials(), updateAuthorities);
-
-        SecurityContextHolder.getContext().setAuthentication(newAuth);
-
-        String newAccessToken = jwtTokenProvider.generateAccessToken(newAuth);
-        String newRefreshToken = jwtTokenProvider.issueRefreshToken(authentication);
-
-        log.info("ACCESS_TOKEN[OLD]::{}",accessToken);
-        log.info("ACCESS_TOKEN[NEW]::{}",newAccessToken);
-
-        log.info("REFRESH_TOKEN[OLD]::{}",refreshToke);
-        log.info("REFRESH_TOKEN[NEW]::{}",newRefreshToken);
-
-        UserPrincipal userDetail = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        log.info(userPrincipal.getUsername());
-
-        if(!ObjectUtils.isEmpty(userPrincipal.getUserAuth())){
-            log.info("UserAuth::{},{}",userPrincipal.getUserAuth().getAuthCode(), userPrincipal.getUserAuth().getPartnerCode());
-        }else{
-            log.info("UserAuth is null");
-        }
-
-        response.setHeader(PartnerKey.Jwt.Header.AUTHORIZATION, PartnerKey.Jwt.Type.BEARER + newAccessToken);
-        response.addCookie(TokenUtil.createCookie(PartnerKey.Jwt.Alias.REFRESH_TOKEN, newRefreshToken, REFRESH_TOKEN_VALIDATION_SECOND));
-
-        return noneDataResponse();
-    }
-
 }

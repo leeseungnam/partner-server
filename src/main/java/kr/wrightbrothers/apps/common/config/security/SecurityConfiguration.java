@@ -72,7 +72,9 @@ public class SecurityConfiguration {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
                 .authorizeRequests()
-                .antMatchers("/v1/sign/login","/v1/sign/logout/response").permitAll()
+                .antMatchers("/v1/sign/login","/v1/sign/logout/response"
+                        , "/v1/auth/email")
+                .permitAll()
                 .anyRequest().authenticated()
             .and()
 //                .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
