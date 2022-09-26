@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.template.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModelProperty;
 import kr.wrightbrothers.apps.product.dto.DeliveryDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,6 +19,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TemplateUpdateDto extends TemplateDto {
+    @ApiModelProperty(value = "템플릿 번호", required = true)
     @NotNull(message = "템플릿 번호")
     private Long templateNo;
     private String partnerCode;

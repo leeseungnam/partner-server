@@ -1,5 +1,6 @@
 package kr.wrightbrothers.apps.product.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 import kr.wrightbrothers.apps.common.type.CategoryCode;
 import kr.wrightbrothers.apps.common.type.ProductLogCode;
 import kr.wrightbrothers.apps.common.type.ProductStatusCode;
@@ -24,21 +25,29 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductInsertDto {
+    @ApiModelProperty(value = "상품 정보")
     @Valid
     @NotNull(message = "상품 정보")
     private ProductDto.ReqBody product;         // 상품 기본 정보
+    @ApiModelProperty(value = "기본 스펙")
     private BasicSpecDto.ReqBody basicSpec;     // 기본 스펙 정보
+    @ApiModelProperty(value = "판매 정보")
     @Valid
     @NotNull(message = "판매 정보")
     private SellInfoDto.ReqBody sellInfo;       // 판매 정보
+    @ApiModelProperty(value = "옵션 정보")
     private List<OptionDto.ReqBody> optionList; // 옵션 정보
+    @ApiModelProperty(value = "배송 정보")
     private DeliveryDto.ReqBody delivery;       // 배송 정보
+    @ApiModelProperty(value = "상품 정보 고시")
     @Valid
     @NotNull(message = "상품 정보 고시")
     private InfoNoticeDto.ReqBody infoNotice;   // 상품 정보 고시
+    @ApiModelProperty(value = "안내 사항")
     @Valid
     @NotNull(message = "안내 사항 정보")
     private GuideDto.ReqBody guide;             // 안내사항 정보
+    @ApiModelProperty(value = "상품 이미지 목록")
     private List<FileUpdateDto> fileList;       // 상품 등록 이미지
 
     public void validProduct() {

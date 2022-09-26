@@ -1,5 +1,6 @@
 package kr.wrightbrothers.apps.template.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.product.dto.DeliveryDto;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
@@ -16,9 +17,13 @@ import org.springframework.util.ObjectUtils;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TemplateDeliveryDto extends DeliveryDto.Delivery {
+    @ApiModelProperty(value = "출고지 우편번호", required = true)
     private String unstoringZipCode;
+    @ApiModelProperty(value = "출고지 상세주소")
     private String unstoringAddressDetail;
+    @ApiModelProperty(value = "반품지 우편번호", required = true)
     private String returnZipCode;
+    @ApiModelProperty(value = "반품지 상세주소")
     private String returnAddressDetail;
 
     public void validTemplateDelivery() {
