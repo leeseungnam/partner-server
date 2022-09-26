@@ -1,5 +1,6 @@
 package kr.wrightbrothers.apps.auth;
 
+import io.swagger.annotations.*;
 import kr.wrightbrothers.apps.auth.dto.AuthEmailDto;
 import kr.wrightbrothers.apps.common.config.security.jwt.JwtTokenProvider;
 import kr.wrightbrothers.apps.common.util.AwsSesUtil;
@@ -20,11 +21,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.context.Context;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+@Api(tags = {"권한"})
 @Slf4j
 @RestController
 @RequestMapping("/v1/auth")
@@ -34,8 +38,12 @@ public class AuthController extends WBController {
     private final AwsSesUtil awsSesUtil;
     private final JwtTokenProvider jwtTokenProvider;
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", paramType = "header")
+    })
+    @ApiOperation(value = "인증 이메일 발송", notes = "인증을 위한 이메일을 발송합니다.")
     @PostMapping("/email")
-    public WBModel authEmail(@RequestBody AuthEmailDto.ReqBody paramDto) {
+    public WBModel authEmail(@ApiParam @RequestBody AuthEmailDto.ReqBody paramDto) {
 
         WBModel wbResponse = new WBModel();
 
@@ -56,11 +64,15 @@ public class AuthController extends WBController {
 
     // [todo] old token 파기
     // [todo] set userAuth validation
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", paramType = "header")
+    })
+    @ApiOperation(value = "인가 정보 변경", notes = "인가(권한) 정보를 변경하기 위한 API 입니다.")
     @PostMapping("/")
     public WBModel setAuthentic(@RequestHeader(PartnerKey.Jwt.Header.AUTHORIZATION) String accessToken
                                     , @CookieValue(PartnerKey.Jwt.Alias.REFRESH_TOKEN) String refreshToke
-                                    , @AuthenticationPrincipal UserPrincipal userPrincipal
-                                    , @RequestBody UserAuthDto userAuth
+                                    , @ApiIgnore @AuthenticationPrincipal UserPrincipal userPrincipal
+                                    , @ApiParam @RequestBody UserAuthDto userAuth
                                     , HttpServletResponse response
                                     ) {
 
