@@ -12,6 +12,7 @@ import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -48,7 +49,7 @@ public class AuthController extends WBController {
         WBModel wbResponse = new WBModel();
 
         if("1".equals(paramDto.getAuthType())) {
-            String authCode = UUID.randomUUID().toString();
+            String authCode = RandomStringUtils.randomAlphanumeric(6).toUpperCase();
             String subject = "라이트브라더스 메일 인증 요청";
             Context context = new Context();
             context.setVariable("code", authCode);
