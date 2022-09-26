@@ -52,6 +52,7 @@ class AddressControllerTest extends BaseControllerTests {
     }
 
     @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Default)
     @DisplayName("주소록 목록 조회")
     void findAddressList() throws Exception {
         // 주소 목록 조회 API

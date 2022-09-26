@@ -49,13 +49,13 @@ public class WBAwsSns {
 					.withMessageGroupId(WBKey.Aws.Sns.GroupId)
 					.withMessageDeduplicationId(UUID.randomUUID().toString());
 
-			log.error("===================================================");
-			log.error("WB ADMIN SNS Send Publish.");
-			log.error("Topic Arn, {}", publishRequest.getTopicArn());
-			log.error("Massage GroupId, {}", publishRequest.getMessageGroupId());
-			log.error("UUID, {}", publishRequest.getMessageDeduplicationId());
-			log.error("Message, {}", publishRequest.getMessage());
-			log.error("===================================================");
+			log.info("===================================================");
+			log.info("WB ADMIN SNS Send Publish.");
+			log.info("Topic Arn, {}", publishRequest.getTopicArn());
+			log.info("Massage GroupId, {}", publishRequest.getMessageGroupId());
+			log.info("UUID, {}", publishRequest.getMessageDeduplicationId());
+			log.info("Message, {}", publishRequest.getMessage());
+			log.info("===================================================");
 
 			return sns.publish(publishRequest);
 		} else {

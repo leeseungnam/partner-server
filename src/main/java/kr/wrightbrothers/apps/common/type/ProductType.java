@@ -11,34 +11,29 @@ import java.util.stream.Stream;
 
 @Getter
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
-public enum TemplateType {
-    DELIVERY("T01", "배송지"),
-    AS_GUIDE("T02", "A/S안내"),
-    DELIVERY_GUIDE("T03", "배송안내"),
-    RETURN_GUIDE("T04", "반품안내"),
-    QNA_GUIDE("T05", "자주묻는질문"),
+public enum ProductType {
+    NEW("P05", "신품"),
+    RECYCLING("P06", "재생"),
     NULL("", "");
-    ;
 
     private final String type;
     private final String name;
 
-    TemplateType(String type, String name) {
+    ProductType(String type, String name) {
         this.type = type;
         this.name = name;
     }
 
     private static final Map<String, String> CODE_MAP = Collections.unmodifiableMap(
             Stream.of(values()).collect(
-                    Collectors.toMap(TemplateType::getType, TemplateType::name)
+                    Collectors.toMap(ProductType::getType, ProductType::name)
             )
     );
 
-    public static TemplateType of(final String type) {
+    public static ProductType of(final String type) {
         if (ObjectUtils.isEmpty(CODE_MAP.get(type)))
-            return TemplateType.NULL;
+            return ProductType.NULL;
 
-        return TemplateType.valueOf(CODE_MAP.get(type));
+        return ProductType.valueOf(CODE_MAP.get(type));
     }
-
 }

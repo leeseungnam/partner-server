@@ -1,5 +1,9 @@
 package kr.wrightbrothers.apps.common.config;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.sns.AmazonSNSClientBuilder;
+import kr.wrightbrothers.framework.util.WBAwsSns;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +20,10 @@ public class AWSConfigure {
     private String accessKey;
     @Value("${cloud.aws.ses.secretKey}")
     private String secretKey;
+    @Value("${cloud.aws.region.static}")
+    private String region;
+    @Value("${cloud.aws.sqs.auto}")
+    private Boolean use;
 
     @Bean
     public SesClient amazonSimpleEmailServiceAsync() {
@@ -23,6 +31,20 @@ public class AWSConfigure {
                 .credentialsProvider(() -> AwsBasicCredentials.create(accessKey, secretKey))
                 .region(Region.AP_NORTHEAST_2)
                 .build();
+    }
+
+    @Bean
+    public WBAwsSns amazonSimpleNotificationService() {
+        return new WBAwsSns(
+                AmazonSNSClientBuilder
+                        .standard().withRegion(region)
+                        .withCredentials(
+                                new AWSStaticCredentialsProvider(
+                                        new BasicAWSCredentials(accessKey, secretKey)
+                                )
+                        )
+                        .build()
+        );
     }
 
 }

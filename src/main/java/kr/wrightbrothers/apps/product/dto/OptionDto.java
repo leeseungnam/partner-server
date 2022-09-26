@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -13,10 +14,15 @@ public class OptionDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Option {
+        @ApiModelProperty(value = "옵션 번호")
         private int optionSeq;
+        @ApiModelProperty(value = "옵션 명")
         private String optionName;
+        @ApiModelProperty(value = "옵션 항목")
         private String optionValue;
+        @ApiModelProperty(value = "변동 금액")
         private Long optionSurcharge;
+        @ApiModelProperty(value = "옵션 재고 수량")
         private int optionStockQty;
     }
 

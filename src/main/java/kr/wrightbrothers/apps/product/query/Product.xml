@@ -415,6 +415,7 @@
 		                          delivery_guide,
 		                          exchange_return_guide,
 		                          as_guide,
+		                          qna_guide,
 		                          create_user_id,
 		                          update_user_id)
 		values(#{productCode},
@@ -422,6 +423,7 @@
 			   #{deliveryGuide},
 			   #{exchangeReturnGuide},
 			   #{asGuide},
+		       #{qnaGuide},
 			   #{userId},
 			   #{userId})
 		on duplicate key
@@ -430,6 +432,7 @@
 			delivery_guide			= #{deliveryGuide},
 			exchange_return_guide	= #{exchangeReturnGuide},
 			as_guide				= #{asGuide},
+			qna_guide				= #{qnaGuide},
 		    update_user_id			= #{userId},
 		    update_date				= now()
 	</insert>
@@ -566,7 +569,8 @@
 			product_guide,
 			delivery_guide,
 			exchange_return_guide,
-            as_guide
+            as_guide,
+            qna_guide
 		  from product_guide
 		 where product_code = #{productCode}
 	</select>

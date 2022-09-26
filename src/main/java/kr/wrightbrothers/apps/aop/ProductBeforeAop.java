@@ -22,7 +22,7 @@ import java.util.Arrays;
 @Aspect
 @Configuration
 @RequiredArgsConstructor
-public class ProductAop {
+public class ProductBeforeAop {
 
     private final WBCommonDao dao;
     private final String namespace = "kr.wrightbrothers.apps.product.query.Product.";
@@ -57,10 +57,12 @@ public class ProductAop {
     }
 
     /**
-     * 상품 상태 값 변경 유효성 체크
+     * <pre>
+     *     상품 상태 값 변경 유효성 체크
      *
-     * 상품 판매 : 판매종료 / 예약 중 상태에서만 변경 가능
-     * 판매 종료, 예약 중 : 판매중인 상태에서만 변경 가능
+     *     상품 판매 : 판매종료 / 예약 중 상태에서만 변경 가능
+     *     판매 종료, 예약 중 : 판매중인 상태에서만 변경 가능
+     *</pre>
      *
      * @param productNo 상품코드
      * @param changeStatusCode 변경 상태코드
@@ -70,14 +72,13 @@ public class ProductAop {
         String currentStatusCode = dao.selectOne(namespace + "findProductStatus", productNo);
         log.debug("Product Current Status::{}", currentStatusCode);
         log.debug("Product Change Status::{}", changeStatusCode);
+        // 상태 변경 아닐 시 종료
+        if (currentStatusCode.equals(changeStatusCode)) return;
 
         switch (ProductStatusCode.of(changeStatusCode)) {
             case SALE:
-                if (!(
-                        ProductStatusCode.END_OF_SALE.getCode().equals (currentStatusCode) ||
-                                ProductStatusCode.RESERVATION.getCode().equals(changeStatusCode)
-                ))
-                    throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매종료/예약중인"});
+                if (!ProductStatusCode.END_OF_SALE.getCode().equals(currentStatusCode))
+                    throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매종료"});
             case END_OF_SALE:
                 if (!ProductStatusCode.SALE.getCode().equals(changeStatusCode))
                     throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매중인"});
@@ -119,6 +120,25 @@ public class ProductAop {
                     .build());
     }
 
+    /**
+     * <pre>
+     *     스토어 소유의 상품을 변경할때 상태값의 유효성을 체크 합니다.
+     *
+     *     상품의 상태값은 두가지로 전시 여부에 대한 상태, 판매 진행에 대한 상태로 나눕니다.
+     *     변경 불가에 대한 정책은 아래와 같으니 해당 부분 업무에 있어 참고 바랍니다.
+     *
+     *     현재 PointCut 영역은 패키지 product -> service 아래 함수 네이밍으로 되어 있습니다.
+     *     추가적인 상태값 변경에 대한 유효성 체크 필요 시 아래 구조를 참고하여 작업 하시기 바랍니다.
+     *
+     *     전시 상태 변경
+     *         - 노출 : 미노출 상태에서 노출 변경 가능
+     *         - 미노출 : 노출 상태에서 미노출 변경 가능
+     *     상품 상태 변경
+     *         - 판매 : 판매종료/예약 중 상태에서 가능
+     *         - 판매종료 : 판매 상태에서 가능
+     *         - 예약중 : 판매 상태에서 가능
+     * </pre>
+     */
     @Before(value = "execution(* kr.wrightbrothers.apps.product.service.*Service.update*(..))")
     public void productStatusCheck(JoinPoint joinPoint) throws Exception {
         JSONObject object = new JSONObject(JsonUtil.ToString(Arrays.stream(joinPoint.getArgs()).findFirst().orElseThrow()));

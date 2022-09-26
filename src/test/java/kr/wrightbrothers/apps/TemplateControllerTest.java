@@ -68,7 +68,7 @@ class TemplateControllerTest extends BaseControllerTests {
     void findTemplateList() throws Exception {
         // 조회 파라미터 필드
         TemplateListDto.Param paramDto = TemplateListDto.Param.builder()
-                .templateType(new String[]{"T01", "T02", "T03", "T04"})
+                .templateType(new String[]{"T01", "T02", "T03", "T04", "T05"})
                 .build();
 
         // 템플릿 목록 조회 API 테스트
@@ -152,7 +152,7 @@ class TemplateControllerTest extends BaseControllerTests {
                                         headerWithName(AUTH_HEADER).description("JWT 토큰")
                                 ),
                                 relaxedRequestFields(
-                                        fieldWithPath("templateType").type(JsonFieldType.STRING).description("템플릿 구분").attributes(key("etc").value("T01 배송지, T02 A/S 안내, T03 배송 안내, T04 반품 안내")),
+                                        fieldWithPath("templateType").type(JsonFieldType.STRING).description("템플릿 구분").attributes(key("etc").value("T01 배송지, T02 A/S 안내, T03 배송 안내, T04 반품 안내, T05 자주 묻는 질문")),
                                         fieldWithPath("templateName").type(JsonFieldType.STRING).description("템플릿 명").attributes(key("etc").value("")),
                                         fieldWithPath("templateGuide").type(JsonFieldType.STRING).description("템플릿 안내사항").optional().attributes(key("etc").value("")),
                                         fieldWithPath("delivery").type(JsonFieldType.OBJECT).description("템플릿 배송 정보").optional().attributes(key("etc").value("")),

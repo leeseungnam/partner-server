@@ -11,19 +11,8 @@ logging:
           EC2MetadataUtils: ERROR
 
 spring:
-  datasource-partner:
-    driver-class-name: org.mariadb.jdbc.Driver
-    jdbc-url: jdbc:mariadb://wrightbrothers-partner-dev.cf22cofp8pqh.ap-northeast-2.rds.amazonaws.com/partner?useSSL=false&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&allowMultiQueries=true
-    username: admin
-    password: pszqU1Be8LcZDWunv19N
-    maximumPoolSize: 5
-  datasource-admin:
-    driver-class-name: org.mariadb.jdbc.Driver
-    jdbc-url: jdbc:mariadb://wrightbrothers-dev-admin.c9lwghctzixx.ap-northeast-2.rds.amazonaws.com:3306/wrightbrothers?useSSL=false&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&allowMultiQueries=true
-    username: admin
-    password: rBEdceIdPrQMaHrQVcZj
-    maximumPoolSize: 5
-
+  profiles:
+    active: local
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -41,21 +30,12 @@ cloud:
     ses:
       accessKey: AKIARL5GKSILRUJFMCMR
       secretKey: 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
-    s3:
-      bucket: wb-storage-dev
-    region:
-      static: ap-northeast-2
-    stack:
-      auto: false
 
 system:
+  name: PARTNER
   mail:
     # AWS SES 메일 발송자
     sender: info@wrightbrothers.kr
-  file:
-    temp:
-      # 임시 파일 저장 위치
-      path: /Users/chals/partner_project/file_temp
 
 jwt:
   secret-key: aYEFtKMCn0xCg5caH1nnFuHfdAB0lBOvdonxq80VqOGNnG6QcyagXWOLrUdqJnzexUXYceMhGNFNYsA6rblSibUEh0yRsJ3XO1um1iMdoekOPzj4zKlokcu9TxTbz5DHYVLkqX3q9JrLgbLZFXD8ynOHfRHRL5Ge64iFZBVm9X517fwZrNornOmK2L7hUz10SgZpxAz6

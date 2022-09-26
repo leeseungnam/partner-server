@@ -19,14 +19,21 @@ import java.util.Arrays;
 @Aspect
 @Configuration
 @RequiredArgsConstructor
-public class AddressAop {
+public class AddressBeforeAop {
 
     private final WBCommonDao dao;
     private final String namespace = "kr.wrightbrothers.apps.address.query.Address.";
 
     /**
-     * 스토어 소유의 등록된 주소록인지 유효성 체크
-     * 소유에 대한 유효성 포인트는 조회, 수정, 삭제 요청 기능에 대해 체크 함
+     * <pre>
+     *     스토어 소유의 등록된 주소록인지 유효성 체크
+     *     소유에 대한 유효성 포인트는 조회, 수정, 삭제 요청 기능에 대해 체크 합니다.
+     *
+     *     현재 PointCut 영역은 패키지 address -> service 아래 함수 네이밍으로 되어 있습니다.
+     *     추가적인 주소록의 파트너 소유권 시 아래 구조를 참고하여 작업 하시기 바랍니다.
+     *
+     *     Object 필수 데이터 : partnerCode, addressNo
+     * </pre>
      */
     @Before(value =
             "execution(* kr.wrightbrothers.apps.address.service.*Service.update*(..)) ||" +

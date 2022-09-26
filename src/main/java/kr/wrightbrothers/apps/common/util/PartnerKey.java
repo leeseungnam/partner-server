@@ -29,6 +29,13 @@ public class PartnerKey {
 		}
 	}
 
+	public static class TransactionType {
+		public static final String Insert 	= "I";
+		public static final String Update 	= "U";
+		public static final String Delete 	= "D";
+		public static final String Read 	= "R";
+	}
+
 	public static class Jwt {
 		public static class Alias {
 			public static final String ACCESS_TOKEN = "ACCESS_TOKEN";
