@@ -11,6 +11,8 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import org.springframework.util.ObjectUtils;
 
+import javax.validation.constraints.NotBlank;
+
 @Getter
 @Jacksonized
 @SuperBuilder
@@ -19,10 +21,13 @@ import org.springframework.util.ObjectUtils;
 public class TemplateDeliveryDto extends DeliveryDto.Delivery {
     @ApiModelProperty(value = "출고지 우편번호", required = true)
     private String unstoringZipCode;
+
     @ApiModelProperty(value = "출고지 상세주소")
     private String unstoringAddressDetail;
+
     @ApiModelProperty(value = "반품지 우편번호", required = true)
     private String returnZipCode;
+
     @ApiModelProperty(value = "반품지 상세주소")
     private String returnAddressDetail;
 

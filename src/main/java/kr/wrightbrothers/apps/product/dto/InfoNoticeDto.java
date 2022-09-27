@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -17,35 +18,46 @@ public class InfoNoticeDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class InfoNotice {
-        @ApiModelProperty(value = "상품구분")
+        @ApiModelProperty(value = "상품구분", required = true)
         @NotBlank(message = "상품구분")
         private String categoryCode;
-        @ApiModelProperty(value = "품명/모델명")
+
+        @ApiModelProperty(value = "품명/모델명", required = true)
         @NotBlank(message = "품명/모델명")
         private String modelName;
+
         @ApiModelProperty(value = "크기")
         private String productSize;
+
         @ApiModelProperty(value = "중량")
         private String productWeight;
+
         @ApiModelProperty(value = "재질")
         private String productMaterial;
+
         @ApiModelProperty(value = "제품구성")
         private String productComponent;
-        @ApiModelProperty(value = "출시 연도")
+
+        @ApiModelProperty(value = "출시 연도", required = true)
         @NotBlank(message = "출시 연도")
         private String modelYear;
-        @ApiModelProperty(value = "출시 월")
+
+        @ApiModelProperty(value = "출시 월", required = true)
         @NotBlank(message = "출시 월")
         private String modelMonth;
-        @ApiModelProperty(value = "제조자(사)")
+
+        @ApiModelProperty(value = "제조자(사)", required = true)
         @Size(min = 2, max = 50, message = "제조자(사)")
         @NotBlank(message = "제조자(사)")
         private String productMfr;
+
         @ApiModelProperty(value = "세부사양")
         private String detailSpec;
+
         @ApiModelProperty(value = "품질보증기준")
         private String qaStandard;
-        @ApiModelProperty(value = "AS 연락처")
+
+        @ApiModelProperty(value = "AS 연락처", required = true)
         @Size(min = 2, max = 20, message = "AS 연락처")
         @NotBlank(message = "AS 연락처")
         private String asPhone;
@@ -54,6 +66,7 @@ public class InfoNoticeDto {
     @Data
     @Jacksonized
     @SuperBuilder
+    @ApiModel(value = "상품 정보 고시")
     @EqualsAndHashCode(callSuper = false)
     public static class ReqBody extends InfoNotice {
         @JsonIgnore

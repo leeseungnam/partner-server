@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
@@ -24,44 +25,58 @@ public class DeliveryDto {
         @ApiModelProperty(value = "배송방법", required = true)
         @NotBlank(message = "배송방법")
         private String deliveryType;
+
         @ApiModelProperty(value = "묶음배송", required = true)
         @NotBlank(message = "묶음배송")
         private String deliveryBundleFlag;
+
         @ApiModelProperty(value = "배송비 설정", required = true)
         @NotBlank(message = "배송비 설정")
         private String chargeType;
+
         @ApiModelProperty(value = "기본 배송비", required = true)
         @NotNull(message = "기본 배송비")
         @Max(value = 100000000, message = "기본 배송비")
         private Integer chargeBase;
+
         @ApiModelProperty(value = "배송비 무료 기준요금")
         private Long termsFreeCharge;
+
         @ApiModelProperty(value = "결제방식", required = true)
         @NotBlank(message = "결제방식")
         private String paymentType;
+
         @ApiModelProperty(value = "제주/도서산간 추가 배송비", required = true)
         @NotBlank(message = "제주/도서산간 추가 배송비")
         private String surchargeFlag;
+
         @ApiModelProperty(value = "권역코드")
         private String areaCode;
+
         @ApiModelProperty(value = "제주도 추가요금")
         private Integer surchargeJejudo;
+
         @ApiModelProperty(value = "도서산간 추가요금")
         private Integer surchargeIsolated;
+
         @ApiModelProperty(value = "출고지", required = true)
         @NotBlank(message = "출고지")
         private String unstoringAddress;
+
         @ApiModelProperty(value = "반품지", required = true)
         @NotBlank(message = "반품지")
         private String returnAddress;
+
         @ApiModelProperty(value = "교환배송비", required = true)
         @NotNull(message = "교환배송비")
         @Max(value = 10000000, message = "교환배송비")
         private Integer exchangeCharge;
+
         @ApiModelProperty(value = "반품배송비(편도)", required = true)
         @NotNull(message = "반품배송비(편도)")
         @Max(value = 10000000, message = "반품배송비(편도)")
         private Integer returnCharge;
+
         @ApiModelProperty(value = "반품/교환 택배사", required = true)
         @NotBlank(message = "반품/교환 택배사")
         private String returnDeliveryCompanyCode;
@@ -104,6 +119,7 @@ public class DeliveryDto {
     @Data
     @Jacksonized
     @SuperBuilder
+    @ApiModel(value = "상품 배송 정보")
     @EqualsAndHashCode(callSuper = false)
     public static class ReqBody extends Delivery {
         @JsonIgnore

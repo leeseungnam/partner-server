@@ -12,8 +12,8 @@ public class AddressFindDto {
     @Getter
     @Builder
     public static class Param {
-        private String partnerCode;
-        private Long addressNo;
+        private String partnerCode;     // 파트너 코드
+        private Long addressNo;         // 주소록 번호
     }
 
     @Getter
@@ -22,7 +22,7 @@ public class AddressFindDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Response extends AddressDto {
-        private Long addressNo;
+        private Long addressNo;         // 주소록 번호
     }
 
 }

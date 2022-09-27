@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -17,20 +18,24 @@ public class GuideDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Guide {
-        @ApiModelProperty(value = "안내 사항")
+        @ApiModelProperty(value = "안내 사항", required = true)
         @NotBlank(message = "안내 사항")
         @Size(min = 30, max = 2000, message = "안내 사항")
         private String productGuide;
-        @ApiModelProperty(value = "배송 안내")
+
+        @ApiModelProperty(value = "배송 안내",required = true)
         @NotBlank(message = "배송 안내")
         @Size(min = 30, max = 2000, message = "배송 안내")
         private String deliveryGuide;
+
         @ApiModelProperty(value = "교환/반품 안내")
         @Size(max = 2000, message = "교환/반품 안내")
         private String exchangeReturnGuide;
-        @ApiModelProperty(value = "A/S 안내")
+
+        @ApiModelProperty(value = "A/S 안내", required = true)
         @NotBlank(message = "A/S 안내")
         private String asGuide;
+
         @ApiModelProperty(value = "자주 묻는 질문")
         @Size(max = 2000, message = "교환/반품 안내")
         private String qnaGuide;
@@ -39,6 +44,7 @@ public class GuideDto {
     @Data
     @Jacksonized
     @SuperBuilder
+    @ApiModel(value = "상품 안내 사항")
     @EqualsAndHashCode(callSuper = false)
     public static class ReqBody extends Guide {
         @JsonIgnore

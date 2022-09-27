@@ -16,19 +16,19 @@ public class TemplateListDto {
     @SuperBuilder
     @EqualsAndHashCode(callSuper = false)
     public static class Param extends AbstractPageDto {
-        private String partnerCode;
-        private int page;
-        private int count;
-        private String[] templateType;
+        private String partnerCode;         // 파트너 코드
+        private int page;                   // 현재 페이지
+        private int count;                  // 페이지 행 수
+        private String[] templateType;      // 템플릿 구분
     }
 
     @Getter
     @AllArgsConstructor
     public static class Response {
-        private Long templateNo;
-        private String templateType;
-        private String templateName;
-        private String create_date;
+        private Long templateNo;            // 템플릿 번호
+        private String templateType;        // 템플릿 구분
+        private String templateName;        // 템플릿 명
+        private String create_date;         // 작성일시
 
         // 템플릿 구분 ENUM 처리
         public void setTemplateType(String templateType) {
