@@ -84,7 +84,7 @@ public class AddressController extends WBController {
     @ApiOperation(value = "주소록 수정", notes = "등록된 주소록 정보 수정")
     @PutMapping("/addresses")
     public WBModel updateAddress(@ApiParam(value = "주소록 수정 데이터") @Valid @RequestBody AddressUpdateDto paramDto,
-                                 @AuthenticationPrincipal UserPrincipal user) {
+                                 @ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
         // Security Custom UserDetail 객체를 통해 파트너 코드, 아이디 정보 추출
         paramDto.setUserId(user.getUsername());
         paramDto.setPartnerCode(user.getUserAuth().getPartnerCode());
@@ -101,7 +101,7 @@ public class AddressController extends WBController {
     @ApiOperation(value = "주소록 삭제", notes = "등록된 주소록 정보 삭제")
     @DeleteMapping("/addresses")
     public WBModel deleteAddress(@ApiParam(value = "주소록 번호") @RequestParam Long addressNo,
-                                 @AuthenticationPrincipal UserPrincipal user) {
+                                 @ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
         // 주소록 삭제
         addressService.deleteAddress(
                 AddressDeleteDto.builder()

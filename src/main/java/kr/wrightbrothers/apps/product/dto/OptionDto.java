@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -33,6 +34,7 @@ public class OptionDto {
     @Data
     @Jacksonized
     @SuperBuilder
+    @ApiModel(value = "상품 옵션 정보")
     @EqualsAndHashCode(callSuper = false)
     public static class ReqBody extends Option {
         @JsonIgnore

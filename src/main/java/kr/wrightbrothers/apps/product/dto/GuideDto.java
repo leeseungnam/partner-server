@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -43,6 +44,7 @@ public class GuideDto {
     @Data
     @Jacksonized
     @SuperBuilder
+    @ApiModel(value = "상품 안내 사항")
     @EqualsAndHashCode(callSuper = false)
     public static class ReqBody extends Guide {
         @JsonIgnore

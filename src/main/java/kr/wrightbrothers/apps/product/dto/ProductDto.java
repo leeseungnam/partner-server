@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -88,6 +89,7 @@ public class ProductDto {
     @Data
     @Jacksonized
     @SuperBuilder
+    @ApiModel(value = "상품 기본 정보")
     @EqualsAndHashCode(callSuper = false)
     public static class ReqBody extends Product {
         private String partnerCode;         // 파트너 코드

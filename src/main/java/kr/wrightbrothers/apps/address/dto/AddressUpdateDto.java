@@ -18,7 +18,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddressUpdateDto extends AddressDto {
-    @ApiModelProperty(value = "주소록 번호")
+    @ApiModelProperty(value = "주소록 번호", required = true)
     @NotNull(message = "주소록 번호")
     private Long addressNo;
 

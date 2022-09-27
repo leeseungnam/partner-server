@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
@@ -118,6 +119,7 @@ public class DeliveryDto {
     @Data
     @Jacksonized
     @SuperBuilder
+    @ApiModel(value = "상품 배송 정보")
     @EqualsAndHashCode(callSuper = false)
     public static class ReqBody extends Delivery {
         @JsonIgnore
