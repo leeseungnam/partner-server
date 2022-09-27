@@ -63,6 +63,31 @@ class AddressControllerTest extends BaseControllerTests {
                         .queryParam("page", String.valueOf(1))
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.WBCommon.state").value("S"))
+                .andDo(
+                        document("address-list",
+                                requestDocument(),
+                                responseDocument(),
+                                requestHeaders(
+                                        headerWithName(AUTH_HEADER).description("JWT 토큰")
+                                ),
+                                requestParameters(
+                                        parameterWithName("count").description("페이지 ROW 수").attributes(key("etc").value("")),
+                                        parameterWithName("page").description("페이지").attributes(key("etc").value(""))
+                                ),
+                                responseFields(
+                                        fieldWithPath("data[]").type(JsonFieldType.ARRAY).optional().description("주소록 목록"),
+                                        fieldWithPath("data[].addressNo").type(JsonFieldType.NUMBER).description("주소록 번호"),
+                                        fieldWithPath("data[].addressName").type(JsonFieldType.STRING).description("주소록 이름"),
+                                        fieldWithPath("data[].address").type(JsonFieldType.STRING).description("주소"),
+                                        fieldWithPath("data[].addressPhone").type(JsonFieldType.STRING).description("연락처"),
+                                        fieldWithPath("data[].reqUnstoringFlag").type(JsonFieldType.STRING).description("대표 출고지 주소로 지정 여부"),
+                                        fieldWithPath("data[].reqReturnFlag").type(JsonFieldType.STRING).description("대표 반품/교환지 주소로 지정 여부"),
+                                        fieldWithPath("totalItems").type(JsonFieldType.NUMBER).description("전체 조회 건수"),
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                )
+                ))
                 ;
     }
 
