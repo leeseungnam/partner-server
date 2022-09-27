@@ -11,8 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * <pre>
@@ -76,7 +75,8 @@ public class ProductService {
         // 판매 정보
         dao.insert(namespace + "mergeSellInfo", paramDto.getSellInfo());
         // 옵션 정보
-        paramDto.getOptionList().forEach(option -> dao.insert(namespace + "insertOption", option));
+        if (!ObjectUtils.isEmpty(paramDto.getOptionList()))
+            paramDto.getOptionList().forEach(option -> dao.insert(namespace + "insertOption", option));
         // 배송 정보
         dao.insert(namespace + "mergeDelivery", paramDto.getDelivery());
         // 정보 고시
@@ -90,14 +90,16 @@ public class ProductService {
     }
 
     public ProductFindDto.ResBody findProduct(ProductFindDto.Param paramDto) {
+        List<OptionDto.ResBody> optionList = dao.selectList(namespace + "findOptionList", paramDto.getProductCode());
+
         return ProductFindDto.ResBody.builder()
-                .product(dao.selectOne(namespace + "findProduct", paramDto.getProductCode()))
-                .basicSpec(dao.selectOne(namespace + "findBasicSpec", paramDto.getProductCode()))
-                .sellInfo(dao.selectOne(namespace + "findSellInfo", paramDto.getProductCode()))
-                .optionList(dao.selectList(namespace + "findOptionList", paramDto.getProductCode()))
-                .delivery(dao.selectOne(namespace + "findDelivery", paramDto.getProductCode()))
-                .infoNotice(dao.selectOne(namespace + "findInfoNotice", paramDto.getProductCode()))
-                .guide(dao.selectOne(namespace + "findGuide", paramDto.getProductCode()))
+                .product(Optional.of((ProductDto.ResBody) dao.selectOne(namespace + "findProduct", paramDto.getProductCode())).orElse(new ProductDto.ResBody()))
+                .basicSpec(Optional.of((BasicSpecDto.ResBody) dao.selectOne(namespace + "findBasicSpec", paramDto.getProductCode())).orElse(new BasicSpecDto.ResBody()))
+                .sellInfo(Optional.of((SellInfoDto.ResBody) dao.selectOne(namespace + "findSellInfo", paramDto.getProductCode())).orElse(new SellInfoDto.ResBody()))
+                .optionList(optionList.isEmpty() ? Collections.emptyList() : optionList)
+                .delivery(Optional.of((DeliveryDto.ResBody) dao.selectOne(namespace + "findDelivery", paramDto.getProductCode())).orElse(new DeliveryDto.ResBody()))
+                .infoNotice(Optional.of((InfoNoticeDto.ResBody) dao.selectOne(namespace + "findInfoNotice", paramDto.getProductCode())).orElse(new InfoNoticeDto.ResBody()))
+                .guide(Optional.of((GuideDto.ResBody) dao.selectOne(namespace + "findGuide", paramDto.getProductCode())).orElse(new GuideDto.ResBody()))
                 .build();
     }
 
@@ -116,8 +118,10 @@ public class ProductService {
         // 판매 정보 수정
         dao.update(namespace + "mergeSellInfo", paramDto.getSellInfo());
         // 옵션 정보 수정
-        dao.delete(namespace + "deleteOption", paramDto.getProductCode());
-        paramDto.getOptionList().forEach(option -> dao.insert(namespace + "insertOption", option));
+        if (!ObjectUtils.isEmpty(paramDto.getOptionList())) {
+            dao.delete(namespace + "deleteOption", paramDto.getProductCode());
+            paramDto.getOptionList().forEach(option -> dao.insert(namespace + "insertOption", option));
+        }
         // 배송 정보
         dao.update(namespace + "mergeDelivery", paramDto.getDelivery());
         // 정보 고시

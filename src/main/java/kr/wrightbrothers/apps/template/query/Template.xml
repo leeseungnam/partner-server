@@ -164,7 +164,7 @@
             d.return_address_detail,
             d.exchange_charge,
             d.return_charge,
-            d.return_delivery_company_code
+			ifnull(d.return_delivery_company_code, '') as return_delivery_company_code
 		  from template t
 		  left join template_guide g
 			on t.template_no = g.template_no

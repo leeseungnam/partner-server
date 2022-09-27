@@ -37,6 +37,7 @@ class TemplateControllerTest extends BaseControllerTests {
         // 템플릿 등록 객체
         paramDto = TemplateInsertDto.builder()
                 .partnerCode("PT0000001")
+                .userId("test@wrightbrothers.kr")
                 .templateType("T01")
                 .templateName("첫번째 배송 등록 테스트")
                 .delivery(TemplateDeliveryDto.builder()
@@ -49,15 +50,14 @@ class TemplateControllerTest extends BaseControllerTests {
                         .surchargeFlag("N")
                         .unstoringZipCode("06035")
                         .unstoringAddress("서울특별시 강남구 강남대로 154길 37")
-                        .unstoringAddressDetail("주경빌딩 2층")
+                        .unstoringAddressDetail("주경빌딩 1층")
                         .returnZipCode("06035")
                         .returnAddress("서울특별시 강남구 강남대로 154길 37")
                         .returnAddressDetail("주경빌딩 1층")
-                        .exchangeCharge(10000)
+                        .exchangeCharge(100000)
                         .returnCharge(1000000)
                         .returnDeliveryCompanyCode("cjgls")
                         .build())
-                .userId("test@wrightbrothers.kr")
                 .build();
         templateService.insertTemplate(paramDto);
     }
@@ -219,7 +219,6 @@ class TemplateControllerTest extends BaseControllerTests {
                 .andExpect(jsonPath("$.data.delivery.returnAddressDetail").value(paramDto.getDelivery().getReturnAddressDetail()))
                 .andExpect(jsonPath("$.data.delivery.exchangeCharge").value(paramDto.getDelivery().getExchangeCharge()))
                 .andExpect(jsonPath("$.data.delivery.returnCharge").value(paramDto.getDelivery().getReturnCharge()))
-                .andExpect(jsonPath("$.data.delivery.returnDeliveryCompanyCode").value(paramDto.getDelivery().getReturnDeliveryCompanyCode()))
                 .andDo(
                         document("template-find",
                                 requestDocument(),
@@ -236,25 +235,25 @@ class TemplateControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.templateName").type(JsonFieldType.STRING).description("템플릿 명"),
                                         fieldWithPath("data.templateGuide").type(JsonFieldType.STRING).description("템플릿 안내사항").optional(),
                                         fieldWithPath("data.delivery").type(JsonFieldType.OBJECT).description("템플릿 배송 정보").optional(),
-                                        fieldWithPath("data.delivery.deliveryType").type(JsonFieldType.STRING).description("배송 방법"),
-                                        fieldWithPath("data.delivery.deliveryBundleFlag").type(JsonFieldType.STRING).description("묶음배송 여부"),
-                                        fieldWithPath("data.delivery.chargeType").type(JsonFieldType.STRING).description("배송비 구분"),
-                                        fieldWithPath("data.delivery.chargeBase").type(JsonFieldType.NUMBER).description("기본 배송비"),
-                                        fieldWithPath("data.delivery.termsFreeCharge").type(JsonFieldType.NUMBER).description("배송비 조건 금액"),
-                                        fieldWithPath("data.delivery.paymentType").type(JsonFieldType.STRING).description("결제 방식"),
-                                        fieldWithPath("data.delivery.surchargeFlag").type(JsonFieldType.STRING).description("제주/도서산간 추가 배송비 여부"),
+                                        fieldWithPath("data.delivery.deliveryType").type(JsonFieldType.STRING).description("배송 방법").optional(),
+                                        fieldWithPath("data.delivery.deliveryBundleFlag").type(JsonFieldType.STRING).description("묶음배송 여부").optional(),
+                                        fieldWithPath("data.delivery.chargeType").type(JsonFieldType.STRING).description("배송비 구분").optional(),
+                                        fieldWithPath("data.delivery.chargeBase").type(JsonFieldType.NUMBER).description("기본 배송비").optional(),
+                                        fieldWithPath("data.delivery.termsFreeCharge").type(JsonFieldType.NUMBER).description("배송비 조건 금액").optional(),
+                                        fieldWithPath("data.delivery.paymentType").type(JsonFieldType.STRING).description("결제 방식").optional(),
+                                        fieldWithPath("data.delivery.surchargeFlag").type(JsonFieldType.STRING).description("제주/도서산간 추가 배송비 여부").optional(),
                                         fieldWithPath("data.delivery.areaCode").type(JsonFieldType.STRING).description("권역").optional(),
                                         fieldWithPath("data.delivery.surchargeJejudo").type(JsonFieldType.STRING).description("제주 추가 배송비").optional(),
                                         fieldWithPath("data.delivery.surchargeIsolated").type(JsonFieldType.STRING).description("도서산간 추가 배송비").optional(),
-                                        fieldWithPath("data.delivery.unstoringZipCode").type(JsonFieldType.STRING).description("출고지 우편번호"),
-                                        fieldWithPath("data.delivery.unstoringAddress").type(JsonFieldType.STRING).description("출고지 주소"),
+                                        fieldWithPath("data.delivery.unstoringZipCode").type(JsonFieldType.STRING).description("출고지 우편번호").optional(),
+                                        fieldWithPath("data.delivery.unstoringAddress").type(JsonFieldType.STRING).description("출고지 주소").optional(),
                                         fieldWithPath("data.delivery.unstoringAddressDetail").type(JsonFieldType.STRING).description("출고지 상세주소").optional(),
-                                        fieldWithPath("data.delivery.returnZipCode").type(JsonFieldType.STRING).description("반품지 우편번호"),
-                                        fieldWithPath("data.delivery.returnAddress").type(JsonFieldType.STRING).description("반품지 주소"),
-                                        fieldWithPath("data.delivery.returnAddressDetail").type(JsonFieldType.STRING).description("반품지 상세주소"),
-                                        fieldWithPath("data.delivery.exchangeCharge").type(JsonFieldType.NUMBER).description("교환배송비"),
-                                        fieldWithPath("data.delivery.returnCharge").type(JsonFieldType.NUMBER).description("반품배송비(편도)"),
-                                        fieldWithPath("data.delivery.returnDeliveryCompanyCode").type(JsonFieldType.STRING).description("반품/교환 택배사 코드"),
+                                        fieldWithPath("data.delivery.returnZipCode").type(JsonFieldType.STRING).description("반품지 우편번호").optional(),
+                                        fieldWithPath("data.delivery.returnAddress").type(JsonFieldType.STRING).description("반품지 주소").optional(),
+                                        fieldWithPath("data.delivery.returnAddressDetail").type(JsonFieldType.STRING).description("반품지 상세주소").optional(),
+                                        fieldWithPath("data.delivery.exchangeCharge").type(JsonFieldType.NUMBER).description("교환배송비").optional(),
+                                        fieldWithPath("data.delivery.returnCharge").type(JsonFieldType.NUMBER).description("반품배송비(편도)").optional(),
+                                        fieldWithPath("data.delivery.returnDeliveryCompanyCode").type(JsonFieldType.STRING).description("반품/교환 택배사 코드").optional(),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
                                 )
                 ))
