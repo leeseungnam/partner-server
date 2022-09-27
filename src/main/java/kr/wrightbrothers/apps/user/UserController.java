@@ -31,14 +31,14 @@ public class UserController extends WBController {
     })
     @ApiOperation(value = "회원가입", notes = "회원가입 요청 API 입니다.")
     @PostMapping()
-    public WBModel insertUser(@ApiParam @Valid @RequestBody UserInsertDto parmaDto) {
+    public WBModel insertUser(@ApiParam @Valid @RequestBody UserInsertDto paramDto) {
 
         // encoding password
-        parmaDto.changePwd(passwordEncoder.encode(parmaDto.getUserPwd()));
+        paramDto.changePwd(passwordEncoder.encode(paramDto.getUserPwd()));
         //setUserStatusCode
-        parmaDto.changeUserStatusCode(PartnerKey.Code.User.Status.JOIN);
+        paramDto.changeUserStatusCode(PartnerKey.Code.User.Status.JOIN);
 
-        userService.insertUser(parmaDto);
+        userService.insertUser(paramDto);
 
         return  noneDataResponse();
     }

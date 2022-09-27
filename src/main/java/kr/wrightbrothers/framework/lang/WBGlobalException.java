@@ -129,6 +129,10 @@ public class WBGlobalException {
                 errorCode = 9999;
                 convert = new String[]{bindingResult.getAllErrors().get(0).getDefaultMessage()};
             }
+
+            if ("AssertTrue".equals(bindingResult.getAllErrors().get(0).getCode())) {
+                errorCode = ErrorCode.INVALID_BOOLEAN.getErrCode();;
+            }
         }
 
         return new ResponseEntity<>(
