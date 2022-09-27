@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.product;
 
 import io.swagger.annotations.*;
+import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.product.dto.*;
 import kr.wrightbrothers.apps.product.service.ProductService;
@@ -64,16 +65,13 @@ public class ProductController extends WBController {
         return response;
     }
 
+    @UserPrincipalScope
     @ApiImplicitParams({
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
     })
     @ApiOperation(value = "상품 등록", notes = "상품 정보 등록")
     @PostMapping("/products")
-    public WBModel insertProduct(@ApiParam(value = "상품 등록 데이터") @Valid @RequestBody ProductInsertDto paramDto,
-                                 @ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
-        // Security Custom UserDetail 객체를 통해 파트너 코드, 아이디 정보 추출
-        paramDto.setUserId(user.getUsername());
-        paramDto.getProduct().setPartnerCode(user.getUserAuth().getPartnerCode());
+    public WBModel insertProduct(@ApiParam(value = "상품 등록 데이터") @Valid @RequestBody ProductInsertDto paramDto) {
         paramDto.setProductCode(
                 productService.generateProductCode(paramDto.getProduct().getCategoryTwoCode())
         );
@@ -102,16 +100,13 @@ public class ProductController extends WBController {
         ));
     }
 
+    @UserPrincipalScope
     @ApiImplicitParams({
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
     })
     @ApiOperation(value = "상품 수정", notes = "등록된 상품 정보 수정")
     @PutMapping("/products")
-    public WBModel updateProduct(@ApiParam(value = "상품 수정 데이터") @Valid @RequestBody ProductUpdateDto paramDto,
-                                 @ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
-        // Security Custom UserDetail 객체를 통해 파트너 코드, 아이디 정보 추출
-        paramDto.setUserId(user.getUsername());
-        paramDto.getProduct().setPartnerCode(user.getUserAuth().getPartnerCode());
+    public WBModel updateProduct(@ApiParam(value = "상품 수정 데이터") @Valid @RequestBody ProductUpdateDto paramDto) {
         paramDto.setProductCode(paramDto.getProductCode());
         // 추가 유효성 검사
         paramDto.validProduct();
@@ -121,17 +116,13 @@ public class ProductController extends WBController {
         return noneDataResponse();
     }
 
+    @UserPrincipalScope
     @ApiImplicitParams({
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
     })
     @ApiOperation(value = "상품 상태 수정", notes = "등록된 상품 상태를 일괄 변경 처리 기능 제공")
     @PatchMapping("/products")
-    public WBModel updateProductStatus(@ApiParam(value = "상품 상태 일괄 변경 데이터") @Valid @RequestBody StatusUpdateDto paramDto,
-                                       @ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
-        // Security Custom UserDetail 객체를 통해 파트너 코드, 아이디 정보 추출
-        paramDto.setUserId(user.getUsername());
-        paramDto.setPartnerCode(user.getUserAuth().getPartnerCode());
-
+    public WBModel updateProductStatus(@ApiParam(value = "상품 상태 일괄 변경 데이터") @Valid @RequestBody StatusUpdateDto paramDto) {
         // 상품 일괄 상태 변경
         productService.updateProductStatus(paramDto);
 

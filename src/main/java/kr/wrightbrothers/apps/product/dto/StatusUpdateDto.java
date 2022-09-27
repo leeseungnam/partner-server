@@ -34,11 +34,11 @@ public class StatusUpdateDto {
     @JsonIgnore
     private String userId;              // 변경자
 
-    public void setUserId(String userId) {
+    public void setAopUserId(String userId) {
         this.userId = userId;
     }
 
-    public void setPartnerCode(String partnerCode) {
+    public void setAopPartnerCode(String partnerCode) {
         this.partnerCode = partnerCode;
     }
 

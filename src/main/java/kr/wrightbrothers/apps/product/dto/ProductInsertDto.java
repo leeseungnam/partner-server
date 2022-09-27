@@ -113,7 +113,7 @@ public class ProductInsertDto {
             throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"탑승 연령대"});
     }
 
-    public void setUserId(String userId) {
+    public void setAopUserId(String userId) {
         // 필수 데이터 입력 부분
         product.setUserId(userId);
         sellInfo.setUserId(userId);
@@ -124,6 +124,11 @@ public class ProductInsertDto {
         fileList.forEach(file -> file.setUserId(userId));
         if (!ObjectUtils.isEmpty(basicSpec))
             basicSpec.setUserId(userId);
+    }
+
+    public void setAopPartnerCode(String partnerCode) {
+        // 필수 데이터 입력 부분
+        product.setPartnerCode(partnerCode);
     }
 
     public void setProductCode(String productCode) {

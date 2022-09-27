@@ -166,7 +166,7 @@ class ProductControllerTest extends BaseControllerTests {
                 .build();
 
         // 기초 데이터 초기화 처리
-        productDto.setUserId("test@wrightbrothers.kr");
+        productDto.setAopUserId("test@wrightbrothers.kr");
         productDto.getProduct().setPartnerCode("PT0000001");
         productDto.setProductCode(
                 productService.generateProductCode(productDto.getProduct().getCategoryTwoCode())
