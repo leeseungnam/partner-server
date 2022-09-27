@@ -24,11 +24,11 @@ public class TemplateUpdateDto extends TemplateDto {
     @JsonIgnore
     private String userId;      // 사용자 아이디
 
-    public void setPartnerCode(String partnerCode) {
+    public void setAopPartnerCode(String partnerCode) {
         this.partnerCode = partnerCode;
     }
 
-    public void setUserId(String userId) {
+    public void setAopUserId(String userId) {
         this.userId = userId;
     }
 }

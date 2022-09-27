@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.template;
 
 import io.swagger.annotations.*;
+import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import kr.wrightbrothers.apps.template.dto.*;
@@ -48,16 +49,13 @@ public class TemplateController extends WBController {
         return response;
     }
 
+    @UserPrincipalScope
     @ApiImplicitParams({
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
     })
     @ApiOperation(value = "템플릿 등록", notes = "템플릿 등록 기능 제공")
     @PostMapping("/templates")
-    public WBModel insetTemplate(@ApiParam(value = "템플릿 등록 데이터") @Valid @RequestBody TemplateInsertDto paramDto,
-                                 @ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
-        // Security Custom UserDetail 객체를 통해 파트너 코드, 아이디 정보 추출
-        paramDto.setUserId(user.getUsername());
-        paramDto.setPartnerCode(user.getUserAuth().getPartnerCode());
+    public WBModel insetTemplate(@ApiParam(value = "템플릿 등록 데이터") @Valid @RequestBody TemplateInsertDto paramDto) {
         // 추가 유효성 체크
         paramDto.validTemplate();
 
@@ -84,16 +82,13 @@ public class TemplateController extends WBController {
 
     }
 
+    @UserPrincipalScope
     @ApiImplicitParams({
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
     })
     @ApiOperation(value = "템플릿 수정", notes = "등록된 템플릿 정보 수정")
     @PutMapping("/templates")
-    public WBModel updateTemplate(@ApiParam(value = "템플릿 수정 데이터") @Valid @RequestBody TemplateUpdateDto paramDto,
-                                  @ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
-        // Security Custom UserDetail 객체를 통해 파트너 코드, 아이디 정보 추출
-        paramDto.setUserId(user.getUsername());
-        paramDto.setPartnerCode(user.getUserAuth().getPartnerCode());
+    public WBModel updateTemplate(@ApiParam(value = "템플릿 수정 데이터") @Valid @RequestBody TemplateUpdateDto paramDto) {
         // 추가 유효성 체크
         paramDto.validTemplate();
 

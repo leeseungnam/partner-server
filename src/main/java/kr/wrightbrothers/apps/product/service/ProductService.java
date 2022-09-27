@@ -75,8 +75,8 @@ public class ProductService {
         // 판매 정보
         dao.insert(namespace + "mergeSellInfo", paramDto.getSellInfo());
         // 옵션 정보
-        if (!ObjectUtils.isEmpty(paramDto.getOptionList()))
-            paramDto.getOptionList().forEach(option -> dao.insert(namespace + "insertOption", option));
+        Optional.ofNullable(paramDto.getOptionList()).orElseGet(Collections::emptyList)
+                .forEach(option -> dao.insert(namespace + "insertOption", option));
         // 배송 정보
         dao.insert(namespace + "mergeDelivery", paramDto.getDelivery());
         // 정보 고시
@@ -100,7 +100,7 @@ public class ProductService {
                 // 판매 정보
                 .sellInfo(Optional.of((SellInfoDto.ResBody) dao.selectOne(namespace + "findSellInfo", paramDto.getProductCode())).orElse(new SellInfoDto.ResBody()))
                 // 옵션 정보
-                .optionList(optionList.isEmpty() ? Collections.emptyList() : optionList)
+                .optionList(Optional.ofNullable(optionList).orElseGet(Collections::emptyList))
                 // 배송 정보
                 .delivery(Optional.of((DeliveryDto.ResBody) dao.selectOne(namespace + "findDelivery", paramDto.getProductCode())).orElse(new DeliveryDto.ResBody()))
                 // 정보 고시
@@ -125,10 +125,9 @@ public class ProductService {
         // 판매 정보 수정
         dao.update(namespace + "mergeSellInfo", paramDto.getSellInfo());
         // 옵션 정보 수정
-        if (!ObjectUtils.isEmpty(paramDto.getOptionList())) {
-            dao.delete(namespace + "deleteOption", paramDto.getProductCode());
-            paramDto.getOptionList().forEach(option -> dao.insert(namespace + "insertOption", option));
-        }
+        dao.delete(namespace + "deleteOption", paramDto.getProductCode());
+        Optional.ofNullable(paramDto.getOptionList()).orElseGet(Collections::emptyList)
+                .forEach(option -> dao.insert(namespace + "insertOption", option));
         // 배송 정보
         dao.update(namespace + "mergeDelivery", paramDto.getDelivery());
         // 정보 고시

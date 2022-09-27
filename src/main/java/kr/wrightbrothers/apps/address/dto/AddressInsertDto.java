@@ -21,4 +21,12 @@ public class AddressInsertDto extends AddressDto {
     private String partnerCode;     // 파트너 코드
     @JsonIgnore
     private String userId;          // 사용자 아이디
+
+    public void setAopUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setAopPartnerCode(String partnerCode) {
+        this.partnerCode = partnerCode;
+    }
 }

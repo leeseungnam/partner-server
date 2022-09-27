@@ -3,6 +3,7 @@ package kr.wrightbrothers.apps.address;
 import io.swagger.annotations.*;
 import kr.wrightbrothers.apps.address.dto.*;
 import kr.wrightbrothers.apps.address.service.AddressService;
+import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import kr.wrightbrothers.framework.support.WBController;
@@ -45,17 +46,13 @@ public class AddressController extends WBController {
         return response;
     }
 
+    @UserPrincipalScope
     @ApiImplicitParams({
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
     })
     @ApiOperation(value = "주소록 등록", notes = "주소록 등록 기능 제공")
     @PostMapping("/addresses")
-    public WBModel insertAddress(@ApiParam(value = "주소록 등록 데이터") @Valid @RequestBody AddressInsertDto paramDto,
-                                 @ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
-        // Security Custom UserDetail 객체를 통해 파트너 코드, 아이디 정보 추출
-        paramDto.setUserId(user.getUsername());
-        paramDto.setPartnerCode(user.getUserAuth().getPartnerCode());
-
+    public WBModel insertAddress(@ApiParam(value = "주소록 등록 데이터") @Valid @RequestBody AddressInsertDto paramDto) {
         // 주소록 등록
         addressService.insertAddress(paramDto);
 
@@ -78,17 +75,13 @@ public class AddressController extends WBController {
         );
     }
 
+    @UserPrincipalScope
     @ApiImplicitParams({
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
     })
     @ApiOperation(value = "주소록 수정", notes = "등록된 주소록 정보 수정")
     @PutMapping("/addresses")
-    public WBModel updateAddress(@ApiParam(value = "주소록 수정 데이터") @Valid @RequestBody AddressUpdateDto paramDto,
-                                 @ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
-        // Security Custom UserDetail 객체를 통해 파트너 코드, 아이디 정보 추출
-        paramDto.setUserId(user.getUsername());
-        paramDto.setPartnerCode(user.getUserAuth().getPartnerCode());
-
+    public WBModel updateAddress(@ApiParam(value = "주소록 수정 데이터") @Valid @RequestBody AddressUpdateDto paramDto) {
         // 주소록 수정
         addressService.updateAddress(paramDto);
 
