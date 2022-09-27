@@ -93,12 +93,19 @@ public class ProductService {
         List<OptionDto.ResBody> optionList = dao.selectList(namespace + "findOptionList", paramDto.getProductCode());
 
         return ProductFindDto.ResBody.builder()
+                // 상품 기본 정보
                 .product(Optional.of((ProductDto.ResBody) dao.selectOne(namespace + "findProduct", paramDto.getProductCode())).orElse(new ProductDto.ResBody()))
+                // 상품 기본스펙
                 .basicSpec(Optional.of((BasicSpecDto.ResBody) dao.selectOne(namespace + "findBasicSpec", paramDto.getProductCode())).orElse(new BasicSpecDto.ResBody()))
+                // 판매 정보
                 .sellInfo(Optional.of((SellInfoDto.ResBody) dao.selectOne(namespace + "findSellInfo", paramDto.getProductCode())).orElse(new SellInfoDto.ResBody()))
+                // 옵션 정보
                 .optionList(optionList.isEmpty() ? Collections.emptyList() : optionList)
+                // 배송 정보
                 .delivery(Optional.of((DeliveryDto.ResBody) dao.selectOne(namespace + "findDelivery", paramDto.getProductCode())).orElse(new DeliveryDto.ResBody()))
+                // 정보 고시
                 .infoNotice(Optional.of((InfoNoticeDto.ResBody) dao.selectOne(namespace + "findInfoNotice", paramDto.getProductCode())).orElse(new InfoNoticeDto.ResBody()))
+                // 안내 정보
                 .guide(Optional.of((GuideDto.ResBody) dao.selectOne(namespace + "findGuide", paramDto.getProductCode())).orElse(new GuideDto.ResBody()))
                 .build();
     }
