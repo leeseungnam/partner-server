@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 
 public class SellInfoDto {
 
-    @Data
+    @Getter
     @Jacksonized
     @SuperBuilder
     @AllArgsConstructor

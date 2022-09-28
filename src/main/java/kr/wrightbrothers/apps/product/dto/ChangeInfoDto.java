@@ -9,7 +9,7 @@ import lombok.extern.jackson.Jacksonized;
 
 public class ChangeInfoDto {
 
-    @Data
+    @Getter
     @Jacksonized
     @SuperBuilder
     @AllArgsConstructor

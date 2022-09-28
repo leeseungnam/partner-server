@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.wrightbrothers.apps.order.query.Order">
+
+	<select id="findOrderList" parameterType="kr.wrightbrothers.apps.order.dto.OrderListDto$Param" resultType="kr.wrightbrothers.apps.order.dto.OrderListDto$Response">
+		select
+		    o.order_no,
+		    date_format(o.order_date, '%Y-%m-%d') as order_day,
+			o.order_user_name,
+			o.order_status_code,
+			p.payment_method_code,
+			o.order_name,
+			p.order_amount,
+			p.ssp_point,
+			p.sales_amount,
+			p.payment_amount,
+			date_format(p.payment_date, '%Y-%m-%d') as payment_day,
+			date_format(p.cancel_date, '%Y-%m-%d') as cancel_day,
+			p.payment_status_code
+		  from order_info o
+		 inner join order_payment p
+			on o.order_no = p.order_no
+		 where o.partner_code = #{partnerCode}
+		<choose>
+			<when test="keywordValue != null and keywordValue != ''">
+				<choose>
+					<when test="keywordType == 'NO'">
+						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+							o.order_no like #{item} '%'
+						</foreach>
+					</when>
+					<when test="keywordType == 'NAME'">
+						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+							o.order_name like #{item} '%'
+						</foreach>
+					</when>
+					<when test="keywordType == 'USER'">
+						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+							o.order_user_name like #{item} '%'
+						</foreach>
+					</when>
+				</choose>
+			</when>
+			<otherwise>
+				<choose>
+					<when test="rangeType == 'PAYMENT'.toString()">
+						and p.payment_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+					</when>
+					<when test="rangeType == 'CANCEL'.toString()">
+						and p.cancel_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+					</when>
+				</choose>
+				-- 주문 상태
+				<foreach collection="orderStatus" item="item" index="index" open="and o.order_status_code in (" separator="," close=")">
+					#{item}
+				</foreach>
+				-- 결제 상태
+				<foreach collection="paymentStatus" item="item" index="index" open="and p.payment_status_code in (" separator="," close=")">
+					#{item}
+				</foreach>
+				-- 결제 방법
+				<foreach collection="paymentMethod" item="item" index="index" open="and p.payment_method_code in (" separator="," close=")">
+					#{item}
+				</foreach>
+			</otherwise>
+		</choose>
+		order by o.create_date desc
+	</select>
+
+	<select id="findOrderStatusStatistics" parameterType="kr.wrightbrothers.apps.order.dto.OrderListDto$Param" resultType="kr.wrightbrothers.apps.order.dto.OrderListDto$Statistics">
+		select
+			count(1) as totalOrderCount,											-- 전체주문 건수
+		    sum(if(p.payment_status_code = 'O05', 1, 0)) as completeOrderCount,		-- 주문완료 건수
+		    sum(if(p.payment_status_code = 'D01', 1, 0)) as readyProductCount,		-- 상품준비 건수
+		    sum(if(p.payment_status_code = 'O06', 1, 0)) as requestCancelCount,		-- 취소요청 건수
+		    sum(if(p.payment_status_code = 'C05', 1, 0)) as confirmPurchaseCount,	-- 구매확정 건수
+		    sum(if(p.payment_status_code = 'R05', 1, 0)) as completeReturnCount		-- 반품완료 건수
+		  from order_info o
+		 inner join order_payment p
+		    on o.order_no = p.order_no
+		 where o.partner_code = #{partnerCode}
+		<choose>
+			<when test="keywordValue != null and keywordValue != ''">
+				<choose>
+					<when test="keywordType == 'NO'">
+						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+							o.order_no like #{item} '%'
+						</foreach>
+					</when>
+					<when test="keywordType == 'NAME'">
+						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+							o.order_name like #{item} '%'
+						</foreach>
+					</when>
+					<when test="keywordType == 'USER'">
+						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+							o.order_user_name like #{item} '%'
+						</foreach>
+					</when>
+				</choose>
+			</when>
+			<otherwise>
+				<choose>
+					<when test="rangeType == 'PAYMENT'.toString()">
+						and p.payment_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+					</when>
+					<when test="rangeType == 'CANCEL'.toString()">
+						and p.cancel_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+					</when>
+				</choose>
+				-- 주문 상태
+				<foreach collection="orderStatus" item="item" index="index" open="and o.order_status_code in (" separator="," close=")">
+					#{item}
+				</foreach>
+				-- 결제 상태
+				<foreach collection="paymentStatus" item="item" index="index" open="and p.payment_status_code in (" separator="," close=")">
+					#{item}
+				</foreach>
+				-- 결제 방법
+				<foreach collection="paymentMethod" item="item" index="index" open="and p.payment_method_code in (" separator="," close=")">
+					#{item}
+				</foreach>
+			</otherwise>
+		</choose>
+	</select>
+
+</mapper>
