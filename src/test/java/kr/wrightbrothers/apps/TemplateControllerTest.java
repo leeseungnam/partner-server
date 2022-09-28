@@ -99,7 +99,7 @@ class TemplateControllerTest extends BaseControllerTests {
                                         fieldWithPath("data[].templateNo").type(JsonFieldType.NUMBER).description("템플릿 번호"),
                                         fieldWithPath("data[].templateType").type(JsonFieldType.STRING).description("템플릿 구분"),
                                         fieldWithPath("data[].templateName").type(JsonFieldType.STRING).description("템플릿 명"),
-                                        fieldWithPath("data[].create_date").type(JsonFieldType.STRING).description("등록일시"),
+                                        fieldWithPath("data[].createDate").type(JsonFieldType.STRING).description("등록일시"),
                                         fieldWithPath("totalItems").type(JsonFieldType.NUMBER).description("전체 조회 건수"),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
                                 )

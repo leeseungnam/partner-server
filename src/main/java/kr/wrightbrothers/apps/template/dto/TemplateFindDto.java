@@ -1,10 +1,6 @@
 package kr.wrightbrothers.apps.template.dto;
 
-import kr.wrightbrothers.apps.product.dto.DeliveryDto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
+import lombok.*;
 
 public class TemplateFindDto {
 
@@ -15,8 +11,9 @@ public class TemplateFindDto {
         private Long templateNo;                // 템플릿 번호
     }
 
-    @Data
     @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class Response {
         private String templateType;            // 템플릿 구분
         private String templateName;            // 템플릿 이름
