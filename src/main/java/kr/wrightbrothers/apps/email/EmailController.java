@@ -27,7 +27,7 @@ public class EmailController extends WBController {
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", paramType = "header")
     })
     @ApiOperation(value = "이메일 발송(단 건)", notes = "이메일 단 건 발송을 위한 API입니다.")
-    @PostMapping("")
+    @PostMapping("/single")
     public WBModel sendSingleEmail(@ApiParam @RequestBody SingleEmailDto.ReqBody paramDto) {
 
         WBModel wbResponse = new WBModel();

@@ -71,7 +71,7 @@ public class UserController extends WBController {
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", paramType = "header")
     })
     @ApiOperation(value = "비밀번호 변경", notes = "비밀번호 변경 API 입니다.")
-    @PutMapping("password")
+    @PutMapping("/password")
     public WBModel updateUserPwd(@ApiParam @Valid @RequestBody UserPwdUpdateDto paramDto) {
 
         // encoding password
