@@ -41,6 +41,7 @@ public class ProductInsertDto {
     private SellInfoDto.ReqBody sellInfo;       // 판매 정보
 
     @ApiModelProperty(value = "옵션 정보")
+    @Valid
     private List<OptionDto.ReqBody> optionList; // 옵션 정보
 
     @ApiModelProperty(value = "배송 정보")
@@ -60,29 +61,8 @@ public class ProductInsertDto {
     @NotNull(message = "상품 이미지 파일 목록")
     private List<FileUpdateDto> fileList;       // 상품 등록 이미지
 
-    public void validProduct() {
-        // 자전거 상품 추가 유효성 검사
-        validBike();
-        // 재생자전거 유효성 검사 제외
-        if (ProductType.RECYCLING.getType().equals(this.product.getProductType())) {
-            if (ObjectUtils.isEmpty(this.guide.getQnaGuide()))
-                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"자주 묻는 질문"});
-            if (this.guide.getQnaGuide().length() < 30)
-                throw new WBBusinessException(ErrorCode.INVALID_TEXT_SIZE.getErrCode(), new String[]{"자주 묻는 질문", "30", "2000"});
-            return;
-        }
-
-        if (ObjectUtils.isEmpty(this.guide.getExchangeReturnGuide()))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"교환/반품 안내"});
-        if (this.guide.getExchangeReturnGuide().length() < 30)
-            throw new WBBusinessException(ErrorCode.INVALID_TEXT_SIZE.getErrCode(), new String[]{"교환/반품 안내", "30", "2000"});
-
-        // 배송정보 유효성 검사
-        delivery.validDelivery();
-    }
-
     // 자전거 상품 추가 유효성 검사
-    public void validBike() {
+    private void validBike() {
         // 자전거 상품이 아닐경우 제외
         if (!CategoryCode.BIKE.getCode().equals(this.product.getCategoryOneCode()))
             return;
@@ -113,6 +93,50 @@ public class ProductInsertDto {
             throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"무게"});
         if (ObjectUtils.isEmpty(basicSpec.getAgeList()))
             throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"탑승 연령대"});
+    }
+
+    // 상품 옵션 유효성 검사
+    private void validOption() {
+        if ("Y".equals(this.sellInfo.getProductOptionFlag())) {
+            if (ObjectUtils.isEmpty(this.optionList))
+                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"옵션 정보"});
+
+            this.optionList.forEach(option -> {
+                if (ObjectUtils.isEmpty(option.getOptionSeq()))
+                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"옵션 번호"});
+                if (ObjectUtils.isEmpty(option.getOptionName()))
+                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"옵션 명"});
+                if (ObjectUtils.isEmpty(option.getOptionValue()))
+                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"옵션 항목"});
+                if (ObjectUtils.isEmpty(option.getOptionSurcharge()))
+                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"변동 금액"});
+                if (ObjectUtils.isEmpty(option.getOptionStockQty()))
+                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"옵션 재고수량"});
+            });
+        }
+    }
+
+    public void validProduct() {
+        // 자전거 상품 추가 유효성 검사
+        validBike();
+        // 상품 판매 옵션 유효성 검사
+        validOption();
+        // 재생자전거 유효성 검사 제외
+        if (ProductType.RECYCLING.getType().equals(this.product.getProductType())) {
+            if (ObjectUtils.isEmpty(this.guide.getQnaGuide()))
+                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"자주 묻는 질문"});
+            if (this.guide.getQnaGuide().length() < 30)
+                throw new WBBusinessException(ErrorCode.INVALID_TEXT_SIZE.getErrCode(), new String[]{"자주 묻는 질문", "30", "2000"});
+            return;
+        }
+
+        if (ObjectUtils.isEmpty(this.guide.getExchangeReturnGuide()))
+            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"교환/반품 안내"});
+        if (this.guide.getExchangeReturnGuide().length() < 30)
+            throw new WBBusinessException(ErrorCode.INVALID_TEXT_SIZE.getErrCode(), new String[]{"교환/반품 안내", "30", "2000"});
+
+        // 배송정보 유효성 검사
+        delivery.validDelivery();
     }
 
     public void setAopUserId(String userId) {
