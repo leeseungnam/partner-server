@@ -2,7 +2,6 @@ package kr.wrightbrothers.apps.token.service;
 
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.token.dto.RefreshTokenDto;
-import kr.wrightbrothers.apps.user.dto.UserDto;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

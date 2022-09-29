@@ -1,20 +1,41 @@
 package kr.wrightbrothers.apps.user;
 
 import io.swagger.annotations.*;
+import kr.wrightbrothers.apps.common.config.security.jwt.JwtTokenProvider;
+import kr.wrightbrothers.apps.common.util.AwsSesUtil;
+import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.common.util.TokenUtil;
+import kr.wrightbrothers.apps.email.dto.SingleEmailDto;
+import kr.wrightbrothers.apps.email.service.EmailService;
+import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
+import kr.wrightbrothers.apps.user.dto.UserAuthDto;
+import kr.wrightbrothers.apps.user.dto.UserDto;
 import kr.wrightbrothers.apps.user.dto.UserInsertDto;
+import kr.wrightbrothers.apps.user.dto.UserPwdUpdateDto;
 import kr.wrightbrothers.apps.user.service.UserService;
+import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.context.Context;
+import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 
 @Api(tags = {"회원"})
 @Slf4j
@@ -22,9 +43,11 @@ import javax.validation.Valid;
 @RequestMapping("/v1/user")
 @RequiredArgsConstructor
 public class UserController extends WBController {
-
+    private final static long REFRESH_TOKEN_VALIDATION_SECOND = 60 * 60 * 2;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final EmailService emailService;
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", paramType = "header")
@@ -35,11 +58,132 @@ public class UserController extends WBController {
 
         // encoding password
         paramDto.changePwd(passwordEncoder.encode(paramDto.getUserPwd()));
+
         //setUserStatusCode
         paramDto.changeUserStatusCode(PartnerKey.Code.User.Status.JOIN);
 
         userService.insertUser(paramDto);
 
         return  noneDataResponse();
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", paramType = "header")
+    })
+    @ApiOperation(value = "비밀번호 변경", notes = "비밀번호 변경 API 입니다.")
+    @PutMapping("/password")
+    public WBModel updateUserPwd(@ApiParam @Valid @RequestBody UserPwdUpdateDto paramDto) {
+
+        // encoding password
+        paramDto.changePwd(passwordEncoder.encode(paramDto.getUserPwd()));
+
+        userService.updateUserPwd(paramDto);
+
+        return  noneDataResponse();
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", paramType = "header")
+    })
+    @ApiOperation(value = "아이디 찾기", notes = "아이디를 찾기 위한 API 입니다.")
+    @PostMapping("/search/id")
+    public WBModel findUserId(@ApiParam @Valid @RequestBody UserDto.FindId.ReqBody paramDto) {
+
+        WBModel wbResponse = new WBModel();
+
+        UserDto userDto = userService.findUserByDynamic(UserDto.builder()
+                .userName(paramDto.getUserName())
+                .userPhone(paramDto.getUserPhone())
+                .build());
+
+        if(ObjectUtils.isEmpty(userDto)) throw new WBBusinessException(ErrorCode.FORBIDDEN.getErrCode());
+
+        wbResponse.addObject("userId", userDto.getUserId());
+
+        return wbResponse;
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", paramType = "header")
+    })
+    @ApiOperation(value = "비밀번호 찾기", notes = "비밀번호를 찾기 위한 API 입니다.")
+    @PostMapping("/search/pwd")
+    public WBModel findUserPwd(@ApiParam @Valid @RequestBody UserDto.FindPwd.ReqBody paramDto) {
+
+        WBModel wbResponse = new WBModel();
+
+        UserDto userDto = userService.findUserByDynamic(UserDto.builder()
+                .userId(paramDto.getUserId())
+                .userName(paramDto.getUserName())
+                .userPhone(paramDto.getUserPhone())
+                .build());
+
+        if(ObjectUtils.isEmpty(userDto)) throw new WBBusinessException(ErrorCode.FORBIDDEN.getErrCode());
+
+        String authCode = RandomStringUtils.randomAlphanumeric(10).toUpperCase();
+        userDto.changePwd(passwordEncoder.encode(authCode));
+
+        //  update userPwd
+        userService.updateUserPwd(UserPwdUpdateDto.builder()
+                .userId(userDto.getUserId())
+                .userPwd(userDto.getUserPwd())
+                .build());
+
+        //  send email
+        SingleEmailDto.ResBody resBody = emailService.singleSendEmail(SingleEmailDto.ReqBody.builder()
+                        .userId(userDto.getUserId())
+                        .authCode(authCode)
+                        .build());
+
+        return  wbResponse;
+    }
+
+    // [todo] old token 파기
+    // [todo] set userAuth validation
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", paramType = "header")
+    })
+    @ApiOperation(value = "인가 정보 변경", notes = "인가(권한) 정보를 변경하기 위한 API 입니다.")
+    @PostMapping("/auth")
+    public WBModel setAuthentic(@RequestHeader(PartnerKey.Jwt.Header.AUTHORIZATION) String accessToken
+            , @CookieValue(PartnerKey.Jwt.Alias.REFRESH_TOKEN) String refreshToke
+            , @ApiIgnore @AuthenticationPrincipal UserPrincipal userPrincipal
+            , @ApiParam @RequestBody UserAuthDto userAuth
+            , HttpServletResponse response
+    ) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        List<GrantedAuthority> updateAuthorities = new ArrayList<>();
+        updateAuthorities.add(new SimpleGrantedAuthority(userAuth.getAuthCode()));
+
+        userPrincipal.changeUserAuth(userAuth);
+
+        Authentication newAuth = new UsernamePasswordAuthenticationToken(userPrincipal, authentication.getCredentials(), updateAuthorities);
+
+        SecurityContextHolder.getContext().setAuthentication(newAuth);
+
+        String newAccessToken = jwtTokenProvider.generateAccessToken(newAuth);
+        String newRefreshToken = jwtTokenProvider.issueRefreshToken(authentication);
+
+        log.info("ACCESS_TOKEN[OLD]::{}",accessToken);
+        log.info("ACCESS_TOKEN[NEW]::{}",newAccessToken);
+
+        log.info("REFRESH_TOKEN[OLD]::{}",refreshToke);
+        log.info("REFRESH_TOKEN[NEW]::{}",newRefreshToken);
+
+        UserPrincipal userDetail = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        log.info(userPrincipal.getUsername());
+
+        if(!ObjectUtils.isEmpty(userPrincipal.getUserAuth())){
+            log.info("UserAuth::{},{}",userPrincipal.getUserAuth().getAuthCode(), userPrincipal.getUserAuth().getPartnerCode());
+        }else{
+            log.info("UserAuth is null");
+        }
+
+        response.setHeader(PartnerKey.Jwt.Header.AUTHORIZATION, PartnerKey.Jwt.Type.BEARER + newAccessToken);
+        response.addCookie(TokenUtil.createCookie(PartnerKey.Jwt.Alias.REFRESH_TOKEN, newRefreshToken, REFRESH_TOKEN_VALIDATION_SECOND));
+
+        return noneDataResponse();
     }
 }

@@ -66,7 +66,6 @@ public class UserInsertDto {
         this.userStatusCode = userStatucCode;
     }
     public void changePwd(String userPwd){
-        Assert.hasText(userPwd, "비밀번호가 존재하지 않습니다.");
         this.userPwd = userPwd;
     }
 }

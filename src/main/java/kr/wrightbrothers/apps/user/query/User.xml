@@ -3,12 +3,33 @@
 
 <mapper namespace="kr.wrightbrothers.apps.user.query.User">
 	
-	<select id="findById" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.user.dto.UserDto">
+	<select id="findUserByDynamic" parameterType="kr.wrightbrothers.apps.user.dto.UserDto" resultType="kr.wrightbrothers.apps.user.dto.UserDto">
 		select
-		    *
+		    user_id
+		,	user_pwd
+		,	user_name
 		  from users
-		 where user_id = #{userId}
+		 where 1=1
+	    <if test="userId != null and !('').equals.userId">
+		   and user_id = #{userId}
+	    </if>
+		<if test="userName != null and !('').equals.userName">
+		   and user_name = #{userName}
+		</if>
+		<if test="userPhone != null and !('').equals.userPhone">
+		   and user_phone = #{userPhone}
+		</if>
 	</select>
+
+	<update id="updateUserPwd" parameterType="kr.wrightbrothers.apps.user.dto.UserPwdUpdateDto">
+		update users
+			set
+			user_pwd = #{userPwd}
+		,	change_pwd_flag = 1
+		where user_id = #{userId}
+	</update>
+
+
 
 	<select id="findAuthById" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.user.dto.UserAuthDto">
 		select
