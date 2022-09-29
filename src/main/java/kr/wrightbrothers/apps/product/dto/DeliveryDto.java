@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 
 public class DeliveryDto {
 
-    @Data
+    @Getter
     @Jacksonized
     @SuperBuilder
     @AllArgsConstructor

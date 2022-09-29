@@ -13,7 +13,7 @@ import javax.validation.constraints.Size;
 
 public class ProductDto {
 
-    @Data
+    @Getter
     @Jacksonized
     @SuperBuilder
     @AllArgsConstructor

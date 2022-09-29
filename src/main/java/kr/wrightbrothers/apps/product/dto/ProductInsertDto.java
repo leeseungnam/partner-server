@@ -17,7 +17,9 @@ import org.springframework.util.ObjectUtils;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @Jacksonized
@@ -117,11 +119,15 @@ public class ProductInsertDto {
         // 필수 데이터 입력 부분
         product.setUserId(userId);
         sellInfo.setUserId(userId);
-        delivery.setUserId(userId);
         infoNotice.setUserId(userId);
         guide.setUserId(userId);
-        optionList.forEach(option -> option.setUserId(userId));
-        fileList.forEach(file -> file.setUserId(userId));
+
+        Optional.ofNullable(optionList).orElseGet(Collections::emptyList)
+                .forEach(option -> option.setUserId(userId));
+        Optional.ofNullable(fileList).orElseGet(Collections::emptyList)
+                .forEach(file -> file.setUserId(userId));
+        if (!ObjectUtils.isEmpty(delivery))
+            delivery.setUserId(userId);
         if (!ObjectUtils.isEmpty(basicSpec))
             basicSpec.setUserId(userId);
     }
@@ -135,11 +141,13 @@ public class ProductInsertDto {
         // 필수 데이터 입력 부분
         product.setProductCode(productCode);
         sellInfo.setProductCode(productCode);
-        delivery.setProductCode(productCode);
         infoNotice.setProductCode(productCode);
         guide.setProductCode(productCode);
-        optionList.forEach(option -> option.setProductCode(productCode));
 
+        Optional.ofNullable(optionList).orElseGet(Collections::emptyList)
+                .forEach(option -> option.setProductCode(productCode));
+        if (!ObjectUtils.isEmpty(delivery))
+            delivery.setProductCode(productCode);
         if (!ObjectUtils.isEmpty(productCode))
             basicSpec.setProductCode(productCode);
     }

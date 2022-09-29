@@ -28,7 +28,7 @@ public class TemplateListDto {
         private Long templateNo;            // 템플릿 번호
         private String templateType;        // 템플릿 구분
         private String templateName;        // 템플릿 명
-        private String create_date;         // 작성일시
+        private String createDate;         // 작성일시
 
         // 템플릿 구분 ENUM 처리
         public void setTemplateType(String templateType) {

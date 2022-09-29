@@ -15,7 +15,9 @@
 		select
 		    address_no,
 		    address_name,
-		    concat(address, ',', address_detail, '(', address_zip_code, ')') as address,
+		    address_zip_code,
+		    address,
+		    address_detail,
 		    address_phone,
 		    rep_unstoring_flag,
 		    rep_return_flag

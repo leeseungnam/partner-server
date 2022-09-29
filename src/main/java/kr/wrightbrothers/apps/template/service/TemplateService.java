@@ -30,7 +30,7 @@ public class TemplateService {
         dao.insert(namespace + "insertTemplate", paramDto);
 
         // 템플릿 배송정보 등록
-        if ("T01".equals(paramDto.getTemplateType())) {
+        if (TemplateType.DELIVERY.getType().equals(paramDto.getTemplateType())) {
             dao.insert(namespace + "insertTemplateDelivery", paramDto);
             return;
         }
