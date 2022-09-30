@@ -34,6 +34,8 @@ public class UserPrincipalAop {
                         method.invoke(object, userPrincipal.getUsername());
                     if (method.getName().equals("setAopPartnerCode"))
                         method.invoke(object, userPrincipal.getUserAuth().getPartnerCode());
+                    if (method.getName().equals("setAopPartnerKind"))
+                        method.invoke(object, userPrincipal.getUserAuth().getPartnerKind());
                 } catch (Exception e) {
                     log.error("UserPrincipal Convertor Dto", e);
                 }

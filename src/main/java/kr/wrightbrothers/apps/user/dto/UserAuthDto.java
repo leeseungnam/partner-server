@@ -18,4 +18,7 @@ public class UserAuthDto {
     private String authCode;
     @ApiModelProperty(value = "파트너 코드", required = true)
     private String partnerCode;
+    @ApiModelProperty(value = "파트너 타입", required = true)
+    private String partnerKind;
+
 }
