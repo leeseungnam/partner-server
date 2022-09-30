@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,6 +11,7 @@ import lombok.extern.jackson.Jacksonized;
 
 import javax.validation.constraints.*;
 
+@ApiModel(value = "회원 비밀번호 변경 요청 데이터")
 @Getter
 @Jacksonized
 @SuperBuilder

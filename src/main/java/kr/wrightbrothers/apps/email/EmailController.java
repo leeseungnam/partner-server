@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Api(tags = {"권한"})
+import javax.validation.Valid;
+
+@Api(tags = {"이메일"})
 @Slf4j
 @RestController
 @RequestMapping("/v1/email")
@@ -28,7 +30,7 @@ public class EmailController extends WBController {
     })
     @ApiOperation(value = "이메일 발송(단 건)", notes = "이메일 단 건 발송을 위한 API입니다.")
     @PostMapping("/single")
-    public WBModel sendSingleEmail(@ApiParam @RequestBody SingleEmailDto.ReqBody paramDto) {
+    public WBModel sendSingleEmail(@ApiParam(value = "메일 인증 요청 데이터") @Valid @RequestBody SingleEmailDto.ReqBody paramDto) {
 
         WBModel wbResponse = new WBModel();
 

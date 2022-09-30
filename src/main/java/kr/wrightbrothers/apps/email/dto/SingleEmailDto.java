@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.email.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,7 +24,7 @@ public class SingleEmailDto {
         @NotBlank(message = "수신 대상 아이디(이메일)")
         private String userId;
     }
-
+    @ApiModel(value = "메인 인증 요청 데이터")
     @Data
     @Jacksonized
     @SuperBuilder
@@ -44,6 +45,7 @@ public class SingleEmailDto {
         }
     }
 
+    @ApiModel(value = "메인 인증 응답 데이터")
     @Data
     @Jacksonized
     @SuperBuilder

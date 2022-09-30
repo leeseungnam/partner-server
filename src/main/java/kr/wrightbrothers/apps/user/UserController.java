@@ -140,7 +140,7 @@ public class UserController extends WBController {
     public WBModel setAuthentic(@RequestHeader(PartnerKey.Jwt.Header.AUTHORIZATION) String accessToken
             , @CookieValue(PartnerKey.Jwt.Alias.REFRESH_TOKEN) String refreshToke
             , @ApiIgnore @AuthenticationPrincipal UserPrincipal userPrincipal
-            , @ApiParam @RequestBody UserAuthDto userAuth
+            , @ApiParam  @Valid @RequestBody UserAuthDto userAuth
             , HttpServletResponse response
     ) {
 
