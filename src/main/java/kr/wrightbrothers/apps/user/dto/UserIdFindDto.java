@@ -15,7 +15,7 @@ public class UserIdFindDto {
     @SuperBuilder
     @AllArgsConstructor
     @NoArgsConstructor
-    public class ReqBody {
+    public static class ReqBody {
         @ApiModelProperty(value = "이름", required = true)
         @NotBlank(message = "이름")
         @Size(min = 2, max = 20, message = "이름")
