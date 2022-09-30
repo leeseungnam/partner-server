@@ -4,10 +4,7 @@ import io.swagger.annotations.*;
 import kr.wrightbrothers.apps.common.config.security.jwt.JwtTokenProvider;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.TokenUtil;
-import kr.wrightbrothers.apps.sign.dto.SignDto;
-import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
-import kr.wrightbrothers.apps.sign.service.SignService;
-import kr.wrightbrothers.apps.user.dto.UserAuthDto;
+import kr.wrightbrothers.apps.sign.dto.SignInDto;
 import kr.wrightbrothers.apps.user.service.UserService;
 import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBModel;
@@ -16,18 +13,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
 
 @Api(tags = {"인증"})
 @Slf4j
@@ -37,7 +28,6 @@ import java.util.List;
 public class SignController extends WBController {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final SignService signService;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final static long REFRESH_TOKEN_VALIDATION_SECOND = 60 * 60 * 2;
     private final UserService userService;
@@ -47,7 +37,7 @@ public class SignController extends WBController {
     })
     @ApiOperation(value = "로그인", notes = "로그인 요청 API 입니다.")
     @PostMapping("/login")
-    public WBModel signIn(@ApiParam @Valid @RequestBody SignDto paramDto
+    public WBModel signIn(@ApiParam @Valid @RequestBody SignInDto paramDto
             , HttpServletRequest request
             , HttpServletResponse response) {
         UsernamePasswordAuthenticationToken authenticationToken =
