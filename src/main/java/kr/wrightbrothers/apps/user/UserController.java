@@ -127,11 +127,12 @@ public class UserController extends WBController {
                 .build());
 
         //  send email
-        emailService.singleSendEmail(SingleEmailDto.builder()
+        SingleEmailDto.ResBody resBody = emailService.singleSendEmail(SingleEmailDto.ReqBody.builder()
                         .userId(userDto.getUserId())
                         .authCode(authCode)
                         .build());
 
+        wbResponse.addObject("authEmail", resBody);
         return  wbResponse;
     }
 

@@ -14,10 +14,7 @@ public class EmailService {
 
     private final AwsSesUtil awsSesUtil;
 
-    private final WBCommonDao dao;
-    private final String namespace = "kr.wrightbrothers.apps.file.query.File.";
-
-    public void singleSendEmail(SingleEmailDto paramDto) {
+    public SingleEmailDto.ResBody singleSendEmail(SingleEmailDto.ReqBody paramDto) {
 
         Email email = Email.valueOfCode(paramDto.getEmailType());
 
@@ -29,6 +26,11 @@ public class EmailService {
         context.setVariable("code", authCode);
 
         awsSesUtil.singleSend(paramDto.getUserId(), subject, template, context);
+
+        return SingleEmailDto.ResBody.builder()
+                .userId(paramDto.getUserId())
+                .authCode(paramDto.getAuthCode())
+                .build();
 
     }
 }
