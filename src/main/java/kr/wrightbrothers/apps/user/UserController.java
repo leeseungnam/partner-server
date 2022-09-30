@@ -110,7 +110,7 @@ public class UserController extends WBController {
         WBModel wbResponse = new WBModel();
 
         UserDto userDto = userService.findUserByDynamic(UserDto.builder()
-                .userId(paramDto.getUserId())
+                .userId(paramDto.getSingleEmail().getUserId())
                 .userName(paramDto.getUserName())
                 .userPhone(paramDto.getUserPhone())
                 .build());
@@ -122,9 +122,9 @@ public class UserController extends WBController {
 
         //transaction
         wbResponse.addObject("authEmail", userService.findUserPwd(authCode, userDto, SingleEmailDto.ReqBody.builder()
-                .userId(paramDto.getUserId())
+                .userId(paramDto.getSingleEmail().getUserId())
                 .authCode(authCode)
-                .emailType(paramDto.getEmailType())
+                .emailType(paramDto.getSingleEmail().getEmailType())
                 .build()));
 
         return  wbResponse;
