@@ -3,6 +3,7 @@ package kr.wrightbrothers.apps.product.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import kr.wrightbrothers.apps.common.type.ChargeType;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
 import lombok.*;
@@ -34,20 +35,17 @@ public class DeliveryDto {
         @NotBlank(message = "배송비 설정")
         private String chargeType;
 
-        @ApiModelProperty(value = "기본 배송비", required = true)
-        @NotNull(message = "기본 배송비")
+        @ApiModelProperty(value = "기본 배송비")
         @Max(value = 100000000, message = "기본 배송비")
         private Integer chargeBase;
 
         @ApiModelProperty(value = "배송비 무료 기준요금")
         private Long termsFreeCharge;
 
-        @ApiModelProperty(value = "결제방식", required = true)
-        @NotBlank(message = "결제방식")
+        @ApiModelProperty(value = "결제방식")
         private String paymentType;
 
-        @ApiModelProperty(value = "제주/도서산간 추가 배송비", required = true)
-        @NotBlank(message = "제주/도서산간 추가 배송비")
+        @ApiModelProperty(value = "제주/도서산간 추가 배송비")
         private String surchargeFlag;
 
         @ApiModelProperty(value = "권역코드")
@@ -87,14 +85,6 @@ public class DeliveryDto {
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"배송방법"});
             if (ObjectUtils.isEmpty(this.deliveryBundleFlag))
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"묶음배송"});
-            if (ObjectUtils.isEmpty(this.chargeType))
-                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"배송비 설정"});
-            if (ObjectUtils.isEmpty(this.chargeBase))
-                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"기본 배송비"});
-            if (ObjectUtils.isEmpty(this.paymentType))
-                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"결제방식"});
-            if (ObjectUtils.isEmpty(this.surchargeFlag))
-                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"제주/도서산간 추가 배송비 여부"});
             if (ObjectUtils.isEmpty(this.unstoringAddress))
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"출고지"});
             if (ObjectUtils.isEmpty(this.returnAddress))
@@ -105,14 +95,47 @@ public class DeliveryDto {
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"반품배송비(편도)"});
             if (ObjectUtils.isEmpty(this.returnDeliveryCompanyCode))
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"반품/교환 택배사"});
+            if (ObjectUtils.isEmpty(this.chargeType))
+                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"배송비 설정"});
 
-            // 범위 체크
-            if (this.chargeBase > 100000000)
-                throw new WBBusinessException(ErrorCode.INVALID_MONEY_MAX.getErrCode(), new String[]{"기본 배송비", "100000000"});
             if (this.exchangeCharge > 10000000)
                 throw new WBBusinessException(ErrorCode.INVALID_MONEY_MAX.getErrCode(), new String[]{"교환 배송비", "100000000"});
             if (this.returnCharge > 10000000)
                 throw new WBBusinessException(ErrorCode.INVALID_MONEY_MAX.getErrCode(), new String[]{"반품 배송비(편도)", "100000000"});
+
+            // 배송비 설정이 무료의 경우 종료
+            if (ChargeType.FREE.getType().equals(this.chargeType)) return;
+
+            if (ObjectUtils.isEmpty(this.chargeBase))
+                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"기본 배송비"});
+            if (ObjectUtils.isEmpty(this.paymentType))
+                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"결제방식"});
+            if (ObjectUtils.isEmpty(this.surchargeFlag))
+                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"제주/도서산간 추가 배송비 여부"});
+
+            // 조건부 무료 경우 배송비 조건 휴요성 체크
+            if (ChargeType.TERMS_FREE.getType().equals(this.chargeType)) {
+                if (ObjectUtils.isEmpty(this.termsFreeCharge))
+                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"배송비 조건"});
+
+                if (this.termsFreeCharge > 100000000)
+                    throw new WBBusinessException(ErrorCode.INVALID_MONEY_MAX.getErrCode(), new String[]{"배송비 조건", "100000000"});
+            }
+
+            // 제주/도서산간 추가 배송비 설정 시 해당 유효성 검사
+            if ("Y".equals(this.surchargeFlag)) {
+                if (ObjectUtils.isEmpty(this.areaCode))
+                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"권역 구분"});
+                if (ObjectUtils.isEmpty(this.surchargeJejudo))
+                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"제주 추가 배송비"});
+                if (ObjectUtils.isEmpty(this.surchargeIsolated))
+                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"제주 외 도서산간 추가 배송비"});
+            }
+
+            // 범위 체크
+            if (this.chargeBase > 100000000)
+                throw new WBBusinessException(ErrorCode.INVALID_MONEY_MAX.getErrCode(), new String[]{"기본 배송비", "100000000"});
+
         }
     }
 
