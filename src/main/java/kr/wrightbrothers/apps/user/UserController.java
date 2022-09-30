@@ -105,7 +105,7 @@ public class UserController extends WBController {
     })
     @ApiOperation(value = "비밀번호 찾기", notes = "비밀번호를 찾기 위한 API 입니다.")
     @PostMapping("/search/pwd")
-    public WBModel findUserPwd(@ApiParam @Valid @RequestBody UserPwdFindDto paramDto) {
+    public WBModel findUserPwd(@ApiParam @Valid @RequestBody UserPwdFindDto paramDto) throws Exception{
 
         WBModel wbResponse = new WBModel();
 
@@ -120,19 +120,13 @@ public class UserController extends WBController {
         String authCode = RandomStringUtils.randomAlphanumeric(10).toUpperCase();
         userDto.changePwd(passwordEncoder.encode(authCode));
 
-        //  update userPwd
-        userService.updateUserPwd(UserPwdUpdateDto.builder()
-                .userId(userDto.getUserId())
-                .userPwd(userDto.getUserPwd())
-                .build());
+        //transaction
+        wbResponse.addObject("authEmail", userService.findUserPwd(authCode, userDto, SingleEmailDto.ReqBody.builder()
+                .userId(paramDto.getUserId())
+                .authCode(authCode)
+                .emailType(paramDto.getEmailType())
+                .build()));
 
-        //  send email
-        SingleEmailDto.ResBody resBody = emailService.singleSendEmail(SingleEmailDto.ReqBody.builder()
-                        .userId(userDto.getUserId())
-                        .authCode(authCode)
-                        .build());
-
-        wbResponse.addObject("authEmail", resBody);
         return  wbResponse;
     }
 

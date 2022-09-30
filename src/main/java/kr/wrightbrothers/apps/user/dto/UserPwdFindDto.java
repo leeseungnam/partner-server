@@ -33,4 +33,8 @@ public class UserPwdFindDto {
     @Size(min = 10, max = 11, message = "휴대전화 번호")
     @NotBlank(message = "휴대전화 번호")
     private String userPhone;
+
+    @ApiModelProperty(value = "이메일 유형 (1:이메일 주소 인증, 2:임시 비밀번호 발급, 3:계약갱신 알림 )", required = true)
+    @NotBlank(message = "이메일 유형")
+    private String emailType;
 }

@@ -10,13 +10,13 @@
 		,	user_name
 		  from users
 		 where 1=1
-	    <if test="userId != null and !('').equals.userId">
+	    <if test="userId != null and userId != ''">
 		   and user_id = #{userId}
 	    </if>
-		<if test="userName != null and !('').equals.userName">
+		<if test="userName != null and userName != ''">
 		   and user_name = #{userName}
 		</if>
-		<if test="userPhone != null and !('').equals.userPhone">
+		<if test="userPhone != null and userPhone != ''">
 		   and user_phone = #{userPhone}
 		</if>
 	</select>

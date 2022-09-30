@@ -50,7 +50,7 @@ public class SingleEmailDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ResBody extends SingleEmail {
-        @JsonIgnore
+
         @ApiModelProperty(value = "인증 코드")
         private String authCode;
     }
