@@ -9,10 +9,7 @@ import kr.wrightbrothers.apps.common.util.TokenUtil;
 import kr.wrightbrothers.apps.email.dto.SingleEmailDto;
 import kr.wrightbrothers.apps.email.service.EmailService;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
-import kr.wrightbrothers.apps.user.dto.UserAuthDto;
-import kr.wrightbrothers.apps.user.dto.UserDto;
-import kr.wrightbrothers.apps.user.dto.UserInsertDto;
-import kr.wrightbrothers.apps.user.dto.UserPwdUpdateDto;
+import kr.wrightbrothers.apps.user.dto.*;
 import kr.wrightbrothers.apps.user.service.UserService;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.WBController;
@@ -87,7 +84,7 @@ public class UserController extends WBController {
     })
     @ApiOperation(value = "아이디 찾기", notes = "아이디를 찾기 위한 API 입니다.")
     @PostMapping("/search/id")
-    public WBModel findUserId(@ApiParam @Valid @RequestBody UserDto.FindId.ReqBody paramDto) {
+    public WBModel findUserId(@ApiParam @Valid @RequestBody UserIdFindDto.ReqBody paramDto) {
 
         WBModel wbResponse = new WBModel();
 
@@ -108,7 +105,7 @@ public class UserController extends WBController {
     })
     @ApiOperation(value = "비밀번호 찾기", notes = "비밀번호를 찾기 위한 API 입니다.")
     @PostMapping("/search/pwd")
-    public WBModel findUserPwd(@ApiParam @Valid @RequestBody UserDto.FindPwd.ReqBody paramDto) {
+    public WBModel findUserPwd(@ApiParam @Valid @RequestBody UserPwdFindDto paramDto) {
 
         WBModel wbResponse = new WBModel();
 
@@ -130,7 +127,7 @@ public class UserController extends WBController {
                 .build());
 
         //  send email
-        SingleEmailDto.ResBody resBody = emailService.singleSendEmail(SingleEmailDto.ReqBody.builder()
+        emailService.singleSendEmail(SingleEmailDto.builder()
                         .userId(userDto.getUserId())
                         .authCode(authCode)
                         .build());

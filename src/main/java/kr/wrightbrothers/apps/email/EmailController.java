@@ -28,14 +28,16 @@ public class EmailController extends WBController {
     })
     @ApiOperation(value = "이메일 발송(단 건)", notes = "이메일 단 건 발송을 위한 API입니다.")
     @PostMapping("/single")
-    public WBModel sendSingleEmail(@ApiParam @RequestBody SingleEmailDto.ReqBody paramDto) {
+    public WBModel sendSingleEmail(@ApiParam @RequestBody SingleEmailDto paramDto) {
 
         WBModel wbResponse = new WBModel();
 
         String authCode = RandomStringUtils.randomAlphanumeric(6).toUpperCase();
         paramDto.setAuthCode(authCode);
 
-        wbResponse.addObject("authEmail", emailService.singleSendEmail(paramDto));
+        emailService.singleSendEmail(paramDto);
+
+        wbResponse.addObject("authEmail", paramDto);
 
         return  wbResponse;
     }
