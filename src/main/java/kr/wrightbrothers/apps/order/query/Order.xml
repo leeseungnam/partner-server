@@ -124,5 +124,61 @@
 			</otherwise>
 		</choose>
 	</select>
+	
+	<select id="findOrder" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.order.dto.OrderDto">
+		select
+		    order_no,
+		    order_date,
+		    order_status_code as order_status_name,
+		    order_qty,
+		    order_user_code,
+		    order_user_id,
+		    order_user_name,
+		    order_user_phone,
+		    recipient_name,
+		    recipient_address_zip_code,
+		    recipient_address,
+		    recipient_address_detail,
+		    request_detail,
+		    order_memo
+		  from order_info
+		 where order_no = #{orderNo}
+	</select>
+
+	<select id="findOrderProduct" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.order.dto.ProductDto">
+		select
+		    order_product_seq,
+		    product_code,
+		    product_name,
+		    final_sell_amount,
+		    option_name,
+		    option_surcharge,
+		    product_qty
+		  from order_product
+		 where order_no = #{orderNo}
+	</select>
+
+	<update id="updateOrder" parameterType="kr.wrightbrothers.apps.order.dto.OrderUpdateDto">
+		-- 송장번호 입력 유무에 대한 체크
+		<selectKey resultType="boolean" keyProperty="isInvoiceNo" order="BEFORE">
+			select
+			    if(count(order_product_seq) = 0, true, false) as isInvoice
+			  from order_delivery
+			 where order_no = #{orderNo}
+		</selectKey>
+		update order_info
+		   set order_memo = #{orderMemo},
+		       -- 송장번호 미입력 시 수령자 정보 변경 가능
+		       <if test="isInvoiceNo">
+				   recipient_name = #{recipientName},
+				   recipient_phone = #{recipientPhone},
+				   recipient_address_zip_code = #{recipientAddressZipCode},
+				   recipient_address = #{recipientAddress},
+				   recipient_address_detail = #{recipientAddressDetail},
+			   </if>
+		       update_user_id = #{userId},
+		       update_date = now()
+		 where order_no = #{orderNo}
+	</update>
 
 </mapper>

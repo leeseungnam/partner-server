@@ -1,6 +1,9 @@
 package kr.wrightbrothers.apps.order;
 
+import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
+import kr.wrightbrothers.apps.order.dto.OrderFindDto;
 import kr.wrightbrothers.apps.order.dto.OrderListDto;
+import kr.wrightbrothers.apps.order.dto.OrderUpdateDto;
 import kr.wrightbrothers.apps.order.service.OrderService;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import kr.wrightbrothers.framework.support.WBController;
@@ -8,12 +11,10 @@ import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/v1")
@@ -66,6 +67,26 @@ public class OrderController extends WBController {
         response.addObject(WBKey.WBModel.DefaultDataTotalCountKey, paramDto.getTotalItems());
 
         return response;
+    }
+
+    @GetMapping("/orders/{orderNo}")
+    public WBModel findOrder(@PathVariable String orderNo,
+                             @AuthenticationPrincipal UserPrincipal user) {
+        return defaultResponse(orderService.findOrder(
+                OrderFindDto.Param.builder()
+                        .partnerCode(user.getUserAuth().getPartnerCode())
+                        .orderNo(orderNo)
+                        .build()
+                ));
+    }
+
+    @UserPrincipalScope
+    @PutMapping("/orders")
+    public WBModel updateOrder(@Valid @RequestBody OrderUpdateDto paramDto) {
+        // 주문 정보 수정
+        orderService.updateOrder(paramDto);
+
+        return noneDataResponse();
     }
 
 }
