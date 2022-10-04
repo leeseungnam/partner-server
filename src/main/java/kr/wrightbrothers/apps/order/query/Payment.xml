@@ -59,10 +59,10 @@
 		 where order_no = #{orderNo}
 	</update>
 
-	<update id="updatePaymentRefundInfo" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto">
+	<update id="updatePaymentDetailRefundInfo" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto">
 		-- 취소 요청 후 환불 정보에 대한 수정으로
 		-- 불필요 한 수정자, 수정일시는 제외(로직 변경 시 해당부분 추가할 것)
-		update order_payment
+		update order_payment_detail
 		   set refund_bank_code			= #{refundBankCode},
 		       refund_bank_name 		= #{refundBankName},
 			   refund_bank_account_no 	= #{refundBankAccountNo},

@@ -18,7 +18,7 @@ public class PaymentController extends WBController {
     private final PaymentService paymentService;
 
     @UserPrincipalScope
-    @PutMapping("/orders/{orderNo}/payments/cancel")
+    @PutMapping("/payments/{orderNo}/cancel")
     public WBModel updatePaymentCancel(@Valid @RequestBody PaymentCancelDto paramDto) {
         // 결제 취소
         paymentService.updateCancelPayment(paramDto);
@@ -27,7 +27,7 @@ public class PaymentController extends WBController {
     }
 
     @UserPrincipalScope
-    @PutMapping("/orders/{orderNo}/payments/forced-cancel")
+    @PutMapping("/payments/{orderNo}/forced-cancel")
     public WBModel updatePaymentForcedCancel(@Valid @RequestBody PaymentCancelDto paramDto) {
         // 결제 강제 취소(상태값 여부 상관없이 강제 실행)
         paymentService.updateForcedCancelPayment(paramDto);

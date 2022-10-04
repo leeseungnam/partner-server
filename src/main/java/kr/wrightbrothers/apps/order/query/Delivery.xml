@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.wrightbrothers.apps.order.query.Delivery">
+
+	<select id="isDeliveryInvoiceCheck" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryFindDto$StatusCheck" resultType="boolean">
+		select
+		    if(order_product_status_code in ('D01', 'D02'), false, true) as isInputDelivery		-- D01 상품준비중, D02 배송중
+		  from order_product
+		 where order_no = #{orderNo}
+		   and order_product_seq = #{orderProductSeq}
+	</select>
+
+	<update id="updateDeliveryInvoice" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto$ProductInvoice">
+		update order_delivery
+		   set delivery_company_code = #{deliveryCompanyCode},
+		       delivery_company_name = #{deliveryCompanyName},
+		       invoice_no			 = #{invoiceNo},
+		       invoice_no_input_date = now(),
+		       update_user_id		 = #{userId},
+		       update_date			 = now()
+		 where order_no = #{orderNo}
+		   and order_product_seq = #{orderProductSeq}
+	</update>
+
+	<update id="updateProductDeliveryStartStatus" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto$ProductInvoice">
+		update order_product
+		   set order_product_status_code = 'D02',	-- 배송중
+			   update_user_id		 = #{userId},
+			   update_date			 = now()
+		 where order_no = #{orderNo}
+		   and order_product_seq = #{orderProductSeq}
+	</update>
+
+</mapper>

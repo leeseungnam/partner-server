@@ -49,4 +49,13 @@ public class OrderUpdateDto {
     public void setAopUserId(String userId) {
         this.userId = userId;
     }
+
+    @Getter
+    @Builder
+    public static class Status {
+        private String orderNo;                 // 주문 번호
+        private String orderStatusCode;         // 주문 진행 코드
+        private String userId;                  // 사용자 아이디
+    }
+
 }

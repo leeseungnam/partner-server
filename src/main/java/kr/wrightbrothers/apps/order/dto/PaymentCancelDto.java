@@ -5,6 +5,7 @@ import kr.wrightbrothers.apps.common.type.PaymentMethodCode;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.util.ObjectUtils;
 
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Getter
+@Builder
 @AllArgsConstructor
 public class PaymentCancelDto {
     @NotBlank(message = "주문 번호")

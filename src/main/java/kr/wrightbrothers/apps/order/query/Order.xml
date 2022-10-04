@@ -3,6 +3,13 @@
 
 <mapper namespace="kr.wrightbrothers.apps.order.query.Order">
 
+	<select id="isDeliveryStatusCheck" parameterType="java.lang.String" resultType="java.lang.String">
+		select
+		    if(order_status_code in ('D01', 'D03'), false, true) as isDeliveryCheck
+		  from order_info
+		 where order_no = #{orderNo}
+	</select>
+
 	<select id="findOrderList" parameterType="kr.wrightbrothers.apps.order.dto.OrderListDto$Param" resultType="kr.wrightbrothers.apps.order.dto.OrderListDto$Response">
 		select
 		    o.order_no,
@@ -147,15 +154,21 @@
 
 	<select id="findOrderProduct" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.order.dto.ProductDto">
 		select
-		    order_product_seq,
-		    product_code,
-		    product_name,
-		    final_sell_amount,
-		    option_name,
-		    option_surcharge,
-		    product_qty
-		  from order_product
-		 where order_no = #{orderNo}
+		    p.order_product_seq,
+		    p.product_code,
+		    p.product_name,
+		    p.final_sell_amount,
+		    p.option_name,
+		    p.option_surcharge,
+		    p.product_qty,
+		    d.delivery_company_name,
+		    d.invoice_no
+		  from order_product p
+		  left join order_delivery d
+			on p.order_no = d.order_no
+		   and p.order_product_seq = d.order_product_seq
+		   and p.product_code = d.product_code
+		 where p.order_no = #{orderNo}
 	</select>
 
 	<update id="updateOrder" parameterType="kr.wrightbrothers.apps.order.dto.OrderUpdateDto">
@@ -179,6 +192,23 @@
 		       update_user_id = #{userId},
 		       update_date = now()
 		 where order_no = #{orderNo}
+	</update>
+
+	<update id="updateOrderDeliveryStatus" parameterType="kr.wrightbrothers.apps.order.dto.OrderUpdateDto$Status">
+		-- 상품준비중 상태의 유무를 확인하여 부분배송 / 배송중 주문 상태코드 조회
+		<selectKey resultType="java.lang.String" keyProperty="orderStatusCode" order="BEFORE">
+			select
+			    if(count(order_product_status_code) = 0, 'D02', 'D03') as orderStatusCode
+			  from order_product
+			 where order_no = #{orderNo}
+			   and order_product_status_code = 'D01'
+		</selectKey>
+		update order_info
+		   set order_status_code = #{orderStatusCode},	-- 조회된 상태코드로 업데이트
+			   update_user_id = #{userId},
+			   update_date = now()
+		 where order_no = #{orderNo}
+		   and order_status_code in ('D01', 'D03')		-- 상품준비중, 부분배송
 	</update>
 
 </mapper>

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
-@Service
+@Service(value = "orderPaymentService")
 @RequiredArgsConstructor
 public class PaymentService {
 
@@ -63,7 +63,7 @@ public class PaymentService {
             // 필수 입력값 체크
             paramDto.validRefundInfo();
             // 환불정보 입력
-            dao.update(namespace + "updatePaymentRefundInfo", paramDto);
+            dao.update(namespace + "updatePaymentDetailRefundInfo", paramDto);
         }
 
         log.debug("Update Request Cancel Payment. OrderNo::{}", paramDto.getOrderNo());

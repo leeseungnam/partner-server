@@ -58,6 +58,7 @@ system:
   mail:
     # AWS SES 메일 발송자
     sender: info@wrightbrothers.kr
+  lang: ko
   file:
     temp:
       # 임시 파일 저장 위치

@@ -15,7 +15,7 @@ public class OrderService {
 
     private final WBCommonDao dao;
     private final PaymentService paymentService;
-    private final String namespace = "kr.wrightbrothers.apps.product.query.Product.";
+    private final String namespace = "kr.wrightbrothers.apps.order.query.Order.";
 
     public List<OrderListDto.Response> findOrderList(OrderListDto.Param paramDto) {
         // 주문내역 목록 조회
@@ -33,7 +33,7 @@ public class OrderService {
                 .order(dao.selectOne(namespace + "findOrder", paramDto.getOrderNo()))
                 // 결제 정보
                 .payment(paymentService.findPaymentToOrder(paramDto.getOrderNo()))
-                // 주문 상품 목록
+                // 주문 상품 리스트
                 .productList(dao.selectList(namespace + "findOrderProduct", paramDto.getOrderNo()))
                 .build();
     }
