@@ -1,23 +1,32 @@
 package kr.wrightbrothers.framework.util;
 
+import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
 import org.apache.commons.lang3.StringUtils;
 import kr.wrightbrothers.framework.support.WBCommon;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.WBKey.Message;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 public class WBResponse {
 
-	public void getResponseData(ModelAndView responseData, String state, Object token, Exception ex) {
+	public void getResponseData(ModelAndView responseData, String state, Exception ex) {
 		/* Common Data */
 		WBCommon common = new WBCommon(state);
 		common.setUuid(RandomKey.getUUID());
+		/*
 		if(token != null)
 			common.setToken(String.valueOf(token));
-		
+		*/
 		/* AccessToken 삭제 */
-		responseData.getModel().remove(WBKey.Jwt.AccessTokenName);
+//		responseData.getModel().remove(WBKey.Jwt.AccessTokenName);
+		;
+
+		if(!ObjectUtils.isEmpty(responseData.getModel().get(PartnerKey.WBConfig.Message.Alias))) {
+			common.setMessage(responseData.getModel().get(PartnerKey.WBConfig.Message.Alias).toString());
+			responseData.getModel().remove(PartnerKey.WBConfig.Message.Alias);
+		}
 
 		/* Error 발생 시 처리 */
 		if(WBKey.Error.endsWith(state)) {

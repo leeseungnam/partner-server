@@ -20,8 +20,9 @@ public class WBInterceptor implements HandlerInterceptor {
         if (ObjectUtils.isEmpty(modelAndView)) return;
 
         // 로그인 생성 토큰
-        Object token = modelAndView.getModel().get(WBKey.Jwt.AccessTokenName);
+//        Object token = modelAndView.getModel().get(WBKey.Jwt.AccessTokenName);
         // 최종 ResponseData 처리
-        new WBResponse().getResponseData(modelAndView, WBKey.Success, token, null);
+//        new WBResponse().getResponseData(modelAndView, WBKey.Success, token, null);
+        new WBResponse().getResponseData(modelAndView, WBKey.Success, null);
     }
 }

@@ -6,6 +6,14 @@ public class PartnerKey {
 	public static final String BasePackage		= "kr.wrightbrothers.apps";
 
 	public static class WBConfig {
+
+		public static class Message {
+			public static final String Alias = "message";
+			public static final String LANG_KO = "ko";
+			public static final String LANG_EN = "en";
+			public static final String LANG_JA = "ja";
+
+		}
 		public static class Mybatis {
 			// 기본 데이터 설정
 			public static final String DefaultDataSource 			= "DefaultDataSource";

@@ -10,6 +10,7 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -32,6 +33,6 @@ public class UserPwdFindDto {
     private String userPhone;
 
     @ApiModelProperty(value = "이메일 유형 (1:이메일 주소 인증, 2:임시 비밀번호 발급, 3:계약갱신 알림 )", required = true)
-    @NotBlank(message = "이메일 데이터")
+    @NotNull(message = "이메일 데이터")
     private SingleEmailDto.ReqBody singleEmail;
 }
