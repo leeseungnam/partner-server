@@ -66,7 +66,7 @@ public class UserController extends WBController {
         userService.insertUser(paramDto);
 
         Object [] messageArgs = {"회원가입"};
-        response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.user.save.custom", messageArgs));
+        response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"user.save.custom", messageArgs));
 
         return  response;
     }
@@ -84,7 +84,8 @@ public class UserController extends WBController {
 
         userService.updateUserPwd(paramDto);
 
-        response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.password.update"));
+        Object [] messageArgs = {messageSourceAccessor.getMessage(messagePrefix+"common.complete")};
+        response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.complete", messageArgs));
 
         return response;
     }
@@ -103,7 +104,7 @@ public class UserController extends WBController {
                 .userPhone(paramDto.getUserPhone())
                 .build());
 
-        if(ObjectUtils.isEmpty(userDto)) throw new WBBusinessException(ErrorCode.UNAUTHORIZED.getErrCode(), messageSourceAccessor.getMessage(messagePrefix+"common.user.unknown"));
+        if(ObjectUtils.isEmpty(userDto)) throw new WBBusinessException(ErrorCode.UNAUTHORIZED.getErrCode(), messageSourceAccessor.getMessage(messagePrefix+"user.unknown"));
 
         response.addObject("userId", userDto.getUserId());
 
@@ -128,7 +129,7 @@ public class UserController extends WBController {
                 .userPhone(paramDto.getUserPhone())
                 .build());
 
-        if(ObjectUtils.isEmpty(userDto)) throw new WBBusinessException(ErrorCode.UNAUTHORIZED.getErrCode(), messageSourceAccessor.getMessage(messagePrefix+"common.user.unknown"));
+        if(ObjectUtils.isEmpty(userDto)) throw new WBBusinessException(ErrorCode.UNAUTHORIZED.getErrCode(), messageSourceAccessor.getMessage(messagePrefix+"user.unknown"));
 
         String authCode = RandomStringUtils.randomAlphanumeric(10).toUpperCase();
         userDto.changePwd(passwordEncoder.encode(authCode));

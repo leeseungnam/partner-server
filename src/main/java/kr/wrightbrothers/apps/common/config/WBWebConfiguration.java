@@ -56,7 +56,7 @@ public class WBWebConfiguration implements WebMvcConfigurer {
     @Bean
     public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasenames("classpath:messages/message");
+        messageSource.setBasenames("classpath:/messages/message");
         messageSource.setDefaultEncoding("UTF-8");
         messageSource.setCacheSeconds(60);
 
