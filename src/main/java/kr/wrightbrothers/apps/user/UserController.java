@@ -84,7 +84,10 @@ public class UserController extends WBController {
 
         userService.updateUserPwd(paramDto);
 
-        Object [] messageArgs = {messageSourceAccessor.getMessage(messagePrefix+"common.complete")};
+
+
+        Object [] messageArgs = {messageSourceAccessor.getMessage(messagePrefix+"word.password")
+                + " " + messageSourceAccessor.getMessage(messagePrefix+"action.change")};
         response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.complete", messageArgs));
 
         return response;
