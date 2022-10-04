@@ -16,7 +16,8 @@ public enum ErrorCode {
     INVALID_NUMBER_MIN(4005),
     INVALID_NUMBER_MAX(4006),
     INVALID_BOOLEAN(4007),
-    INTERNAL_SERVER(5000)
+    INTERNAL_SERVER(5000),
+    ETC(9999)
     ;
 
     final int errCode;

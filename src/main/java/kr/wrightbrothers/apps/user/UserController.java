@@ -104,7 +104,7 @@ public class UserController extends WBController {
                 .userPhone(paramDto.getUserPhone())
                 .build());
 
-        if(ObjectUtils.isEmpty(userDto)) throw new WBBusinessException(ErrorCode.UNAUTHORIZED.getErrCode(), messageSourceAccessor.getMessage(messagePrefix+"user.unknown"));
+        if(ObjectUtils.isEmpty(userDto)) throw new WBBusinessException(ErrorCode.ETC.getErrCode(), new String[] {messageSourceAccessor.getMessage(messagePrefix+"user.unknown")});
 
         response.addObject("userId", userDto.getUserId());
 
@@ -129,7 +129,7 @@ public class UserController extends WBController {
                 .userPhone(paramDto.getUserPhone())
                 .build());
 
-        if(ObjectUtils.isEmpty(userDto)) throw new WBBusinessException(ErrorCode.UNAUTHORIZED.getErrCode(), messageSourceAccessor.getMessage(messagePrefix+"user.unknown"));
+        if(ObjectUtils.isEmpty(userDto)) throw new WBBusinessException(ErrorCode.ETC.getErrCode(), new String[] {messageSourceAccessor.getMessage(messagePrefix+"user.unknown")});
 
         String authCode = RandomStringUtils.randomAlphanumeric(10).toUpperCase();
         userDto.changePwd(passwordEncoder.encode(authCode));
