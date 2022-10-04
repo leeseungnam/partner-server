@@ -17,6 +17,7 @@ import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -44,7 +45,9 @@ public class UserController extends WBController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final EmailService emailService;
+
+    private final String messagePrefix = "api.message.";
+    private final MessageSourceAccessor messageSourceAccessor;
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", paramType = "header")
@@ -52,6 +55,7 @@ public class UserController extends WBController {
     @ApiOperation(value = "회원가입", notes = "회원가입 요청 API 입니다.")
     @PostMapping()
     public WBModel insertUser(@ApiParam @Valid @RequestBody UserInsertDto paramDto) {
+        WBModel response = new WBModel();
 
         // encoding password
         paramDto.changePwd(passwordEncoder.encode(paramDto.getUserPwd()));
@@ -61,7 +65,10 @@ public class UserController extends WBController {
 
         userService.insertUser(paramDto);
 
-        return  noneDataResponse();
+        Object [] messageArgs = {"회원가입"};
+        response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"user.save.custom", messageArgs));
+
+        return  response;
     }
 
     @ApiImplicitParams({
@@ -70,13 +77,20 @@ public class UserController extends WBController {
     @ApiOperation(value = "비밀번호 변경", notes = "비밀번호 변경 API 입니다.")
     @PutMapping("/password")
     public WBModel updateUserPwd(@ApiParam @Valid @RequestBody UserPwdUpdateDto paramDto) {
+        WBModel response = new WBModel();
 
         // encoding password
         paramDto.changePwd(passwordEncoder.encode(paramDto.getUserPwd()));
 
         userService.updateUserPwd(paramDto);
 
-        return  noneDataResponse();
+
+
+        Object [] messageArgs = {messageSourceAccessor.getMessage(messagePrefix+"word.password")
+                + " " + messageSourceAccessor.getMessage(messagePrefix+"action.change")};
+        response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.complete", messageArgs));
+
+        return response;
     }
 
     @ApiImplicitParams({
@@ -86,18 +100,21 @@ public class UserController extends WBController {
     @PostMapping("/search/id")
     public WBModel findUserId(@ApiParam @Valid @RequestBody UserIdFindDto.ReqBody paramDto) {
 
-        WBModel wbResponse = new WBModel();
+        WBModel response = new WBModel();
 
         UserDto userDto = userService.findUserByDynamic(UserDto.builder()
                 .userName(paramDto.getUserName())
                 .userPhone(paramDto.getUserPhone())
                 .build());
 
-        if(ObjectUtils.isEmpty(userDto)) throw new WBBusinessException(ErrorCode.FORBIDDEN.getErrCode());
+        if(ObjectUtils.isEmpty(userDto)) throw new WBBusinessException(ErrorCode.ETC.getErrCode(), new String[] {messageSourceAccessor.getMessage(messagePrefix+"user.unknown")});
 
-        wbResponse.addObject("userId", userDto.getUserId());
+        response.addObject("userId", userDto.getUserId());
 
-        return wbResponse;
+        Object[] messageArgs = {userDto.getUserId()};
+        response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"search.id.success", messageArgs));
+
+        return response;
     }
 
     @ApiImplicitParams({
@@ -107,7 +124,7 @@ public class UserController extends WBController {
     @PostMapping("/search/pwd")
     public WBModel findUserPwd(@ApiParam @Valid @RequestBody UserPwdFindDto paramDto) throws Exception{
 
-        WBModel wbResponse = new WBModel();
+        WBModel response = new WBModel();
 
         UserDto userDto = userService.findUserByDynamic(UserDto.builder()
                 .userId(paramDto.getSingleEmail().getUserId())
@@ -115,19 +132,22 @@ public class UserController extends WBController {
                 .userPhone(paramDto.getUserPhone())
                 .build());
 
-        if(ObjectUtils.isEmpty(userDto)) throw new WBBusinessException(ErrorCode.FORBIDDEN.getErrCode());
+        if(ObjectUtils.isEmpty(userDto)) throw new WBBusinessException(ErrorCode.ETC.getErrCode(), new String[] {messageSourceAccessor.getMessage(messagePrefix+"user.unknown")});
 
         String authCode = RandomStringUtils.randomAlphanumeric(10).toUpperCase();
         userDto.changePwd(passwordEncoder.encode(authCode));
 
         //transaction
-        wbResponse.addObject("authEmail", userService.findUserPwd(authCode, userDto, SingleEmailDto.ReqBody.builder()
+        response.addObject("authEmail", userService.findUserPwd(authCode, userDto, SingleEmailDto.ReqBody.builder()
                 .userId(paramDto.getSingleEmail().getUserId())
                 .authCode(authCode)
                 .emailType(paramDto.getSingleEmail().getEmailType())
                 .build()));
 
-        return  wbResponse;
+        Object [] messageArgs = {userDto.getUserId()};
+        response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"email.password.success", messageArgs));
+
+        return  response;
     }
 
     // [todo] old token 파기

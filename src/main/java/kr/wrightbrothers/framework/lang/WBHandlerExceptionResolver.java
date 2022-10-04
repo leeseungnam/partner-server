@@ -14,7 +14,7 @@ public class WBHandlerExceptionResolver implements HandlerExceptionResolver{
 
 	@Override
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-		String token = request.getHeader(WBKey.Jwt.HeaderName);
+//		String token = request.getHeader(WBKey.Jwt.HeaderName);
 		ModelAndView mv = new ModelAndView(WBKey.View);
 		
 		/* 세션이 종료되었을때 발생하는 메세지 */
@@ -25,7 +25,8 @@ public class WBHandlerExceptionResolver implements HandlerExceptionResolver{
 			}
 		}
 		
-		new WBResponse().getResponseData(mv, WBKey.Error, token, ex);
+//		new WBResponse().getResponseData(mv, WBKey.Error, token, ex);
+		new WBResponse().getResponseData(mv, WBKey.Error, ex);
 		return mv;
 	}
 }
