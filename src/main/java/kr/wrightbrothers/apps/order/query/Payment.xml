@@ -29,14 +29,11 @@
 		    p.payment_method_code as payment_method_name,
 		    p.payment_status_code as payment_status_name,
 		    p.cancel_date,
-		    p.cancel_reason
+		    if(p.cancel_reason_code = 'C99', p.cancel_reason_etc, p.cancel_reason_name) as cancel_reason
 		  from order_payment p
-		 inner join order_payment_detail pd
-			on p.order_no = pd.order_no
-		   and p.payment_method_code = pd.payment_method_code
-		 inner join order_transaction t
-			on pd.order_no = t.order_no
-		   and pd.pg_type = t.pg_type
+		  left join order_transaction t
+			on p.order_no = t.order_no
+		   and p.pg_type = t.pg_type
 		 where p.order_no = #{orderNo}
 	</select>
 
@@ -44,7 +41,7 @@
 		update order_payment
 		   set payment_status_code 	= 'S09',	-- 취소요청 코드
 		       cancel_date			= now(),
-		       cancel_reason		= #{cancelReason},
+		       cancel_reason_name	= #{cancelReasonName},
 		       cancel_reason_code	= #{cancelReasonCode},
 		       update_user_id 		= #{userId},
 		       update_date 			= now()
@@ -62,7 +59,7 @@
 	<update id="updatePaymentDetailRefundInfo" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto">
 		-- 취소 요청 후 환불 정보에 대한 수정으로
 		-- 불필요 한 수정자, 수정일시는 제외(로직 변경 시 해당부분 추가할 것)
-		update order_payment_detail
+		update order_payment
 		   set refund_bank_code			= #{refundBankCode},
 		       refund_bank_name 		= #{refundBankName},
 			   refund_bank_account_no 	= #{refundBankAccountNo},

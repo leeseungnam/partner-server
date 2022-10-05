@@ -18,7 +18,7 @@ public class PaymentDto {
     private String paymentMethodName;   // 결제 방법
     private String paymentStatusName;   // 결제 상태
     private String cancelDate;          // 취소 일시
-    private String cancelReason;        // 취소 사윺
+    private String cancelReason;        // 취소 사유
 
     public void setPaymentMethodName(String paymentMethodCode) {
         this.paymentMethodName = PaymentMethodCode.of(paymentMethodCode).getName();

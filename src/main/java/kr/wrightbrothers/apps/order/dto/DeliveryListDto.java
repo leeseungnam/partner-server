@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import kr.wrightbrothers.apps.common.AbstractPageDto;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
@@ -31,6 +32,12 @@ public class DeliveryListDto {
 
             this.keywordValueList = this.keywordValue.split(";");
         }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class Response {
+
     }
 
 }

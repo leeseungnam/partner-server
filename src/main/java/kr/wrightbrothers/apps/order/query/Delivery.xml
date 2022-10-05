@@ -3,6 +3,41 @@
 
 <mapper namespace="kr.wrightbrothers.apps.order.query.Delivery">
 
+	<select id="findDeliveryList" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryFindDto$Param" resultType="kr.wrightbrothers.apps.order.dto.DeliveryFindDto$Response">
+		select
+		    *
+		  from order_info o
+		 inner join order_payment p
+			on o.order_no = p.order_no
+		 where o.partner_code = #{partnerCode}
+		<choose>
+			<when test="keywordValue != null and keywordValue != ''">
+				<choose>
+					<when test="keywordType == 'NO'">
+						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+							o.order_no like #{item} '%'
+						</foreach>
+					</when>
+					<when test="keywordType == 'NAME'">
+						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+							o.order_name like #{item} '%'
+						</foreach>
+					</when>
+					<when test="keywordType == 'USER'">
+						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+							o.order_user_name like #{item} '%'
+						</foreach>
+					</when>
+				</choose>
+			</when>
+			<otherwise>
+				<choose>
+
+				</choose>
+			</otherwise>
+		</choose>
+	</select>
+
 	<select id="isDeliveryInvoiceCheck" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryFindDto$StatusCheck" resultType="boolean">
 		select
 		    if(order_product_status_code in ('D01', 'D02'), false, true) as isInputDelivery		-- D01 상품준비중, D02 배송중

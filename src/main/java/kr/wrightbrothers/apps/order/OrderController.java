@@ -34,9 +34,10 @@ public class OrderController extends WBController {
                                  @RequestParam String startDay,
                                  @RequestParam String endDay,
                                  @RequestParam String keywordType,
-                                 @RequestParam String keywordValue,
-                                 @RequestParam int count,
-                                 @RequestParam int page,
+                                 @RequestParam(required = false) String keywordValue,
+                                 @RequestParam String sortType,
+                                 @RequestParam(required = false) int count,
+                                 @RequestParam(required = false) int page,
                                  @AuthenticationPrincipal UserPrincipal user,
                                  HttpServletRequest request
     ) {
@@ -51,6 +52,7 @@ public class OrderController extends WBController {
                 .endDay(endDay)
                 .keywordType(keywordType)
                 .keywordValue(keywordValue)
+                .sortType(sortType)
                 .count(count)
                 .page(page)
                 .build();

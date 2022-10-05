@@ -25,6 +25,7 @@ public class OrderListDto {
         private String endDay;              // 종료 일자
         private String keywordType;         // 키워드 종류
         private String keywordValue;        // 키워드 값
+        private String sortType;            // 정렬 타입
         private String[] keywordValueList;  // 여러검색 조건
 
         // 여러 상품 검색을 위해 구분자인 ; Split 처리
@@ -57,15 +58,15 @@ public class OrderListDto {
         private String paymentStatusName;   // 결제상테 명
 
         // 주문 상태 ENUM 처리
-        public void setOrderStatusCode(String orderStatusCode) {
+        public void setOrderStatusName(String orderStatusCode) {
             this.orderStatusName = OrderStatusCode.of(orderStatusCode).getName();
         }
         // 결제 상태 ENUM 처리
-        public void setPaymentStatusCode(String paymentStatusCode) {
+        public void setPaymentStatusName(String paymentStatusCode) {
             this.paymentStatusName = PaymentStatusCode.of(paymentStatusCode).getName();
         }
         // 결제 수단 ENUM 처리
-        public void setPaymentMethodCode(String paymentMethodCode) {
+        public void setPaymentMethodName(String paymentMethodCode) {
             this.paymentMethodName = PaymentMethodCode.of(paymentMethodCode).getName();
         }
     }

@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PaymentService {
 
     private final WBCommonDao dao;
-    private final String namespace = "kr.wrightbrothers.apps.product.query.Payment.";
+    private final String namespace = "kr.wrightbrothers.apps.order.query.Payment.";
 
     // 주문내역 상세정보 시 결제정보 조회
     public PaymentDto findPaymentToOrder(String orderNo) {

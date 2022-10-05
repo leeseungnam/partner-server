@@ -188,7 +188,7 @@ class ProductControllerTest extends BaseControllerTests {
                 .startDay(new SimpleDateFormat("yyyyMMdd").format(new Date()))
                 .endDay(new SimpleDateFormat("yyyyMMdd").format(new Date()))
                 .keywordType("NAME")
-                .keywordValue("")
+                .keywordValue("철새")
                 .sortType("CRE")
                 .build();
 

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,9 +20,9 @@ public class DeliveryService {
     private final WBCommonDao dao;
     private final String namespace = "kr.wrightbrothers.apps.order.query.Delivery.";
 
-    public Object findDeliveryList(DeliveryListDto.Param paramDto) {
-
-        return null;
+    public List<DeliveryListDto.Response> findDeliveryList(DeliveryListDto.Param paramDto) {
+        // 배송관리 목록 조회
+        return dao.selectList(namespace + "findDeliveryList", paramDto, paramDto.getRowBounds());
     }
 
     public Object findDeliveryStatusStatistics(DeliveryListDto.Param paramDto) {

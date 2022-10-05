@@ -16,7 +16,9 @@
 		    date_format(o.order_date, '%Y-%m-%d') as order_day,
 			o.order_user_name,
 			o.order_status_code,
+			o.order_status_code as order_status_name,
 			p.payment_method_code,
+			p.payment_method_code as payment_method_name,
 			o.order_name,
 			p.order_amount,
 			p.ssp_point,
@@ -24,7 +26,8 @@
 			p.payment_amount,
 			date_format(p.payment_date, '%Y-%m-%d') as payment_day,
 			date_format(p.cancel_date, '%Y-%m-%d') as cancel_day,
-			p.payment_status_code
+			p.payment_status_code,
+			p.payment_status_code as payment_status_name
 		  from order_info o
 		 inner join order_payment p
 			on o.order_no = p.order_no
@@ -72,17 +75,30 @@
 				</foreach>
 			</otherwise>
 		</choose>
-		order by o.create_date desc
+		<choose>
+			<when test="sortType == 'ORD'.toString()">
+				order by o.order_date desc
+			</when>
+			<when test="sortType == 'PYT'.toString()">
+				order by p.payment_date desc
+			</when>
+			<when test="sortType == 'LSAMT'.toString()">
+				order by p.order_amount
+			</when>
+			<when test="sortType == 'HSAMT'.toString()">
+				order by p.order_amount desc
+			</when>
+		</choose>
 	</select>
 
 	<select id="findOrderStatusStatistics" parameterType="kr.wrightbrothers.apps.order.dto.OrderListDto$Param" resultType="kr.wrightbrothers.apps.order.dto.OrderListDto$Statistics">
 		select
 			count(1) as totalOrderCount,											-- 전체주문 건수
-		    sum(if(p.payment_status_code = 'O05', 1, 0)) as completeOrderCount,		-- 주문완료 건수
-		    sum(if(p.payment_status_code = 'D01', 1, 0)) as readyProductCount,		-- 상품준비 건수
-		    sum(if(p.payment_status_code = 'O06', 1, 0)) as requestCancelCount,		-- 취소요청 건수
-		    sum(if(p.payment_status_code = 'C05', 1, 0)) as confirmPurchaseCount,	-- 구매확정 건수
-		    sum(if(p.payment_status_code = 'R05', 1, 0)) as completeReturnCount		-- 반품완료 건수
+		    sum(if(o.order_status_code = 'O05', 1, 0)) as completeOrderCount,		-- 주문완료 건수
+		    sum(if(o.order_status_code = 'D01', 1, 0)) as readyProductCount,		-- 상품준비 건수
+		    sum(if(o.order_status_code = 'O06', 1, 0)) as requestCancelCount,		-- 취소요청 건수
+		    sum(if(o.order_status_code = 'C05', 1, 0)) as confirmPurchaseCount,		-- 구매확정 건수
+		    sum(if(o.order_status_code = 'R05', 1, 0)) as completeReturnCount		-- 반품완료 건수
 		  from order_info o
 		 inner join order_payment p
 		    on o.order_no = p.order_no
