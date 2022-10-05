@@ -79,12 +79,13 @@ public class ProductBeforeAop {
             case SALE:
                 if (!ProductStatusCode.END_OF_SALE.getCode().equals(currentStatusCode))
                     throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매종료"});
+                break;
             case END_OF_SALE:
-                if (!ProductStatusCode.SALE.getCode().equals(changeStatusCode))
-                    throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매중인"});
             case RESERVATION:
                 if (!ProductStatusCode.SALE.getCode().equals(changeStatusCode))
                     throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매중인"});
+                break;
+
         }
     }
 
