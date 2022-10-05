@@ -132,11 +132,14 @@ public class FileService {
                     } catch (IOException e) {
                         throw new WBException(e);
                     }
+                    break;
                 case WBKey.TransactionType.Delete:
                     dao.delete(namespace + "deleteFile", fileDto, PartnerKey.WBDataBase.Alias.Admin);
                     s3Service.fileDelete(fileDto.getFileSource());
+                    break;
                 case WBKey.TransactionType.Read:
                     dao.update(namespace + "updateFileDisplaySeq", fileDto, PartnerKey.WBDataBase.Alias.Admin);
+                    break;
             }
         });
 
