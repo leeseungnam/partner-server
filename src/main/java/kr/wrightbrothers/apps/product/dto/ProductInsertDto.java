@@ -118,7 +118,7 @@ public class ProductInsertDto {
 
     public void validProduct() {
         // 자전거 상품 추가 유효성 검사
-        validBike();
+        // validBike();
         // 상품 판매 옵션 유효성 검사
         validOption();
         // 재생자전거 유효성 검사 제외
