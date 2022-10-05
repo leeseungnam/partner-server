@@ -364,3 +364,14 @@ include::{snippets}/order-status-statistics/request-parameters.adoc[]
 .HTTP response
 include::{snippets}/order-status-statistics/http-response.adoc[]
 include::{snippets}/order-status-statistics/response-fields.adoc[]
+
+[[order-find]]
+=== 주문내역 조회
+
+.HTTP request
+include::{snippets}/order-find/http-request.adoc[]
+include::{snippets}/order-find/request-headers.adoc[]
+include::{snippets}/order-find/path-parameters.adoc[]
+.HTTP response
+include::{snippets}/order-find/http-response.adoc[]
+include::{snippets}/order-find/response-fields.adoc[]

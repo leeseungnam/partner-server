@@ -177,6 +177,7 @@
 		    p.option_name,
 		    p.option_surcharge,
 		    p.product_qty,
+		    p.delivery_type,
 		    d.delivery_company_name,
 		    d.invoice_no
 		  from order_product p

@@ -12,7 +12,8 @@ public class ProductDto {
     private Long finalSellAmount;       // 상품 금액
     private String optionName;          // 옵션 이름
     private Long optionSurcharge;       // 변동 금액
+    private Integer productQty;         // 구매 수량
+    private String deliveryType;        // 배송 구분
     private String deliveryCompanyName; // 택배사
     private String invoiceNo;           // 송장 번호
-    private Integer productQty;         // 구매 수량
 }
