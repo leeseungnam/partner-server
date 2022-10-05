@@ -70,11 +70,11 @@ public class ProductDto {
         private String modelYear;           // 모델 연식
 
         @ApiModelProperty(value = "유튜브 주소")
-        @Size(min = 1, max = 200, message = "Youtube Url")
+        @Size(min = 0, max = 200, message = "Youtube Url")
         private String youtubeUrl;          // 유튜브 주소
 
         @ApiModelProperty(value = "상품 바코드")
-        @Size(min = 1, max = 200, message = "상품 바코드")
+        @Size(min = 0, max = 200, message = "상품 바코드")
         private String productBarcode;      // 상품 바코드
 
         @ApiModelProperty(value = "상품 이미지 파일 번호", required = true)

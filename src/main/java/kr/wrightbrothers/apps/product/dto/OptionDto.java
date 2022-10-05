@@ -23,11 +23,11 @@ public class OptionDto {
         private Integer optionSeq;
 
         @ApiModelProperty(value = "옵션 명")
-        @Size(min = 1, max = 20, message = "옵션 명")
+        @Size(min = 0, max = 20, message = "옵션 명")
         private String optionName;
 
         @ApiModelProperty(value = "옵션 항목")
-        @Size(min = 1, max = 20, message = "옵션 항목")
+        @Size(min = 0, max = 20, message = "옵션 항목")
         private String optionValue;
 
         @ApiModelProperty(value = "변동 금액")
@@ -36,7 +36,7 @@ public class OptionDto {
         private Long optionSurcharge;
 
         @ApiModelProperty(value = "옵션 재고 수량")
-        @Min(value = 1, message = "옵션 재고 수량")
+        @Min(value = 0, message = "옵션 재고 수량")
         @Max(value = 9999, message = "옵션 재고 수량")
         private Integer optionStockQty;
     }
