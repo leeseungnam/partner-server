@@ -77,12 +77,12 @@
 		<if test="keywordValue != null and keywordValue != ''">
 			<choose>
 				<when test="keywordType == 'NAME'.toString()">
-					<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+					<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
 						p.product_name like #{item} '%'
 					</foreach>
 				</when>
 				<when test="keywordType == 'CODE'.toString()">
-					<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+					<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
 						p.product_code like #{item} '%'
 					</foreach>
 				</when>
