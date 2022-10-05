@@ -70,7 +70,8 @@ public class ProductService {
         if (!ObjectUtils.isEmpty(paramDto.getBasicSpec())) {
             dao.insert(namespace + "mergeBasicSpec", paramDto.getBasicSpec());
             // 연령 등록
-            dao.insert(namespace + "insertBasicSpecAge", paramDto.getBasicSpec());
+            if (!ObjectUtils.isEmpty(paramDto.getBasicSpec().getAgeList()))
+                dao.insert(namespace + "insertBasicSpecAge", paramDto.getBasicSpec());
         }
         // 판매 정보
         dao.insert(namespace + "mergeSellInfo", paramDto.getSellInfo());
@@ -120,7 +121,8 @@ public class ProductService {
             // 연령 삭제
             dao.delete(namespace + "deleteBasicSpecAge", paramDto.getProductCode());
             // 연령 등록
-            dao.insert(namespace + "insertBasicSpecAge", paramDto.getBasicSpec());
+            if (!ObjectUtils.isEmpty(paramDto.getBasicSpec().getAgeList()))
+                dao.insert(namespace + "insertBasicSpecAge", paramDto.getBasicSpec());
         }
         // 판매 정보 수정
         dao.update(namespace + "mergeSellInfo", paramDto.getSellInfo());
