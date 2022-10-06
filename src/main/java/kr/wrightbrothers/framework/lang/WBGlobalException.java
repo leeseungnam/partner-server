@@ -13,6 +13,7 @@ import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -67,7 +68,15 @@ public class WBGlobalException {
     private ResponseEntity<JSONObject> jwtException(Exception e) {
     	 return new ResponseEntity<>(exceptionResponse(3, WBKey.Message.Type.Notification), HttpStatus.OK);
     }
-    
+
+    @ExceptionHandler({
+            BadCredentialsException.class
+    })
+    private ResponseEntity<JSONObject> badCredentialsException(Exception e) {
+        return new ResponseEntity<>(exceptionResponse(ErrorCode.UNAUTHORIZE_LOGIN.getErrCode(), WBKey.Message.Type.Error), HttpStatus.OK);
+    }
+
+
     /**
      * Exception Handler
      */
