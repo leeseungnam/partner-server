@@ -343,8 +343,10 @@ include::{snippets}/template-delete/response-fields.adoc[]
 [[order]]
 == 주문 API 관리
 
+=== 주문내역 API 관리
+
 [[order-list]]
-=== 주문내역 목록 조회
+==== 주문내역 목록 조회
 
 .HTTP request
 include::{snippets}/order-list/http-request.adoc[]
@@ -355,7 +357,7 @@ include::{snippets}/order-list/http-response.adoc[]
 include::{snippets}/order-list/response-fields.adoc[]
 
 [[order-status-statistics]]
-=== 주문내역 상태 집계 조회
+==== 주문내역 상태 집계 조회
 
 .HTTP request
 include::{snippets}/order-status-statistics/http-request.adoc[]
@@ -366,7 +368,7 @@ include::{snippets}/order-status-statistics/http-response.adoc[]
 include::{snippets}/order-status-statistics/response-fields.adoc[]
 
 [[order-find]]
-=== 주문내역 조회
+==== 주문내역 조회
 
 .HTTP request
 include::{snippets}/order-find/http-request.adoc[]
@@ -375,3 +377,25 @@ include::{snippets}/order-find/path-parameters.adoc[]
 .HTTP response
 include::{snippets}/order-find/http-response.adoc[]
 include::{snippets}/order-find/response-fields.adoc[]
+
+[[order-put]]
+==== 주문내역 수정
+
+.HTTP request
+include::{snippets}/order-update/http-request.adoc[]
+include::{snippets}/order-update/request-headers.adoc[]
+include::{snippets}/order-update/request-fields.adoc[]
+.HTTP response
+include::{snippets}/order-update/http-response.adoc[]
+include::{snippets}/order-update/response-fields.adoc[]
+
+[[order-product-cancel]]
+==== 상품 결제 취소 요청
+
+.HTTP request
+include::{snippets}/payment-cancel-update/http-request.adoc[]
+include::{snippets}/payment-cancel-update/request-headers.adoc[]
+include::{snippets}/payment-cancel-update/request-fields.adoc[]
+.HTTP response
+include::{snippets}/payment-cancel-update/http-response.adoc[]
+include::{snippets}/payment-cancel-update/response-fields.adoc[]

@@ -3,24 +3,29 @@ package kr.wrightbrothers.apps.order.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @Getter
-@Builder
+@Jacksonized
+@SuperBuilder
 @ApiModel(value = "주문내역 수정 데이터")
 public class OrderUpdateDto {
     @ApiModelProperty(value = "주문 번호", required = true)
     @NotBlank(message = "주문 번호")
     private String orderNo;                 // 주문 번호
 
-    @ApiModelProperty(value = "주문 번호", required = true)
+    @ApiModelProperty(value = "수령자 명", required = true)
     @NotBlank(message = "수령자명")
-    @Size(min = 2, max = 20, message = "수령자명")
+    @Size(min = 2, max = 20, message = "수령자 명")
     private String recipientName;           // 수령자 이름
 
     @ApiModelProperty(value = "휴대전화", required = true)
@@ -42,10 +47,6 @@ public class OrderUpdateDto {
     @NotBlank(message = "상세주소")
     @Size(min = 2, max = 100, message = "상세주소")
     private String recipientAddressDetail;  // 수령자 상세주소
-
-    @ApiModelProperty(value = "주문메모", required = false)
-    @Size(min = 1, max = 2000, message = "주문메모")
-    private String orderMemo;               // 주문 메모
 
     private String partnerCode;             // 파트너 코드
     @JsonIgnore

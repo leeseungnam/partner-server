@@ -7,19 +7,22 @@ import kr.wrightbrothers.framework.lang.WBBusinessException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.util.ObjectUtils;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Getter
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class PaymentCancelDto {
     @NotBlank(message = "주문 번호")
     private String orderNo;                 // 주문 번호
 
-    @NotBlank(message = "주문 상품 SEQ")
+    @NotNull(message = "주문 상품 SEQ")
     private Integer[] orderProductSeq;      // 주문 상품 SEQ
 
     @NotBlank(message = "취소사유 코드")

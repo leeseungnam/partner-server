@@ -5,7 +5,7 @@ import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.OrderFindDto;
 import kr.wrightbrothers.apps.order.dto.OrderListDto;
-import kr.wrightbrothers.apps.order.dto.OrderUpdateDto;
+import kr.wrightbrothers.apps.order.dto.OrderMemoUpdateDto;
 import kr.wrightbrothers.apps.order.service.OrderService;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import kr.wrightbrothers.framework.support.WBController;
@@ -100,7 +100,7 @@ public class OrderController extends WBController {
     })
     @ApiOperation(value = "주문내역 수정", notes = "주문내역의 배송지 정보, 주문 메모의 내용을 수정")
     @PutMapping("/orders")
-    public WBModel updateOrder(@ApiParam(value = "주문내역 수정 데이터") @Valid @RequestBody OrderUpdateDto paramDto) {
+    public WBModel updateOrder(@ApiParam(value = "주문내역 수정 데이터") @Valid @RequestBody OrderMemoUpdateDto paramDto) {
         // 주문 정보 수정
         orderService.updateOrder(paramDto);
 

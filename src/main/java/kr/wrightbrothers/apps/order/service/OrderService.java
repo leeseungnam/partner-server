@@ -2,6 +2,7 @@ package kr.wrightbrothers.apps.order.service;
 
 import kr.wrightbrothers.apps.order.dto.OrderFindDto;
 import kr.wrightbrothers.apps.order.dto.OrderListDto;
+import kr.wrightbrothers.apps.order.dto.OrderMemoUpdateDto;
 import kr.wrightbrothers.apps.order.dto.OrderUpdateDto;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,7 @@ public class OrderService {
                 .build();
     }
 
-    public void updateOrder(OrderUpdateDto paramDto) {
+    public void updateOrder(OrderMemoUpdateDto paramDto) {
         // 송장번호 입력 시 배송지 정보 수정 제외
         dao.update(namespace + "updateOrder", paramDto);
     }

@@ -26,13 +26,4 @@ public class PaymentController extends WBController {
         return noneDataResponse();
     }
 
-    @UserPrincipalScope
-    @PutMapping("/payments/{orderNo}/forced-cancel")
-    public WBModel updatePaymentForcedCancel(@Valid @RequestBody PaymentCancelDto paramDto) {
-        // 결제 강제 취소(상태값 여부 상관없이 강제 실행)
-        paymentService.updateForcedCancelPayment(paramDto);
-
-        return noneDataResponse();
-    }
-
 }

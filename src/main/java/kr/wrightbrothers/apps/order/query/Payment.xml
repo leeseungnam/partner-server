@@ -10,9 +10,9 @@
 		 where order_no = #{orderNo}
 	</select>
 
-	<select id="isNonCompleteOrder" parameterType="java.lang.String" resultType="boolean">
+	<select id="isDelivery" parameterType="java.lang.String" resultType="boolean">
 		select
-		    if(order_status_code = 'O05', false, true) as isNonOrderComplete
+		    if(order_status_code in ('O05', 'D01'), false, true) as isNonOrderComplete
 		  from order_info
 		 where order_no = #{orderNo}
 	</select>
@@ -69,7 +69,7 @@
 
 	<select id="isCancelPartialPayment" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto" resultType="boolean">
 		select
-			if(count(order_product_seq) != #{orderProductSeq.length}, true, false) as isPartialPaymentCancel
+			if(count(order_product_seq) != ${orderProductSeq.length}, true, false) as isPartialPaymentCancel
 		  from order_product
 		 where order_no = #{orderNo}
 	</select>

@@ -29,17 +29,11 @@ public class PaymentService {
     public void updateCancelPayment(PaymentCancelDto paramDto) {
         // 결제 취소 가능여부 체크
         // 주문완료 상태에서만 결제 취소 가능
-        if (dao.selectOne(namespace + "isNonCompleteOrder", paramDto.getOrderNo())) {
-            log.error("Payment Unable Cancel Payment. Reason::Not Complete Order Status, OrderNo::{}", paramDto.getOrderNo());
-            throw new WBBusinessException(ErrorCode.UNABLE_CANCEL_PAYMENT.getErrCode(), new String[]{"주문 완료"});
+        if (dao.selectOne(namespace + "isDelivery", paramDto.getOrderNo())) {
+            log.error("Payment Unable Cancel Payment. Reason::Not Ready Product, OrderNo::{}", paramDto.getOrderNo());
+            throw new WBBusinessException(ErrorCode.UNABLE_CANCEL_PAYMENT.getErrCode(), new String[]{"상품 준비중"});
         }
 
-        // 결제 취소 요청
-        updateForcedCancelPayment(paramDto);
-    }
-
-    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
-    public void updateForcedCancelPayment(PaymentCancelDto paramDto) {
         // 중복 결제 취소 요청 여부 확인
         if (dao.selectOne(namespace + "isCancelPayment", paramDto.getOrderNo())) {
             log.error("Payment Already Cancel Payment. OrderNo::{}", paramDto.getOrderNo());
@@ -68,4 +62,5 @@ public class PaymentService {
 
         log.debug("Update Request Cancel Payment. OrderNo::{}", paramDto.getOrderNo());
     }
+
 }

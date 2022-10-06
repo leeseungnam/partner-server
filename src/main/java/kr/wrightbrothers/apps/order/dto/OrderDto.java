@@ -18,11 +18,14 @@ public class OrderDto {
     private String orderUserName;           // 주문자 이름
     private String orderUserPhone;          // 주문자 연락처
     private String recipientName;           // 수령자 이름
+    private String recipientPhone;          // 수령자 연락처
     private String recipientAddressZipCode; // 수령자 우편번호
     private String recipientAddress;        // 수령자 주소
     private String recipientAddressDetail;  // 수령자 상세주소
     private String requestDetail;           // 배송 요청사항
     private String orderMemo;               // 주문 메모
+    private String returnMemo;              // 반품 메모
+    private String deliveryMemo;            // 배송 메모
 
     // 주문 상태 ENUM 처리
     public void setOrderStatusName(String orderStatusCode) {

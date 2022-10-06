@@ -18,6 +18,7 @@ public enum PaymentStatusCode {
     PARTIAL_CANCEL_PAYMENT("S02", "부분최소"),
     WITHDRAWAL_CONTRACT("S03", "계약철회"),
     COMPLETE_CONTRACT("S04", "계약완료"),
+    REQUEST_CANCEL_PAYMENT("S09", "결제취소 요청"),
     NULL("", "");
 
     private final String code;
