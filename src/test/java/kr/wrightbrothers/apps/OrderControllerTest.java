@@ -91,9 +91,9 @@ public class OrderControllerTest extends BaseControllerTests {
                                         headerWithName(AUTH_HEADER).description("JWT 토큰")
                                 ),
                                 requestParameters(
-                                        parameterWithName("orderStatus").description("주문 상태").attributes(key("etc").value("마스터 코드 000065")),
-                                        parameterWithName("paymentStatus").description("결제 상태").attributes(key("etc").value("마스터 코드 000067")),
-                                        parameterWithName("paymentMethod").description("결제 수단").attributes(key("etc").value("마스터 코드 000068")),
+                                        parameterWithName("orderStatus").description("주문 상태").attributes(key("etc").value("O05 주문완료, D01 상품 준비중, C05 구매확정, O06 취소요청, O07 취소완료, D02 배송중, D03 부분배송, D05 배송완료, O10 반품상태")),
+                                        parameterWithName("paymentStatus").description("결제 상태").attributes(key("etc").value("S01 입금대기, S10 결제완료, S08 결제취소, S02 부분취소")),
+                                        parameterWithName("paymentMethod").description("결제 수단").attributes(key("etc").value("P01 신용카드, P02 계좌이체, P03 무통장, P06 페이코")),
                                         parameterWithName("rangeType").description("조회 기간 구분").attributes(key("etc").value("PAYMENT 결제일자, CANCEL 취소일자")),
                                         parameterWithName("startDay").description("검색 시작 일자").attributes(key("etc").value("YYYY-MM-DD 예)2022-09-13")),
                                         parameterWithName("endDay").description("검색 종료 일자").attributes(key("etc").value("YYYY-MM-DD 예)2022-09-13")),
@@ -185,9 +185,9 @@ public class OrderControllerTest extends BaseControllerTests {
                                         headerWithName(AUTH_HEADER).description("JWT 토큰")
                                 ),
                                 requestParameters(
-                                        parameterWithName("orderStatus").description("주문 상태").attributes(key("etc").value("마스터 코드 000065")),
-                                        parameterWithName("paymentStatus").description("결제 상태").attributes(key("etc").value("마스터 코드 000067")),
-                                        parameterWithName("paymentMethod").description("결제 수단").attributes(key("etc").value("마스터 코드 000068")),
+                                        parameterWithName("orderStatus").description("주문 상태").attributes(key("etc").value("O05 주문완료, D01 상품 준비중, C05 구매확정, O06 취소요청, O07 취소완료, D02 배송중, D03 부분배송, D05 배송완료, O10 반품상태")),
+                                        parameterWithName("paymentStatus").description("결제 상태").attributes(key("etc").value("S01 입금대기, S10 결제완료, S08 결제취소, S02 부분취소")),
+                                        parameterWithName("paymentMethod").description("결제 수단").attributes(key("etc").value("P01 신용카드, P02 계좌이체, P03 무통장, P06 페이코")),
                                         parameterWithName("rangeType").description("조회 기간 구분").attributes(key("etc").value("PAYMENT 결제일자, CANCEL 취소일자")),
                                         parameterWithName("startDay").description("검색 시작 일자").attributes(key("etc").value("YYYY-MM-DD 예)2022-09-13")),
                                         parameterWithName("endDay").description("검색 종료 일자").attributes(key("etc").value("YYYY-MM-DD 예)2022-09-13")),
