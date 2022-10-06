@@ -57,13 +57,25 @@ public class DeliveryDto {
         @ApiModelProperty(value = "도서산간 추가요금")
         private Integer surchargeIsolated;
 
+        @ApiModelProperty(value = "출고지 우편번호", required = true)
+        private String unstoringZipCode;
+
         @ApiModelProperty(value = "출고지", required = true)
         @NotBlank(message = "출고지")
         private String unstoringAddress;
 
+        @ApiModelProperty(value = "출고지 상세주소")
+        private String unstoringAddressDetail;
+
+        @ApiModelProperty(value = "반품지 우편번호", required = true)
+        private String returnZipCode;
+
         @ApiModelProperty(value = "반품지", required = true)
         @NotBlank(message = "반품지")
         private String returnAddress;
+
+        @ApiModelProperty(value = "반품지 상세주소")
+        private String returnAddressDetail;
 
         @ApiModelProperty(value = "교환배송비", required = true)
         @NotNull(message = "교환배송비")
@@ -85,10 +97,18 @@ public class DeliveryDto {
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"배송방법"});
             if (ObjectUtils.isEmpty(this.deliveryBundleFlag))
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"묶음배송"});
+            if (ObjectUtils.isEmpty(this.unstoringZipCode))
+                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"출고지 우편번호"});
             if (ObjectUtils.isEmpty(this.unstoringAddress))
-                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"출고지"});
+                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"출고지 주소"});
+            if (ObjectUtils.isEmpty(this.unstoringAddressDetail))
+                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"출고지 상세주소"});
+            if (ObjectUtils.isEmpty(this.returnZipCode))
+                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"반품지 우편번호"});
             if (ObjectUtils.isEmpty(this.returnAddress))
-                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"반품지"});
+                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"반품지 주소"});
+            if (ObjectUtils.isEmpty(this.returnAddressDetail))
+                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"반품지 상세주소"});
             if (ObjectUtils.isEmpty(this.exchangeCharge))
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"교환배송비"});
             if (ObjectUtils.isEmpty(this.returnCharge))

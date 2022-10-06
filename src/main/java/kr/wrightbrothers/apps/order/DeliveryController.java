@@ -88,7 +88,7 @@ public class DeliveryController extends WBController {
         // 주문 정보 수정
         // 주문 내역 정보와 동일한 데이터 수정 처리를 하므로 해당 서비스 이용.
         // 이후 확장에 대한 변동이 생길 경우 서비스 로직 추가 필요 함.
-        orderService.updateOrder(paramDto);
+        // orderService.updateOrder(paramDto);
 
         return noneDataResponse();
     }

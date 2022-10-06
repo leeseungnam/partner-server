@@ -44,7 +44,7 @@ public class TemplateDto {
         }
 
         // 배송정보 유효성 검사
-        delivery.validTemplateDelivery();
+        delivery.validDelivery();
     }
 
 }

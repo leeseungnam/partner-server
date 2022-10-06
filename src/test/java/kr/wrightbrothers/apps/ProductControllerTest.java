@@ -134,8 +134,12 @@ class ProductControllerTest extends BaseControllerTests {
                         .termsFreeCharge(10000000L)
                         .paymentType("P02")
                         .surchargeFlag("N")
-                        .unstoringAddress("서울특별시 강남구 강남대로 154길 37, 주경빌딩 2층 (06035)")
-                        .returnAddress("서울특별시 강남구 강남대로 154길 37, 주경빌딩 1층 (06035)")
+                        .unstoringZipCode("06035")
+                        .unstoringAddress("서울특별시 강남구 강남대로 154길 37")
+                        .unstoringAddressDetail("주경빌딩 2층")
+                        .returnZipCode("06035")
+                        .returnAddress("서울특별시 강남구 강남대로 154길 37")
+                        .returnAddressDetail("주경빌딩 1층")
                         .exchangeCharge(100000)
                         .returnCharge(1000000)
                         .returnDeliveryCompanyCode("cjgls")
@@ -339,8 +343,12 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("delivery.areaCode").type(JsonFieldType.STRING).description("권역").optional().attributes(key("etc").value("공통코드 000080")),
                                         fieldWithPath("delivery.surchargeJejudo").type(JsonFieldType.NUMBER).description("제주도 추가 배송비").optional().attributes(key("etc").value("")),
                                         fieldWithPath("delivery.surchargeIsolated").type(JsonFieldType.NUMBER).description("도서산간 추가 배송비").optional().attributes(key("etc").value("")),
-                                        fieldWithPath("delivery.unstoringAddress").type(JsonFieldType.STRING).description("출고지").attributes(key("etc").value("")),
-                                        fieldWithPath("delivery.returnAddress").type(JsonFieldType.STRING).description("반품지").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.unstoringZipCode").type(JsonFieldType.STRING).description("출고지 우편번호").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.unstoringAddress").type(JsonFieldType.STRING).description("출고지 주소").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.unstoringAddressDetail").type(JsonFieldType.STRING).description("출고지 주소").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.returnZipCode").type(JsonFieldType.STRING).description("반품지 우편번호").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.returnAddress").type(JsonFieldType.STRING).description("반품지 주소").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.returnAddressDetail").type(JsonFieldType.STRING).description("반품지 상세주소").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.exchangeCharge").type(JsonFieldType.NUMBER).description("교환배송비").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.returnCharge").type(JsonFieldType.NUMBER).description("반품배송비(편도)").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.returnDeliveryCompanyCode").type(JsonFieldType.STRING).description("반품/교환 택배사 코드").attributes(key("etc").value("공통코드 000044")),
@@ -466,8 +474,12 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.delivery.areaCode").type(JsonFieldType.STRING).description("권역").optional(),
                                         fieldWithPath("data.delivery.surchargeJejudo").type(JsonFieldType.NUMBER).description("제주도 추가 배송비").optional(),
                                         fieldWithPath("data.delivery.surchargeIsolated").type(JsonFieldType.NUMBER).description("도서산간 추가 배송비").optional(),
-                                        fieldWithPath("data.delivery.unstoringAddress").type(JsonFieldType.STRING).description("출고지"),
-                                        fieldWithPath("data.delivery.returnAddress").type(JsonFieldType.STRING).description("반품지"),
+                                        fieldWithPath("data.delivery.unstoringZipCode").type(JsonFieldType.STRING).description("출고지 우편번호"),
+                                        fieldWithPath("data.delivery.unstoringAddress").type(JsonFieldType.STRING).description("출고지 주소"),
+                                        fieldWithPath("data.delivery.unstoringAddressDetail").type(JsonFieldType.STRING).description("출고지 상세주소"),
+                                        fieldWithPath("data.delivery.returnZipCode").type(JsonFieldType.STRING).description("반품지 우편번호"),
+                                        fieldWithPath("data.delivery.returnAddress").type(JsonFieldType.STRING).description("반품지 주소"),
+                                        fieldWithPath("data.delivery.returnAddressDetail").type(JsonFieldType.STRING).description("반품지 상세주소"),
                                         fieldWithPath("data.delivery.exchangeCharge").type(JsonFieldType.NUMBER).description("교환배송비"),
                                         fieldWithPath("data.delivery.returnCharge").type(JsonFieldType.NUMBER).description("반품배송비(편도)"),
                                         fieldWithPath("data.delivery.returnDeliveryCompanyCode").type(JsonFieldType.STRING).description("반품/교환 택배사 코드"),
@@ -585,8 +597,12 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("delivery.areaCode").type(JsonFieldType.STRING).description("권역").optional().attributes(key("etc").value("공통코드 000080")),
                                         fieldWithPath("delivery.surchargeJejudo").type(JsonFieldType.NUMBER).description("제주도 추가 배송비").optional().attributes(key("etc").value("")),
                                         fieldWithPath("delivery.surchargeIsolated").type(JsonFieldType.NUMBER).description("도서산간 추가 배송비").optional().attributes(key("etc").value("")),
-                                        fieldWithPath("delivery.unstoringAddress").type(JsonFieldType.STRING).description("출고지").attributes(key("etc").value("")),
-                                        fieldWithPath("delivery.returnAddress").type(JsonFieldType.STRING).description("반품지").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.unstoringZipCode").type(JsonFieldType.STRING).description("출고지 우편번호").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.unstoringAddress").type(JsonFieldType.STRING).description("출고지 주소").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.unstoringAddressDetail").type(JsonFieldType.STRING).description("출고지 상세주소").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.returnZipCode").type(JsonFieldType.STRING).description("반품지 우편번호").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.returnAddress").type(JsonFieldType.STRING).description("반품지 주소").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.returnAddressDetail").type(JsonFieldType.STRING).description("반품지 상세주소").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.exchangeCharge").type(JsonFieldType.NUMBER).description("교환배송비").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.returnCharge").type(JsonFieldType.NUMBER).description("반품배송비(편도)").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.returnDeliveryCompanyCode").type(JsonFieldType.STRING).description("반품/교환 택배사 코드").attributes(key("etc").value("공통코드 000044")),
@@ -690,8 +706,12 @@ class ProductControllerTest extends BaseControllerTests {
                         .termsFreeCharge(10000000L)
                         .paymentType("P02")
                         .surchargeFlag("N")
-                        .unstoringAddress("서울특별시 강남구 강남대로 154길 37, 주경빌딩 2층 (06035)")
-                        .returnAddress("서울특별시 강남구 강남대로 154길 37, 주경빌딩 1층 (06035)")
+                        .unstoringZipCode("06035")
+                        .unstoringAddress("서울특별시 강남구 강남대로 154길 37")
+                        .unstoringAddressDetail("주경빌딩 2층")
+                        .returnZipCode("06035")
+                        .returnAddress("서울특별시 강남구 강남대로 154길 37")
+                        .returnAddressDetail("주경빌딩 1층")
                         .exchangeCharge(10000)
                         .returnCharge(1000000)
                         .returnDeliveryCompanyCode("cjgls")
