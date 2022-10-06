@@ -1,6 +1,8 @@
 package kr.wrightbrothers.apps.order;
 
+import io.swagger.annotations.*;
 import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
+import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.OrderFindDto;
 import kr.wrightbrothers.apps.order.dto.OrderListDto;
 import kr.wrightbrothers.apps.order.dto.OrderUpdateDto;
@@ -12,10 +14,12 @@ import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+@Api(tags = {"주문"})
 @RestController
 @RequestMapping("/v1")
 @RequiredArgsConstructor
@@ -23,23 +27,27 @@ public class OrderController extends WBController {
 
     private final OrderService orderService;
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
+    })
+    @ApiOperation(value = "주문내역 목록 조회", notes = "주문 정보의 목록 조회")
     @GetMapping(value = {
             "/orders",
             "/orders/status-statistics"
     })
-    public WBModel findOrderList(@RequestParam String[] orderStatus,
-                                 @RequestParam String[] paymentStatus,
-                                 @RequestParam String[] paymentMethod,
-                                 @RequestParam String rangeType,
-                                 @RequestParam String startDay,
-                                 @RequestParam String endDay,
-                                 @RequestParam String keywordType,
-                                 @RequestParam(required = false) String keywordValue,
-                                 @RequestParam String sortType,
-                                 @RequestParam(required = false) int count,
-                                 @RequestParam(required = false) int page,
-                                 @AuthenticationPrincipal UserPrincipal user,
-                                 HttpServletRequest request
+    public WBModel findOrderList(@ApiParam(value = "주문상태") @RequestParam String[] orderStatus,
+                                 @ApiParam(value = "결제상태") @RequestParam String[] paymentStatus,
+                                 @ApiParam(value = "결제수단") @RequestParam String[] paymentMethod,
+                                 @ApiParam(value = "조회기간 구분") @RequestParam String rangeType,
+                                 @ApiParam(value = "조회기간 시작일") @RequestParam String startDay,
+                                 @ApiParam(value = "조회기간 종료일") @RequestParam String endDay,
+                                 @ApiParam(value = "키워드 구분") @RequestParam String keywordType,
+                                 @ApiParam(value = "키워드 값") @RequestParam(required = false) String keywordValue,
+                                 @ApiParam(value = "정렬 타입") @RequestParam String sortType,
+                                 @ApiParam(value = "페이지 행 수") @RequestParam(required = false) int count,
+                                 @ApiParam(value = "현재 페이지") @RequestParam(required = false) int page,
+                                 @ApiIgnore @AuthenticationPrincipal UserPrincipal user,
+                                 @ApiIgnore HttpServletRequest request
     ) {
         WBModel response = new WBModel();
         OrderListDto.Param paramDto = OrderListDto.Param.builder()
@@ -71,9 +79,13 @@ public class OrderController extends WBController {
         return response;
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
+    })
+    @ApiOperation(value = "주문내역 조회", notes = "주문내역 상세 정보 조회")
     @GetMapping("/orders/{orderNo}")
-    public WBModel findOrder(@PathVariable String orderNo,
-                             @AuthenticationPrincipal UserPrincipal user) {
+    public WBModel findOrder(@ApiParam(value = "주문 번호") @PathVariable String orderNo,
+                             @ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
         return defaultResponse(orderService.findOrder(
                 OrderFindDto.Param.builder()
                         .partnerCode(user.getUserAuth().getPartnerCode())
@@ -83,8 +95,12 @@ public class OrderController extends WBController {
     }
 
     @UserPrincipalScope
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
+    })
+    @ApiOperation(value = "주문내역 수정", notes = "주문내역의 배송지 정보, 주문 메모의 내용을 수정")
     @PutMapping("/orders")
-    public WBModel updateOrder(@Valid @RequestBody OrderUpdateDto paramDto) {
+    public WBModel updateOrder(@ApiParam(value = "주문내역 수정 데이터") @Valid @RequestBody OrderUpdateDto paramDto) {
         // 주문 정보 수정
         orderService.updateOrder(paramDto);
 
