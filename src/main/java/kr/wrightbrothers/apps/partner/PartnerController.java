@@ -10,6 +10,7 @@ import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +27,8 @@ import javax.validation.Valid;
 @RequestMapping(value = "/v1/partner")
 @RequiredArgsConstructor
 public class PartnerController extends WBController {
-
+    private final String messagePrefix = "api.message.";
+    private final MessageSourceAccessor messageSourceAccessor;
     private final PartnerService partnerService;
 
     @ApiImplicitParams({
@@ -45,7 +47,8 @@ public class PartnerController extends WBController {
 
         // insertPartner
         partnerService.insertPartner(paramDto);
-
+        Object [] messageArgs = {"심사요청"};
+        wbResponse.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.complete", messageArgs));
 
         return  wbResponse;
     }

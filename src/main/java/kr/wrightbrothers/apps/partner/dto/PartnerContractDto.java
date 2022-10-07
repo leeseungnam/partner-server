@@ -18,10 +18,7 @@ public class PartnerContractDto {
     @NoArgsConstructor
     public static class PartnerContract {
 
-        @ApiModelProperty(value = "파트너 코드", required = true)
-        @NotBlank(message = "파트너 코드")
-        @Size(min = 2, max = 20, message = "파트너 코드")
-        private String partnerCode;
+
 
         @ApiModelProperty(value = "입점 담당자명", required = true)
         @NotBlank(message = "입점 담당자명")
@@ -80,6 +77,10 @@ public class PartnerContractDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ReqBody extends PartnerContract{
+        @ApiModelProperty(value = "파트너 코드")
+        @JsonIgnore
+        private String partnerCode;
+
         @ApiModelProperty(value = "계약번호")
         @JsonIgnore
         private String contractNo;
@@ -93,6 +94,9 @@ public class PartnerContractDto {
         }
         public void changeUserId(String userId) {
             this.userId = userId;
+        }
+        public void changePartnerCode(String partnerCode) {
+            this.partnerCode = partnerCode;
         }
     }
 
@@ -108,5 +112,8 @@ public class PartnerContractDto {
 
         @ApiModelProperty(value = "계약진행 상태코드")
         private String contractStatus;
+
+        @ApiModelProperty(value = "파트너 코드")
+        private String partnerCode;
     }
 }
