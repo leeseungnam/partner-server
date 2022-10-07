@@ -66,7 +66,7 @@ public class UserController extends WBController {
         userService.insertUser(paramDto);
 
         Object [] messageArgs = {"회원가입"};
-        response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"user.save.custom", messageArgs));
+        response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.complete", messageArgs));
 
         return  response;
     }
