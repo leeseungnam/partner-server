@@ -209,7 +209,7 @@ public class OrderControllerTest extends BaseControllerTests {
                                         parameterWithName("page").description("페이지").attributes(key("etc").value(""))
                                 ),
                                 responseFields(
-                                        fieldWithPath("data[]").type(JsonFieldType.ARRAY).optional().description("주문 목록"),
+                                        fieldWithPath("data[]").type(JsonFieldType.ARRAY).optional().description("주문 목록 정보"),
                                         fieldWithPath("data[].orderDay").type(JsonFieldType.STRING).description("주문 일자"),
                                         fieldWithPath("data[].orderNo").type(JsonFieldType.STRING).description("주문 번호"),
                                         fieldWithPath("data[].orderUserName").type(JsonFieldType.STRING).description("주문자"),

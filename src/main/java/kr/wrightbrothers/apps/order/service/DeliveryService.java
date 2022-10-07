@@ -1,6 +1,5 @@
 package kr.wrightbrothers.apps.order.service;
 
-import kr.wrightbrothers.apps.common.type.OrderStatusCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto;
 import kr.wrightbrothers.apps.order.dto.DeliveryListDto;
@@ -25,8 +24,9 @@ public class DeliveryService {
         return dao.selectList(namespace + "findDeliveryList", paramDto, paramDto.getRowBounds());
     }
 
-    public Object findDeliveryStatusStatistics(DeliveryListDto.Param paramDto) {
-        return null;
+    public DeliveryListDto.Statistics findDeliveryStatusStatistics(DeliveryListDto.Param paramDto) {
+        // 배송내역 상태 집계 건수 조회
+        return dao.selectOne(namespace + "findDeliveryStatusStatistics", paramDto);
     }
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)

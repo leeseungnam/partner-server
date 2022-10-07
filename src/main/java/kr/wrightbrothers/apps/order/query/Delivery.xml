@@ -3,10 +3,46 @@
 
 <mapper namespace="kr.wrightbrothers.apps.order.query.Delivery">
 
-	<select id="findDeliveryList" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryFindDto$Param" resultType="kr.wrightbrothers.apps.order.dto.DeliveryFindDto$Response">
+	<select id="findDeliveryList" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryListDto$Param" resultType="kr.wrightbrothers.apps.order.dto.DeliveryListDto$Response">
 		select
-		    *
+			date_format(p.payment_date, '%Y-%m-%d') as payment_day,
+			o.order_no,
+			o.order_user_name,
+			o.order_status_code,
+			o.order_status_code as order_status_name,
+			p.payment_method_code,
+			p.payment_method_code as payment_method_name,
+			o.order_name,
+			g.delivery_name,
+			o.recipient_name,
+			o.recipient_phone,
+			o.recipient_address,
+			o.recipient_address_detail
 		  from order_info o
+		 inner join (
+		     select
+		         _p.order_no,
+		         concat(
+		             if(sum(if(_p.delivery_type = 'D01', 1, 0)) > 0, '택배', ''),
+					 if(sum(if(_p.delivery_type = 'D01', 1, 0)) > 0 and sum(if(_p.delivery_type = 'D07', 1, 0)) > 0, ' / ', ''),
+					 if(sum(if(_p.delivery_type = 'D07', 1, 0)) > 0, '화물', '')
+				 ) as delivery_name
+		       from order_product _p
+		       left join order_delivery _d
+		       	 on _p.order_no = _d.order_no
+				and _p.order_product_seq = _d.order_product_seq
+				and _p.product_code = _d.product_code
+			  where 1 = 1
+			-- 배송 상태
+			<foreach collection="deliveryStatus" item="item" index="index" open="and _d.delivery_status_code in (" separator="," close=")">
+				#{item}
+			</foreach>
+			-- 배송 방법
+			<foreach collection="deliveryType" item="item" index="index" open="and _p.delivery_type in (" separator="," close=")">
+				#{item}
+			</foreach>
+		      group by _p.order_no
+		) g on o.order_no = g.order_no
 		 inner join order_payment p
 			on o.order_no = p.order_no
 		 where o.partner_code = #{partnerCode}
@@ -31,11 +67,10 @@
 				</choose>
 			</when>
 			<otherwise>
-				<choose>
-
-				</choose>
+				and	p.payment_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
 			</otherwise>
 		</choose>
+		order by p.payment_date desc
 	</select>
 
 	<select id="isDeliveryInvoiceCheck" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryFindDto$StatusCheck" resultType="boolean">

@@ -1,6 +1,11 @@
 package kr.wrightbrothers.apps.order;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
+import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto;
 import kr.wrightbrothers.apps.order.dto.DeliveryListDto;
 import kr.wrightbrothers.apps.order.dto.OrderFindDto;
@@ -14,6 +19,7 @@ import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -26,27 +32,30 @@ public class DeliveryController extends WBController {
     private final DeliveryService deliveryService;
     private final OrderService orderService;
 
-    @GetMapping(value = {
-            "/deliveries"
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
     })
-    public WBModel findDeliveryList(@RequestParam String[] deliveryStatus,
-                                    @RequestParam String[] deliveryType,
-                                    @RequestParam String rangeType,
-                                    @RequestParam String startDay,
-                                    @RequestParam String endDay,
-                                    @RequestParam String keywordType,
-                                    @RequestParam String keywordValue,
-                                    @RequestParam int count,
-                                    @RequestParam int page,
-                                    @AuthenticationPrincipal UserPrincipal user,
-                                    HttpServletRequest request
+    @ApiOperation(value = "배송관리 목록 조회", notes = "주문 정보의 배송 목록 조회")
+    @GetMapping(value = {
+            "/deliveries",
+            "/deliveries/status-statistics"
+    })
+    public WBModel findDeliveryList(@ApiParam(value = "배송상태") @RequestParam String[] deliveryStatus,
+                                    @ApiParam(value = "배송방법") @RequestParam String[] deliveryType,
+                                    @ApiParam(value = "조회기간 시작일") @RequestParam String startDay,
+                                    @ApiParam(value = "조회기간 종료일") @RequestParam String endDay,
+                                    @ApiParam(value = "키워드 구분") @RequestParam String keywordType,
+                                    @ApiParam(value = "키워드 값") @RequestParam(required = false) String keywordValue,
+                                    @ApiParam(value = "페이지 행 수") @RequestParam int count,
+                                    @ApiParam(value = "현재 페이지") @RequestParam int page,
+                                    @ApiIgnore @AuthenticationPrincipal UserPrincipal user,
+                                    @ApiIgnore HttpServletRequest request
     ) {
         WBModel response = new WBModel();
         DeliveryListDto.Param paramDto = DeliveryListDto.Param.builder()
                 .partnerCode(user.getUserAuth().getPartnerCode())
                 .deliveryType(deliveryType)
                 .deliveryStatus(deliveryStatus)
-                .rangeType(rangeType)
                 .startDay(startDay)
                 .endDay(endDay)
                 .keywordType(keywordType)
