@@ -40,6 +40,11 @@ public class UserService {
         dao.insert(namespace + "insertUser", paramDto, PartnerKey.WBDataBase.Alias.Default);
     }
 
+    public void _insertUser(UserAuthDto paramDto) {
+        dao.insert(namespace + "insertUsersPartner", paramDto, PartnerKey.WBDataBase.Alias.Default);
+    }
+
+
     @Transactional(value = PartnerKey.WBDataBase.TransactionManager.Default)
     public void updateUserPwd(UserPwdUpdateDto paramDto) {
         dao.update(namespace + "updateUserPwd", paramDto, PartnerKey.WBDataBase.Alias.Default);
