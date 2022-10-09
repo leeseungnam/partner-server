@@ -73,7 +73,7 @@
 		order by p.payment_date desc
 	</select>
 
-	<select id="isDeliveryInvoiceCheck" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryFindDto$StatusCheck" resultType="boolean">
+	<select id="isDeliveryInvoiceCheck" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto$ProductInvoice" resultType="boolean">
 		select
 		    if(order_product_status_code in ('D01', 'D02'), false, true) as isInputDelivery		-- D01 상품준비중, D02 배송중
 		  from order_product

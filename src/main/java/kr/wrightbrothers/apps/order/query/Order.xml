@@ -3,7 +3,7 @@
 
 <mapper namespace="kr.wrightbrothers.apps.order.query.Order">
 
-	<select id="isDeliveryStatusCheck" parameterType="java.lang.String" resultType="java.lang.String">
+	<select id="isDeliveryStatusCheck" parameterType="java.lang.String" resultType="boolean">
 		select
 		    if(order_status_code in ('D01', 'D03'), false, true) as isDeliveryCheck
 		  from order_info

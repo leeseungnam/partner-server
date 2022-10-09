@@ -5,6 +5,7 @@ import kr.wrightbrothers.BaseControllerTests;
 import kr.wrightbrothers.apps.common.type.DeliveryStatusCode;
 import kr.wrightbrothers.apps.common.type.DeliveryType;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto;
 import kr.wrightbrothers.apps.order.dto.DeliveryListDto;
 import kr.wrightbrothers.apps.order.dto.DeliveryMemoUpdateDto;
 import kr.wrightbrothers.apps.order.dto.OrderFindDto;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,8 +25,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -117,6 +118,82 @@ class DeliveryControllerTest extends BaseControllerTests {
     }
 
     @Test
+    @DisplayName("배송내역 조회")
+    void findDelivery() throws Exception {
+        String orderNo = "202209281757217262";
+
+        // 주문내역 상세 API 조회
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/deliveries/{orderNo}", orderNo)
+                        .header(AUTH_HEADER, JWT_TOKEN)
+                        .contentType(MediaType.TEXT_HTML)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.WBCommon.state").value("S"))
+                .andDo(
+                        document("delivery-find",
+                                requestDocument(),
+                                responseDocument(),
+                                requestHeaders(
+                                        headerWithName(AUTH_HEADER).description("JWT 토큰")
+                                ),
+                                pathParameters(
+                                        parameterWithName("orderNo").description("주문 번호")
+                                ),
+                                responseFields(
+                                        fieldWithPath("data.order").type(JsonFieldType.OBJECT).description("주문 정보"),
+                                        fieldWithPath("data.order.orderNo").type(JsonFieldType.STRING).description("주문 번호"),
+                                        fieldWithPath("data.order.orderDate").type(JsonFieldType.STRING).description("주문 일시"),
+                                        fieldWithPath("data.order.orderStatusName").type(JsonFieldType.STRING).description("주문 상태"),
+                                        fieldWithPath("data.order.orderQty").type(JsonFieldType.NUMBER).description("주문 수량"),
+                                        fieldWithPath("data.order.orderUserCode").type(JsonFieldType.STRING).description("회원 코드"),
+                                        fieldWithPath("data.order.orderUserId").type(JsonFieldType.STRING).description("아이디"),
+                                        fieldWithPath("data.order.orderUserName").type(JsonFieldType.STRING).description("회원명"),
+                                        fieldWithPath("data.order.orderUserPhone").type(JsonFieldType.STRING).description("휴대폰 번호"),
+                                        fieldWithPath("data.order.recipientName").type(JsonFieldType.STRING).description("수령자 명"),
+                                        fieldWithPath("data.order.recipientPhone").type(JsonFieldType.STRING).description("수령자 휴대전화"),
+                                        fieldWithPath("data.order.recipientAddressZipCode").type(JsonFieldType.STRING).description("수령자 우편번호"),
+                                        fieldWithPath("data.order.recipientAddress").type(JsonFieldType.STRING).description("수령자 주소"),
+                                        fieldWithPath("data.order.recipientAddressDetail").type(JsonFieldType.STRING).description("수령자 상세주소"),
+                                        fieldWithPath("data.order.requestDetail").type(JsonFieldType.STRING).optional().description("배송 요청 사항"),
+                                        fieldWithPath("data.order.orderMemo").type(JsonFieldType.STRING).optional().description("주문 메모"),
+                                        fieldWithPath("data.order.returnMemo").type(JsonFieldType.STRING).optional().description("반품 메모"),
+                                        fieldWithPath("data.order.deliveryMemo").type(JsonFieldType.STRING).optional().description("배송 메모"),
+                                        fieldWithPath("data.payment").type(JsonFieldType.OBJECT).description("결제 정보"),
+                                        fieldWithPath("data.payment.orderAmount").type(JsonFieldType.NUMBER).description("주문 금액"),
+                                        fieldWithPath("data.payment.deliveryChargeAmount").type(JsonFieldType.NUMBER).description("배송 금액"),
+                                        fieldWithPath("data.payment.sspPoint").type(JsonFieldType.NUMBER).description("S.S.P"),
+                                        fieldWithPath("data.payment.salesAmount").type(JsonFieldType.NUMBER).description("판매 대금"),
+                                        fieldWithPath("data.payment.paymentAmount").type(JsonFieldType.NUMBER).description("결제 금액"),
+                                        fieldWithPath("data.payment.paymentDate").type(JsonFieldType.STRING).optional().description("결제 일시"),
+                                        fieldWithPath("data.payment.transactionId").type(JsonFieldType.STRING).optional().description("PG 승인번호"),
+                                        fieldWithPath("data.payment.paymentMethodName").type(JsonFieldType.STRING).description("결제 수단"),
+                                        fieldWithPath("data.payment.paymentStatusName").type(JsonFieldType.STRING).description("결제 상태"),
+                                        fieldWithPath("data.payment.cancelDate").type(JsonFieldType.STRING).description("취소 일시"),
+                                        fieldWithPath("data.payment.cancelReason").type(JsonFieldType.STRING).description("취소 사유"),
+                                        fieldWithPath("data.productList[]").type(JsonFieldType.ARRAY).description("주문 상품 목록"),
+                                        fieldWithPath("data.productList[].orderProductSeq").type(JsonFieldType.NUMBER).description("주문 상품 SEQ"),
+                                        fieldWithPath("data.productList[].productCode").type(JsonFieldType.STRING).description("상품 코드"),
+                                        fieldWithPath("data.productList[].productName").type(JsonFieldType.STRING).description("상품 명"),
+                                        fieldWithPath("data.productList[].orderProductStatusName").type(JsonFieldType.STRING).description("주문 상품 상태"),
+                                        fieldWithPath("data.productList[].finalSellAmount").type(JsonFieldType.NUMBER).description("판매 금액"),
+                                        fieldWithPath("data.productList[].optionName").type(JsonFieldType.STRING).description("옵션 명"),
+                                        fieldWithPath("data.productList[].optionSurcharge").type(JsonFieldType.NUMBER).description("옵션 변동 금액"),
+                                        fieldWithPath("data.productList[].productQty").type(JsonFieldType.NUMBER).description("구매 수량"),
+                                        fieldWithPath("data.productList[].deliveryType").type(JsonFieldType.STRING).optional().description("배송 구분"),
+                                        fieldWithPath("data.productList[].deliveryCompanyName").type(JsonFieldType.STRING).optional().description("택배 업체"),
+                                        fieldWithPath("data.productList[].deliveryChargeAmount").type(JsonFieldType.NUMBER).optional().description("배송료"),
+                                        fieldWithPath("data.productList[].invoiceNo").type(JsonFieldType.STRING).optional().description("송장 번호"),
+                                        fieldWithPath("data.productList[].returnDeliveryCompanyName").type(JsonFieldType.STRING).optional().description("반품 택배 업체"),
+                                        fieldWithPath("data.productList[].returnInvoiceNo").type(JsonFieldType.STRING).optional().description("반품 송장 번"),
+                                        fieldWithPath("data.productList[].returnReason").type(JsonFieldType.STRING).optional().description("반품 사유"),
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                )
+                        ))
+        ;
+    }
+
+    @Test
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     @DisplayName("배송내역 수정")
     void updateDelivery() throws Exception {
@@ -174,6 +251,51 @@ class DeliveryControllerTest extends BaseControllerTests {
         assertEquals(updateParam.getRecipientAddress(), nowDto.getOrder().getRecipientAddress());
         assertEquals(updateParam.getRecipientAddressDetail(), nowDto.getOrder().getRecipientAddressDetail());
         assertEquals(updateParam.getDeliveryMemo(), nowDto.getOrder().getDeliveryMemo());
+    }
+
+    @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @DisplayName("송장번호 입력")
+    void updateDeliveryInvoice() throws Exception {
+        DeliveryInvoiceUpdateDto updateDto = DeliveryInvoiceUpdateDto.builder()
+                .orderNo("202201011022429727")
+                .orderProductSeq(new Integer[]{1})
+                .deliveryCompanyCode("cjgls")
+                .deliveryCompanyName("CJ대한통운")
+                .invoiceNo("12345678890")
+                .build();
+
+        // 배송정보 수정 API 테스트
+        mockMvc.perform(RestDocumentationRequestBuilders.put("/v1/deliveries/{orderNo}/invoice", updateDto.getOrderNo())
+                        .header(AUTH_HEADER, JWT_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(updateDto))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.WBCommon.state").value("S"))
+                .andDo(
+                        document("delivery-invoice-update",
+                                requestDocument(),
+                                responseDocument(),
+                                requestHeaders(
+                                        headerWithName(AUTH_HEADER).description("JWT 토큰")
+                                ),
+                                pathParameters(
+                                        parameterWithName("orderNo").description("주문 번호")
+                                ),
+                                relaxedRequestFields(
+                                        fieldWithPath("orderNo").type(JsonFieldType.STRING).description("주문 번호").attributes(key("etc").value("")),
+                                        fieldWithPath("orderProductSeq").type(JsonFieldType.ARRAY).description("주문 상품 SEQ").attributes(key("etc").value("")),
+                                        fieldWithPath("deliveryCompanyCode").type(JsonFieldType.STRING).description("택배사 코드").attributes(key("etc").value("마스터 코드 000044")),
+                                        fieldWithPath("deliveryCompanyName").type(JsonFieldType.STRING).description("택배사 이름").attributes(key("etc").value("")),
+                                        fieldWithPath("invoiceNo").type(JsonFieldType.STRING).description("송장번호").attributes(key("etc").value(""))
+                                ),
+                                responseFields(
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                )
+                        ))
+        ;
     }
 
 }

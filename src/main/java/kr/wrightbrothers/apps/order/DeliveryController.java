@@ -97,6 +97,7 @@ public class DeliveryController extends WBController {
         return noneDataResponse();
     }
 
+    @UserPrincipalScope
     @PutMapping("/deliveries/{orderNo}/invoice")
     public WBModel updateDeliveryInvoice(@Valid @RequestBody DeliveryInvoiceUpdateDto paramDto) {
         // 배송정보 수정

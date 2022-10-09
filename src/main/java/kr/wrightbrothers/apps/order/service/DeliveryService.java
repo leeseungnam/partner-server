@@ -36,7 +36,7 @@ public class DeliveryService {
                 .forEach(orderProductSeq -> {
                     // 배송정보 입력 가능 상태 체크
                     // 시스템 에러가 아닌 이상 다른 상태 코드는 패스
-                    if (dao.selectOne(namespace + "isDeliveryInvoiceCheck", paramDto))
+                    if (dao.selectOne(namespace + "isDeliveryInvoiceCheck", paramDto.toProductInvoiceDto(orderProductSeq)))
                         return;
 
                     // 배송정보 입력 처리

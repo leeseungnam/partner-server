@@ -413,3 +413,37 @@ include::{snippets}/delivery-list/request-parameters.adoc[]
 .HTTP response
 include::{snippets}/delivery-list/http-response.adoc[]
 include::{snippets}/delivery-list/response-fields.adoc[]
+
+[[delivery-find]]
+==== 배송내역 조회
+
+.HTTP request
+include::{snippets}/delivery-find/http-request.adoc[]
+include::{snippets}/delivery-find/request-headers.adoc[]
+include::{snippets}/delivery-find/path-parameters.adoc[]
+.HTTP response
+include::{snippets}/delivery-find/http-response.adoc[]
+include::{snippets}/delivery-find/response-fields.adoc[]
+
+[[delivery-update]]
+==== 배송내역 수정
+
+.HTTP request
+include::{snippets}/delivery-update/http-request.adoc[]
+include::{snippets}/delivery-update/request-headers.adoc[]
+include::{snippets}/delivery-update/request-fields.adoc[]
+.HTTP response
+include::{snippets}/delivery-update/http-response.adoc[]
+include::{snippets}/delivery-update/response-fields.adoc[]
+
+[[delivery-invoice-update]]
+==== 송장번호 등록/수정
+
+.HTTP request
+include::{snippets}/delivery-invoice-update/http-request.adoc[]
+include::{snippets}/delivery-invoice-update/request-headers.adoc[]
+include::{snippets}/delivery-invoice-update/path-parameters.adoc[]
+include::{snippets}/delivery-invoice-update/request-fields.adoc[]
+.HTTP response
+include::{snippets}/delivery-invoice-update/http-response.adoc[]
+include::{snippets}/delivery-invoice-update/response-fields.adoc[]
