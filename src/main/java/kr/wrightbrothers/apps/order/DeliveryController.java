@@ -6,10 +6,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
-import kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto;
-import kr.wrightbrothers.apps.order.dto.DeliveryListDto;
-import kr.wrightbrothers.apps.order.dto.OrderFindDto;
-import kr.wrightbrothers.apps.order.dto.OrderUpdateDto;
+import kr.wrightbrothers.apps.order.dto.*;
 import kr.wrightbrothers.apps.order.service.DeliveryService;
 import kr.wrightbrothers.apps.order.service.OrderService;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
@@ -93,11 +90,9 @@ public class DeliveryController extends WBController {
 
     @UserPrincipalScope
     @PutMapping("/deliveries")
-    public WBModel updateDelivery(@Valid @RequestBody OrderUpdateDto paramDto) {
-        // 주문 정보 수정
-        // 주문 내역 정보와 동일한 데이터 수정 처리를 하므로 해당 서비스 이용.
-        // 이후 확장에 대한 변동이 생길 경우 서비스 로직 추가 필요 함.
-        // orderService.updateOrder(paramDto);
+    public WBModel updateDelivery(@Valid @RequestBody DeliveryMemoUpdateDto paramDto) {
+        // 배송관리 정보 수정
+        deliveryService.updateDelivery(paramDto);
 
         return noneDataResponse();
     }

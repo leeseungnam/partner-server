@@ -10,8 +10,8 @@ import javax.validation.constraints.Size;
 @Getter
 @Jacksonized
 @SuperBuilder
-public class OrderMemoUpdateDto extends OrderUpdateDto {
-    @ApiModelProperty(value = "주문메모", required = false)
-    @Size(max = 2000, message = "주문메모")
-    private String orderMemo;               // 주문 메모
+public class DeliveryMemoUpdateDto extends OrderUpdateDto {
+    @ApiModelProperty(value = "배송메모", required = false)
+    @Size(max = 2000, message = "배송메모")
+    private String deliveryMemo;            // 배송 메모
 }

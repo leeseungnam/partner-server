@@ -3,6 +3,7 @@ package kr.wrightbrothers.apps.order.service;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto;
 import kr.wrightbrothers.apps.order.dto.DeliveryListDto;
+import kr.wrightbrothers.apps.order.dto.DeliveryMemoUpdateDto;
 import kr.wrightbrothers.apps.order.dto.OrderUpdateDto;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
@@ -58,5 +59,18 @@ public class DeliveryService {
                         .userId(paramDto.getUserId())
                         .build()
                 );
+    }
+
+    /**
+     * <pre>
+     * 배송 주문 상품 목록에서 송장번호가 입력 되어있으면, 해당 주문건에 대해서
+     * 배송 진행이 되어있다고 판단 합니다.
+     *
+     * 배송 진행 상태일 경우 해당 배송지 정보는 제외하고 배송 메모 데이터만 수정
+     * </pre>
+     */
+    public void updateDelivery(DeliveryMemoUpdateDto paramDto) {
+        // 송장번호 입력 시 배송지 정보 수정 제외
+        dao.update(namespace + "updateDelivery", paramDto);
     }
 }

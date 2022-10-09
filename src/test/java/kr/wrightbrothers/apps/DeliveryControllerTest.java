@@ -1,21 +1,28 @@
 package kr.wrightbrothers.apps;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.BaseControllerTests;
 import kr.wrightbrothers.apps.common.type.DeliveryStatusCode;
 import kr.wrightbrothers.apps.common.type.DeliveryType;
+import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.DeliveryListDto;
+import kr.wrightbrothers.apps.order.dto.DeliveryMemoUpdateDto;
+import kr.wrightbrothers.apps.order.dto.OrderFindDto;
+import kr.wrightbrothers.apps.order.service.OrderService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.restdocs.snippet.Attributes.key;
@@ -24,6 +31,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class DeliveryControllerTest extends BaseControllerTests {
+
+    @Autowired
+    private OrderService orderService;
 
     @Test
     @DisplayName("배송내역 목록 조회")
@@ -104,6 +114,66 @@ class DeliveryControllerTest extends BaseControllerTests {
                         )
                 )
                 ;
+    }
+
+    @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @DisplayName("배송내역 수정")
+    void updateDelivery() throws Exception {
+        DeliveryMemoUpdateDto updateParam = DeliveryMemoUpdateDto.builder()
+                .orderNo("202209281757217262")
+                .recipientName("홍길동")
+                .recipientPhone("01012341234")
+                .recipientAddressZipCode("12345")
+                .recipientAddress("서울특별시 강남구 강남대로 154길 37")
+                .recipientAddressDetail("주경빌딩 2층")
+                .deliveryMemo("배송메모")
+                .build();
+
+        // 배송내역 수정 API 테스트
+        mockMvc.perform(put("/v1/deliveries")
+                    .header(AUTH_HEADER, JWT_TOKEN)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content((new ObjectMapper().writeValueAsString(updateParam)))
+                    .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.WBCommon.state").value("S"))
+                .andDo(
+                        document("delivery-update",
+                                requestDocument(),
+                                responseDocument(),
+                                requestHeaders(
+                                        headerWithName(AUTH_HEADER).description("JWT 토큰")
+                                ),
+                                relaxedRequestFields(
+                                        fieldWithPath("orderNo").type(JsonFieldType.STRING).description("주문 번호").attributes(key("etc").value("")),
+                                        fieldWithPath("recipientName").type(JsonFieldType.STRING).description("수령자 이름").attributes(key("etc").value("")),
+                                        fieldWithPath("recipientPhone").type(JsonFieldType.STRING).description("수령자 휴대전화").attributes(key("etc").value("")),
+                                        fieldWithPath("recipientAddressZipCode").type(JsonFieldType.STRING).description("배송지 우편번호").attributes(key("etc").value("")),
+                                        fieldWithPath("recipientAddress").type(JsonFieldType.STRING).description("배송지 주소").attributes(key("etc").value("")),
+                                        fieldWithPath("recipientAddressDetail").type(JsonFieldType.STRING).description("배송지 상세주소").attributes(key("etc").value("")),
+                                        fieldWithPath("deliveryMemo").type(JsonFieldType.STRING).description("배송 메모").optional().attributes(key("etc").value(""))
+                                ),
+                                responseFields(
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                )
+                ))
+        ;
+
+        // 변경 체크를 위한 조회
+        OrderFindDto.Response nowDto = orderService.findOrder(OrderFindDto.Param.builder()
+                .partnerCode("PT0000001")
+                .orderNo("202209281757217262")
+                .build());
+
+        // 검증
+        assertEquals(updateParam.getRecipientName(), nowDto.getOrder().getRecipientName());
+        assertEquals(updateParam.getRecipientPhone(), nowDto.getOrder().getRecipientPhone());
+        assertEquals(updateParam.getRecipientAddressZipCode(), nowDto.getOrder().getRecipientAddressZipCode());
+        assertEquals(updateParam.getRecipientAddress(), nowDto.getOrder().getRecipientAddress());
+        assertEquals(updateParam.getRecipientAddressDetail(), nowDto.getOrder().getRecipientAddressDetail());
+        assertEquals(updateParam.getDeliveryMemo(), nowDto.getOrder().getDeliveryMemo());
     }
 
 }

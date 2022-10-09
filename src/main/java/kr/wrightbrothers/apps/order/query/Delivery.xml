@@ -102,4 +102,28 @@
 		   and order_product_seq = #{orderProductSeq}
 	</update>
 
+	<update id="updateDelivery" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryMemoUpdateDto">
+		-- 송장번호 입력 유무에 대한 체크
+		<selectKey resultType="boolean" keyProperty="isInvoiceNo" order="BEFORE">
+			select
+			if(count(order_product_seq) = 0, true, false) as isInvoice
+			from order_delivery
+			where order_no = #{orderNo}
+			and invoice_no is not null
+		</selectKey>
+		update order_info
+		   set delivery_memo = #{deliveryMemo},
+		       -- 송장번호 미입력 시 수령자 정보 변경 가능
+		       <if test="isInvoiceNo">
+		       		recipient_name = #{recipientName},
+					recipient_phone = #{recipientPhone},
+					recipient_address_zip_code = #{recipientAddressZipCode},
+					recipient_address = #{recipientAddress},
+					recipient_address_detail = #{recipientAddressDetail},
+			   </if>
+			   update_user_id = #{userId},
+			   update_date = now()
+		 where order_no = #{orderNo}
+	</update>
+
 </mapper>
