@@ -37,6 +37,78 @@ class DeliveryControllerTest extends BaseControllerTests {
     private OrderService orderService;
 
     @Test
+    @DisplayName("배송상태 집계 건수")
+    void findDeliveryStatusStatistics() throws Exception {
+        // 조회 파라미터 필터
+        DeliveryListDto.Param paramDto = DeliveryListDto.Param.builder()
+                .deliveryType(
+                        new String[]{
+                                DeliveryType.PARCEL.getType(),
+                                DeliveryType.FREIGHT.getType()
+                        }
+                )
+                .deliveryStatus(
+                        new String[]{
+                                DeliveryStatusCode.READY_PRODUCT.getCode(),
+                                DeliveryStatusCode.START_DELIVERY.getCode(),
+                                DeliveryStatusCode.FINISH_DELIVERY.getCode(),
+                                DeliveryStatusCode.PARTIAL_DELIVERY.getCode()
+                        }
+                )
+                .startDay("2022-01-01")
+                .endDay("2022-10-10")
+                .keywordType("NAME")
+                .keywordValue("")
+                .build();
+
+        // 배송상태 집계 조회 API 테스트
+        mockMvc.perform(get("/v1/deliveries/status-statistics")
+                        .header(AUTH_HEADER, JWT_TOKEN)
+                        .contentType(MediaType.TEXT_HTML)
+                        .queryParam("deliveryType", paramDto.getDeliveryType())
+                        .queryParam("deliveryStatus", paramDto.getDeliveryStatus())
+                        .queryParam("startDay", paramDto.getStartDay())
+                        .queryParam("endDay", paramDto.getEndDay())
+                        .queryParam("keywordType", paramDto.getKeywordType())
+                        .queryParam("keywordValue", paramDto.getKeywordValue())
+                        .queryParam("count", String.valueOf(1))
+                        .queryParam("page", String.valueOf(1))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.WBCommon.state").value("S"))
+                .andDo(
+                        document("delivery-status-statistics",
+                                requestDocument(),
+                                responseDocument(),
+                                requestHeaders(
+                                        headerWithName(AUTH_HEADER).description("JWT 토큰")
+                                ),
+                                requestParameters(
+                                        parameterWithName("deliveryType").description("배송 방법").attributes(key("etc").value("D01 택배, D07 화물")),
+                                        parameterWithName("deliveryStatus").description("배송 상태").attributes(key("etc").value("D01 상품준비중, D02 배송중, D05 배송완료, D03 부분배송, O11 교환배송")),
+                                        parameterWithName("startDay").description("검색 시작 일자").attributes(key("etc").value("YYYY-MM-DD 예)2022-09-13")),
+                                        parameterWithName("endDay").description("검색 종료 일자").attributes(key("etc").value("YYYY-MM-DD 예)2022-09-13")),
+                                        parameterWithName("keywordType").description("키워드 구분").attributes(key("etc").value("NO 주문번호, NAME 주문명, USER 주문자")),
+                                        parameterWithName("keywordValue").description("키워드 값").optional().attributes(key("etc").value("")),
+                                        parameterWithName("count").description("페이지 ROW 수").attributes(key("etc").value("")),
+                                        parameterWithName("page").description("페이지").attributes(key("etc").value(""))
+                                ),
+                                responseFields(
+                                        fieldWithPath("data").type(JsonFieldType.OBJECT).description("배송 상태 집계 정보"),
+                                        fieldWithPath("data.totalDeliveryCount").type(JsonFieldType.NUMBER).description("전체배송 건수"),
+                                        fieldWithPath("data.readyProductCount").type(JsonFieldType.NUMBER).description("상품준비중 건수"),
+                                        fieldWithPath("data.startDeliveryCount").type(JsonFieldType.NUMBER).description("배송중 건수"),
+                                        fieldWithPath("data.partialDeliveryCount").type(JsonFieldType.NUMBER).description("부분배송 건수"),
+                                        fieldWithPath("data.exchangeDeliveryCount").type(JsonFieldType.NUMBER).description("교화배송 건수"),
+                                        fieldWithPath("data.finishDeliveryCount").type(JsonFieldType.NUMBER).description("배송완료 건수"),
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                )
+                ))
+                ;
+    }
+
+    @Test
     @DisplayName("배송내역 목록 조회")
     void findDeliveryList() throws Exception {
         // 조회 파라미터 필드
@@ -85,8 +157,8 @@ class DeliveryControllerTest extends BaseControllerTests {
                                         headerWithName(AUTH_HEADER).description("JWT 토큰")
                                 ),
                                 requestParameters(
-                                        parameterWithName("deliveryType").description("배송 방법").attributes(key("etc").value("")),
-                                        parameterWithName("deliveryStatus").description("배송 상태").attributes(key("etc").value("")),
+                                        parameterWithName("deliveryType").description("배송 방법").attributes(key("etc").value("D01 택배, D07 화물")),
+                                        parameterWithName("deliveryStatus").description("배송 상태").attributes(key("etc").value("D01 상품준비중, D02 배송중, D05 배송완료, D03 부분배송, O11 교환배송")),
                                         parameterWithName("startDay").description("검색 시작 일자").attributes(key("etc").value("YYYY-MM-DD 예)2022-09-13")),
                                         parameterWithName("endDay").description("검색 종료 일자").attributes(key("etc").value("YYYY-MM-DD 예)2022-09-13")),
                                         parameterWithName("keywordType").description("키워드 구분").attributes(key("etc").value("NO 주문번호, NAME 주문명, USER 주문자")),

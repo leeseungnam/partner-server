@@ -75,7 +75,7 @@ public class OrderControllerTest extends BaseControllerTests {
                 .sortType("ORD")
                 .build();
 
-        // 주문내역 목록 조회 API 테스트
+        // 주문상태 집계 조회 API 테스트
         mockMvc.perform(get("/v1/orders/status-statistics")
                         .header(AUTH_HEADER, JWT_TOKEN)
                         .contentType(MediaType.TEXT_HTML)

@@ -73,6 +73,63 @@
 		order by p.payment_date desc
 	</select>
 
+	<select id="findDeliveryStatusStatistics" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryListDto$Param" resultType="kr.wrightbrothers.apps.order.dto.DeliveryListDto$Statistics">
+		select
+		    count(1) as totalDeliveryCount,
+			sum(if(g.delivery_status_code = 'D01', 1, 0)) as readyProductCount,
+			sum(if(g.delivery_status_code = 'D02', 1, 0)) as startDeliveryCount,
+			sum(if(g.delivery_status_code = 'D03', 1, 0)) as partialDeliveryCount,
+			sum(if(g.delivery_status_code = 'D11', 1, 0)) as exchangeDeliveryCount,
+			sum(if(g.delivery_status_code = 'D05', 1, 0)) as finishDeliveryCount
+		  from order_info o
+		 inner join (
+			select
+			    _p.order_no,
+			    _d.delivery_status_code
+			  from order_product _p
+			  left join order_delivery _d
+			    on _p.order_no = _d.order_no
+			   and _p.order_product_seq = _d.order_product_seq
+			   and _p.product_code = _d.product_code
+		     where 1 = 1
+			-- 배송 상태
+			<foreach collection="deliveryStatus" item="item" index="index" open="and _d.delivery_status_code in (" separator="," close=")">
+				#{item}
+			</foreach>
+			-- 배송 방법
+			<foreach collection="deliveryType" item="item" index="index" open="and _p.delivery_type in (" separator="," close=")">
+				#{item}
+			</foreach>
+		) g on o.order_no = g.order_no
+		 inner join order_payment p
+		    on o.order_no = p.order_no
+		 where o.partner_code = #{partnerCode}
+		<choose>
+			<when test="keywordValue != null and keywordValue != ''">
+				<choose>
+					<when test="keywordType == 'NO'">
+						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+							o.order_no like #{item} '%'
+						</foreach>
+					</when>
+					<when test="keywordType == 'NAME'">
+						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+							o.order_name like #{item} '%'
+						</foreach>
+					</when>
+					<when test="keywordType == 'USER'">
+						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+							o.order_user_name like #{item} '%'
+						</foreach>
+					</when>
+				</choose>
+			</when>
+			<otherwise>
+				and	p.payment_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+			</otherwise>
+		</choose>
+	</select>
+
 	<select id="isDeliveryInvoiceCheck" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto$ProductInvoice" resultType="boolean">
 		select
 		    if(order_product_status_code in ('D01', 'D02'), false, true) as isInputDelivery		-- D01 상품준비중, D02 배송중
