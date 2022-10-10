@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.wrightbrothers.apps.order.query.Return">
+
+	<select id="findReturnList" parameterType="kr.wrightbrothers.apps.order.dto.ReturnListDto$Param" resultType="kr.wrightbrothers.apps.order.dto.ReturnListDto$Response">
+		select
+		    date_format(g.return_request_date, '%Y-%m-%d') as return_request_day,
+		    o.order_no,
+			date_format(o.order_date, '%Y-%m-%d') as order_day,
+			o.order_user_name,
+			g.order_product_status_code,
+			g.order_product_status_code as order_product_status_name,
+			o.order_status_code,
+			o.order_status_code as order_status_name,
+			p.payment_method_code,
+			p.payment_method_code as payment_method_name,
+			o.order_name,
+			g.product_name,
+			g.return_reason,
+			p.order_amount,
+			g.final_sell_amount,
+			p.ssp_point,
+			p.sales_amount,
+			date_format(p.cancel_date, '%Y-%m-%d') as cancel_day,
+			p.payment_status_code,
+			p.payment_status_code as payment_status_name
+		  from order_info o
+		 inner join order_payment p
+			on o.order_no = p.order_no
+		 inner join order_product g
+			on o.order_no = g.order_no
+		 where o.partner_code = #{partnerCode}
+		<choose>
+			<when test="keywordValue != null and keywordValue != ''">
+				<choose>
+					<when test="keywordType == 'NO'">
+						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+							o.order_no like #{item} '%'
+						</foreach>
+					</when>
+					<when test="keywordType == 'NAME'">
+						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+							o.order_name like #{item} '%'
+						</foreach>
+					</when>
+					<when test="keywordType == 'USER'">
+						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+							o.order_user_name like #{item} '%'
+						</foreach>
+					</when>
+				</choose>
+		 		order by g.return_request_date desc
+			</when>
+			<otherwise>
+				<choose>
+					<when test="rangeType == 'PAYMENT'.toString()">
+						and p.payment_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+						order by p.payment_date desc
+		 			</when>
+					<when test="rangeType == 'CANCEL'.toString()">
+						and p.cancel_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+						order by p.cancel_date desc
+					</when>
+					<when test="rangeType == 'RETURN'.toString()">
+						and g.return_request_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+						order by g.return_request_date desc
+					</when>
+				</choose>
+			</otherwise>
+		</choose>
+	</select>
+
+</mapper>

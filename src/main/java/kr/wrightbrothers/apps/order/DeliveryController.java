@@ -78,7 +78,7 @@ public class DeliveryController extends WBController {
     @GetMapping("/deliveries/{orderNo}")
     public WBModel findDelivery(@PathVariable String orderNo,
                                 @AuthenticationPrincipal UserPrincipal user) {
-        // 반품관리 배송 상세 정보 조회
+        // 배송 관리 상세 정보 조회
         // 주문 내역 정보와 동일한 데이터를 처리하므로 해당 서비스 이용.
         // 이후 확장에 대한 변동이 생길 경우 서비스 로직 추가 필요 함.
         return defaultResponse(orderService.findOrder(
