@@ -3,7 +3,9 @@ package kr.wrightbrothers.apps.partner.service;
 import kr.wrightbrothers.apps.common.constants.Partner;
 import kr.wrightbrothers.apps.common.constants.User;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.partner.dto.PartnerAndAuthFindDto;
 import kr.wrightbrothers.apps.partner.dto.PartnerDto;
+import kr.wrightbrothers.apps.partner.dto.PartnerFindDto;
 import kr.wrightbrothers.apps.partner.dto.PartnerInsertDto;
 import kr.wrightbrothers.apps.user.dto.UserAuthDto;
 import kr.wrightbrothers.apps.user.dto.UserAuthInsertDto;
@@ -14,6 +16,8 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class PartnerService {
@@ -22,8 +26,12 @@ public class PartnerService {
     private final String namespace = "kr.wrightbrothers.apps.partner.query.Partner.";
     private final UserService userService;
 
-    public PartnerDto.ResBody findPartnerByBusinessNo(String businessNo) {
-        return dao.selectOne(namespace + "findPartnerByBusinessNo", businessNo);
+    public List<PartnerDto.ResBody> findPartnerListByBusinessNo(PartnerFindDto.Param paramDto) {
+        return dao.selectList(namespace + "findPartnerListByBusinessNo", paramDto);
+    }
+
+    public List<PartnerAndAuthFindDto.ResBody> findUserAuthAndPartnerListByUserId(PartnerAndAuthFindDto.Param paramDto) {
+        return dao.selectList(namespace + "findUserAuthAndPartnerListByUserId", paramDto);
     }
     @Transactional(value = PartnerKey.WBDataBase.TransactionManager.Default)
     public void insertPartner(PartnerInsertDto paramDto) {

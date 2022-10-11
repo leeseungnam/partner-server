@@ -3,11 +3,29 @@
 
 <mapper namespace="kr.wrightbrothers.apps.partner.query.Partner">
 
-	<select id="findPartnerByBusinessNo" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.partner.dto.PartnerDto$ResBody">
+	<select id="findPartnerListByBusinessNo" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerFindDto$Param" resultType="kr.wrightbrothers.apps.partner.dto.PartnerFindDto$ResBody">
 		select
 			*
 		  from partner
 		 where business_no = #{businessNo}
+		   <if test="businessClassificationCode != null and businessClassificationCode != ''">
+		   and business_classification_code = #{businessClassificationCode}
+		   </if>
+	</select>
+
+	<select id="findUserAuthAndPartnerListByUserId" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerAndAuthFindDto$Param" resultType="kr.wrightbrothers.apps.partner.dto.PartnerAndAuthFindDto$ResBody">
+		select up.partner_code
+			 ,  up.auth_code
+			 ,  p.partner_name
+			 ,  p.partner_kind
+			 ,  p.partner_status
+			 ,  pc.contract_status
+		from users_partner up
+				 inner join partner p
+							on p.partner_code = up.partner_code
+				 inner join partner_contract pc
+							on p.partner_code = pc.partner_code
+		where up.user_id = #{userId}
 	</select>
 
 	<insert id="insertPartner" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerDto$ReqBody">

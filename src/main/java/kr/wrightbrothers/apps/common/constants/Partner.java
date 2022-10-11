@@ -15,7 +15,8 @@ public class Partner {
     public enum Status {
         REQUEST("P01", "심사요청"),
         COMPLETE_SUCESS("P02", "심사완료(통과)"),
-        COMPLETE_FAIL("P03", "심사완료(반려)")
+        COMPLETE_FAIL("P03", "심사완료(반려)"),
+        STOP("P04", "운영중지")
         ;
 
         private final String code;
@@ -33,7 +34,32 @@ public class Partner {
             return CODE_MAP.get(code);
         }
     }
+    @Getter
+    @JsonFormat(shape = JsonFormat.Shape.OBJECT)
+    public enum Classification {
+        GENERAL_TAXPATER("1", "일반과세자"),
+        SIMPLIFIED_TAXPAYER("2", "간이과세자"),
+        UNIT_TAXPATER("3", "단위과세자"),
+        CORPORATE_BUSINESS_OPERATOR("4", "법인사업자"),
+        DUTYFREE_BUSINESS_OPERATOR("5", "면세사업자"),
+        OTHER_BUSINESS_OPERATOR("6", "기타사업자")
+        ;
 
+        private final String code;
+        private final String name;
+
+        Classification(String code, String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        private static final Map<String, Partner.Classification> CODE_MAP =
+                Stream.of(values()).collect(Collectors.toMap(Partner.Classification::getCode, Function.identity()));
+
+        public static Partner.Classification valueOfCode(String code) {
+            return CODE_MAP.get(code);
+        }
+    }
     public static class Contract {
 
         @Getter
