@@ -3,9 +3,14 @@
 
 <mapper namespace="kr.wrightbrothers.apps.partner.query.Partner">
 
-	<select id="findPartnerListByBusinessNo" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerFindDto$Param" resultType="kr.wrightbrothers.apps.partner.dto.PartnerFindDto$ResBody">
-		select
-			*
+	<select id="findPartnerListByBusinessNo" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerFindDto$Param" resultType="kr.wrightbrothers.apps.partner.dto.PartnerDto$ResBody">
+		select partner_code
+			,  partner_status
+			,  partner_name
+			,  partner_kind
+			,  business_classification_code
+			,  business_name
+			,  business_no
 		  from partner
 		 where business_no = #{businessNo}
 		   <if test="businessClassificationCode != null and businessClassificationCode != ''">

@@ -43,9 +43,7 @@ public class PartnerController extends WBController {
     })
     @ApiOperation(value = "파트너 등록", notes = "파트너 등록 요청 API 입니다.")
     @PostMapping("")
-    public WBModel insertPartner(@ApiParam @Valid @RequestBody PartnerInsertDto paramDto
-            , HttpServletRequest request
-            , HttpServletResponse response) {
+    public WBModel insertPartner(@ApiParam @Valid @RequestBody PartnerInsertDto paramDto) {
 
         WBModel wbResponse = new WBModel();
 
@@ -60,19 +58,20 @@ public class PartnerController extends WBController {
 
         // 단위과세 등록이 아닌 경우 복수 체크
         if(!Partner.Classification.UNIT_TAXPATER.getCode().equals(businessClassificationCode)) {
-            if(partnerList.size() > 0) throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode());
+            if(partnerList.size() > 0) throw new WBBusinessException(ErrorCode.DUPLICATION_OBJECT.getErrCode(), new String[]{messageSourceAccessor.getMessage(messagePrefix+"word.business.no")});
 
             // 단위과세 인 경우 단위과세 아닌 타 사업유형의 경우 체크
         }else{
             if(partnerList.size() > 0) {
                 if(!ObjectUtils.isEmpty(partnerList.get(0)) && !Partner.Classification.UNIT_TAXPATER.getCode().equals(partnerList.get(0).getBusinessClassificationCode())) {
-                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode());
+                    throw new WBBusinessException(ErrorCode.DUPLICATION_OBJECT.getErrCode(), new String[]{messageSourceAccessor.getMessage(messagePrefix+"word.business.no")});
                 }
             }
         }
         // insertPartner
         partnerService.insertPartner(paramDto);
-        Object [] messageArgs = {"심사요청"};
+
+        Object [] messageArgs = {messagePrefix+"word.audit"+messagePrefix+"word.request"};
         wbResponse.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.complete", messageArgs));
 
         return  wbResponse;
