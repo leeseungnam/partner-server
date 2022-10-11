@@ -119,4 +119,21 @@
 		 order by p.order_product_seq
 	</select>
 
+	<select id="findOrderProductStatusCode" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto" resultType="java.lang.String">
+		select
+		    order_product_status_code
+		  from order_product
+		 where order_no = #{orderNo}
+		   and order_product_seq = #{orderProductSeq}
+	</select>
+
+	<update id="updateOrderProductReturnCode" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto">
+		update order_product
+		   set order_product_status_code = #{orderProductStatusCode},
+		       update_user_id = #{userId},
+		       update_date = now()
+		 where order_no = #{orderNo}
+		   and order_product_seq = #{orderProductSeq}
+	</update>
+
 </mapper>

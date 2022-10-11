@@ -10,6 +10,7 @@ import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -55,20 +56,39 @@ public class ReturnService {
 
     public void updateRequestReturn(RequestReturnUpdateDto paramDto) {
 
-        // 반품 요청 처리
-        switch (OrderProductStatusCode.of(paramDto.getReturnProcessCode())) {
-            case START_RETURN:
-                // 반품 승인 처리
-                break;
-            case WITHDRAWAL_RETURN:
-                // 반품 철회 처리
-                break;
-            case COMPLETE_RETURN:
-                // 반품 완료 처리
-                break;
-            case NON_RETURN:
-                // 반품 불가 처리
-                break;
-        }
+        // 주문 상품 반품 상태값 변경 처리
+        Arrays.stream(paramDto.getOrderProductSeqArray()).forEach(orderProductSeq -> {
+            // 주문 상품 SEQ 설정
+            paramDto.setOrderProductSeq(orderProductSeq);
+            // 현재 주문 상품 상태 코드 조회
+            String currentStatusCode = dao.selectOne(namespace + "findOrderProductStatusCode", paramDto);
+
+            // 반품 요청 처리
+            switch (OrderProductStatusCode.of(paramDto.getReturnProcessCode())) {
+                case START_RETURN:
+                case WITHDRAWAL_RETURN:
+                    // 반품 요청이 아닐 경우 예외
+                    if (!OrderProductStatusCode.REQUEST_RETURN.equals(OrderProductStatusCode.of(currentStatusCode)))
+                        return;
+
+                    // 주문 상품 반품 진행 / 반품 철회 처리
+                    dao.update(namespace + "updateOrderProductReturnCode", paramDto);
+                    break;
+                case COMPLETE_RETURN:
+                case NON_RETURN:
+                    // 반품 진행이 아닐 경우 예외
+                    if (!OrderProductStatusCode.START_RETURN.equals(OrderProductStatusCode.of(currentStatusCode)))
+                        return;
+
+                    // 주문 상품 반품 완료 / 반품 불가 처리
+                    dao.update(namespace + "updateOrderProductReturnCode", paramDto);
+                    break;
+            }
+        });
+
+        // 주문 상태 변경 처리
+
+        // 결제 상태 변경 처리
+
     }
 }
