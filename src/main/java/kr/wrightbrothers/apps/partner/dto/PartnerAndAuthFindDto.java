@@ -36,7 +36,5 @@ public class PartnerAndAuthFindDto {
         @ApiModelProperty(value = "파트너 상태 코드")
         private String contractStatus;
 
-        @ApiModelProperty(value = "스토어 코멘트")
-        private String comment;
     }
 }
