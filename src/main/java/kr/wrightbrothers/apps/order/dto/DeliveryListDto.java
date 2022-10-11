@@ -3,7 +3,6 @@ package kr.wrightbrothers.apps.order.dto;
 import kr.wrightbrothers.apps.common.AbstractPageDto;
 import kr.wrightbrothers.apps.common.type.OrderStatusCode;
 import kr.wrightbrothers.apps.common.type.PaymentMethodCode;
-import kr.wrightbrothers.apps.common.util.MaskingUtil;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -52,21 +51,6 @@ public class DeliveryListDto {
         private String recipientPhone;              // 휴대전화
         private String recipientAddress;            // 주소
         private String recipientAddressDetail;      // 상세주소
-
-        // 주문자 마스킹 처리
-        public void setOrderUserName(String orderUserName) {
-            this.orderUserName = MaskingUtil.maskingName(orderUserName);
-        }
-
-        // 수령자 마스킹 처리
-        public void setRecipientName(String recipientName) {
-            this.recipientName = MaskingUtil.maskingName(recipientName);
-        }
-
-        // 수령자 휴대전화 마스킹 처리
-        public void setRecipientPhone(String recipientPhone) {
-            this.recipientPhone = MaskingUtil.maskingPhone(recipientPhone);
-        }
 
         // 주문 상태 ENUM 처리
         public void setOrderStatusName(String orderStatusCode) {

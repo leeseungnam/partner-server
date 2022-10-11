@@ -176,6 +176,7 @@
 		    p.order_product_seq,
 		    p.product_code,
 		    p.product_name,
+		    p.order_product_status_code,
 		    p.order_product_status_code as order_product_status_name,
 		    p.final_sell_amount,
 		    p.option_name,

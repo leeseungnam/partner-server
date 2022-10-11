@@ -10,6 +10,7 @@ public class ProductDto {
     private Integer orderProductSeq;            // 주문 상품 인덱스
     private String productCode;                 // 상품 코드
     private String productName;                 // 상품 이름
+    private String orderProductStatusCode;      // 주문 상품 상태 코드
     private String orderProductStatusName;      // 주문 상품 상태 명
     private Long finalSellAmount;               // 상품 금액
     private String optionName;                  // 옵션 이름

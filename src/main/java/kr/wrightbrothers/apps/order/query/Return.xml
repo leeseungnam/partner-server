@@ -71,4 +71,52 @@
 		</choose>
 	</select>
 
+	<update id="updateReturn" parameterType="kr.wrightbrothers.apps.order.dto.ReturnMemoUpdateDto">
+		-- 송장번호 입력 유무에 대한 체크
+		<selectKey resultType="boolean" keyProperty="isInvoiceNo" order="BEFORE">
+			select
+			if(count(order_product_seq) = 0, true, false) as isInvoice
+			from order_delivery
+			where order_no = #{orderNo}
+			and invoice_no is not null
+		</selectKey>
+		update order_info
+		   set return_memo = #{returnMemo},
+		       -- 송장번호 미입력 시 수령자 정보 변경 가능
+		       <if test="isInvoiceNo">
+					recipient_name = #{recipientName},
+					recipient_phone = #{recipientPhone},
+					recipient_address_zip_code = #{recipientAddressZipCode},
+					recipient_address = #{recipientAddress},
+					recipient_address_detail = #{recipientAddressDetail},
+			   </if>
+			   update_user_id = #{userId},
+			   update_date = now()
+		 where order_no = #{orderNo}
+	</update>
+
+	<select id="findReturnProductList" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.order.dto.ReturnProductDto">
+		select
+		    p.order_product_seq,
+		    p.product_code,
+		    p.product_name,
+		    p.option_name,
+		    p.final_sell_amount,
+			date_format(p.return_request_date, '%Y-%m-%d') as return_request_day,
+			p.product_qty,
+			p.order_product_status_code,
+			p.order_product_status_code as order_product_status_name,
+			d.return_delivery_company_name,
+			d.return_invoice_no,
+			if(p.order_product_status_code = 'R04', p.non_return_reason_name, p.return_reason) as reason
+		  from order_product p
+		  left join order_delivery d
+		  	on p.order_no = d.order_no
+		   and p.order_product_seq = d.order_product_seq
+		   and p.product_code = d.product_code
+		 where p.order_no = #{orderNo}
+		   and p.order_product_status_code in ('R01', 'R02', 'R03', 'R04', 'R05')	-- 반품요청, 반품취소, 반품진행, 반품불가, 반품완료
+		 order by p.order_product_seq
+	</select>
+
 </mapper>

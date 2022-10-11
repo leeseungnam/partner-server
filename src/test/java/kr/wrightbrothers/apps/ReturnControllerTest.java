@@ -2,6 +2,7 @@ package kr.wrightbrothers.apps;
 
 import kr.wrightbrothers.BaseControllerTests;
 import kr.wrightbrothers.apps.common.type.OrderProductStatusCode;
+import kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto;
 import kr.wrightbrothers.apps.order.dto.ReturnListDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,12 +10,10 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.snippet.Attributes.key;
@@ -165,7 +164,8 @@ public class ReturnControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.productList[].orderProductSeq").type(JsonFieldType.NUMBER).description("주문 상품 SEQ"),
                                         fieldWithPath("data.productList[].productCode").type(JsonFieldType.STRING).description("상품 코드"),
                                         fieldWithPath("data.productList[].productName").type(JsonFieldType.STRING).description("상품 명"),
-                                        fieldWithPath("data.productList[].orderProductStatusName").type(JsonFieldType.STRING).description("주문 상품 상태"),
+                                        fieldWithPath("data.productList[].orderProductStatusCode").type(JsonFieldType.STRING).description("주문 상품 상태 코드"),
+                                        fieldWithPath("data.productList[].orderProductStatusName").type(JsonFieldType.STRING).description("주문 상품 상태 이름"),
                                         fieldWithPath("data.productList[].finalSellAmount").type(JsonFieldType.NUMBER).description("판매 금액"),
                                         fieldWithPath("data.productList[].optionName").type(JsonFieldType.STRING).description("옵션 명"),
                                         fieldWithPath("data.productList[].optionSurcharge").type(JsonFieldType.NUMBER).description("옵션 변동 금액"),
@@ -177,11 +177,23 @@ public class ReturnControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.productList[].returnDeliveryCompanyName").type(JsonFieldType.STRING).optional().description("반품 택배 업체"),
                                         fieldWithPath("data.productList[].returnInvoiceNo").type(JsonFieldType.STRING).optional().description("반품 송장 번"),
                                         fieldWithPath("data.productList[].returnReason").type(JsonFieldType.STRING).optional().description("반품 사유"),
+                                        fieldWithPath("data.returnProductList[]").type(JsonFieldType.ARRAY).optional().description("반품 요청 상품 목록"),
+                                        fieldWithPath("data.returnProductList[].orderProductSeq").type(JsonFieldType.NUMBER).description("주문 상품 SEQ"),
+                                        fieldWithPath("data.returnProductList[].productCode").type(JsonFieldType.STRING).description("상품 코드"),
+                                        fieldWithPath("data.returnProductList[].productName").type(JsonFieldType.STRING).description("상품 이름"),
+                                        fieldWithPath("data.returnProductList[].optionName").type(JsonFieldType.STRING).description("옵션 이름"),
+                                        fieldWithPath("data.returnProductList[].finalSellAmount").type(JsonFieldType.NUMBER).description("판매 금액"),
+                                        fieldWithPath("data.returnProductList[].returnRequestDay").type(JsonFieldType.STRING).optional().description("반품 요청 일자"),
+                                        fieldWithPath("data.returnProductList[].productQty").type(JsonFieldType.NUMBER).description("반품 요청 수량"),
+                                        fieldWithPath("data.returnProductList[].orderProductStatusCode").type(JsonFieldType.STRING).description("상품 진행 상태 코드"),
+                                        fieldWithPath("data.returnProductList[].orderProductStatusName").type(JsonFieldType.STRING).description("상품 진행 상태 이름"),
+                                        fieldWithPath("data.returnProductList[].returnDeliveryCompanyName").type(JsonFieldType.STRING).optional().description("반품 택배사 이름"),
+                                        fieldWithPath("data.returnProductList[].returnInvoiceNo").type(JsonFieldType.STRING).optional().description("반품 송장 번호"),
+                                        fieldWithPath("data.returnProductList[].reason").type(JsonFieldType.STRING).optional().description("사유"),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
                                 )
                 ))
                 ;
-
     }
 
 }

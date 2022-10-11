@@ -1,7 +1,10 @@
 package kr.wrightbrothers.apps.order;
 
-import kr.wrightbrothers.apps.order.dto.OrderFindDto;
+import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
+import kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto;
+import kr.wrightbrothers.apps.order.dto.ReturnFindDto;
 import kr.wrightbrothers.apps.order.dto.ReturnListDto;
+import kr.wrightbrothers.apps.order.dto.ReturnMemoUpdateDto;
 import kr.wrightbrothers.apps.order.service.OrderService;
 import kr.wrightbrothers.apps.order.service.ReturnService;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
@@ -12,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 
 @RestController
 @RequestMapping("/v1")
@@ -19,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 public class ReturnController extends WBController {
 
     private final ReturnService returnService;
-    private final OrderService orderService;
 
     @GetMapping(value = {
             "/returns"
@@ -59,14 +63,30 @@ public class ReturnController extends WBController {
     @GetMapping("/returns/{orderNo}")
     public WBModel findReturn(@PathVariable String orderNo,
                               @AuthenticationPrincipal UserPrincipal user) {
-        // 반품 관리 상세 정보 조회
-        // 주문 내역 정보와 동일한 데이터를 처리하므로 해당 서비스 이용.
-        // 이후 확장에 대한 변동이 생길 경우 서비스 로직 추가 필요 함.
-        return defaultResponse(orderService.findOrder(
-                OrderFindDto.Param.builder()
+        return defaultResponse(returnService.findReturn(
+                ReturnFindDto.Param.builder()
                         .partnerCode(user.getUserAuth().getPartnerCode())
                         .orderNo(orderNo)
-                        .build()));
+                        .build()
+        ));
+    }
+
+    @UserPrincipalScope
+    @PutMapping("/returns")
+    public WBModel updateReturn(@Valid @RequestBody ReturnMemoUpdateDto paramDto) {
+        // 반품관리 정보 수정
+        returnService.updateReturn(paramDto);
+
+        return noneDataResponse();
+    }
+
+    @UserPrincipalScope
+    @PutMapping("/returns/{orderNo}/request-return")
+    public WBModel updateRequestReturn(@Valid @RequestBody RequestReturnUpdateDto paramDto) {
+        // 반품 요청에 대한 처리 수행
+        returnService.updateRequestReturn(paramDto);
+
+        return noneDataResponse();
     }
 
 }
