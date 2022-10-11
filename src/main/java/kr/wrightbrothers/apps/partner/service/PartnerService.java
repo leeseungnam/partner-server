@@ -31,7 +31,7 @@ public class PartnerService {
         // create partnerCode
         String partnerCode = RandomStringUtils.randomAlphanumeric(10).toUpperCase();
         paramDto.getPartner().changePartnerCode(partnerCode);
-        paramDto.getPartner().changePartnerStatus(User.Status.JOIN.getCode());
+        paramDto.getPartner().changePartnerStatus(Partner.Status.REQUEST.getCode());
 
         // insert partner
         dao.insert(namespace + "insertPartner", paramDto.getPartner());
