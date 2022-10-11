@@ -332,7 +332,7 @@ class DeliveryControllerTest extends BaseControllerTests {
     void updateDeliveryInvoice() throws Exception {
         DeliveryInvoiceUpdateDto updateDto = DeliveryInvoiceUpdateDto.builder()
                 .orderNo("202201011022429727")
-                .orderProductSeq(new Integer[]{1})
+                .orderProductSeqArray(new Integer[]{1})
                 .deliveryCompanyCode("cjgls")
                 .deliveryCompanyName("CJ대한통운")
                 .invoiceNo("12345678890")
@@ -359,7 +359,7 @@ class DeliveryControllerTest extends BaseControllerTests {
                                 ),
                                 relaxedRequestFields(
                                         fieldWithPath("orderNo").type(JsonFieldType.STRING).description("주문 번호").attributes(key("etc").value("")),
-                                        fieldWithPath("orderProductSeq").type(JsonFieldType.ARRAY).description("주문 상품 SEQ").attributes(key("etc").value("")),
+                                        fieldWithPath("orderProductSeqArray").type(JsonFieldType.ARRAY).description("주문 상품 SEQ").attributes(key("etc").value("")),
                                         fieldWithPath("deliveryCompanyCode").type(JsonFieldType.STRING).description("택배사 코드").attributes(key("etc").value("마스터 코드 000044")),
                                         fieldWithPath("deliveryCompanyName").type(JsonFieldType.STRING).description("택배사 이름").attributes(key("etc").value("")),
                                         fieldWithPath("invoiceNo").type(JsonFieldType.STRING).description("송장번호").attributes(key("etc").value(""))

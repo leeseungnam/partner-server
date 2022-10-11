@@ -32,17 +32,20 @@ public class DeliveryService {
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void updateDeliveryInvoice(DeliveryInvoiceUpdateDto paramDto) {
-        Arrays.stream(paramDto.getOrderProductSeq())
+        Arrays.stream(paramDto.getOrderProductSeqArray())
                 .forEach(orderProductSeq -> {
+                    // 주문 상품 SEQ 설정
+                    paramDto.setOrderProductSeq(orderProductSeq);
+
                     // 배송정보 입력 가능 상태 체크
                     // 시스템 에러가 아닌 이상 다른 상태 코드는 패스
-                    if (dao.selectOne(namespace + "isDeliveryInvoiceCheck", paramDto.toProductInvoiceDto(orderProductSeq)))
+                    if (dao.selectOne(namespace + "isDeliveryInvoiceCheck", paramDto))
                         return;
 
                     // 배송정보 입력 처리
-                    dao.update(namespace + "updateDeliveryInvoice", paramDto.toProductInvoiceDto(orderProductSeq));
+                    dao.update(namespace + "updateDeliveryInvoice", paramDto);
                     // 주문 상품 배송중 상태값 변경
-                    dao.update(namespace + "updateProductDeliveryStartStatus", paramDto.toProductInvoiceDto(orderProductSeq));
+                    dao.update(namespace + "updateProductDeliveryStartStatus", paramDto);
                 });
 
         // 주문 배송에 대한 상태값 변경 가능 여부에 대한 유효성 체크

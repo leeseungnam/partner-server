@@ -20,7 +20,7 @@ public class DeliveryInvoiceUpdateDto {
     private String orderNo;
 
     @NotNull(message = "주문 상품 SEQ")
-    private Integer[] orderProductSeq;      // 주문 상품 SEQ
+    private Integer[] orderProductSeqArray; // 주문 상품 SEQ Array
 
     @NotBlank(message = "택배사 코드")
     private String deliveryCompanyCode;     // 택배사 코드
@@ -36,6 +36,8 @@ public class DeliveryInvoiceUpdateDto {
     private String partnerCode;             // 파트너 코드
     @JsonIgnore
     private String userId;                  // 사용자 아이디
+    @JsonIgnore
+    private Integer orderProductSeq;        // 주문 상품 SEQ
 
     public void setAopPartnerCode(String partnerCode) {
         this.partnerCode = partnerCode;
@@ -45,27 +47,7 @@ public class DeliveryInvoiceUpdateDto {
         this.userId = userId;
     }
 
-    // 송장번호 입력에 따른 DTO 객체 변환
-    public DeliveryInvoiceUpdateDto.ProductInvoice toProductInvoiceDto(Integer orderProductSeq) {
-        return DeliveryInvoiceUpdateDto.ProductInvoice.builder()
-                .orderNo(this.orderNo)
-                .orderProductSeq(orderProductSeq)
-                .deliveryCompanyCode(this.deliveryCompanyCode)
-                .deliveryCompanyName(this.deliveryCompanyName)
-                .invoiceNo(this.invoiceNo)
-                .userId(this.userId)
-                .build();
+    public void setOrderProductSeq(Integer orderProductSeq) {
+        this.orderProductSeq = orderProductSeq;
     }
-
-    @Getter
-    @Builder
-    public static class ProductInvoice {
-        private String orderNo;
-        private Integer orderProductSeq;
-        private String deliveryCompanyCode;
-        private String deliveryCompanyName;
-        private String invoiceNo;
-        private String userId;
-    }
-
 }

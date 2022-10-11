@@ -130,7 +130,7 @@
 		</choose>
 	</select>
 
-	<select id="isDeliveryInvoiceCheck" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto$ProductInvoice" resultType="boolean">
+	<select id="isDeliveryInvoiceCheck" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto" resultType="boolean">
 		select
 		    if(order_product_status_code in ('D01', 'D02'), false, true) as isInputDelivery		-- D01 상품준비중, D02 배송중
 		  from order_product
@@ -138,7 +138,7 @@
 		   and order_product_seq = #{orderProductSeq}
 	</select>
 
-	<update id="updateDeliveryInvoice" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto$ProductInvoice">
+	<update id="updateDeliveryInvoice" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto">
 		update order_delivery
 		   set delivery_company_code = #{deliveryCompanyCode},
 		       delivery_company_name = #{deliveryCompanyName},
@@ -150,7 +150,7 @@
 		   and order_product_seq = #{orderProductSeq}
 	</update>
 
-	<update id="updateProductDeliveryStartStatus" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto$ProductInvoice">
+	<update id="updateProductDeliveryStartStatus" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto">
 		update order_product
 		   set order_product_status_code = 'D02',	-- 배송중
 			   update_user_id		 = #{userId},
