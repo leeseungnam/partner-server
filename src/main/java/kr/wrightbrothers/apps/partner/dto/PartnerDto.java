@@ -30,8 +30,7 @@ public class PartnerDto {
         @ApiModelProperty(value = "썸네일")
         private String thumbnail;
 
-        @ApiModelProperty(value = "입점사타입 공통코드: 000047(1: 일반입점, 2: 재생입점)", required = true)
-        @NotBlank(message = "입점사타입")
+        @ApiModelProperty(value = "입점사타입 공통코드: 000047(1: 일반입점, 2: 재생입점)")
         private String partnerKind;
 
         @ApiModelProperty(value = "사업자 유형 공통코드 : 000048(1: 일반과세자, 2:간이과세자, 3:단위과세자, 4:법인사업자, 5:면세사업자, 6:기타사업자)", required = true)
@@ -49,12 +48,10 @@ public class PartnerDto {
         private String businessNo;
 
         @ApiModelProperty(value = "업태")
-        @NotBlank(message = "업태")
         @Size(min = 2, max = 20, message = "업태")
         private String businessCondition;
 
         @ApiModelProperty(value = "업종")
-        @NotBlank(message = "업종")
         @Size(min = 2, max = 20, message = "업종")
         private String businessType;
 
@@ -98,11 +95,19 @@ public class PartnerDto {
         @JsonIgnore
         private String partnerCode;
 
+        @ApiModelProperty(value = "파트너 상태 코드")
+        @JsonIgnore
+        private String partnerStatus;
+
         public void changePartnerCode(String partnerCode) {
             this.partnerCode = partnerCode;
         }
         public void changeUserId(String userId) {
             this.userId = userId;
+        }
+
+        public void changePartnerStatus(String partnerStatus) {
+            this.partnerStatus = partnerStatus;
         }
     }
     @Getter
@@ -112,10 +117,11 @@ public class PartnerDto {
     @NoArgsConstructor
     @ApiModel(value = "파트너 응답 데이터")
     public static class ResBody extends Partner{
-        @ApiModelProperty(value = "파트너 상태 코드")
-        private String partnerStatus;
 
         @ApiModelProperty(value = "파트너 코드")
         private String partnerCode;
+
+        @ApiModelProperty(value = "파트너 상태 코드")
+        private String partnerStatus;
     }
 }

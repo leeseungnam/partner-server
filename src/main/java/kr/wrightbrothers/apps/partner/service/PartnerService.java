@@ -5,6 +5,7 @@ import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.partner.dto.PartnerDto;
 import kr.wrightbrothers.apps.partner.dto.PartnerInsertDto;
 import kr.wrightbrothers.apps.user.dto.UserAuthDto;
+import kr.wrightbrothers.apps.user.dto.UserAuthInsertDto;
 import kr.wrightbrothers.apps.user.service.UserService;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class PartnerService {
         // create partnerCode
         String partnerCode = RandomStringUtils.randomAlphanumeric(10).toUpperCase();
         paramDto.getPartner().changePartnerCode(partnerCode);
+        paramDto.getPartner().changePartnerStatus(PartnerKey.Code.User.Status.JOIN);
 
         // insert partner
         dao.insert(namespace + "insertPartner", paramDto.getPartner());
@@ -37,14 +39,16 @@ public class PartnerService {
         String contractNo = RandomStringUtils.randomAlphanumeric(10).toUpperCase();
         paramDto.getPartnerContract().changeContractNo(contractNo);
         paramDto.getPartnerContract().changePartnerCode(partnerCode);
+        paramDto.getPartnerContract().changeContractStatus("1");
 
         // insert contract
-        dao.insert(namespace + "insertContract", paramDto.getPartnerContract());
+        dao.insert(namespace + "insertPartnerContract", paramDto.getPartnerContract());
 
         // insert usersPartner
-        userService._insertUser(UserAuthDto.builder()
+        userService._insertUser(UserAuthInsertDto.ReqBody.builder()
                         .authCode(User.Auth.ADMIN.getType())
                         .partnerCode(partnerCode)
+                        .userId(paramDto.getPartner().getUserId())
                         .partnerKind(paramDto.getPartner().getPartnerKind())
                         .build());
     }

@@ -70,7 +70,7 @@
 			)
 	</insert>
 
-	<insert id="insertUsersPartner" parameterType="kr.wrightbrothers.apps.user.dto.UserAuthDto">
+	<insert id="insertUsersPartner" parameterType="kr.wrightbrothers.apps.user.dto.UserAuthInsertDto$ReqBody">
 		insert into users_partner
 			(user_id
 			, partner_code

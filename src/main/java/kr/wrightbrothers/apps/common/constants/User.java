@@ -13,10 +13,10 @@ public class User {
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     public enum Auth {
-        SUPER("SUPER", "슈퍼 관리자"),
-        ADMIN("ADMIN", "관리자"),
-        MANAGER("MANAGER", "운영자"),
-        USER("USER", "일반 유저")
+        SUPER("ROLE_SUPER", "슈퍼 관리자"),
+        ADMIN("ROLE_ADMIN", "관리자"),
+        MANAGER("ROLE_MANAGER", "운영자"),
+        USER("ROLE_USER", "일반 유저")
         ;
 
         private final String type;

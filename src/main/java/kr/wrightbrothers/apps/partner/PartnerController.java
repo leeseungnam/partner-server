@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.partner;
 
 import io.swagger.annotations.*;
+import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.partner.dto.PartnerInsertDto;
@@ -31,6 +32,7 @@ public class PartnerController extends WBController {
     private final MessageSourceAccessor messageSourceAccessor;
     private final PartnerService partnerService;
 
+    @UserPrincipalScope
     @ApiImplicitParams({
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", paramType = "header")
     })

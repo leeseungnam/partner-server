@@ -4,10 +4,7 @@ import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.email.dto.SingleEmailDto;
 import kr.wrightbrothers.apps.email.service.EmailService;
-import kr.wrightbrothers.apps.user.dto.UserAuthDto;
-import kr.wrightbrothers.apps.user.dto.UserDto;
-import kr.wrightbrothers.apps.user.dto.UserInsertDto;
-import kr.wrightbrothers.apps.user.dto.UserPwdUpdateDto;
+import kr.wrightbrothers.apps.user.dto.*;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +37,7 @@ public class UserService {
         dao.insert(namespace + "insertUser", paramDto, PartnerKey.WBDataBase.Alias.Default);
     }
 
-    public void _insertUser(UserAuthDto paramDto) {
+    public void _insertUser(UserAuthInsertDto.ReqBody paramDto) {
         dao.insert(namespace + "insertUsersPartner", paramDto, PartnerKey.WBDataBase.Alias.Default);
     }
 

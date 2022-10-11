@@ -18,8 +18,6 @@ public class PartnerContractDto {
     @NoArgsConstructor
     public static class PartnerContract {
 
-
-
         @ApiModelProperty(value = "입점 담당자명", required = true)
         @NotBlank(message = "입점 담당자명")
         @Size(min = 2, max = 20, message = "입점 담당자명")
@@ -32,7 +30,6 @@ public class PartnerContractDto {
 
         @ApiModelProperty(value = "세금계산서 이메일", required = true)
         @NotBlank(message = "세금계산서 이메일")
-        @Size(min = 2, max = 20, message = "세금계산서 이메일")
         private String taxBillEmail;
 
         @ApiModelProperty(value = "은행 코드", required = true)
@@ -50,24 +47,20 @@ public class PartnerContractDto {
         @Size(min = 2, max = 20, message = "예금주")
         private String accountHolder;
 
-        @ApiModelProperty(value = "계약일자", required = true)
+        @ApiModelProperty(value = "계약일자(YYYYMMDD)", required = true)
         @NotBlank(message = "계약일자")
-        @Size(min = 2, max = 20, message = "계약일자")
         private String contractDay;
 
-        @ApiModelProperty(value = "계약기간 시작일", required = true)
+        @ApiModelProperty(value = "계약기간 시작일(YYYYMMDD)", required = true)
         @NotBlank(message = "계약기간 시작일")
-        @Size(min = 2, max = 20, message = "계약기간 시작일")
         private String contractStartDay;
 
-        @ApiModelProperty(value = "계약기간 종료일", required = true)
+        @ApiModelProperty(value = "계약기간 종료일(YYYYMMDD)", required = true)
         @NotBlank(message = "계약기간 종료일")
-        @Size(min = 2, max = 20, message = "계약기간 종료일")
         private String contractEndDay;
 
         @ApiModelProperty(value = "계약서 파일 번호", required = true)
-        @NotBlank(message = "계약서 파일 번호")
-        @Size(min = 2, max = 20, message = "계약서 파일 번호")
+        @JsonIgnore
         private String contractFileNo;
     }
 
@@ -80,6 +73,10 @@ public class PartnerContractDto {
         @ApiModelProperty(value = "파트너 코드")
         @JsonIgnore
         private String partnerCode;
+
+        @ApiModelProperty(value = "계약진행 상태코드")
+        @JsonIgnore
+        private String contractStatus;
 
         @ApiModelProperty(value = "계약번호")
         @JsonIgnore
@@ -94,6 +91,10 @@ public class PartnerContractDto {
         }
         public void changeUserId(String userId) {
             this.userId = userId;
+        }
+
+        public void changeContractStatus(String contractStatus) {
+            this.contractStatus = contractStatus;
         }
         public void changePartnerCode(String partnerCode) {
             this.partnerCode = partnerCode;
