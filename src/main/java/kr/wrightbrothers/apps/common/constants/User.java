@@ -37,7 +37,9 @@ public class User {
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     public enum Status {
-        COMMON("U01", "정상")
+        JOIN("U01", "정상"),
+        DROP_REQUEST("U02", "탈퇴 요청"),
+        DROP_COMPLETE("U03", "탈퇴 완료")
         ;
 
         private final String code;

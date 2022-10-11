@@ -2,6 +2,7 @@ package kr.wrightbrothers.apps.user;
 
 import io.swagger.annotations.*;
 import kr.wrightbrothers.apps.common.config.security.jwt.JwtTokenProvider;
+import kr.wrightbrothers.apps.common.constants.User;
 import kr.wrightbrothers.apps.common.util.AwsSesUtil;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
@@ -61,7 +62,7 @@ public class UserController extends WBController {
         paramDto.changePwd(passwordEncoder.encode(paramDto.getUserPwd()));
 
         //setUserStatusCode
-        paramDto.changeUserStatusCode(PartnerKey.Code.User.Status.JOIN);
+        paramDto.changeUserStatusCode(User.Status.JOIN.getCode());
 
         userService.insertUser(paramDto);
 

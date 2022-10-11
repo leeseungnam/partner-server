@@ -1,5 +1,6 @@
 package kr.wrightbrothers.apps.partner.service;
 
+import kr.wrightbrothers.apps.common.constants.Partner;
 import kr.wrightbrothers.apps.common.constants.User;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.partner.dto.PartnerDto;
@@ -30,7 +31,7 @@ public class PartnerService {
         // create partnerCode
         String partnerCode = RandomStringUtils.randomAlphanumeric(10).toUpperCase();
         paramDto.getPartner().changePartnerCode(partnerCode);
-        paramDto.getPartner().changePartnerStatus(PartnerKey.Code.User.Status.JOIN);
+        paramDto.getPartner().changePartnerStatus(User.Status.JOIN.getCode());
 
         // insert partner
         dao.insert(namespace + "insertPartner", paramDto.getPartner());
@@ -39,7 +40,7 @@ public class PartnerService {
         String contractNo = RandomStringUtils.randomAlphanumeric(10).toUpperCase();
         paramDto.getPartnerContract().changeContractNo(contractNo);
         paramDto.getPartnerContract().changePartnerCode(partnerCode);
-        paramDto.getPartnerContract().changeContractStatus("1");
+        paramDto.getPartnerContract().changeContractStatus(Partner.Contract.Status.EMPTY.getCode());
 
         // insert contract
         dao.insert(namespace + "insertPartnerContract", paramDto.getPartnerContract());
