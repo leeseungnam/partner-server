@@ -15,8 +15,10 @@ public class PaymentDto {
     private Long paymentAmount;         // 결제 금액
     private String paymentDate;         // 결제 일자
     private String transactionId;       // PG 승인번호
-    private String paymentMethodName;   // 결제 방법
-    private String paymentStatusName;   // 결제 상태
+    private String paymentMethodCode;   // 결제 방법 코드
+    private String paymentMethodName;   // 결제 방법 이름
+    private String paymentStatusCode;   // 결제 상태 코드
+    private String paymentStatusName;   // 결제 상태 이름
     private String cancelDate;          // 취소 일시
     private String cancelReason;        // 취소 사유
 

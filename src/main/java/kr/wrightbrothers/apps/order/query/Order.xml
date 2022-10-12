@@ -152,6 +152,7 @@
 		select
 		    order_no,
 		    order_date,
+		    order_status_code,
 		    order_status_code as order_status_name,
 		    order_qty,
 		    order_user_code,

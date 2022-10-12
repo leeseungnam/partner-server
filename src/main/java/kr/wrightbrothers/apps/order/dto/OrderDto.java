@@ -11,7 +11,8 @@ import lombok.Getter;
 public class OrderDto {
     private String orderNo;                 // 주문 번호
     private String orderDate;               // 주문 일시
-    private String orderStatusName;         // 주문 상태
+    private String orderStatusCode;         // 주문 상태 코드
+    private String orderStatusName;         // 주문 상태 이름
     private Integer orderQty;               // 주문 수량
     private String orderUserCode;           // 주문자 회원 번호
     private String orderUserId;             // 주문자 아이디

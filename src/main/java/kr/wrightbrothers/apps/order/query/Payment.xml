@@ -26,7 +26,9 @@
 		    p.payment_amount,
 		    p.payment_date,
 		    t.transaction_id,
+		    p.payment_method_code,
 		    p.payment_method_code as payment_method_name,
+		    p.payment_status_code,
 		    p.payment_status_code as payment_status_name,
 		    p.cancel_date,
 		    if(p.cancel_reason_code = 'C99', p.cancel_reason_etc, p.cancel_reason_name) as cancel_reason
