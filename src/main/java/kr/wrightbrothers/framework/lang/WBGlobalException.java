@@ -73,7 +73,7 @@ public class WBGlobalException {
             BadCredentialsException.class
     })
     private ResponseEntity<JSONObject> badCredentialsException(Exception e) {
-        return new ResponseEntity<>(exceptionResponse(ErrorCode.UNAUTHORIZE_LOGIN.getErrCode(), WBKey.Message.Type.Error), HttpStatus.OK);
+        return new ResponseEntity<>(exceptionResponse(ErrorCode.UNAUTHORIZED_LOGIN.getErrCode(), WBKey.Message.Type.Error), HttpStatus.OK);
     }
 
 
