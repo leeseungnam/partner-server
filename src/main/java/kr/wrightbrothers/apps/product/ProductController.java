@@ -71,12 +71,17 @@ public class ProductController extends WBController {
     })
     @ApiOperation(value = "상품 등록", notes = "상품 정보 등록")
     @PostMapping("/products")
-    public WBModel insertProduct(@ApiParam(value = "상품 등록 데이터") @Valid @RequestBody ProductInsertDto paramDto) {
+    public WBModel insertProduct(@ApiParam(value = "상품 등록 데이터") @Valid @RequestBody ProductInsertDto paramDto,
+                                 @ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
+        // 상품타입 설정
+        paramDto.setProductType(user.getUserAuth().getPartnerKind());
+        // 상품코드 생성
         paramDto.setProductCode(
                 productService.generateProductCode(paramDto.getProduct().getCategoryTwoCode())
         );
         // 추가 유효성 검사
         paramDto.validProduct();
+
         // 상품정보 등록
         productService.insertProduct(paramDto);
 

@@ -161,6 +161,17 @@ public class ProductInsertDto {
         product.setPartnerCode(partnerCode);
     }
 
+    public void setProductType(String partnerKind) {
+        // 재생입점 재생자전거 코드 설정
+        if ("2".equals(partnerKind)) {
+            this.product.setProductType("P04"); // 재생
+            return;
+        }
+
+        // 일반입점 신품 자전거 코드 설정
+        this.product.setProductType("P05"); // 신품
+    }
+
     public void setProductCode(String productCode) {
         // 필수 데이터 입력 부분
         product.setProductCode(productCode);

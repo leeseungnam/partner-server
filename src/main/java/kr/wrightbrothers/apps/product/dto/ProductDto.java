@@ -19,10 +19,6 @@ public class ProductDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Product {
-        @ApiModelProperty(value = "상품 유형", required = true)
-        @NotBlank(message = "상품 유형")
-        private String productType;         // 상품 유형
-
         @ApiModelProperty(value = "대 카테고리 코드", required = true)
         @NotBlank(message = "대 카테고리")
         private String categoryOneCode;     // 대 카테고리 코드
@@ -94,6 +90,9 @@ public class ProductDto {
     public static class ReqBody extends Product {
         private String partnerCode;         // 파트너 코드
         private String productCode;         // 상품 코드
+
+        @JsonIgnore
+        private String productType;         // 상품 유형
         @JsonIgnore
         private String userId;              // 작성자 아이디
     }
@@ -104,6 +103,7 @@ public class ProductDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ResBody extends Product {
-        private String productCode;
+        private String productType;         // 상품 유형
+        private String productCode;         // 상품 코드
     }
 }
