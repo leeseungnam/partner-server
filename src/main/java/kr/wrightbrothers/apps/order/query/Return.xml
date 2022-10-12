@@ -138,6 +138,11 @@
 	<update id="updateOrderProductReturnCode" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto">
 		update order_product
 		   set order_product_status_code = #{returnProcessCode},
+		       -- 반풀불가 처리 시 반품 사유 등록
+		       <if test="returnProcessCode == 'R04'.toString()">
+				   non_return_reason_code = #{nonReturnReasonCode},
+				   non_return_reason_name = #{nonReturnReasonName},
+			   </if>
 		       update_user_id = #{userId},
 		       update_date = now()
 		 where order_no = #{orderNo}

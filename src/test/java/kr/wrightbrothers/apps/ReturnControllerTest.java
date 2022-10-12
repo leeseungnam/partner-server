@@ -1,19 +1,25 @@
 package kr.wrightbrothers.apps;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.BaseControllerTests;
 import kr.wrightbrothers.apps.common.type.OrderProductStatusCode;
+import kr.wrightbrothers.apps.common.type.OrderStatusCode;
+import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto;
 import kr.wrightbrothers.apps.order.dto.ReturnListDto;
+import kr.wrightbrothers.apps.order.dto.ReturnMemoUpdateDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.snippet.Attributes.key;
@@ -193,6 +199,95 @@ public class ReturnControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.returnProductList[].returnDeliveryCompanyName").type(JsonFieldType.STRING).optional().description("반품 택배사 이름"),
                                         fieldWithPath("data.returnProductList[].returnInvoiceNo").type(JsonFieldType.STRING).optional().description("반품 송장 번호"),
                                         fieldWithPath("data.returnProductList[].reason").type(JsonFieldType.STRING).optional().description("사유"),
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                )
+                ))
+                ;
+    }
+
+    @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @DisplayName("반품관리 정보 수정")
+    void updateReturn() throws Exception {
+        ReturnMemoUpdateDto updateParam = ReturnMemoUpdateDto.builder()
+                .orderNo("202209281757217262")
+                .recipientName("홍길동")
+                .recipientPhone("01012341234")
+                .recipientAddressZipCode("12345")
+                .recipientAddress("서울특별시 강남구 강남대로 154길 37")
+                .recipientAddressDetail("주경빌딩 2층")
+                .returnMemo("반품메모")
+                .build();
+
+        // 반품관리 수정 API 테스트
+        mockMvc.perform(put("/v1/returns")
+                    .header(AUTH_HEADER, JWT_TOKEN)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content((new ObjectMapper().writeValueAsString(updateParam)))
+                    .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.WBCommon.state").value("S"))
+                .andDo(
+                        document("return-update",
+                                requestDocument(),
+                                responseDocument(),
+                                requestHeaders(
+                                        headerWithName(AUTH_HEADER).description("JWT 토큰")
+                                ),
+                                relaxedRequestFields(
+                                        fieldWithPath("orderNo").type(JsonFieldType.STRING).description("주문 번호").attributes(key("etc").value("")),
+                                        fieldWithPath("recipientName").type(JsonFieldType.STRING).description("수령자 이름").attributes(key("etc").value("")),
+                                        fieldWithPath("recipientPhone").type(JsonFieldType.STRING).description("수령자 휴대전화").attributes(key("etc").value("")),
+                                        fieldWithPath("recipientAddressZipCode").type(JsonFieldType.STRING).description("배송지 우편번호").attributes(key("etc").value("")),
+                                        fieldWithPath("recipientAddress").type(JsonFieldType.STRING).description("배송지 주소").attributes(key("etc").value("")),
+                                        fieldWithPath("recipientAddressDetail").type(JsonFieldType.STRING).description("배송지 상세주소").attributes(key("etc").value("")),
+                                        fieldWithPath("returnMemo").type(JsonFieldType.STRING).description("반품 메모").optional().attributes(key("etc").value(""))
+                                ),
+                                responseFields(
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                )
+                ))
+                ;
+    }
+
+    @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @DisplayName("반품 요청 상품 처리")
+    void updateRequestReturn() throws Exception {
+        RequestReturnUpdateDto updateParam = RequestReturnUpdateDto.builder()
+                .orderNo("202201011022429727")
+                .orderProductSeqArray(new Integer[]{1})
+                .returnProcessCode(OrderStatusCode.START_RETURN.getCode())
+                .build();
+
+        // 반품 요청 상품 처리 API 테스트
+        mockMvc.perform(RestDocumentationRequestBuilders.put("/v1/returns/{orderNo}/request-return", updateParam.getOrderNo())
+                    .header(AUTH_HEADER, JWT_TOKEN)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(new ObjectMapper().writeValueAsString(updateParam))
+                    .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.WBCommon.state").value("S"))
+                .andDo(
+                        document("return-request-update",
+                                requestDocument(),
+                                responseDocument(),
+                                requestHeaders(
+                                        headerWithName(AUTH_HEADER).description("JWT 토큰")
+                                ),
+                                pathParameters(
+                                        parameterWithName("orderNo").description("주문 번호")
+                                ),
+                                relaxedRequestFields(
+                                        fieldWithPath("orderNo").type(JsonFieldType.STRING).description("주문 번호").attributes(key("etc").value("")),
+                                        fieldWithPath("orderProductSeqArray").type(JsonFieldType.ARRAY).description("주문 상품 SEQ").attributes(key("etc").value("")),
+                                        fieldWithPath("returnProcessCode").type(JsonFieldType.STRING).description("반품 처리 코드").attributes(key("etc").value("R03 반품승인, R05 반품완료, R04 반품불가")),
+                                        fieldWithPath("nonReturnReasonCode").type(JsonFieldType.STRING).description("반품불가 사유 코드").optional().attributes(key("etc").value("")),
+                                        fieldWithPath("nonReturnReasonName").type(JsonFieldType.STRING).description("반품불가 사유 이름").optional().attributes(key("etc").value(""))
+                                ),
+                                responseFields(
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
                                 )
                 ))

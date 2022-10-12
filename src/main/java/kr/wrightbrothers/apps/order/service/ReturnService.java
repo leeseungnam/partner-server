@@ -10,6 +10,7 @@ import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -57,6 +58,14 @@ public class ReturnService {
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void updateRequestReturn(RequestReturnUpdateDto paramDto) {
+        // 반품불가 처리 시 유효성 확인
+        if (OrderProductStatusCode.NON_RETURN.getCode().equals(paramDto.getReturnProcessCode())) {
+            if (ObjectUtils.isEmpty(paramDto.getNonReturnReasonCode()))
+                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"반품 사유"});
+            if (ObjectUtils.isEmpty(paramDto.getNonReturnReasonName()))
+                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"반품 사유"});
+        }
+
         // 중복 반품 요청 확인
         if (dao.selectOne(namespace + "isRequestReturn", paramDto))
             throw new WBBusinessException(ErrorCode.ALREADY_RETURN.getErrCode(), new String[]{OrderStatusCode.of(paramDto.getReturnProcessCode()).getName()});
@@ -67,6 +76,7 @@ public class ReturnService {
             paramDto.setOrderProductSeq(orderProductSeq);
             // 현재 주문 상품 상태 코드 조회
             String currentStatusCode = dao.selectOne(namespace + "findOrderProductStatusCode", paramDto);
+
 
             // 반품 요청 처리
             switch (OrderProductStatusCode.of(paramDto.getReturnProcessCode())) {
