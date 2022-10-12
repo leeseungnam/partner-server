@@ -41,8 +41,12 @@
 		update order_payment
 		   set payment_status_code 	= 'S09',	-- 취소요청 코드
 		       cancel_date			= now(),
-		       cancel_reason_name	= #{cancelReasonName},
-		       cancel_reason_code	= #{cancelReasonCode},
+		       <if test="cancelReasonCode != null and cancelReasonCode != ''.toString()">
+				   cancel_reason_code = #{cancelReasonCode},
+			   </if>
+		       <if test="cancelReasonName != null and cancelReasonName != ''.toString()">
+				   cancel_reason_name = #{cancelReasonName},
+			   </if>
 		       update_user_id 		= #{userId},
 		       update_date 			= now()
 		 where order_no = #{orderNo}

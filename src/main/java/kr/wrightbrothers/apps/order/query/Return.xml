@@ -3,6 +3,14 @@
 
 <mapper namespace="kr.wrightbrothers.apps.order.query.Return">
 
+	<select id="isRequestReturn" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto" resultType="boolean">
+		select
+		    if(count(order_no) = 1, true, false) as isRequestReturn
+		  from order_info
+		 where order_no = #{orderNo}
+		   and order_status_code = #{returnProcessCode}
+	</select>
+
 	<select id="findReturnList" parameterType="kr.wrightbrothers.apps.order.dto.ReturnListDto$Param" resultType="kr.wrightbrothers.apps.order.dto.ReturnListDto$Response">
 		select
 		    date_format(g.return_request_date, '%Y-%m-%d') as return_request_day,
@@ -129,11 +137,19 @@
 
 	<update id="updateOrderProductReturnCode" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto">
 		update order_product
-		   set order_product_status_code = #{orderProductStatusCode},
+		   set order_product_status_code = #{returnProcessCode},
 		       update_user_id = #{userId},
 		       update_date = now()
 		 where order_no = #{orderNo}
 		   and order_product_seq = #{orderProductSeq}
+	</update>
+
+	<update id="updateOrderReturnCode" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto">
+		update order_info
+		   set order_status_code = #{returnProcessCode},
+		       update_user_id = #{userId},
+		       update_date = now()
+		 where order_no = #{orderNo}
 	</update>
 
 </mapper>

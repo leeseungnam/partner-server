@@ -1,14 +1,15 @@
 package kr.wrightbrothers.apps.order.service;
 
 import kr.wrightbrothers.apps.common.type.OrderProductStatusCode;
-import kr.wrightbrothers.apps.common.type.ProductStatusCode;
-import kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto;
-import kr.wrightbrothers.apps.order.dto.ReturnFindDto;
-import kr.wrightbrothers.apps.order.dto.ReturnListDto;
-import kr.wrightbrothers.apps.order.dto.ReturnMemoUpdateDto;
+import kr.wrightbrothers.apps.common.type.OrderStatusCode;
+import kr.wrightbrothers.apps.common.util.ErrorCode;
+import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.order.dto.*;
+import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
@@ -54,7 +55,11 @@ public class ReturnService {
         dao.update(namespace + "updateReturn", paramDto);
     }
 
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void updateRequestReturn(RequestReturnUpdateDto paramDto) {
+        // 중복 반품 요청 확인
+        if (dao.selectOne(namespace + "isRequestReturn", paramDto))
+            throw new WBBusinessException(ErrorCode.ALREADY_RETURN.getErrCode(), new String[]{OrderStatusCode.of(paramDto.getReturnProcessCode()).getName()});
 
         // 주문 상품 반품 상태값 변경 처리
         Arrays.stream(paramDto.getOrderProductSeqArray()).forEach(orderProductSeq -> {
@@ -68,7 +73,7 @@ public class ReturnService {
                 case START_RETURN:
                 case WITHDRAWAL_RETURN:
                     // 반품 요청이 아닐 경우 예외
-                    if (!OrderProductStatusCode.REQUEST_RETURN.equals(OrderProductStatusCode.of(currentStatusCode)))
+                    if (!OrderProductStatusCode.REQUEST_RETURN.getCode().equals(currentStatusCode))
                         return;
 
                     // 주문 상품 반품 진행 / 반품 철회 처리
@@ -77,7 +82,7 @@ public class ReturnService {
                 case COMPLETE_RETURN:
                 case NON_RETURN:
                     // 반품 진행이 아닐 경우 예외
-                    if (!OrderProductStatusCode.START_RETURN.equals(OrderProductStatusCode.of(currentStatusCode)))
+                    if (!OrderProductStatusCode.START_RETURN.getCode().equals(currentStatusCode))
                         return;
 
                     // 주문 상품 반품 완료 / 반품 불가 처리
@@ -87,8 +92,14 @@ public class ReturnService {
         });
 
         // 주문 상태 변경 처리
+        dao.update(namespace + "updateOrderReturnCode", paramDto);
 
-        // 결제 상태 변경 처리
-
+        // 반품 완료 요청 시 결제는 결제취소 요청으로 처리
+        if (OrderStatusCode.COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()))
+            dao.update("kr.wrightbrothers.apps.order.query.Payment.updateRequestCancelPayment",
+                    PaymentCancelDto.builder()
+                            .orderNo(paramDto.getOrderNo())
+                            .userId(paramDto.getUserId())
+                            .build());
     }
 }
