@@ -1,6 +1,5 @@
 package kr.wrightbrothers.apps.order.service;
 
-import kr.wrightbrothers.apps.order.dto.DeliveryMemoUpdateDto;
 import kr.wrightbrothers.apps.order.dto.OrderFindDto;
 import kr.wrightbrothers.apps.order.dto.OrderListDto;
 import kr.wrightbrothers.apps.order.dto.OrderMemoUpdateDto;

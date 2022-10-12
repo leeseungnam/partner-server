@@ -3,6 +3,14 @@
 
 <mapper namespace="kr.wrightbrothers.apps.order.query.Order">
 
+	<select id="isOrderAuth" parameterType="kr.wrightbrothers.apps.order.dto.OrderAuthDto" resultType="boolean">
+		select
+		    if(count(order_no) = 0, true, false) as isOrderAuth
+		  from order_info
+		 where partner_code = #{partnerCode}
+		   and order_no = #{orderNo}
+	</select>
+
 	<select id="isDeliveryStatusCheck" parameterType="java.lang.String" resultType="boolean">
 		select
 		    if(order_status_code in ('D01', 'D03'), false, true) as isDeliveryCheck

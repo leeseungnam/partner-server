@@ -43,10 +43,11 @@ public class AddressBeforeAop {
     public void ownAddressCheck(JoinPoint joinPoint) throws Exception {
         JSONObject object = new JSONObject(JsonUtil.ToString(Arrays.stream(joinPoint.getArgs()).findFirst().orElseThrow()));
 
-        if (dao.selectOne(namespace + "isAddressAuth", AddressAuthDto.builder()
-                .partnerCode(object.getString("partnerCode"))
-                .addressNo(object.getLong("addressNo"))
-                .build())) {
+        if (dao.selectOne(namespace + "isAddressAuth",
+                AddressAuthDto.builder()
+                        .partnerCode(object.getString("partnerCode"))
+                        .addressNo(object.getLong("addressNo"))
+                        .build())) {
 
             log.error("Address Auth Error.");
             log.error("PartnerCode::{}, AddressNo::{}", object.getString("partnerCode"), object.getLong("addressNo"));
