@@ -71,7 +71,7 @@ public class PartnerContractDto {
         @JsonIgnore
         private String partnerCode;
 
-        @ApiModelProperty(value = "계약진행 상태코드")
+        @ApiModelProperty(value = "계약진행 상태 공통코드:000087(C01:계약전, C02:계약중, C03:재계약, C04:계약갱신, C05:계약종료, C06:계약철회)")
         @JsonIgnore
         private String contractStatus;
 
@@ -108,7 +108,7 @@ public class PartnerContractDto {
         @ApiModelProperty(value = "계약번호")
         private String contractNo;
 
-        @ApiModelProperty(value = "계약진행 상태코드")
+        @ApiModelProperty(value = "계약진행 상태 공통코드:000087(C01:계약전, C02:계약중, C03:재계약, C04:계약갱신, C05:계약종료, C06:계약철회)")
         private String contractStatus;
 
         @ApiModelProperty(value = "파트너 코드")
