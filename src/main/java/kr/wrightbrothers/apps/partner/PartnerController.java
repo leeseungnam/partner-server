@@ -13,6 +13,7 @@ import kr.wrightbrothers.apps.partner.service.PartnerService;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.WBController;
+import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -89,7 +90,7 @@ public class PartnerController extends WBController {
         // findUserAuth
         List<PartnerAndAuthFindDto.ResBody> partnerList = partnerService.findUserAuthAndPartnerListByUserId(PartnerAndAuthFindDto.Param.builder().userId(user.getUsername()).build());
 
-        wbResponse.addObject("partnerList", partnerList);
+        wbResponse.addObject(WBKey.WBModel.DefaultDataKey, partnerList);
         return  wbResponse;
     }
 }
