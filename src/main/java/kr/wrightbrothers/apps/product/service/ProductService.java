@@ -50,9 +50,14 @@ public class ProductService {
         // PA + 카테고리 상품 그룹코드 2자리 + 영문/숫자 6자리
         productCode.append("PA");
         productCode.append(productGroupCode);
-        productCode.append(RandomStringUtils.randomAlphanumeric(6).toUpperCase());
 
-        return productCode.toString();
+        // 등록여부 확인 후 코드 생성 처리
+        String generateProductCode;
+        do {
+            generateProductCode = productCode + RandomStringUtils.randomAlphanumeric(6).toUpperCase();
+        } while (dao.selectOne(namespace + "isProductCode", generateProductCode));
+
+        return generateProductCode;
     }
 
     public List<ProductListDto.Response> findProductList(ProductListDto.Param paramDto) {
