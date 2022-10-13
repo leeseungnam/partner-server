@@ -47,19 +47,16 @@ public class PartnerContractDto {
         @Size(min = 2, max = 20, message = "예금주")
         private String accountHolder;
 
-        @ApiModelProperty(value = "계약일자(YYYYMMDD)", required = true)
-        @NotBlank(message = "계약일자")
+        @ApiModelProperty(value = "계약일자(YYYYMMDD)")
         private String contractDay;
 
-        @ApiModelProperty(value = "계약기간 시작일(YYYYMMDD)", required = true)
-        @NotBlank(message = "계약기간 시작일")
+        @ApiModelProperty(value = "계약기간 시작일(YYYYMMDD)")
         private String contractStartDay;
 
-        @ApiModelProperty(value = "계약기간 종료일(YYYYMMDD)", required = true)
-        @NotBlank(message = "계약기간 종료일")
+        @ApiModelProperty(value = "계약기간 종료일(YYYYMMDD)")
         private String contractEndDay;
 
-        @ApiModelProperty(value = "계약서 파일 번호", required = true)
+        @ApiModelProperty(value = "계약서 파일 번호")
         @JsonIgnore
         private String contractFileNo;
     }
