@@ -76,11 +76,11 @@
 	<select id="findDeliveryStatusStatistics" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryListDto$Param" resultType="kr.wrightbrothers.apps.order.dto.DeliveryListDto$Statistics">
 		select
 		    count(1) as totalDeliveryCount,
-			sum(if(g.delivery_status_code = 'D01', 1, 0)) as readyProductCount,
-			sum(if(g.delivery_status_code = 'D02', 1, 0)) as startDeliveryCount,
-			sum(if(g.delivery_status_code = 'D03', 1, 0)) as partialDeliveryCount,
-			sum(if(g.delivery_status_code = 'D11', 1, 0)) as exchangeDeliveryCount,
-			sum(if(g.delivery_status_code = 'D05', 1, 0)) as finishDeliveryCount
+			ifnull(sum(if(g.delivery_status_code = 'D01', 1, 0)), 0) as readyProductCount,
+			ifnull(sum(if(g.delivery_status_code = 'D02', 1, 0)), 0) as startDeliveryCount,
+			ifnull(sum(if(g.delivery_status_code = 'D03', 1, 0)), 0) as partialDeliveryCount,
+			ifnull(sum(if(g.delivery_status_code = 'D11', 1, 0)), 0) as exchangeDeliveryCount,
+			ifnull(sum(if(g.delivery_status_code = 'D05', 1, 0)), 0) as finishDeliveryCount
 		  from order_info o
 		 inner join (
 			select
@@ -182,5 +182,35 @@
 			   update_date = now()
 		 where order_no = #{orderNo}
 	</update>
+
+	<sql id="findDeliveryProductSql">
+		select
+			p.order_product_seq,
+			p.product_code,
+			p.product_name,
+			p.option_name,
+			p.product_qty,
+			d.delivery_company_name,
+			d.invoice_no,
+			d.delivery_status_code,
+			d.delivery_status_code as delivery_status_name,
+			date_format(d.delivery_start_date, '%Y-%m-%d') as delivery_start_day,
+			date_format(d.delivery_end_date, '%Y-%m-%d') as delivery_end_day
+		  from order_product p
+		  left join order_delivery d
+		    on p.order_no = d.order_no
+		   and p.order_product_seq = d.order_product_seq
+		   and p.product_code = d.product_code
+	</sql>
+	<select id="findDeliveryProductList" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.order.dto.DeliveryProductDto">
+		<include refid="findDeliveryProductSql"/>
+	     where p.order_no = #{orderNo}
+	       and d.delivery_status_code in ('D01', 'D02')
+	</select>
+	<select id="findDeliveryCompleteProductList" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.order.dto.DeliveryProductDto">
+		<include refid="findDeliveryProductSql"/>
+		 where p.order_no = #{orderNo}
+		   and d.delivery_status_code = 'D05'
+	</select>
 
 </mapper>

@@ -36,8 +36,8 @@ public class ReturnService {
                 .order(dao.selectOne(orderNamespace + "findOrder", paramDto.getOrderNo()))
                 // 결제 정보
                 .payment(paymentService.findPaymentToOrder(paramDto.getOrderNo()))
-                // 주문 상품 리스트
-                .productList(dao.selectList(orderNamespace + "findOrderProduct", paramDto.getOrderNo()))
+                // 주문 상품 리스트(취소 상품 제외)
+                .orderProductList(dao.selectList(namespace + "findNonCancelOrderProduct", paramDto.getOrderNo()))
                 // 반품 요청 상품 리스트
                 .returnProductList(dao.selectList(namespace + "findReturnProductList", paramDto.getOrderNo()))
                 .build();

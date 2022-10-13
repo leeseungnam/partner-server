@@ -1,23 +1,23 @@
 package kr.wrightbrothers.apps.order.service;
 
 import kr.wrightbrothers.apps.common.util.PartnerKey;
-import kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto;
-import kr.wrightbrothers.apps.order.dto.DeliveryListDto;
-import kr.wrightbrothers.apps.order.dto.DeliveryMemoUpdateDto;
-import kr.wrightbrothers.apps.order.dto.OrderUpdateDto;
+import kr.wrightbrothers.apps.order.dto.*;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class DeliveryService {
 
     private final WBCommonDao dao;
+    private final PaymentService paymentService;
     private final String namespace = "kr.wrightbrothers.apps.order.query.Delivery.";
 
     public List<DeliveryListDto.Response> findDeliveryList(DeliveryListDto.Param paramDto) {
@@ -28,6 +28,19 @@ public class DeliveryService {
     public DeliveryListDto.Statistics findDeliveryStatusStatistics(DeliveryListDto.Param paramDto) {
         // 배송내역 상태 집계 건수 조회
         return dao.selectOne(namespace + "findDeliveryStatusStatistics", paramDto);
+    }
+
+    public DeliveryFindDto.Response findDelivery(DeliveryFindDto.Param paramDto) {
+        return DeliveryFindDto.Response.builder()
+                // 주문 기본 정보
+                .order(dao.selectOne("kr.wrightbrothers.apps.order.query.Order.findOrder", paramDto.getOrderNo()))
+                // 결제 정보
+                .payment(paymentService.findPaymentToOrder(paramDto.getOrderNo()))
+                // 배송 주문 상품 리스트
+                .deliveryList(dao.selectList(namespace + "findDeliveryProductList", paramDto.getOrderNo()))
+                // 배송 완료 주문 상품 리스트
+                .deliveryCompleteList(dao.selectList(namespace + "findDeliveryCompleteProductList", paramDto.getOrderNo()))
+                .build();
     }
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)

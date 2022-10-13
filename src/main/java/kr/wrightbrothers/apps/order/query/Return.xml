@@ -123,7 +123,7 @@
 		   and p.order_product_seq = d.order_product_seq
 		   and p.product_code = d.product_code
 		 where p.order_no = #{orderNo}
-		   and p.order_product_status_code in ('R01', 'R02', 'R03', 'R04', 'R05')	-- 반품요청, 반품취소, 반품진행, 반품불가, 반품완료
+		   and p.order_product_status_code in ('R02', 'R03', 'R04', 'R05')	-- 반품요청, 반품취소, 반품진행, 반품불가, 반품완료
 		 order by p.order_product_seq
 	</select>
 
@@ -156,5 +156,27 @@
 		       update_date = now()
 		 where order_no = #{orderNo}
 	</update>
+
+	<select id="findNonCancelOrderProduct" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.order.dto.DeliveryProductDto">
+		select
+			p.order_product_seq,
+			p.product_code,
+			p.product_name,
+			p.option_name,
+			p.product_qty,
+			d.delivery_company_name,
+			d.invoice_no,
+			d.delivery_status_code,
+			d.delivery_status_code as delivery_status_name,
+			date_format(d.delivery_start_date, '%Y-%m-%d') as delivery_start_day,
+			date_format(d.delivery_end_date, '%Y-%m-%d') as delivery_end_day
+		  from order_product p
+		  left join order_delivery d
+		    on p.order_no = d.order_no
+		   and p.order_product_seq = d.order_product_seq
+		   and p.product_code = d.product_code
+		 where p.order_no = #{orderNo}
+		   and p.order_product_status_code not in ('O06', 'O07')
+	</select>
 
 </mapper>

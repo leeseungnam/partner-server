@@ -33,8 +33,8 @@ public class OrderService {
                 .order(dao.selectOne(namespace + "findOrder", paramDto.getOrderNo()))
                 // 결제 정보
                 .payment(paymentService.findPaymentToOrder(paramDto.getOrderNo()))
-                // 주문 상품 리스트
-                .productList(dao.selectList(namespace + "findOrderProduct", paramDto.getOrderNo()))
+                // 주문 상품 리스트(상품 준비중 상태)
+                .productList(dao.selectList(namespace + "findOrderReadyProduct", paramDto.getOrderNo()))
                 .build();
     }
 

@@ -102,11 +102,11 @@
 	<select id="findOrderStatusStatistics" parameterType="kr.wrightbrothers.apps.order.dto.OrderListDto$Param" resultType="kr.wrightbrothers.apps.order.dto.OrderListDto$Statistics">
 		select
 			count(1) as totalOrderCount,											-- 전체주문 건수
-		    sum(if(o.order_status_code = 'O05', 1, 0)) as completeOrderCount,		-- 주문완료 건수
-		    sum(if(o.order_status_code = 'D01', 1, 0)) as readyProductCount,		-- 상품준비 건수
-		    sum(if(o.order_status_code = 'O06', 1, 0)) as requestCancelCount,		-- 취소요청 건수
-		    sum(if(o.order_status_code = 'C05', 1, 0)) as confirmPurchaseCount,		-- 구매확정 건수
-		    sum(if(o.order_status_code = 'R05', 1, 0)) as completeReturnCount		-- 반품완료 건수
+		    ifnull(sum(if(o.order_status_code = 'O05', 1, 0)), 0) as completeOrderCount,		-- 주문완료 건수
+		    ifnull(sum(if(o.order_status_code = 'D01', 1, 0)), 0) as readyProductCount,		-- 상품준비 건수
+		    ifnull(sum(if(o.order_status_code = 'O06', 1, 0)), 0) as requestCancelCount,		-- 취소요청 건수
+		    ifnull(sum(if(o.order_status_code = 'C05', 1, 0)), 0) as confirmPurchaseCount,		-- 구매확정 건수
+		    ifnull(sum(if(o.order_status_code = 'R05', 1, 0)), 0) as completeReturnCount		-- 반품완료 건수
 		  from order_info o
 		 inner join order_payment p
 		    on o.order_no = p.order_no
@@ -180,30 +180,20 @@
 		 where order_no = #{orderNo}
 	</select>
 
-	<select id="findOrderProduct" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.order.dto.ProductDto">
+	<select id="findOrderReadyProduct" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.order.dto.ProductDto">
 		select
-		    p.order_product_seq,
-		    p.product_code,
-		    p.product_name,
-		    p.order_product_status_code,
-		    p.order_product_status_code as order_product_status_name,
-		    p.final_sell_amount,
-		    p.option_name,
-		    p.option_surcharge,
-		    p.product_qty,
-		    p.delivery_type,
-		    d.delivery_company_name,
-		    p.delivery_charge_amount,
-		    d.invoice_no,
-		    d.return_delivery_company_name,
-		    d.return_invoice_no,
-		    p.return_reason
-		  from order_product p
-		  left join order_delivery d
-			on p.order_no = d.order_no
-		   and p.order_product_seq = d.order_product_seq
-		   and p.product_code = d.product_code
-		 where p.order_no = #{orderNo}
+		    order_product_seq,
+		    product_code,
+		    product_name,
+		    order_product_status_code,
+		    order_product_status_code as order_product_status_name,
+		    final_sell_amount,
+		    option_name,
+		    option_surcharge,
+		    product_qty
+		  from order_product
+		 where order_no = #{orderNo}
+		   and product_code = 'D01'		-- 상품 준비중
 	</select>
 
 	<update id="updateOrder" parameterType="kr.wrightbrothers.apps.order.dto.OrderMemoUpdateDto">
