@@ -33,26 +33,24 @@ public class ProductService {
 
     /**
      * <pre>
-     *     상품코드 자리수 11 자리
+     *     상품코드 자리수 10 자리
      *     상품 코드 생성 조합 규칙
      *
      *     파트너 구분 코드 2자리 : PA
      *     카테고리 그룹 코드 2자리
-     *     정산 구분 코드 2자리 : FE
-     *     숫자 + 알파벳 5자리 : A0B0H
+     *     숫자 + 알파벳 6자리 : A0B0EH
      *
-     *     예: PABFFEA0B0H
+     *     예: PABFA0B0HZ
      * </pre>
      */
     public String generateProductCode(String categoryTwoCode) {
         StringBuilder productCode = new StringBuilder();
         String productGroupCode = dao.selectOne(namespace + "findProductGroupCode", categoryTwoCode, PartnerKey.WBDataBase.Alias.Admin);
-        // 파트너 신품 코드 영문 숫자조합 11자리
-        // PA + 카테고리 상품 그룹코드 2자리 + FE + 영문/숫자 5자리
+        // 파트너 신품 코드 영문 숫자조합 10자리
+        // PA + 카테고리 상품 그룹코드 2자리 + 영문/숫자 6자리
         productCode.append("PA");
         productCode.append(productGroupCode);
-        productCode.append("FE");
-        productCode.append(RandomStringUtils.randomAlphanumeric(5).toUpperCase());
+        productCode.append(RandomStringUtils.randomAlphanumeric(6).toUpperCase());
 
         return productCode.toString();
     }
