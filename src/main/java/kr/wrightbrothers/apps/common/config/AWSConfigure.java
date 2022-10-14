@@ -17,9 +17,14 @@ import software.amazon.awssdk.services.ses.SesClient;
 public class AWSConfigure {
 
     @Value("${cloud.aws.ses.accessKey}")
-    private String accessKey;
+    private String sesAccessKey;
     @Value("${cloud.aws.ses.secretKey}")
+    private String sesSecretKey;
+    @Value("${cloud.aws.credentials.accessKey}")
+    private String accessKey;
+    @Value("${cloud.aws.credentials.secretKey}")
     private String secretKey;
+
     @Value("${cloud.aws.region.static}")
     private String region;
     @Value("${cloud.aws.sqs.auto}")
@@ -28,7 +33,7 @@ public class AWSConfigure {
     @Bean
     public SesClient amazonSimpleEmailServiceAsync() {
         return SesClient.builder()
-                .credentialsProvider(() -> AwsBasicCredentials.create(accessKey, secretKey))
+                .credentialsProvider(() -> AwsBasicCredentials.create(sesAccessKey, sesSecretKey))
                 .region(Region.AP_NORTHEAST_2)
                 .build();
     }

@@ -1,14 +1,10 @@
 package kr.wrightbrothers.apps.order;
 
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.*;
 import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.*;
 import kr.wrightbrothers.apps.order.service.DeliveryService;
-import kr.wrightbrothers.apps.order.service.OrderService;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBKey;
@@ -21,13 +17,13 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+@Api(tags = {"배송"})
 @RestController
 @RequestMapping("/v1")
 @RequiredArgsConstructor
 public class DeliveryController extends WBController {
 
     private final DeliveryService deliveryService;
-    private final OrderService orderService;
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
@@ -75,9 +71,13 @@ public class DeliveryController extends WBController {
         return response;
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
+    })
+    @ApiOperation(value = "배송 관리 상세 정보 조회", notes = "주문 내역의 및 배송에 대한 상세 정보 조회")
     @GetMapping("/deliveries/{orderNo}")
-    public WBModel findDelivery(@PathVariable String orderNo,
-                                @AuthenticationPrincipal UserPrincipal user) {
+    public WBModel findDelivery(@ApiParam(value = "주문번호") @PathVariable String orderNo,
+                                @ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
         // 배송 관리 상세 정보 조회
         return defaultResponse(deliveryService.findDelivery(
                 DeliveryFindDto.Param.builder()
@@ -88,8 +88,12 @@ public class DeliveryController extends WBController {
     }
 
     @UserPrincipalScope
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
+    })
+    @ApiOperation(value = "배송 정보 수정", notes = "배송지 정보, 배송 메모에 대한 정보 수정")
     @PutMapping("/deliveries")
-    public WBModel updateDelivery(@Valid @RequestBody DeliveryMemoUpdateDto paramDto) {
+    public WBModel updateDelivery(@ApiParam(value = "배송 수정 데이터") @Valid @RequestBody DeliveryMemoUpdateDto paramDto) {
         // 배송관리 정보 수정
         deliveryService.updateDelivery(paramDto);
 
@@ -97,8 +101,12 @@ public class DeliveryController extends WBController {
     }
 
     @UserPrincipalScope
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
+    })
+    @ApiOperation(value = "송장번호 저장", notes = "택배 발송되는 주문 상품의 택배사 / 송장번호 등록 및 수정")
     @PutMapping("/deliveries/{orderNo}/invoice")
-    public WBModel updateDeliveryInvoice(@Valid @RequestBody DeliveryInvoiceUpdateDto paramDto) {
+    public WBModel updateDeliveryInvoice(@ApiParam(value = "송장번호 입력 데이터") @Valid @RequestBody DeliveryInvoiceUpdateDto paramDto) {
         // 배송정보 수정
         deliveryService.updateDeliveryInvoice(paramDto);
 

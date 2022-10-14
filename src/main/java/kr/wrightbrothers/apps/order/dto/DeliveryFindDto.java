@@ -1,5 +1,6 @@
 package kr.wrightbrothers.apps.order.dto;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Builder;
 import lombok.Getter;
 

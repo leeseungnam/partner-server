@@ -1,6 +1,8 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,23 +13,29 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+@ApiModel(value = "송장번호 입력")
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeliveryInvoiceUpdateDto {
+    @ApiModelProperty(value = "주문 번호", required = true)
     @NotBlank(message = "주문 번호")
     private String orderNo;
 
+    @ApiModelProperty(value = "주문 상품 SEQ", required = true)
     @NotNull(message = "주문 상품 SEQ")
     private Integer[] orderProductSeqArray; // 주문 상품 SEQ Array
 
+    @ApiModelProperty(value = "택배사 코드", required = true)
     @NotBlank(message = "택배사 코드")
     private String deliveryCompanyCode;     // 택배사 코드
 
+    @ApiModelProperty(value = "택배사 이름", required = true)
     @NotBlank(message = "택배사 이름")
     private String deliveryCompanyName;     // 택배사 이름
 
+    @ApiModelProperty(value = "송장번호", required = true)
     @NotBlank(message = "송장번호")
     @Size(min = 2, max = 50, message = "송장번호")
     @Pattern(regexp = "^\\d+$", message = "송장번호는 숫자만 입력 가능 합니다.")

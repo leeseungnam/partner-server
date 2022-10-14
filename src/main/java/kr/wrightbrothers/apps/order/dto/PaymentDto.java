@@ -1,11 +1,13 @@
 package kr.wrightbrothers.apps.order.dto;
 
+import io.swagger.annotations.ApiModel;
 import kr.wrightbrothers.apps.common.type.PaymentMethodCode;
 import kr.wrightbrothers.apps.common.type.PaymentStatusCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@ApiModel(value = "결제 정보")
 @AllArgsConstructor
 public class PaymentDto {
     private Long orderAmount;           // 주문 금액
