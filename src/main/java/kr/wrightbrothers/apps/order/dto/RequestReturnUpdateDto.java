@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import kr.wrightbrothers.apps.common.type.OrderStatusCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,6 +43,10 @@ public class RequestReturnUpdateDto {
 
         public void setOrderProductSeq(Integer orderProductSeq) {
             this.orderProductSeq = orderProductSeq;
+        }
+
+        public void setReturnProcessCode(String returnProcessCode){
+            this.returnProcessCode = returnProcessCode;
         }
 
 }

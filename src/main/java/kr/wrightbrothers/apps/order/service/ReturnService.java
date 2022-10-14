@@ -60,10 +60,8 @@ public class ReturnService {
     public void updateRequestReturn(RequestReturnUpdateDto paramDto) {
         // 반품불가 처리 시 유효성 확인
         if (OrderProductStatusCode.NON_RETURN.getCode().equals(paramDto.getReturnProcessCode())) {
-            if (ObjectUtils.isEmpty(paramDto.getNonReturnReasonCode()))
-                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"반품 사유"});
-            if (ObjectUtils.isEmpty(paramDto.getNonReturnReasonName()))
-                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"반품 사유"});
+            if (ObjectUtils.isEmpty(paramDto.getNonReturnReasonCode()) || ObjectUtils.isEmpty(paramDto.getNonReturnReasonName()))
+                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"불가 사유"});
         }
 
         // 중복 반품 요청 확인
@@ -84,7 +82,7 @@ public class ReturnService {
                 case WITHDRAWAL_RETURN:
                     // 반품 요청이 아닐 경우 예외
                     if (!OrderProductStatusCode.REQUEST_RETURN.getCode().equals(currentStatusCode))
-                        return;
+                        break;
 
                     // 주문 상품 반품 진행 / 반품 철회 처리
                     dao.update(namespace + "updateOrderProductReturnCode", paramDto);
@@ -93,13 +91,18 @@ public class ReturnService {
                 case NON_RETURN:
                     // 반품 진행이 아닐 경우 예외
                     if (!OrderProductStatusCode.START_RETURN.getCode().equals(currentStatusCode))
-                        return;
+                        break;
 
                     // 주문 상품 반품 완료 / 반품 불가 처리
                     dao.update(namespace + "updateOrderProductReturnCode", paramDto);
                     break;
             }
         });
+
+        // 반품 취소 시 주문 상태 값은 반품취소 -> 배송완료 변경되야 함.
+        // 결제 상태는 반품 완료 시 변경되야 하는 상태로, 이외 상태값은 영향을 받지 않아
+        // 해당 로직에서 상태값을 변경하였으며, 이후 로직 변경 시 아래 부분에 대한 부분에 대해 확인 필요.
+        paramDto.setReturnProcessCode(OrderStatusCode.FINISH_DELIVERY.getCode());
 
         // 주문 상태 변경 처리
         dao.update(namespace + "updateOrderReturnCode", paramDto);
