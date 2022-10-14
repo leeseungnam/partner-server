@@ -37,7 +37,7 @@ public class EmailService {
 
         try {
 
-            awsSesUtil.singleSend(paramDto.getUserId(), subject, template, context);
+            awsSesUtil.singleSend(subject, template, context, paramDto.getUserId());
 
             return SingleEmailDto.ResBody.builder()
                     .userId(paramDto.getUserId())
