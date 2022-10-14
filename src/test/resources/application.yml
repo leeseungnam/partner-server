@@ -45,10 +45,10 @@ cloud:
       accessKey: AKIARL5GKSIL5OK4DO5V
       secretKey: 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
     sns:
-      arn: 'arn:aws:sns:ap-northeast-2:094301229591:'
+      arn: 'arn:aws:sns:ap-northeast-2:226098469581:'
       auto: false
-      ack: DEV-ACKMSG.fifo
-      partner: DEV-PARTNER-PRODUCT.fifo
+      ack: DEV-ACKMSG2.fifo
+      partner: DEV-PARTNER-PRODUCT2.fifo
     ses:
       accessKey: AKIARL5GKSILRUJFMCMR
       secretKey: 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
