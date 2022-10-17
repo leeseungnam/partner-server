@@ -1,14 +1,12 @@
 package kr.wrightbrothers.apps.common.config.security.jwt;
 
-import kr.wrightbrothers.apps.common.util.TokenUtil;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.common.util.TokenUtil;
 import kr.wrightbrothers.apps.sign.service.SignService;
-import kr.wrightbrothers.apps.token.dto.BlackListDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 

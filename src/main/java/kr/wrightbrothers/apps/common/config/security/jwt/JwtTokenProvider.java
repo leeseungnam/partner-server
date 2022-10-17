@@ -6,6 +6,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.TokenUtil;
+import kr.wrightbrothers.apps.sign.dto.UserDetailDto;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import kr.wrightbrothers.apps.sign.service.WBUserDetailService;
 import kr.wrightbrothers.apps.token.dto.RefreshTokenDto;
@@ -91,6 +92,7 @@ public class JwtTokenProvider implements InitializingBean {
                 .setSubject(authentication.getName())
                 .claim(PartnerKey.Jwt.Alias.AUTH, authorities)
                 .claim(PartnerKey.Jwt.Alias.NAME, userPrincipal.getName())
+                .claim(PartnerKey.Jwt.Alias.STATUS, userPrincipal.getUserStatusCode())
                 .addClaims(claims)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .setExpiration(validity)
@@ -114,7 +116,13 @@ public class JwtTokenProvider implements InitializingBean {
         ObjectMapper mapper = new ObjectMapper();
         if(!ObjectUtils.isEmpty(claims.get(PartnerKey.Jwt.Alias.USER_AUTH))) userAuthDto = mapper.convertValue(claims.get(PartnerKey.Jwt.Alias.USER_AUTH), UserAuthDto.class);
 
-        UserPrincipal principal = new UserPrincipal(claims.getSubject(), "", authorities, userAuthDto);
+        UserPrincipal principal = new UserPrincipal(UserDetailDto.builder()
+                .userId(claims.getSubject())
+                .userPwd("")
+                .userName(claims.get(PartnerKey.Jwt.Alias.NAME).toString())
+                .userStatusCode(claims.get(PartnerKey.Jwt.Alias.STATUS).toString())
+                .userAuth(userAuthDto)
+                .build(), authorities);
 
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }

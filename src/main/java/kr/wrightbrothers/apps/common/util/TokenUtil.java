@@ -2,7 +2,6 @@ package kr.wrightbrothers.apps.common.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.Cookie;
@@ -11,7 +10,6 @@ import java.util.Base64;
 import java.util.UUID;
 
 @Slf4j
-@Service
 public class TokenUtil {
 
     // refresh JWT 사용 X
@@ -31,11 +29,12 @@ public class TokenUtil {
     }
 
     public static String resolveTokenInHeader(HttpServletRequest request, String name) {
+
         String token = request.getHeader(name);
 
         // token check
         if (token != null && token.startsWith(PartnerKey.Jwt.Type.BEARER)) {
-            return token.substring(7);
+            return token.split(PartnerKey.Jwt.Type.BEARER)[1].trim();
         }
         return null;
     }
@@ -44,11 +43,10 @@ public class TokenUtil {
 
         String token;
 
-        log.info("[resolveTokenInCookie]::name={}", name);
         try {
             Cookie cookie = getCookie(request, name);
             token = cookie.getValue();
-            log.info("[resolveTokenInCookie]::value={}", token);
+
         } catch (Exception e) {
             log.error("throw new Exception [resolveTokenInCookie]");
             return null;
