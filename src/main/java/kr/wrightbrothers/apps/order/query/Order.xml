@@ -193,7 +193,7 @@
 		    product_qty
 		  from order_product
 		 where order_no = #{orderNo}
-		   and product_code = 'D01'		-- 상품 준비중
+		   and order_product_status_code = 'D01'		-- 상품 준비중
 	</select>
 
 	<update id="updateOrder" parameterType="kr.wrightbrothers.apps.order.dto.OrderMemoUpdateDto">
