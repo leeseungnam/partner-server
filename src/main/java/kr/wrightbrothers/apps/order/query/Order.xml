@@ -44,17 +44,17 @@
 			<when test="keywordValue != null and keywordValue != ''">
 				<choose>
 					<when test="keywordType == 'NO'">
-						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+						<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
 							o.order_no like #{item} '%'
 						</foreach>
 					</when>
 					<when test="keywordType == 'NAME'">
-						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+						<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
 							o.order_name like #{item} '%'
 						</foreach>
 					</when>
 					<when test="keywordType == 'USER'">
-						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+						<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
 							o.order_user_name like #{item} '%'
 						</foreach>
 					</when>
@@ -115,17 +115,17 @@
 			<when test="keywordValue != null and keywordValue != ''">
 				<choose>
 					<when test="keywordType == 'NO'">
-						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+						<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
 							o.order_no like #{item} '%'
 						</foreach>
 					</when>
 					<when test="keywordType == 'NAME'">
-						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+						<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
 							o.order_name like #{item} '%'
 						</foreach>
 					</when>
 					<when test="keywordType == 'USER'">
-						<foreach collection="keywordValueList" item="item" index="index" open="(" separator="OR" close=")">
+						<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
 							o.order_user_name like #{item} '%'
 						</foreach>
 					</when>
