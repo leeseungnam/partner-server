@@ -24,6 +24,31 @@ public class ProductQueueService {
     private final ProductService productService;
     private final String namespace = "kr.wrightbrothers.apps.product.query.Product.";
 
+    private String findCategoryName(String categoryCode) {
+        return dao.selectOne("kr.wrightbrothers.apps.category.query.Category.findCategoryName", categoryCode, PartnerKey.WBDataBase.Alias.Admin);
+    }
+
+    private List<OptionDto.ReqBody> jsonToOptionList(JSONObject object) {
+        if (ObjectUtils.isEmpty(object.getJSONArray("ProductOptin"))) return null;
+
+        List<OptionDto.ReqBody> optionList = new ArrayList<>();
+        JSONArray jsonOptionList = object.getJSONArray("ProductOptin");
+        for (int i = 0; i < jsonOptionList.length(); i++) {
+            optionList.add(
+                    OptionDto.ReqBody.builder()
+                            .productCode(object.getJSONObject("ProductBasicSpecification").getString(""))
+                            .userId(object.getJSONObject("ProductBasicSpecification").getString(""))
+                            .optionSeq(jsonOptionList.getJSONObject(i).getInt("OptionSequence"))
+                            .optionName(jsonOptionList.getJSONObject(i).getString("OptionName"))
+                            .optionValue(jsonOptionList.getJSONObject(i).getString("OptionValue"))
+                            .optionSurcharge(jsonOptionList.getJSONObject(i).getLong("OptionSurcharge"))
+                            .optionStockQty(jsonOptionList.getJSONObject(i).getInt("InventoryQuantity"))
+                            .build());
+        }
+
+        return optionList;
+    }
+
     // SNS 입점몰 상품 정보 조회
     public ProductSendDto findProductSnsData(String partnerCode,
                                              String productCode) {
@@ -58,7 +83,7 @@ public class ProductQueueService {
 
     /**
      * <pre>
-     * 어드민 서비스에서 입점몰 상품 등록 처리일 경우 해당 상품 정보를 입점몰에 저장합니다.
+     * 어드민 서비스에서 입점몰 상품 등록 처리일 경우 해당 상품 정보를 입점몰에 저장 합니다.
      * 저장 처리 경우에는 AOP Before 처리되는 SNS 데이터 전송은 예외처리 되었으니
      * 이부분 참고하시어 별도의 추가 구성은 하지 않아도 됩니다.
      * </pre>
@@ -67,8 +92,8 @@ public class ProductQueueService {
      */
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void insertProductSqsData(JSONObject body) {
-        // SQS 입점몰 상품 등록
-        productService.insertProduct(ProductInsertDto.builder()
+        // Json -> ProductInsertDto
+        ProductInsertDto paramDto = ProductInsertDto.builder()
                 .product(ProductDto.ReqBody.jsonToProductDto(body))
                 .basicSpec(BasicSpecDto.ReqBody.jsonToBasicSpecDto(body))
                 .sellInfo(SellInfoDto.ReqBody.jsonToSellInfoDto(body))
@@ -76,21 +101,29 @@ public class ProductQueueService {
                 .delivery(DeliveryDto.ReqBody.jsonToDeliveryDto(body))
                 .infoNotice(InfoNoticeDto.ReqBody.jsonToInfoNoticeDto(body))
                 .guide(GuideDto.ReqBody.jsonToGuideDto(body))
-                .build());
+                .build();
+
+        // 카테고리 코드 -> 이름 데이터 셋팅
+        paramDto.getProduct().setCategoryOneName(findCategoryName(paramDto.getProduct().getCategoryOneCode()));
+        paramDto.getProduct().setCategoryTwoName(findCategoryName(paramDto.getProduct().getCategoryTwoCode()));
+        paramDto.getProduct().setCategoryThrName(findCategoryName(paramDto.getProduct().getCategoryThrCode()));
+
+        // SQS 입점몰 상품 등록
+        productService.insertProduct(paramDto);
     }
 
-    // SQS
-    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
-    public void updateInspectionSqsData(ProductUpdateDto productUpdateDto) {
-        // SQS 입점몰 검수 결과
-        productService.updateProduct(productUpdateDto);
-    }
-
-    // SQS
+    /**
+     * <pre>
+     * 어드민 서비스에서 입점몰 상품 변경 처리일 경우 해당 상품 정보를 입점몰에 갱신 합니다.
+     * 수정 처리 경우에는 AOP Before 처리되는 SNS 데이터 전송은 예외처리 되었으니
+     * 이부분 참고하시어 별도의 추가 구성은 하지 않아도 됩니다.
+     * </pre>
+     *
+     * @param body SQS 수신 상품 수정 데이터
+     */
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void updateProductSqsData(JSONObject body) {
-        // SQS 입점몰 상품 수정
-        productService.updateProduct(ProductUpdateDto.builder()
+        ProductUpdateDto paramDto = ProductUpdateDto.builder()
                 .productCode(body.getJSONObject("ProductMain").getString("ProductCode"))
                 .changeLogList(new String[]{"라이트브라더스 프로세스 정보 변경"})
                 .product(ProductDto.ReqBody.jsonToProductDto(body))
@@ -100,27 +133,30 @@ public class ProductQueueService {
                 .delivery(DeliveryDto.ReqBody.jsonToDeliveryDto(body))
                 .infoNotice(InfoNoticeDto.ReqBody.jsonToInfoNoticeDto(body))
                 .guide(GuideDto.ReqBody.jsonToGuideDto(body))
-                .build());
+                .build();
+
+        // 카테고리 코드 -> 이름 데이터 셋팅
+        paramDto.getProduct().setCategoryOneName(findCategoryName(paramDto.getProduct().getCategoryOneCode()));
+        paramDto.getProduct().setCategoryTwoName(findCategoryName(paramDto.getProduct().getCategoryTwoCode()));
+        paramDto.getProduct().setCategoryThrName(findCategoryName(paramDto.getProduct().getCategoryThrCode()));
+
+        // SQS 입점몰 상품 수정
+        productService.updateProduct(paramDto);
     }
 
-    public List<OptionDto.ReqBody> jsonToOptionList(JSONObject object) {
-        if (ObjectUtils.isEmpty(object.getJSONArray("ProductOptin"))) return null;
-
-        List<OptionDto.ReqBody> optionList = new ArrayList<>();
-        JSONArray jsonOptionList = object.getJSONArray("ProductOptin");
-        for (int i = 0; i < jsonOptionList.length(); i++) {
-            optionList.add(
-                    OptionDto.ReqBody.builder()
-                            .productCode(object.getJSONObject("ProductBasicSpecification").getString(""))
-                            .userId(object.getJSONObject("ProductBasicSpecification").getString(""))
-                            .optionSeq(jsonOptionList.getJSONObject(i).getInt("OptionSequence"))
-                            .optionName(jsonOptionList.getJSONObject(i).getString("OptionName"))
-                            .optionValue(jsonOptionList.getJSONObject(i).getString("OptionValue"))
-                            .optionSurcharge(jsonOptionList.getJSONObject(i).getLong("OptionSurcharge"))
-                            .optionStockQty(jsonOptionList.getJSONObject(i).getInt("InventoryQuantity"))
-                    .build());
-        }
-
-        return optionList;
+    /**
+     * <pre>
+     * 어드민 서비스에서 입점몰 상품 검수요청 결과에 대하 입점몰에 등록 합니다.
+     * 검수관련 처리 경우에는 AOP Before SNS 데이터 전송은 예외처리 되었으니
+     * 이부분 참고하시어 별도의 추가 구성은 하지 않아도 됩니다.
+     * </pre>
+     *
+     * @param productUpdateDto 상품 입점몰 검수 결과 데이터
+     */
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    public void updateInspectionSqsData(ProductUpdateDto productUpdateDto) {
+        // SQS 입점몰 검수 결과
+        productService.updateProduct(productUpdateDto);
     }
+
 }

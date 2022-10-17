@@ -13,4 +13,11 @@
 		 order by cagy_dp_seq
 	</select>
 
+	<select id="findCategoryName" parameterType="java.lang.String" resultType="java.lang.String">
+		select
+		    cagy_nm as categoryName
+		  from com_cagy
+		 where cagy_cd = #{categoryCode}
+	</select>
+
 </mapper>
