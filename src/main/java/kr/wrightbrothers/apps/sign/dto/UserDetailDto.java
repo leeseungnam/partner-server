@@ -14,6 +14,7 @@ public class UserDetailDto {
 
     private String userId;
     private String userPwd;
+    private String userName;
     private String userStatusCode;
     private UserAuthDto userAuth;
 

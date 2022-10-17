@@ -17,6 +17,8 @@ public class UserPrincipal implements UserDetails {
 
     private String password;
 
+    private String name;
+
     private String userStatusCode;
 
     private UserAuthDto userAuth;
@@ -37,6 +39,8 @@ public class UserPrincipal implements UserDetails {
     public UserPrincipal(UserDetailDto userDetailDto, Collection<? extends GrantedAuthority> authorities) {
         this.username = userDetailDto.getUserId();
         this.password = userDetailDto.getUserPwd();
+        this.name = userDetailDto.getUserName();
+        this.userStatusCode = userDetailDto.getUserStatusCode();
         this.userAuth = userDetailDto.getUserAuth();
         this.authorities = authorities;
     }

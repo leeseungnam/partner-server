@@ -77,6 +77,9 @@ public class JwtTokenProvider implements InitializingBean {
     }
 
     public String createJsonWebToken(Authentication authentication, Claims claims, long expireTime) {
+
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
@@ -87,6 +90,7 @@ public class JwtTokenProvider implements InitializingBean {
         return Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(PartnerKey.Jwt.Alias.AUTH, authorities)
+                .claim(PartnerKey.Jwt.Alias.NAME, userPrincipal.getName())
                 .addClaims(claims)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .setExpiration(validity)

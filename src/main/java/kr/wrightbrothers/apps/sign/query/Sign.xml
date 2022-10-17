@@ -7,6 +7,7 @@
 		select
 			user.user_id,
 			user.user_pwd,
+			user.user_name,
 			user.user_status_code,
 		    ifnull(role.auth_code, 'ROLE_USER') as auth_code,
 			ifnull(role.partner_code, '') as partner_code
@@ -20,6 +21,7 @@
 	<resultMap id="loadUserByUsernameMap" type="kr.wrightbrothers.apps.sign.dto.UserDetailDto">
 		<result column="user_id" property="userId"/>
 		<result column="user_pwd" property="userPwd"/>
+		<result column="user_name" property="userName"/>
 		<result column="user_status_code" property="userStatusCode"/>
 		<collection property="userAuth" ofType="kr.wrightbrothers.apps.user.dto.UserAuthDto">
 			<result column="auth_code" property="authCode"/>
