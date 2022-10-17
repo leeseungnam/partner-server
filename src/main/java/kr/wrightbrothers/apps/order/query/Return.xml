@@ -114,6 +114,7 @@
 			p.product_qty,
 			p.order_product_status_code,
 			p.order_product_status_code as order_product_status_name,
+			d.return_delivery_company_code,
 			d.return_delivery_company_name,
 			d.return_invoice_no,
 			if(p.order_product_status_code = 'R04', p.non_return_reason_name, p.return_reason) as reason
@@ -164,6 +165,7 @@
 			p.product_name,
 			p.option_name,
 			p.product_qty,
+			d.delivery_company_code,
 			d.delivery_company_name,
 			d.invoice_no,
 			d.delivery_status_code,

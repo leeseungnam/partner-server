@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+import org.json.JSONObject;
+import org.springframework.util.ObjectUtils;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -95,6 +97,30 @@ public class ProductDto {
         private String productType;         // 상품 유형
         @JsonIgnore
         private String userId;              // 작성자 아이디
+
+        // JSON -> ProductDto
+        public static ProductDto.ReqBody jsonToProductDto(JSONObject object) {
+            if (ObjectUtils.isEmpty(object.getJSONObject("ProductMain"))) return null;
+
+            return ProductDto.ReqBody.builder()
+                    .partnerCode(object.getJSONObject("ProductMain").getString("PurchaseRequestNumber"))
+                    .productCode(object.getJSONObject("ProductMain").getString("ProductCode"))
+                    .productType(object.getJSONObject("ProductMain").getString("ProductType"))
+                    .userId(object.getJSONObject("ProductMain").getString("CreateUserId"))
+                    .categoryOneCode(object.getJSONObject("ProductMain").getString("CategoryDepthOne"))
+                    .categoryTwoCode(object.getJSONObject("ProductMain").getString("CategoryDepthTwo"))
+                    .categoryThrCode(object.getJSONObject("ProductMain").getString("CategoryDepthThr"))
+                    .productName(object.getJSONObject("ProductMain").getString("ProductName"))
+                    .brandNo(object.getJSONObject("ProductMain").getString("BrandNumber"))
+                    .brandName(object.getJSONObject("ProductMain").getString("BrandName"))
+                    .modelCode(object.getJSONObject("ProductMain").getString("ModelNumber"))
+                    .modelName(object.getJSONObject("ProductMain").getString("ModelName"))
+                    .modelYear(object.getJSONObject("ProductMain").getString("ModelYear"))
+                    .youtubeUrl(object.getJSONObject("ProductMain").getString("YoutubeUrl"))
+                    .productBarcode(object.getJSONObject("ProductMain").getString("ProductBarcode"))
+                    .productDescription(object.getJSONObject("ProductGuideanceComment").getString("ProductGuideanceCommentOne"))
+                    .build();
+        }
     }
 
     @Getter

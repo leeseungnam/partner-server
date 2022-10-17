@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.aop;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.wrightbrothers.apps.common.type.DocumentSNS;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.product.dto.StatusUpdateDto;
 import kr.wrightbrothers.apps.queue.ProductQueue;
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.json.JSONObject;
 import org.springframework.context.annotation.Configuration;
 
@@ -46,6 +48,11 @@ public class ProductAfterAop {
                     "execution(* kr.wrightbrothers.apps.product.service.ProductService.insert*(..))"
     )
     public void sendProductSnsData(JoinPoint joinPoint) throws Exception {
+        // AOP 호출 메소드 정보 추출
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+        // SQS 처리시 발생에 따른 부분은 SNS 제외
+        if (methodSignature.getMethod().getName().contains("SqsData")) return;
+
         JSONObject object = new JSONObject(JsonUtil.ToString(Arrays.stream(joinPoint.getArgs()).findFirst().orElseThrow()));
 
         // 입점몰 API -> ADMIN 2.0 API
@@ -58,6 +65,7 @@ public class ProductAfterAop {
                     )
                     .forEach(productCode -> {
                         productQueue.sendToAdmin(
+                                DocumentSNS.UPDATE_PRODUCT,
                                 object.getString("partnerCode"),
                                 productCode,
                                 PartnerKey.TransactionType.Update
@@ -67,6 +75,7 @@ public class ProductAfterAop {
         else if (object.has("product")) {
             // 상품 등록 / 변경에 따른 SNS 발송 처리
             productQueue.sendToAdmin(
+                    DocumentSNS.REQ_INSPECTION,
                     object.getJSONObject("product").getString("partnerCode"),
                     object.getJSONObject("product").getString("productCode"),
                     // 변경 사항 로그 유무를 통한 등록 / 수정 구분

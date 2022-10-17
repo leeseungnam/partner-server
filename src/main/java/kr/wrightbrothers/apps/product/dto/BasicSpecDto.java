@@ -6,7 +6,11 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.springframework.util.ObjectUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BasicSpecDto {
@@ -64,6 +68,35 @@ public class BasicSpecDto {
         private String productCode;     // 파트너 코드
         @JsonIgnore
         private String userId;          // 사용자 아이디
+
+        // JSON -> BasicSpecDto
+        public static BasicSpecDto.ReqBody jsonToBasicSpecDto(JSONObject object) {
+            if (ObjectUtils.isEmpty(object.getJSONObject("ProductBasicSpecification"))) return null;
+            // 탑승자 연령
+            List<String> ageList = new ArrayList<>();
+            if (!ObjectUtils.isEmpty(object.getJSONArray("ProductEmbarkAge"))) {
+                JSONArray jsonArray = object.getJSONArray("ProductEmbarkAge");
+                for (int i = 0; i < jsonArray.length(); i++)
+                    ageList.add(jsonArray.getJSONObject(i).getString("EmbarkAge"));
+            }
+
+            return ReqBody.builder()
+                    .productCode(object.getJSONObject("ProductBasicSpecification").getString(""))
+                    .userId(object.getJSONObject("ProductBasicSpecification").getString(""))
+                    .salesCategoryCode(object.getJSONObject("ProductBasicSpecification").getString(""))
+                    .drivetrainTypeCode(object.getJSONObject("ProductBasicSpecification").getString(""))
+                    .frameMaterialCode(object.getJSONObject("ProductBasicSpecification").getString(""))
+                    .frameSizeCode(object.getJSONObject("ProductBasicSpecification").getString(""))
+                    .brakeTypeCode(object.getJSONObject("ProductBasicSpecification").getString(""))
+                    .purposeThemeCode(object.getJSONObject("ProductBasicSpecification").getString(""))
+                    .wheelSizeCode(object.getJSONObject("ProductBasicSpecification").getString(""))
+                    .suspensionTypeCode(object.getJSONObject("ProductBasicSpecification").getString(""))
+                    .minHeightPerson(object.getJSONObject("ProductBasicSpecification").getString(""))
+                    .maxHeightPerson(object.getJSONObject("ProductBasicSpecification").getString(""))
+                    .bikeWeight(object.getJSONObject("ProductBasicSpecification").getString(""))
+                    .ageList(ageList)
+                    .build();
+        }
     }
 
     @Getter

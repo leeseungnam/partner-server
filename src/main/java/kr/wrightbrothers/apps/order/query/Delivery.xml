@@ -190,6 +190,7 @@
 			p.product_name,
 			p.option_name,
 			p.product_qty,
+			d.delivery_company_code,
 			d.delivery_company_name,
 			d.invoice_no,
 			d.delivery_status_code,

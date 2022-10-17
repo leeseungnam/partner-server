@@ -12,6 +12,7 @@ public class DeliveryProductDto {
     private String productName;             // 상품 이름
     private String optionName;              // 옵션 이름
     private Integer productQty;             // 상품 수량
+    private String deliveryCompanyCode;     // 택배사 코드
     private String deliveryCompanyName;     // 택배사 이름
     private String invoiceNo;               // 송장번호
     private String deliveryStatusCode;      // 택배 진행 상태 코드

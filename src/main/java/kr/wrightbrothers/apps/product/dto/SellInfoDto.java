@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+import org.json.JSONObject;
+import org.springframework.util.ObjectUtils;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -73,6 +75,27 @@ public class SellInfoDto {
         private String productCode;
         @JsonIgnore
         private String userId;
+
+        public static SellInfoDto.ReqBody jsonToSellInfoDto(JSONObject object) {
+            if (ObjectUtils.isEmpty(object.getJSONObject("ProductSellInformation"))) return null;
+
+            return ReqBody.builder()
+                    .productCode(object.getJSONObject("ProductMain").getString("ProductCode"))
+                    .userId(object.getJSONObject("ProductMain").getString("CreateUserId"))
+                    .productAmount(object.getJSONObject("ProductSellInformation").getLong("ProductAmount"))
+                    .discountFlag(object.getJSONObject("ProductSellInformation").getString("DiscountFlag"))
+                    .discountType(object.getJSONObject("ProductSellInformation").getString("DiscountType"))
+                    .discountAmount(object.getJSONObject("ProductSellInformation").getString("DiscountAmount"))
+                    .finalSellAmount(object.getJSONObject("ProductSellInformation").getLong("FinalSellAmount"))
+                    .displayFlag(object.getJSONObject("ProductSellInformation").getString("DisplayFlag"))
+                    .productOptionFlag(ObjectUtils.isEmpty(object.getJSONArray("ProductOptin")) ? "N" : "Y")
+                    .supplyAmount(object.getJSONObject("ProductSellInformation").getLong("PurchaseAmount"))
+                    .finalSellAmount(object.getJSONObject("ProductSellInformation").getLong("FinalSellAmount"))
+                    .productStatusCode(object.getJSONObject("ProductSellInformation").getString("ProductStatusCode"))
+                    .productStockQty(object.getJSONObject("ProductSellInformation").getInt("InventoryQuantity"))
+                    .build();
+        }
+
     }
 
     @Getter

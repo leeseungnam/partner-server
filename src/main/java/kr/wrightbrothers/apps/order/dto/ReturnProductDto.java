@@ -16,7 +16,8 @@ public class ReturnProductDto {
     private Integer productQty;                 // 반품 요청 수량
     private String orderProductStatusCode;      // 상품 진행 상태 코드(반품 진행 상태 코드)
     private String orderProductStatusName;      // 상품 진행 상태 이름(반품 진행 상태 이름)
-    private String returnDeliveryCompanyName;   // 반품 택배사
+    private String returnDeliveryCompanyCode;   // 반품 택배사 코드
+    private String returnDeliveryCompanyName;   // 반품 택배사 이름
     private String returnInvoiceNo;             // 반품 송장번호
     private String reason;                      // 사유
 

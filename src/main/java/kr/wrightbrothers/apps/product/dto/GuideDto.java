@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+import org.json.JSONObject;
+import org.springframework.util.ObjectUtils;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -51,6 +53,20 @@ public class GuideDto {
         private String productCode;
         @JsonIgnore
         private String userId;
+
+        public static GuideDto.ReqBody jsonToGuideDto(JSONObject object) {
+            if (ObjectUtils.isEmpty(object.getJSONObject("ProductGuideanceComment"))) return null;
+
+            return ReqBody.builder()
+                    .productCode(object.getJSONObject("ProductMain").getString("ProductCode"))
+                    .userId(object.getJSONObject("ProductMain").getString("CreateUserId"))
+                    .productGuide(object.getJSONObject("ProductMain").getString("ProductGuideanceCommentTwo"))
+                    .deliveryGuide(object.getJSONObject("ProductMain").getString("ProductGuideanceCommentFour"))
+                    .exchangeReturnGuide(object.getJSONObject("ProductMain").getString("ExchangeReturnGuide"))
+                    .asGuide(object.getJSONObject("ProductMain").getString("AsGuide"))
+                    .qnaGuide(object.getJSONObject("ProductMain").getString("ProductGuideanceCommentThree"))
+                    .build();
+        }
     }
 
     @Getter

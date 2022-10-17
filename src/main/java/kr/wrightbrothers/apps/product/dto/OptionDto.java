@@ -58,4 +58,12 @@ public class OptionDto {
     @SuperBuilder
     @NoArgsConstructor
     public static class ResBody extends Option {}
+
+    @Getter
+    @Jacksonized
+    @SuperBuilder
+    @NoArgsConstructor
+    public static class Queue extends Option {
+        private String matadata;
+    }
 }

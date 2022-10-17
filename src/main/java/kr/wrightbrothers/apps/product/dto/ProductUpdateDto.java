@@ -39,4 +39,8 @@ public class ProductUpdateDto extends ProductInsertDto {
                 .userId(this.getProduct().getUserId())
                 .build();
     }
+
+    public void setSqsLog(String[] sqsLog) {
+        this.changeLogList = sqsLog;
+    }
 }

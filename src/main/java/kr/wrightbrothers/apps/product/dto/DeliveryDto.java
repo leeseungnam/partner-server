@@ -9,6 +9,7 @@ import kr.wrightbrothers.framework.lang.WBBusinessException;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+import org.json.JSONObject;
 import org.springframework.util.ObjectUtils;
 
 import javax.validation.constraints.Max;
@@ -169,6 +170,34 @@ public class DeliveryDto {
         private String productCode;
         @JsonIgnore
         private String userId;
+
+        public static DeliveryDto.ReqBody jsonToDeliveryDto(JSONObject object) {
+            if (ObjectUtils.isEmpty(object.getJSONObject("ProductDelivery"))) return null;
+
+            return ReqBody.builder()
+                    .productCode(object.getJSONObject("ProductMain").getString("ProductCode"))
+                    .userId(object.getJSONObject("ProductMain").getString("CreateUserId"))
+                    .deliveryType(object.getJSONObject("ProductDelivery").getString("ProductDeliveryCode"))
+                    .deliveryBundleFlag(object.getJSONObject("ProductDelivery").getString("DeliveryBundleFlag"))
+                    .chargeType(object.getJSONObject("ProductDelivery").getString("ChargeType"))
+                    .chargeBase(object.getJSONObject("ProductDelivery").getInt("ChargeBase"))
+                    .termsFreeCharge(object.getJSONObject("ProductDelivery").getLong("TermsFreeCharge"))
+                    .paymentType(object.getJSONObject("ProductDelivery").getString("PaymentType"))
+                    .surchargeFlag(object.getJSONObject("ProductDelivery").getString("SurchargeFlag"))
+                    .areaCode(object.getJSONObject("ProductDelivery").getString("AreaCode"))
+                    .surchargeJejudo(object.getJSONObject("ProductDelivery").getInt("SurchargeJejudo"))
+                    .surchargeIsolated(object.getJSONObject("ProductDelivery").getInt("SurchargeIsolated"))
+                    .unstoringZipCode(object.getJSONObject("ProductDelivery").getString("UnstoringZipCode"))
+                    .unstoringAddress(object.getJSONObject("ProductDelivery").getString("UnstoringAddress"))
+                    .unstoringAddressDetail(object.getJSONObject("ProductDelivery").getString("UnstoringAddressDetail"))
+                    .returnZipCode(object.getJSONObject("ProductDelivery").getString("ReturnZipCode"))
+                    .returnAddress(object.getJSONObject("ProductDelivery").getString("ReturnAddress"))
+                    .returnAddressDetail(object.getJSONObject("ProductDelivery").getString("ReturnAddressDetail"))
+                    .exchangeCharge(object.getJSONObject("ProductDelivery").getInt("ExchangeCharge"))
+                    .returnCharge(object.getJSONObject("ProductDelivery").getInt("ReturnCharge"))
+                    .returnDeliveryCompanyCode(object.getJSONObject("ProductDelivery").getString("ReturnDeliveryCompanyCode"))
+                    .build();
+        }
     }
 
     @Getter
