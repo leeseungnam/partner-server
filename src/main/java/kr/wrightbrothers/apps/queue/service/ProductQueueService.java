@@ -90,7 +90,17 @@ public class ProductQueueService {
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void updateProductSqsData(JSONObject body) {
         // SQS 입점몰 상품 수정
-
+        productService.updateProduct(ProductUpdateDto.builder()
+                .productCode(body.getJSONObject("ProductMain").getString("ProductCode"))
+                .changeLogList(new String[]{"라이트브라더스 프로세스 정보 변경"})
+                .product(ProductDto.ReqBody.jsonToProductDto(body))
+                .basicSpec(BasicSpecDto.ReqBody.jsonToBasicSpecDto(body))
+                .sellInfo(SellInfoDto.ReqBody.jsonToSellInfoDto(body))
+                .optionList(jsonToOptionList(body))
+                .delivery(DeliveryDto.ReqBody.jsonToDeliveryDto(body))
+                .infoNotice(InfoNoticeDto.ReqBody.jsonToInfoNoticeDto(body))
+                .guide(GuideDto.ReqBody.jsonToGuideDto(body))
+                .build());
     }
 
     public List<OptionDto.ReqBody> jsonToOptionList(JSONObject object) {
