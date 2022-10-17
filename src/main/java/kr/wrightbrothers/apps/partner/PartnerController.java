@@ -84,13 +84,15 @@ public class PartnerController extends WBController {
     @ApiOperation(value = "파트너 권한 리스트 조회", notes = "파트너 권한 리스트 조회 요청 API 입니다.")
     @GetMapping("")
     public WBModel findPartnerList(@ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
-
         WBModel wbResponse = new WBModel();
 
         // findUserAuth
         List<PartnerAndAuthFindDto.ResBody> partnerList = partnerService.findUserAuthAndPartnerListByUserId(PartnerAndAuthFindDto.Param.builder().userId(user.getUsername()).build());
 
         partnerList.forEach(entry -> {
+
+            Partner.Status PartnerStatus = Partner.Status.valueOfCode(entry.getPartnerStatus());
+            Partner.Contract.Status PartnerContractStatus = Partner.Contract.Status.valueOfCode(entry.getContractStatus());
 
             int productCount = 0;
             Object [] messageArgs = null;
@@ -104,7 +106,10 @@ public class PartnerController extends WBController {
                     .append(".")
                     .append(entry.getContractStatus());
 
-            entry.changeComment(messageSourceAccessor.getMessage(messageId.toString(), messageArgs));
+            entry.setComment(messageSourceAccessor.getMessage(messageId.toString(), messageArgs));
+
+            entry.setPartnerStatusName(PartnerStatus.getName());
+            entry.setContractStatusName(PartnerContractStatus.getName());
         });
 
         wbResponse.addObject(WBKey.WBModel.DefaultDataKey, partnerList);

@@ -1,12 +1,9 @@
 package kr.wrightbrothers.apps.partner.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import lombok.Setter;
 
 public class PartnerAndAuthFindDto {
     @Getter
@@ -15,6 +12,7 @@ public class PartnerAndAuthFindDto {
         private String userId;
     }
 
+    @Setter
     @Getter
     @Builder
     public static class ResBody {
@@ -30,17 +28,20 @@ public class PartnerAndAuthFindDto {
         @ApiModelProperty(value = "파트너 상태 코드")
         private String partnerStatus;
 
-        @ApiModelProperty(value = "파트너 상태 코드")
+        @ApiModelProperty(value = "권한 코드")
         private String authCode;
 
-        @ApiModelProperty(value = "파트너 상태 코드")
+        @ApiModelProperty(value = "계약 상태 코드")
         private String contractStatus;
 
-        @ApiModelProperty(value = "파트너 상태 코드")
+        @ApiModelProperty(value = "파트너 권한에 따른 문구")
         private String comment;
 
-        public void changeComment(String comment){
-            this.comment = comment;
-        }
+        @ApiModelProperty(value = "파트너 상태 코드명")
+        private String partnerStatusName;
+
+        @ApiModelProperty(value = "계약 상태 코드명")
+        private String contractStatusName;
+
     }
 }

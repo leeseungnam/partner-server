@@ -25,7 +25,9 @@
 			 ,  p.partner_kind
 			 ,  p.partner_status
 			 ,  pc.contract_status
-			 , "" as comment
+			 , '' as comment
+			 , '' as partner_status_name
+			 , '' as contract_status_name
 		from users_partner up
 				 inner join partner p
 							on p.partner_code = up.partner_code
