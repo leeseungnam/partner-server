@@ -20,7 +20,6 @@ class AwsTest extends BaseControllerTests {
     @Autowired
     private EmailService emailService;
 
-    @Test
     @DisplayName("SES 메일발송 테스트")
     void SesSendTest() {
 
