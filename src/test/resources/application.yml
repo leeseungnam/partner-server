@@ -48,6 +48,7 @@ cloud:
       arn: 'arn:aws:sns:ap-northeast-2:226098469581:'
       auto: false
       ack: DEV-ACKMSG2.fifo
+      common: DEV-SNS-MSG2.fifo
       partner: DEV-PARTNER-PRODUCT2.fifo
     ses:
       accessKey: AKIARL5GKSILRUJFMCMR
