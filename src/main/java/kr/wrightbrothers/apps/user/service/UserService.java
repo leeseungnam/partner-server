@@ -48,7 +48,7 @@ public class UserService {
     }
 
     @Transactional(value = PartnerKey.WBDataBase.TransactionManager.Default)
-    public SingleEmailDto.ResBody findUserPwd(String authCode, UserDto userParamDto, SingleEmailDto.ReqBody mailParamDto) throws Exception{
+    public SingleEmailDto.ResBody findUserPwd(UserDto userParamDto, SingleEmailDto.ReqBody mailParamDto) throws Exception{
 
         //  update userPwd
         this.updateUserPwd(UserPwdUpdateDto.builder()

@@ -5,7 +5,6 @@ import kr.wrightbrothers.apps.common.util.AwsSesUtil;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.email.dto.SingleEmailDto;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
-import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,9 @@ public class EmailService {
         Context context = new Context();
         context.setVariable("code", authCode);
 
-        log.info("[singleSendEmail]::authCode={}",authCode);
+        if(paramDto.getEmailType().equals(Email.PASSWORD.getCode())) context.setVariable("userName", paramDto.getUserName());
+
+        log.info("[singleSendEmail]::code={}",authCode);
         log.info("[singleSendEmail]::subject={}",subject);
         log.info("[singleSendEmail]::template={}",template);
 
@@ -43,6 +44,7 @@ public class EmailService {
                     .userId(paramDto.getUserId())
                     .authCode(paramDto.getAuthCode())
                     .build();
+
         } catch (Exception e) {
             log.info("[singleSendEmail]::Exception={}",e.getClass());
             throw new WBBusinessException(ErrorCode.INTERNAL_SERVER.getErrCode());

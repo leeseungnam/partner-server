@@ -32,9 +32,6 @@ public class SignController extends WBController {
     private final static long REFRESH_TOKEN_VALIDATION_SECOND = 60 * 60 * 2;
     private final UserService userService;
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", paramType = "header")
-    })
     @ApiOperation(value = "로그인", notes = "로그인 요청 API 입니다.")
     @PostMapping("/login")
     public WBModel signIn(@ApiParam @Valid @RequestBody SignInDto paramDto

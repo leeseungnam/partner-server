@@ -40,6 +40,10 @@ public class SingleEmailDto {
         @ApiModelProperty(value = "인증 코드")
         private String authCode;
 
+        @JsonIgnore
+        @ApiModelProperty(value = "사용자명")
+        private String userName;
+
         public void changeAuthCode(String authCode) {
             this.authCode = authCode;
         }

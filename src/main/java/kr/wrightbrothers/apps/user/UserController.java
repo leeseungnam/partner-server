@@ -139,8 +139,9 @@ public class UserController extends WBController {
         userDto.changePwd(passwordEncoder.encode(authCode));
 
         //transaction
-        response.addObject("authEmail", userService.findUserPwd(authCode, userDto, SingleEmailDto.ReqBody.builder()
+        response.addObject("authEmail", userService.findUserPwd(userDto, SingleEmailDto.ReqBody.builder()
                 .userId(paramDto.getSingleEmail().getUserId())
+                .userName(paramDto.getUserName())
                 .authCode(authCode)
                 .emailType(paramDto.getSingleEmail().getEmailType())
                 .build()));

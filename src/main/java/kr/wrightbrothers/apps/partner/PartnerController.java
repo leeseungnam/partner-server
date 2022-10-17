@@ -90,6 +90,23 @@ public class PartnerController extends WBController {
         // findUserAuth
         List<PartnerAndAuthFindDto.ResBody> partnerList = partnerService.findUserAuthAndPartnerListByUserId(PartnerAndAuthFindDto.Param.builder().userId(user.getUsername()).build());
 
+        partnerList.forEach(entry -> {
+
+            int productCount = 0;
+            Object [] messageArgs = null;
+            StringBuffer messageId = new StringBuffer();
+
+            if(Partner.Status.COMPLETE_SUCESS.getCode().equals(entry.getPartnerStatus()) && Partner.Contract.Status.COMPLETE.getCode().equals(entry.getContractStatus())) messageArgs = new Object[]{Integer.toString(productCount)};
+
+            messageId.append(messagePrefix)
+                    .append("partner.status.")
+                    .append(entry.getPartnerStatus())
+                    .append(".")
+                    .append(entry.getContractStatus());
+
+            entry.changeComment(messageSourceAccessor.getMessage(messageId.toString(), messageArgs));
+        });
+
         wbResponse.addObject(WBKey.WBModel.DefaultDataKey, partnerList);
         return  wbResponse;
     }

@@ -11,8 +11,8 @@ import java.util.stream.Stream;
 @Getter
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Email {
-    AUTH("1", "이메일 주소 인증", "userMailAuth.html"),
-    PASSWORD("2", "임시 비밀번호 발급", "changeUserPwd.html"),
+    AUTH("1", "[라이트브라더스] 파트너센터 회원가입 인증", "join_email"),
+    PASSWORD("2", "[라이트브라더스] 파트너센터 임시 비밀번호 안내", "join_pw"),
 
     END("","", "");
 
