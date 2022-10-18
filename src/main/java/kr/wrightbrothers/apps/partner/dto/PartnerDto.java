@@ -109,7 +109,6 @@ public class PartnerDto {
         public void changeUserId(String userId) {
             this.userId = userId;
         }
-
         public void changePartnerStatus(String partnerStatus) {
             this.partnerStatus = partnerStatus;
         }

@@ -5,10 +5,7 @@ import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
 import kr.wrightbrothers.apps.common.constants.Partner;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
-import kr.wrightbrothers.apps.partner.dto.PartnerAndAuthFindDto;
-import kr.wrightbrothers.apps.partner.dto.PartnerDto;
-import kr.wrightbrothers.apps.partner.dto.PartnerFindDto;
-import kr.wrightbrothers.apps.partner.dto.PartnerInsertDto;
+import kr.wrightbrothers.apps.partner.dto.*;
 import kr.wrightbrothers.apps.partner.service.PartnerService;
 import kr.wrightbrothers.apps.product.service.ProductService;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
@@ -120,5 +117,18 @@ public class PartnerController extends WBController {
 
         wbResponse.addObject(WBKey.WBModel.DefaultDataKey, partnerList);
         return  wbResponse;
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", paramType = "header")
+    })
+    @ApiOperation(value = "파트너 정보 조회", notes = "파트너 정보 조회 요청 API 입니다.")
+    @GetMapping("/{partnerCode}")
+    public WBModel findPartner(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode
+                               ,@ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
+
+        return  defaultResponse(partnerService.findPartnerByPartnerCode(PartnerViewDto.Param.builder()
+                        .partnerCode(partnerCode)
+                        .build()));
     }
 }

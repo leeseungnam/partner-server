@@ -3,6 +3,49 @@
 
 <mapper namespace="kr.wrightbrothers.apps.partner.query.Partner">
 
+	<select id="findPartnerByPartnerCode" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.partner.dto.PartnerDto$ResBody">
+		select p.partner_code
+			 , p.partner_name
+			 , p.thumbnail
+			 , p.partner_status
+			 , p.partner_kind
+			 , p.business_classification_code
+			 , p.business_name
+			 , p.business_no
+			 , p.business_condition
+			 , p.business_type
+			 , p.rep_name
+			 , p.rep_phone
+			 , p.cs_phone
+			 , p.business_address
+			 , p.business_address_sub
+			 , p.business_address_zip_code
+		from partner p
+		inner join partner_contract pc
+		on p.partner_code = pc.partner_code
+		where p.partner_code = #{partnerCode}
+	</select>
+
+	<select id="findPartnerContractByPartnerCode" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.partner.dto.PartnerContractDto$ResBody">
+		select pc.partner_code
+			 , pc.contract_no
+			 , pc.contract_status
+			 , pc.contract_manager
+			 , pc.contract_manager_phone
+			 , pc.tax_bill_email
+			 , pc.bank_code
+			 , pc.account_no
+			 , pc.account_holder
+			 , pc.contract_day
+			 , pc.contract_start_day
+			 , pc.contract_end_day
+			 , pc.contract_file_no
+		from partner_contract pc
+	   where pc.partner_code = #{partnerCode}
+		order by pc.contract_day desc
+		limit 1
+	</select>
+
 	<select id="findPartnerListByBusinessNo" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerFindDto$Param" resultType="kr.wrightbrothers.apps.partner.dto.PartnerDto$ResBody">
 		select partner_code
 			,  partner_status
