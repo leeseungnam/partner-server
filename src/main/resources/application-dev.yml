@@ -20,7 +20,7 @@ cloud:
       static: ap-northeast-2
     sqs:
       auto: false
-      partner: DEV-PARTNER-PRODUCT.fifo
+      partner: DEV-PARTNER-PRODUCT2.fifo
     sns:
       arn: 'arn:aws:sns:ap-northeast-2:226098469581:'
       auto: false
