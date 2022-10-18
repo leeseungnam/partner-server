@@ -19,6 +19,7 @@ public class GuideDto {
     @SuperBuilder
     @AllArgsConstructor
     @NoArgsConstructor
+    @EqualsAndHashCode
     public static class Guide {
         @ApiModelProperty(value = "안내 사항", required = true)
         @NotBlank(message = "안내 사항")

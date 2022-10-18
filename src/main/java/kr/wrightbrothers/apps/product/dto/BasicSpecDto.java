@@ -20,6 +20,7 @@ public class BasicSpecDto {
     @SuperBuilder
     @AllArgsConstructor
     @NoArgsConstructor
+    @EqualsAndHashCode
     public static class BasicSpec {
         @ApiModelProperty(value = "완차구분")
         private String salesCategoryCode;

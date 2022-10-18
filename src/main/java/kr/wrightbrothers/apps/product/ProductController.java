@@ -3,6 +3,7 @@ package kr.wrightbrothers.apps.product;
 import io.swagger.annotations.*;
 import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.common.util.ProductUtil;
 import kr.wrightbrothers.apps.product.dto.*;
 import kr.wrightbrothers.apps.product.service.ProductService;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
@@ -23,6 +24,7 @@ import javax.validation.Valid;
 public class ProductController extends WBController {
 
     private final ProductService productService;
+    private final ProductUtil productUtil;
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
@@ -77,7 +79,7 @@ public class ProductController extends WBController {
         paramDto.setProductType(user.getUserAuth().getPartnerKind());
         // 상품코드 생성
         paramDto.setProductCode(
-                productService.generateProductCode(paramDto.getProduct().getCategoryTwoCode())
+                productUtil.generateProductCode(paramDto.getProduct().getCategoryTwoCode())
         );
         // 추가 유효성 검사
         paramDto.validProduct();

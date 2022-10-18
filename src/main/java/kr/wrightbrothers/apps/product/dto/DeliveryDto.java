@@ -23,6 +23,7 @@ public class DeliveryDto {
     @SuperBuilder
     @AllArgsConstructor
     @NoArgsConstructor
+    @EqualsAndHashCode
     public static class Delivery {
         @ApiModelProperty(value = "배송방법", required = true)
         @NotBlank(message = "배송방법")

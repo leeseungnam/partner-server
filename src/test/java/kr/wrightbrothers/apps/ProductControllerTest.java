@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.BaseControllerTests;
 import kr.wrightbrothers.apps.common.type.ProductStatusCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.common.util.ProductUtil;
 import kr.wrightbrothers.apps.common.util.RandomUtil;
 import kr.wrightbrothers.apps.file.dto.FileUpdateDto;
 import kr.wrightbrothers.apps.file.dto.FileUploadDto;
@@ -45,6 +46,8 @@ class ProductControllerTest extends BaseControllerTests {
     private S3Service s3Service;
     @Autowired
     protected ProductService productService;
+    @Autowired
+    protected ProductUtil productUtil;
 
     protected ProductInsertDto productDto;
 
@@ -175,7 +178,7 @@ class ProductControllerTest extends BaseControllerTests {
         productDto.setAopUserId("test@wrightbrothers.kr");
         productDto.getProduct().setPartnerCode("PT0000001");
         productDto.setProductCode(
-                productService.generateProductCode(productDto.getProduct().getCategoryTwoCode())
+                productUtil.generateProductCode(productDto.getProduct().getCategoryTwoCode())
         );
         // 상품 등록
         productService.insertProduct(productDto);

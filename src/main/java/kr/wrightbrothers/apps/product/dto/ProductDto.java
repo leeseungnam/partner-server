@@ -20,6 +20,7 @@ public class ProductDto {
     @SuperBuilder
     @AllArgsConstructor
     @NoArgsConstructor
+    @EqualsAndHashCode
     public static class Product {
         @ApiModelProperty(value = "대 카테고리 코드", required = true)
         @NotBlank(message = "대 카테고리")

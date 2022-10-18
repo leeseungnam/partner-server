@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.queue.service;
 
 import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.common.util.ProductUtil;
 import kr.wrightbrothers.apps.product.dto.*;
 import kr.wrightbrothers.apps.product.service.ProductService;
 import kr.wrightbrothers.apps.queue.dto.ProductSendDto;
@@ -22,6 +23,7 @@ public class ProductQueueService {
 
     private final WBCommonDao dao;
     private final ProductService productService;
+    private final ProductUtil productUtil;
     private final String namespace = "kr.wrightbrothers.apps.product.query.Product.";
 
     private String findCategoryName(String categoryCode) {
@@ -125,7 +127,6 @@ public class ProductQueueService {
     public void updateProductSqsData(JSONObject body) {
         ProductUpdateDto paramDto = ProductUpdateDto.builder()
                 .productCode(body.getJSONObject("ProductMain").getString("ProductCode"))
-                .changeLogList(new String[]{"라이트브라더스 프로세스 정보 변경"})
                 .product(ProductDto.ReqBody.jsonToProductDto(body))
                 .basicSpec(BasicSpecDto.ReqBody.jsonToBasicSpecDto(body))
                 .sellInfo(SellInfoDto.ReqBody.jsonToSellInfoDto(body))
@@ -139,6 +140,20 @@ public class ProductQueueService {
         paramDto.getProduct().setCategoryOneName(findCategoryName(paramDto.getProduct().getCategoryOneCode()));
         paramDto.getProduct().setCategoryTwoName(findCategoryName(paramDto.getProduct().getCategoryTwoCode()));
         paramDto.getProduct().setCategoryThrName(findCategoryName(paramDto.getProduct().getCategoryThrCode()));
+
+        // 변경사항 로그 체크
+        paramDto.setSqsLog(
+                productUtil.productModifyCheck(
+                        ProductFindDto.Param.builder()
+                                .partnerCode(paramDto.getProduct().getPartnerCode())
+                                .productCode(paramDto.getProductCode())
+                                .build(),
+                        paramDto.getProduct(),
+                        paramDto.getBasicSpec(),
+                        paramDto.getSellInfo(),
+                        paramDto.getDelivery(),
+                        paramDto.getInfoNotice(),
+                        paramDto.getGuide()));
 
         // SQS 입점몰 상품 수정
         productService.updateProduct(paramDto);

@@ -18,6 +18,7 @@ public class InfoNoticeDto {
     @SuperBuilder
     @AllArgsConstructor
     @NoArgsConstructor
+    @EqualsAndHashCode
     public static class InfoNotice {
         @ApiModelProperty(value = "상품구분", required = true)
         @NotBlank(message = "상품구분")

@@ -21,6 +21,7 @@ public class SellInfoDto {
     @SuperBuilder
     @AllArgsConstructor
     @NoArgsConstructor
+    @EqualsAndHashCode
     public static class SellInfo {
         @ApiModelProperty(value = "상품금액", required = true)
         @Max(value = 100000000, message = "상품금액")
