@@ -10,6 +10,7 @@ import kr.wrightbrothers.apps.partner.dto.PartnerDto;
 import kr.wrightbrothers.apps.partner.dto.PartnerFindDto;
 import kr.wrightbrothers.apps.partner.dto.PartnerInsertDto;
 import kr.wrightbrothers.apps.partner.service.PartnerService;
+import kr.wrightbrothers.apps.product.service.ProductService;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.WBController;
@@ -37,6 +38,8 @@ public class PartnerController extends WBController {
     private final String messagePrefix = "api.message.";
     private final MessageSourceAccessor messageSourceAccessor;
     private final PartnerService partnerService;
+
+    private final ProductService productService;
 
     @UserPrincipalScope
     @ApiImplicitParams({
@@ -98,7 +101,10 @@ public class PartnerController extends WBController {
             Object [] messageArgs = null;
             StringBuffer messageId = new StringBuffer();
 
-            if(Partner.Status.COMPLETE_SUCESS.getCode().equals(entry.getPartnerStatus()) && Partner.Contract.Status.COMPLETE.getCode().equals(entry.getContractStatus())) messageArgs = new Object[]{Integer.toString(productCount)};
+            if(Partner.Status.COMPLETE_SUCESS.getCode().equals(entry.getPartnerStatus()) && Partner.Contract.Status.COMPLETE.getCode().equals(entry.getContractStatus())) {
+                productCount = productService.findProductCountByPartnerCode(entry.getPartnerCode());
+                messageArgs = new Object[]{Integer.toString(productCount)};
+            }
 
             messageId.append(messagePrefix)
                     .append("partner.status.")
