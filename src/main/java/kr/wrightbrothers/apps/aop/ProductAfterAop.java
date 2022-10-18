@@ -75,7 +75,7 @@ public class ProductAfterAop {
         else if (object.has("product")) {
             // 상품 등록 / 변경에 따른 SNS 발송 처리
             productQueue.sendToAdmin(
-                    DocumentSNS.REQ_INSPECTION,
+                    DocumentSNS.REQUEST_INSPECTION,
                     object.getJSONObject("product").getString("partnerCode"),
                     object.getJSONObject("product").getString("productCode"),
                     // 변경 사항 로그 유무를 통한 등록 / 수정 구분

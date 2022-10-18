@@ -83,7 +83,7 @@ public class ProductQueue extends WBSQS {
             }
 
             // SQS 수신 된 Admin 2.0 입력 파트너 검수 결과 등록
-            if (DocumentSNS.RST_INSPECTION.getName().equals(header.getDocuNm())) {
+            if (DocumentSNS.RESULT_INSPECTION.getName().equals(header.getDocuNm())) {
                 ProductUpdateDto productUpdateDto =
                         new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                                 .convertValue(snsDto.getBody(), ProductUpdateDto.class);
