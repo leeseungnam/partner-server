@@ -95,6 +95,13 @@ public class ReturnService {
 
                     // 주문 상품 반품 진행 / 반품 철회 처리
                     dao.update(namespace + "updateOrderProductReturnCode", paramDto);
+
+                    // 반품 취소 시 주문 상태 값은 반품취소 -> 배송완료 변경되야 함.
+                    if (OrderProductStatusCode.WITHDRAWAL_RETURN.getCode().equals(paramDto.getRequestCode()))
+                        paramDto.setReturnProcessCode(OrderStatusCode.FINISH_DELIVERY.getCode());
+
+                    // 주문 상태 변경 처리
+                    dao.update(namespace + "updateOrderReturnCode", paramDto);
                     break;
                 case COMPLETE_RETURN:
                 case NON_RETURN:
@@ -104,23 +111,19 @@ public class ReturnService {
 
                     // 주문 상품 반품 완료 / 반품 불가 처리
                     dao.update(namespace + "updateOrderProductReturnCode", paramDto);
+
+                    // 주문 상태 변경 처리
+                    dao.update(namespace + "updateOrderReturnCode", paramDto);
+
+                    // 반품 완료 요청 시 결제는 결제취소 요청으로 처리
+                    if (OrderStatusCode.COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()))
+                        dao.update("kr.wrightbrothers.apps.order.query.Payment.updateRequestCancelPayment",
+                                PaymentCancelDto.builder()
+                                        .orderNo(paramDto.getOrderNo())
+                                        .userId(paramDto.getUserId())
+                                        .build());
                     break;
             }
         });
-
-        // 반품 취소 시 주문 상태 값은 반품취소 -> 배송완료 변경되야 함.
-        if (OrderProductStatusCode.WITHDRAWAL_RETURN.getCode().equals(paramDto.getRequestCode()))
-            paramDto.setReturnProcessCode(OrderStatusCode.FINISH_DELIVERY.getCode());
-
-        // 주문 상태 변경 처리
-        dao.update(namespace + "updateOrderReturnCode", paramDto);
-
-        // 반품 완료 요청 시 결제는 결제취소 요청으로 처리
-        if (OrderStatusCode.COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()))
-            dao.update("kr.wrightbrothers.apps.order.query.Payment.updateRequestCancelPayment",
-                    PaymentCancelDto.builder()
-                            .orderNo(paramDto.getOrderNo())
-                            .userId(paramDto.getUserId())
-                            .build());
     }
 }
