@@ -256,6 +256,9 @@ public class ReturnControllerTest extends BaseControllerTests {
                 .orderNo("202201011022429727")
                 .orderProductSeqArray(new Integer[]{1})
                 .returnProcessCode(OrderStatusCode.START_RETURN.getCode())
+                .requestCode("cgkwe")
+                .requestName("대한통운")
+                .requestValue("102849583785")
                 .build();
 
         // 반품 요청 상품 처리 API 테스트
@@ -280,9 +283,10 @@ public class ReturnControllerTest extends BaseControllerTests {
                                 relaxedRequestFields(
                                         fieldWithPath("orderNo").type(JsonFieldType.STRING).description("주문 번호").attributes(key("etc").value("")),
                                         fieldWithPath("orderProductSeqArray").type(JsonFieldType.ARRAY).description("주문 상품 SEQ").attributes(key("etc").value("")),
-                                        fieldWithPath("returnProcessCode").type(JsonFieldType.STRING).description("반품 처리 코드").attributes(key("etc").value("R03 반품승인, R05 반품완료, R04 반품불가")),
-                                        fieldWithPath("nonReturnReasonCode").type(JsonFieldType.STRING).description("반품불가 사유 코드").optional().attributes(key("etc").value("")),
-                                        fieldWithPath("nonReturnReasonName").type(JsonFieldType.STRING).description("반품불가 사유 이름").optional().attributes(key("etc").value(""))
+                                        fieldWithPath("returnProcessCode").type(JsonFieldType.STRING).description("반품 처리 코드").attributes(key("etc").value("R03 반품승인, R02 반품취소, R05 반품완료, R04 반품불가")),
+                                        fieldWithPath("requestCode").type(JsonFieldType.STRING).description("반품 요청 데이터 코드").optional().attributes(key("etc").value("000085 반품불가 사유, 000044 반품 진행 택배사")),
+                                        fieldWithPath("requestName").type(JsonFieldType.STRING).description("반품 요청 데이터 이름").optional().attributes(key("etc").value("")),
+                                        fieldWithPath("requestValue").type(JsonFieldType.STRING).description("반품 요청 데이터").optional().attributes(key("etc").value("반품 진행 송장번호"))
                                 ),
                                 responseFields(
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")

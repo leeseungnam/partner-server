@@ -141,8 +141,8 @@
 		   set order_product_status_code = #{returnProcessCode},
 		       -- 반풀불가 처리 시 반품 사유 등록
 		       <if test="returnProcessCode == 'R04'.toString()">
-				   non_return_reason_code = #{nonReturnReasonCode},
-				   non_return_reason_name = #{nonReturnReasonName},
+				   non_return_reason_code = #{requestCode},
+				   non_return_reason_name = #{requestName},
 			   </if>
 		       update_user_id = #{userId},
 		       update_date = now()
@@ -180,5 +180,17 @@
 		 where p.order_no = #{orderNo}
 		   and p.order_product_status_code not in ('O06', 'O07')
 	</select>
+
+	<update id="updateOrderDeliveryReturn" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto">
+		update order_delivery
+		   set return_delivery_company_code = #{requestCode},
+		       return_delivery_company_name = #{requestName},
+		       return_invoice_no			= #{requestValue},
+		       return_invoice_no_input_date = ifnull(return_invoice_no_input_date, now()),
+		       update_user_id				= #{userId},
+		       update_date					= now()
+		 where order_no = #{orderNo}
+		   and order_product_seq = #{orderProductSeq}
+	</update>
 
 </mapper>

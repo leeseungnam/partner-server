@@ -22,10 +22,11 @@ public class RequestReturnUpdateDto {
         private Integer[] orderProductSeqArray; // 주문 상품 SEQ
 
         @NotBlank(message = "반품 요청 처리 구분")
-        private String returnProcessCode;       // 반품 요청 처리 코드
+        private String returnProcessCode;       // 반품 요청 구분
 
-        private String nonReturnReasonCode;     // 반품 불가 사유 코드
-        private String nonReturnReasonName;     // 반품 불가 사유 이름
+        private String requestCode;             // 요청 처리 코드
+        private String requestName;             // 요청 처리 이름
+        private String requestValue;            // 요청 처리 데이터
 
         private String partnerCode;             // 파트너 코드
         @JsonIgnore
