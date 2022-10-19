@@ -4,6 +4,7 @@ import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.email.dto.SingleEmailDto;
 import kr.wrightbrothers.apps.email.service.EmailService;
+import kr.wrightbrothers.apps.partner.dto.PartnerViewDto;
 import kr.wrightbrothers.apps.user.dto.*;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
@@ -23,6 +24,10 @@ public class UserService {
     private final WBCommonDao dao;
     private final String namespace = "kr.wrightbrothers.apps.user.query.User.";
     private final EmailService emailService;
+
+    public List<UserDto>  findUserByPartnerCodeAndAuthCode(PartnerViewDto.Param paramDto) {
+        return dao.selectList(namespace + "findUserByPartnerCodeAndAuthCode", paramDto, PartnerKey.WBDataBase.Alias.Default);
+    }
 
     public UserDto findUserByDynamic(UserDto paramDto) {
         return dao.selectOne(namespace + "findUserByDynamic", paramDto, PartnerKey.WBDataBase.Alias.Default);

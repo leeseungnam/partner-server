@@ -30,6 +30,8 @@ public class PartnerService {
                 .builder()
                 .partner(Optional.of((PartnerDto.ResBody) dao.selectOne(namespace + "findPartnerByPartnerCode", paramDto.getPartnerCode())).orElse(new PartnerDto.ResBody()))
                 .partnerContract(Optional.of((PartnerContractDto.ResBody) dao.selectOne(namespace + "findPartnerContractByPartnerCode", paramDto.getPartnerCode())).orElse(new PartnerContractDto.ResBody()))
+                .partnerOperator(userService.findUserByPartnerCodeAndAuthCode(paramDto))
+                .partnerNotification(dao.selectList(namespace + "findPartnerNotificationByPartnerCode", paramDto.getPartnerCode()))
                 .build();
     }
 

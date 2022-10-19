@@ -41,6 +41,19 @@
 		where user.user_id = #{userId}
 	</select>
 
+	<select id="findUserByPartnerCodeAndAuthCode" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerViewDto$Param" resultType="kr.wrightbrothers.apps.partner.dto.PartnerOperatorDto$ReqBody">
+		select
+		       u.user_id
+		     , u.user_name
+			 , up.auth_code
+			 , up.partner_code
+		from users_partner up
+				 inner join  users u
+							 on up.user_id = u.user_id
+		where up.partner_code = #{partnerCode}
+		  and up.auth_code = #{authCode}
+	</select>
+
 	<insert id="insertUser" parameterType="kr.wrightbrothers.apps.user.dto.UserInsertDto">
 		insert into users
 			(user_id

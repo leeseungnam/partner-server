@@ -3,6 +3,12 @@
 
 <mapper namespace="kr.wrightbrothers.apps.partner.query.Partner">
 
+	<select id="findPartnerNotificationByPartnerCode" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.partner.dto.PartnerNotificationDto$ResBody">
+		select pn.notification_phone
+		from partner_notification pn
+		where pn.partner_code = #{partnerCode}
+	</select>
+
 	<select id="findPartnerByPartnerCode" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.partner.dto.PartnerDto$ResBody">
 		select p.partner_code
 			 , p.partner_name

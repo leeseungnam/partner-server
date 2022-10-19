@@ -3,6 +3,7 @@ package kr.wrightbrothers.apps.partner;
 import io.swagger.annotations.*;
 import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
 import kr.wrightbrothers.apps.common.constants.Partner;
+import kr.wrightbrothers.apps.common.constants.User;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.partner.dto.*;
@@ -35,7 +36,6 @@ public class PartnerController extends WBController {
     private final String messagePrefix = "api.message.";
     private final MessageSourceAccessor messageSourceAccessor;
     private final PartnerService partnerService;
-
     private final ProductService productService;
 
     @UserPrincipalScope
@@ -124,11 +124,11 @@ public class PartnerController extends WBController {
     })
     @ApiOperation(value = "파트너 정보 조회", notes = "파트너 정보 조회 요청 API 입니다.")
     @GetMapping("/{partnerCode}")
-    public WBModel findPartner(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode
-                               ,@ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
+    public WBModel findPartnerOperator(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode) {
 
-        return  defaultResponse(partnerService.findPartnerByPartnerCode(PartnerViewDto.Param.builder()
+        return defaultResponse(partnerService.findPartnerByPartnerCode(PartnerViewDto.Param.builder()
                         .partnerCode(partnerCode)
+                        .authCode(User.Auth.MANAGER.getType())
                         .build()));
     }
 }
