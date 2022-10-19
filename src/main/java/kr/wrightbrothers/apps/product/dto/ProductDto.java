@@ -10,7 +10,6 @@ import org.json.JSONObject;
 import org.springframework.util.ObjectUtils;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 public class ProductDto {
@@ -116,22 +115,23 @@ public class ProductDto {
             if (ObjectUtils.isEmpty(object.getJSONObject("ProductMain"))) return null;
 
             return ProductDto.ReqBody.builder()
-                    .partnerCode(object.getJSONObject("ProductMain").getString("PurchaseRequestNumber"))
-                    .productCode(object.getJSONObject("ProductMain").getString("ProductCode"))
-                    .productType(object.getJSONObject("ProductMain").getString("ProductType"))
-                    .userId(object.getJSONObject("ProductMain").getString("CreateUserId"))
-                    .categoryOneCode(object.getJSONObject("ProductMain").getString("CategoryDepthOne"))
-                    .categoryTwoCode(object.getJSONObject("ProductMain").getString("CategoryDepthTwo"))
-                    .categoryThrCode(object.getJSONObject("ProductMain").getString("CategoryDepthThr"))
-                    .productName(object.getJSONObject("ProductMain").getString("ProductName"))
-                    .brandNo(object.getJSONObject("ProductMain").getString("BrandNumber"))
-                    .brandName(object.getJSONObject("ProductMain").getString("BrandName"))
-                    .modelCode(object.getJSONObject("ProductMain").getString("ModelNumber"))
-                    .modelName(object.getJSONObject("ProductMain").getString("ModelName"))
-                    .modelYear(object.getJSONObject("ProductMain").getString("ModelYear"))
-                    .youtubeUrl(object.getJSONObject("ProductMain").getString("YoutubeUrl"))
-                    .productBarcode(object.getJSONObject("ProductMain").getString("ProductBarcode"))
-                    .productDescription(object.getJSONObject("ProductGuideanceComment").getString("ProductGuideanceCommentOne"))
+                    .partnerCode(object.getJSONObject("ProductMain").optString("PurchaseRequestNumber"))
+                    .productCode(object.getJSONObject("ProductMain").optString("ProductCode"))
+                    .productType(object.getJSONObject("ProductMain").optString("ProductType"))
+                    .userId(object.getJSONObject("ProductMain").optString("CreateUserId"))
+                    .categoryOneCode(object.getJSONObject("ProductMain").optString("CategoryDepthOne"))
+                    .categoryTwoCode(object.getJSONObject("ProductMain").optString("CategoryDepthTwo"))
+                    .categoryThrCode(object.getJSONObject("ProductMain").optString("CategoryDepthThree"))
+                    .productName(object.getJSONObject("ProductMain").optString("ProductName"))
+                    .brandNo(object.getJSONObject("ProductMain").optString("BrandNumber"))
+                    .brandName(object.getJSONObject("ProductMain").optString("BrandName"))
+                    .modelCode(object.getJSONObject("ProductMain").optString("ModelNumber"))
+                    .modelName(object.getJSONObject("ProductMain").optString("ModelName"))
+                    .modelYear(object.getJSONObject("ProductMain").optString("ModelYear"))
+                    .youtubeUrl(object.getJSONObject("ProductMain").optString("YoutubeUrl"))
+                    .productBarcode(object.getJSONObject("ProductMain").optString("ProductBarcode"))
+                    .productFileNo(object.getJSONObject("ProductMain").optString("ProductFileNo"))
+                    .productDescription(object.getJSONObject("ProductGuideanceComment").optString("ProductGuideanceCommentOne"))
                     .build();
         }
     }

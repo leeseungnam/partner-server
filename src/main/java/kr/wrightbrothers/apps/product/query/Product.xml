@@ -253,6 +253,7 @@
 		                              product_option_flag,
 									  product_status_code,
 		                              product_stock_qty,
+		                              product_sell_start_date,
 		                              create_user_id,
 		                              update_user_id)
 		values(#{productCode},
@@ -266,6 +267,7 @@
 		       #{productOptionFlag},
 			   #{productStatusCode},
 			   #{productStockQty},
+		       #{productSellStartDate},
 			   #{userId},
 			   #{userId})
 		on duplicate key
@@ -283,7 +285,14 @@
 		    update_user_id		= #{userId},
 		    update_date			= now()
 	</insert>
-	
+
+	<update id="updateProductSellDate" parameterType="kr.wrightbrothers.apps.product.dto.SellInfoDto$ReqBody">
+		update product_sell_info
+		   set product_sell_start_date = ifnull(#{productSellStartDate}, product_sell_start_date),
+		       product_sell_end_date   = ifnull(#{productSellEndDate}, product_sell_end_date)
+		where product_code = #{productCode}
+	</update>
+
 	<insert id="insertOption" parameterType="kr.wrightbrothers.apps.product.dto.OptionDto$ReqBody">
 		insert into product_option(product_code,
 		                           option_seq,
@@ -528,7 +537,9 @@
             supply_amount,
             final_sell_amount,
             product_status_code,
-            product_stock_qty
+            product_stock_qty,
+            product_sell_start_date,
+            product_sell_end_date
 		  from product_sell_info
 		 where product_code = #{productCode}
 	</select>
@@ -623,5 +634,15 @@
 			</foreach>
 		</if>
 	</update>
-
+	
+	<select id="findProductRejectReason" parameterType="java.lang.String" resultType="java.lang.String">
+		select
+		    product_log
+		  from product_change_info
+		 where product_code = #{productCode}
+		   and product_log_code = 'L04'
+		 order by create_date desc
+		 limit 1
+	</select>
+	
 </mapper>

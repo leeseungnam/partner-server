@@ -16,14 +16,18 @@ import software.amazon.awssdk.services.ses.SesClient;
 @RequiredArgsConstructor
 public class AWSConfigure {
 
-    @Value("${cloud.aws.ses.accessKey}")
-    private String sesAccessKey;
-    @Value("${cloud.aws.ses.secretKey}")
-    private String sesSecretKey;
     @Value("${cloud.aws.credentials.accessKey}")
     private String accessKey;
     @Value("${cloud.aws.credentials.secretKey}")
     private String secretKey;
+    @Value("${cloud.aws.ses.accessKey}")
+    private String sesAccessKey;
+    @Value("${cloud.aws.ses.secretKey}")
+    private String sesSecretKey;
+    @Value("${cloud.aws.sns.accessKey}")
+    private String snsAccessKey;
+    @Value("${cloud.aws.sns.secretKey}")
+    private String snsSecretKey;
 
     @Value("${cloud.aws.region.static}")
     private String region;
@@ -45,7 +49,7 @@ public class AWSConfigure {
                         .standard().withRegion(region)
                         .withCredentials(
                                 new AWSStaticCredentialsProvider(
-                                        new BasicAWSCredentials(accessKey, secretKey)
+                                        new BasicAWSCredentials(snsAccessKey, snsSecretKey)
                                 )
                         )
                         .build()

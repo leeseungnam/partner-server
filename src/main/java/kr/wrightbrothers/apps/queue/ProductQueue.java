@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.apps.common.type.DocumentSNS;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.product.dto.ProductInsertDto;
 import kr.wrightbrothers.apps.product.dto.ProductUpdateDto;
 import kr.wrightbrothers.apps.queue.service.ProductQueueService;
 import kr.wrightbrothers.framework.support.WBSQS;
@@ -13,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.aws.messaging.listener.SqsMessageDeletionPolicy;
+import org.springframework.cloud.aws.messaging.listener.annotation.SqsListener;
 import org.springframework.stereotype.Component;
 
 import kr.wrightbrothers.framework.support.dto.WBSnsDTO.Header;
@@ -25,9 +28,9 @@ public class ProductQueue extends WBSQS {
 
     private final WBAwsSns sender;
     private final ProductQueueService productQueueService;
-    @Value("${cloud.aws.sns.partner}")
+    @Value("${cloud.aws.sns.product}")
     private String topic;
-    @Value("${cloud.aws.sqs.partner}")
+    @Value("${cloud.aws.sqs.product}")
     private String queueName;
 
     /**
@@ -65,6 +68,7 @@ public class ProductQueue extends WBSQS {
      *
      * @param message SQS 상품 수신 데이터
      */
+    @SqsListener(value = "${cloud.aws.sqs.product}", deletionPolicy = SqsMessageDeletionPolicy.ALWAYS)
     public void receiveFromAdmin(String message) {
         WBSnsDTO snsDto = null;
 
@@ -74,6 +78,9 @@ public class ProductQueue extends WBSQS {
             snsDto = getSqsMessage(WBSnsDTO.class);
             Header header = snsDto.getHeader();
             JSONObject body = new JSONObject(new ObjectMapper().writeValueAsString(snsDto.getBody()));
+
+            log.info("Header SQS Info. {}", header);
+            log.info("Product SQS Info. {}", body);
 
             // SQS 수신 된 Admin 2.0 입력 상품 입점몰 신규 등록
             if (PartnerKey.TransactionType.Insert.equals(snsDto.getHeader().getTrsctnTp())) {

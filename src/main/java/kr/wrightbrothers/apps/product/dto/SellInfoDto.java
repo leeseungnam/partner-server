@@ -76,6 +76,10 @@ public class SellInfoDto {
         private String productCode;
         @JsonIgnore
         private String userId;
+        @JsonIgnore
+        private String productSellStartDate;
+        @JsonIgnore
+        private String productSellEndDate;
 
         public static SellInfoDto.ReqBody jsonToSellInfoDto(JSONObject object) {
             if (ObjectUtils.isEmpty(object.getJSONObject("ProductSellInformation"))) return null;
@@ -94,6 +98,7 @@ public class SellInfoDto {
                     .finalSellAmount(object.getJSONObject("ProductSellInformation").getLong("FinalSellAmount"))
                     .productStatusCode(object.getJSONObject("ProductSellInformation").getString("ProductStatusCode"))
                     .productStockQty(object.getJSONObject("ProductSellInformation").getInt("InventoryQuantity"))
+                    .productSellStartDate(object.getJSONObject("ProductSellInformation").getString("ProductSellStartDate"))
                     .build();
         }
 
@@ -103,5 +108,8 @@ public class SellInfoDto {
     @Jacksonized
     @SuperBuilder
     @NoArgsConstructor
-    public static class ResBody extends SellInfo {}
+    public static class ResBody extends SellInfo {
+        private String productSellStartDate;    // 판매 시작 일시
+        private String productSellEndDate;      // 판매 종료 일시
+    }
 }

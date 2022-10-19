@@ -59,13 +59,13 @@ public class GuideDto {
             if (ObjectUtils.isEmpty(object.getJSONObject("ProductGuideanceComment"))) return null;
 
             return ReqBody.builder()
-                    .productCode(object.getJSONObject("ProductMain").getString("ProductCode"))
-                    .userId(object.getJSONObject("ProductMain").getString("CreateUserId"))
-                    .productGuide(object.getJSONObject("ProductMain").getString("ProductGuideanceCommentTwo"))
-                    .deliveryGuide(object.getJSONObject("ProductMain").getString("ProductGuideanceCommentFour"))
-                    .exchangeReturnGuide(object.getJSONObject("ProductMain").getString("ExchangeReturnGuide"))
-                    .asGuide(object.getJSONObject("ProductMain").getString("AsGuide"))
-                    .qnaGuide(object.getJSONObject("ProductMain").getString("ProductGuideanceCommentThree"))
+                    .productCode(object.getJSONObject("ProductMain").optString("ProductCode"))
+                    .userId(object.getJSONObject("ProductMain").optString("CreateUserId"))
+                    .productGuide(object.getJSONObject("ProductMain").optString("ProductGuideanceCommentTwo"))
+                    .deliveryGuide(object.getJSONObject("ProductMain").optString("ProductGuideanceCommentFour"))
+                    .exchangeReturnGuide(object.getJSONObject("ProductMain").optString("ExchangeReturnGuide"))
+                    .asGuide(object.getJSONObject("ProductMain").optString("AsGuide"))
+                    .qnaGuide(object.getJSONObject("ProductMain").optString("ProductGuideanceCommentThree"))
                     .build();
         }
     }

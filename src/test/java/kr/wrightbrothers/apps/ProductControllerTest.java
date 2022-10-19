@@ -467,6 +467,8 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.sellInfo.displayFlag").type(JsonFieldType.STRING).description("전시상태"),
                                         fieldWithPath("data.sellInfo.productOptionFlag").type(JsonFieldType.STRING).description("옵션여부"),
                                         fieldWithPath("data.sellInfo.productStockQty").type(JsonFieldType.NUMBER).description("재고"),
+                                        fieldWithPath("data.sellInfo.productSellStartDate").type(JsonFieldType.STRING).description("* 판매 시작 일시").optional(),
+                                        fieldWithPath("data.sellInfo.productSellEndDate").type(JsonFieldType.STRING).description("* 판매 종료 일시").optional(),
                                         fieldWithPath("data.optionList[]").type(JsonFieldType.ARRAY).description("옵션 정보").optional(),
                                         fieldWithPath("data.optionList[].optionSeq").type(JsonFieldType.NUMBER).description("옵션 번호").optional(),
                                         fieldWithPath("data.optionList[].optionName").type(JsonFieldType.STRING).description("옵션 명").optional(),
@@ -512,6 +514,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.guide.exchangeReturnGuide").type(JsonFieldType.STRING).description("교환/반품 안내 사항").optional(),
                                         fieldWithPath("data.guide.asGuide").type(JsonFieldType.STRING).description("A/S 안내"),
                                         fieldWithPath("data.guide.qnaGuide").type(JsonFieldType.STRING).description("자주 묻는 질문"),
+                                        fieldWithPath("data.rejectReason").type(JsonFieldType.STRING).description("* 검수 반려 사유").optional(),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
                                 )
 

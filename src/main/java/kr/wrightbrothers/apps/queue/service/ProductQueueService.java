@@ -6,6 +6,7 @@ import kr.wrightbrothers.apps.product.dto.*;
 import kr.wrightbrothers.apps.product.service.ProductService;
 import kr.wrightbrothers.apps.queue.dto.ProductSendDto;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
+import kr.wrightbrothers.framework.util.JsonUtil;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -38,8 +39,8 @@ public class ProductQueueService {
         for (int i = 0; i < jsonOptionList.length(); i++) {
             optionList.add(
                     OptionDto.ReqBody.builder()
-                            .productCode(object.getJSONObject("ProductBasicSpecification").getString(""))
-                            .userId(object.getJSONObject("ProductBasicSpecification").getString(""))
+                            .productCode(object.getJSONObject("ProductMain").getString("ProductCode"))
+                            .userId(object.getJSONObject("ProductMain").getString("UpdateUserId"))
                             .optionSeq(jsonOptionList.getJSONObject(i).getInt("OptionSequence"))
                             .optionName(jsonOptionList.getJSONObject(i).getString("OptionName"))
                             .optionValue(jsonOptionList.getJSONObject(i).getString("OptionValue"))
@@ -125,6 +126,9 @@ public class ProductQueueService {
      */
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void updateProductSqsData(JSONObject body) {
+
+        org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
+
         ProductUpdateDto paramDto = ProductUpdateDto.builder()
                 .productCode(body.getJSONObject("ProductMain").getString("ProductCode"))
                 .product(ProductDto.ReqBody.jsonToProductDto(body))
@@ -144,10 +148,10 @@ public class ProductQueueService {
         // 변경사항 로그 체크
         paramDto.setSqsLog(
                 productUtil.productModifyCheck(
-                        ProductFindDto.Param.builder()
+                        productService.findProduct(ProductFindDto.Param.builder()
                                 .partnerCode(paramDto.getProduct().getPartnerCode())
                                 .productCode(paramDto.getProductCode())
-                                .build(),
+                                .build()),
                         paramDto.getProduct(),
                         paramDto.getBasicSpec(),
                         paramDto.getSellInfo(),

@@ -1,6 +1,8 @@
 package kr.wrightbrothers.apps.product.service;
 
+import kr.wrightbrothers.apps.common.type.ProductStatusCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.common.util.ProductUtil;
 import kr.wrightbrothers.apps.file.service.FileService;
 import kr.wrightbrothers.apps.product.dto.*;
 import kr.wrightbrothers.framework.support.WBKey;
@@ -28,6 +30,7 @@ public class ProductService {
 
     private final WBCommonDao dao;
     private final String namespace = "kr.wrightbrothers.apps.product.query.Product.";
+    private final ProductUtil productUtil;
     private final FileService fileService;
     private final ChangeInfoService changeInfoService;
 
@@ -66,8 +69,7 @@ public class ProductService {
 
     public ProductFindDto.ResBody findProduct(ProductFindDto.Param paramDto) {
         List<OptionDto.ResBody> optionList = dao.selectList(namespace + "findOptionList", paramDto.getProductCode());
-
-        return ProductFindDto.ResBody.builder()
+        ProductFindDto.ResBody findDto = ProductFindDto.ResBody.builder()
                 // 상품 기본 정보
                 .product(Optional.of((ProductDto.ResBody) dao.selectOne(namespace + "findProduct", paramDto.getProductCode())).orElse(new ProductDto.ResBody()))
                 // 상품 기본스펙
@@ -83,6 +85,12 @@ public class ProductService {
                 // 안내 정보
                 .guide(Optional.of((GuideDto.ResBody) dao.selectOne(namespace + "findGuide", paramDto.getProductCode())).orElse(new GuideDto.ResBody()))
                 .build();
+
+        if (ProductStatusCode.REJECT_INSPECTION.getCode().equals(findDto.getSellInfo().getProductStatusCode()))
+            // 반려 사유 조회
+            findDto.setRejectReason(dao.selectOne(namespace + "findProductRejectReason", paramDto.getProductCode()));
+
+        return findDto;
     }
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
@@ -110,6 +118,10 @@ public class ProductService {
         dao.update(namespace + "mergeInfoNotice", paramDto.getInfoNotice());
         // 안내 정보
         dao.update(namespace + "mergeGuide", paramDto.getGuide());
+
+
+        // 상품 판매 기간 처리
+        productUtil.updateProductSellDate(paramDto.getProductCode(), paramDto.getSellInfo().getProductStatusCode());
         // 상품 변경 이력
         changeInfoService.insertChangeInfo(paramDto.toChangeInfo());
         // 임시저장 파일 AWS S3 업로드

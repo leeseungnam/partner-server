@@ -1,22 +1,26 @@
 package kr.wrightbrothers.apps.common.util;
 
+import kr.wrightbrothers.apps.common.type.ProductStatusCode;
 import kr.wrightbrothers.apps.product.dto.*;
-import kr.wrightbrothers.apps.product.service.ProductService;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ProductUtil {
 
     private final WBCommonDao dao;
-    private final ProductService productService;
     private final String namespace = "kr.wrightbrothers.apps.product.query.Product.";
 
     /**
@@ -51,7 +55,7 @@ public class ProductUtil {
     /**
      * 상품 정보의 수정여부에 대한 체크를 확인.
      *
-     * @param paramDto 조회 파라미터
+     * @param findDto 현재 저장 상품 정보
      * @param product 변경체크 상품 정보
      * @param basicSpec 변경체크 기본스펙 정보
      * @param sellInfo 변경체크 판매 정보
@@ -60,7 +64,7 @@ public class ProductUtil {
      * @param guide 변경체크 안내 사항 정보
      * @return 변경 사항 내용
      */
-    public String[] productModifyCheck(ProductFindDto.Param paramDto,
+    public String[] productModifyCheck(ProductFindDto.ResBody findDto,
                                        ProductDto.Product product,
                                        BasicSpecDto.BasicSpec basicSpec,
                                        SellInfoDto.SellInfo sellInfo,
@@ -68,8 +72,6 @@ public class ProductUtil {
                                        InfoNoticeDto.InfoNotice infoNotice,
                                        GuideDto.Guide guide) {
         List<String> logList = new ArrayList<>();
-        // 현재 상품 정보 조회
-        ProductFindDto.ResBody findDto = productService.findProduct(paramDto);
 
         if (!findDto.getProduct().equals(product))
             logList.add("상품 정보");
@@ -90,6 +92,45 @@ public class ProductUtil {
             logList.add("안내 사항");
 
         return logList.toArray(new String[0]);
+    }
+
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    public void updateProductSellDate(String productCode,
+                                      String changeStatusCode) {
+        // 현재 상품 상태 코드
+        String currentStatusCode = dao.selectOne(namespace + "findProductStatus", productCode);
+        String nowDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date());
+
+        // 상태 변경 아닐 시 종료
+        if (currentStatusCode.equals(changeStatusCode)) return;
+
+        switch (ProductStatusCode.of(changeStatusCode)) {
+            case SALE:
+                if (
+                        // 검수 요청 대기
+                        currentStatusCode.equals(ProductStatusCode.PRODUCT_INSPECTION.getCode())
+                        ||
+                        // 불가
+                        currentStatusCode.equals(ProductStatusCode.REJECT_INSPECTION.getCode())
+                )
+                    dao.update(namespace + "updateProductSellDate",
+                            SellInfoDto.ReqBody.builder()
+                                    .productCode(productCode)
+                                    .productSellStartDate(nowDate)
+                                    .build());
+
+                log.info("Product Sale Start Date. Product Code::{}, Date::{}", productCode, nowDate);
+                break;
+            case END_OF_SALE:
+                dao.update(namespace + "updateProductSellDate",
+                        SellInfoDto.ReqBody.builder()
+                                .productCode(productCode)
+                                .productSellEndDate(nowDate)
+                                .build());
+
+                log.info("Product Sale End Date. Product Code::{}, Date::{}", productCode, nowDate);
+                break;
+        }
     }
 
 }

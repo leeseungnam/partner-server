@@ -24,6 +24,12 @@ public class ProductFindDto {
         private DeliveryDto.ResBody delivery;       // 배송 정보
         private InfoNoticeDto.ResBody infoNotice;   // 상품 정보 고시
         private GuideDto.ResBody guide;             // 안내 사항 정보
+        private String rejectReason;                // 반려 사유
+
+        // 검수 반려 사유
+        public void setRejectReason(String reason) {
+            this.rejectReason = reason;
+        }
     }
 
 }
