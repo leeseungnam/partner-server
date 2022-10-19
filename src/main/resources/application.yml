@@ -44,7 +44,7 @@ system:
   name: PARTNER
   mail:
     # AWS SES 메일 발송자
-    sender: info@wrightbrothers.kr
+    sender: noreply@wrightbrothers.kr
   lang: ko
 
 jwt:

@@ -5,11 +5,9 @@ import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
 import kr.wrightbrothers.apps.common.constants.Partner;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
-import kr.wrightbrothers.apps.partner.dto.PartnerAndAuthFindDto;
-import kr.wrightbrothers.apps.partner.dto.PartnerDto;
-import kr.wrightbrothers.apps.partner.dto.PartnerFindDto;
-import kr.wrightbrothers.apps.partner.dto.PartnerInsertDto;
+import kr.wrightbrothers.apps.partner.dto.*;
 import kr.wrightbrothers.apps.partner.service.PartnerService;
+import kr.wrightbrothers.apps.product.service.ProductService;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.WBController;
@@ -37,6 +35,8 @@ public class PartnerController extends WBController {
     private final String messagePrefix = "api.message.";
     private final MessageSourceAccessor messageSourceAccessor;
     private final PartnerService partnerService;
+
+    private final ProductService productService;
 
     @UserPrincipalScope
     @ApiImplicitParams({
@@ -98,7 +98,10 @@ public class PartnerController extends WBController {
             Object [] messageArgs = null;
             StringBuffer messageId = new StringBuffer();
 
-            if(Partner.Status.COMPLETE_SUCESS.getCode().equals(entry.getPartnerStatus()) && Partner.Contract.Status.COMPLETE.getCode().equals(entry.getContractStatus())) messageArgs = new Object[]{Integer.toString(productCount)};
+            if(Partner.Status.COMPLETE_SUCESS.getCode().equals(entry.getPartnerStatus()) && Partner.Contract.Status.COMPLETE.getCode().equals(entry.getContractStatus())) {
+                productCount = productService.findProductCountByPartnerCode(entry.getPartnerCode());
+                messageArgs = new Object[]{Integer.toString(productCount)};
+            }
 
             messageId.append(messagePrefix)
                     .append("partner.status.")
@@ -114,5 +117,18 @@ public class PartnerController extends WBController {
 
         wbResponse.addObject(WBKey.WBModel.DefaultDataKey, partnerList);
         return  wbResponse;
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", paramType = "header")
+    })
+    @ApiOperation(value = "파트너 정보 조회", notes = "파트너 정보 조회 요청 API 입니다.")
+    @GetMapping("/{partnerCode}")
+    public WBModel findPartner(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode
+                               ,@ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
+
+        return  defaultResponse(partnerService.findPartnerByPartnerCode(PartnerViewDto.Param.builder()
+                        .partnerCode(partnerCode)
+                        .build()));
     }
 }

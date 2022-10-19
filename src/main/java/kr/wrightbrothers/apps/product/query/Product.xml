@@ -18,6 +18,13 @@
 		   and product_code = #{productCode}
 	</select>
 
+	<select id="findProductCountByPartnerCode" parameterType="java.lang.String" resultType="Integer">
+		select
+			count(product_code) as productCount
+		from product
+		where partner_code = #{partnerCode}
+	</select>
+
 	<select id="findProductGroupCode" parameterType="java.lang.String" resultType="java.lang.String">
 		select
 		    prdt_grp_cd

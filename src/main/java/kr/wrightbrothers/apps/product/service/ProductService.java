@@ -152,4 +152,8 @@ public class ProductService {
         dao.update(namespace + "bulkUpdateProductStatus", paramDto);
     }
 
+    public int findProductCountByPartnerCode(String partnerCode) {
+        return dao.selectOne(namespace+"findProductCountByPartnerCode", partnerCode);
+    }
+
 }
