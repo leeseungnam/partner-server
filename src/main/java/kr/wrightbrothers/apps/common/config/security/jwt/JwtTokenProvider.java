@@ -53,7 +53,6 @@ public class JwtTokenProvider implements InitializingBean {
         this.wbUserDetailService = wbUserDetailService;
     }
 
-    private final static String AUTHORITIES_KEY = "auth";
     private final static long ACCESS_TOKEN_VALIDATION_SECOND = 1000L * 60 * 60 * 2;
     private final static long REFRESH_TOKEN_VALIDATION_SECOND = 1000L * 60 * 60 * 2;
     private Key key;
@@ -67,7 +66,7 @@ public class JwtTokenProvider implements InitializingBean {
     public String generateAccessToken(Authentication authentication) {
         Claims claims = Jwts.claims();
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        claims.put("userAuth", userPrincipal.getUserAuth());
+        claims.put(PartnerKey.Jwt.Alias.USER_AUTH, userPrincipal.getUserAuth());
         return createJsonWebToken(authentication, claims, ACCESS_TOKEN_VALIDATION_SECOND);
     }
 
@@ -90,7 +89,8 @@ public class JwtTokenProvider implements InitializingBean {
 
         return Jwts.builder()
                 .setSubject(authentication.getName())
-                .claim(PartnerKey.Jwt.Alias.AUTH, authorities)
+                // auth 삭제 - userAuth 사용 중복
+//                .claim(PartnerKey.Jwt.Alias.AUTH, "ROLE".equals(authorities) ? null : authorities)
                 .claim(PartnerKey.Jwt.Alias.NAME, userPrincipal.getName())
                 .claim(PartnerKey.Jwt.Alias.STATUS, userPrincipal.getUserStatusCode())
                 .addClaims(claims)
@@ -105,16 +105,21 @@ public class JwtTokenProvider implements InitializingBean {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-
+/*
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get(PartnerKey.Jwt.Alias.AUTH).toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
-
+*/
         UserAuthDto userAuthDto = null;
 
         ObjectMapper mapper = new ObjectMapper();
         if(!ObjectUtils.isEmpty(claims.get(PartnerKey.Jwt.Alias.USER_AUTH))) userAuthDto = mapper.convertValue(claims.get(PartnerKey.Jwt.Alias.USER_AUTH), UserAuthDto.class);
+
+        Collection<? extends GrantedAuthority> authorities =
+                Arrays.stream(userAuthDto.getAuthCode().split(","))
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
 
         UserPrincipal principal = new UserPrincipal(UserDetailDto.builder()
                 .userId(claims.getSubject())
