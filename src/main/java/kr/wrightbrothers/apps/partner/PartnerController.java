@@ -22,8 +22,6 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -124,11 +122,29 @@ public class PartnerController extends WBController {
     })
     @ApiOperation(value = "파트너 정보 조회", notes = "파트너 정보 조회 요청 API 입니다.")
     @GetMapping("/{partnerCode}")
-    public WBModel findPartnerOperator(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode) {
+    public WBModel findPartner(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode) {
 
         return defaultResponse(partnerService.findPartnerByPartnerCode(PartnerViewDto.Param.builder()
                         .partnerCode(partnerCode)
                         .authCode(User.Auth.MANAGER.getType())
                         .build()));
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", paramType = "header")
+    })
+    @ApiOperation(value = "파트너 정보 수정", notes = "파트너 정보 수정 요청 API 입니다.")
+    @PutMapping("")
+    public WBModel updatePartner(@ApiParam @Valid @RequestBody PartnerUpdateDto.ReqBody paramDto
+                                 ,@ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
+
+        WBModel wbResponse = new WBModel();
+
+        // create user set
+        paramDto.changeUserId(user.getUsername());
+        partnerService.updatePartner(paramDto);
+
+        wbResponse.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.save.success"));
+        return wbResponse;
     }
 }

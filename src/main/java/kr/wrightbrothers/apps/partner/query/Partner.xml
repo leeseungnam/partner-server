@@ -3,6 +3,26 @@
 
 <mapper namespace="kr.wrightbrothers.apps.partner.query.Partner">
 
+	<delete id="deleteParterNotification" parameterType="java.lang.String">
+		delete from partner_notification where partner_code = #{partnerCode}
+	</delete>
+
+	<insert id="insertParterNotification" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerUpdateDto$Param$Notification">
+		insert into partner_notification
+		    (partner_code, notification_phone, create_user_id) values
+		<foreach collection="notificationPhoneList" item="notificationPhone" index="index" separator=",">
+			(#{partnerCode}, #{notificationPhone}, #{userId})
+		</foreach>
+	</insert>
+
+	<update id="updateParterContract" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerUpdateDto$Param$Contract">
+		update partner_contract set
+		    contract_manager_name = #{contractManagerName}
+		,	contract_manager_phone = #{contractManagerPhone}
+			where partner_code = #{partnerCode}
+
+	</update>
+
 	<select id="findPartnerNotificationByPartnerCode" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.partner.dto.PartnerNotificationDto$ResBody">
 		select pn.notification_phone
 		from partner_notification pn

@@ -4,8 +4,6 @@ import kr.wrightbrothers.apps.common.constants.Partner;
 import kr.wrightbrothers.apps.common.constants.User;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.partner.dto.*;
-import kr.wrightbrothers.apps.product.dto.ProductDto;
-import kr.wrightbrothers.apps.user.dto.UserAuthDto;
 import kr.wrightbrothers.apps.user.dto.UserAuthInsertDto;
 import kr.wrightbrothers.apps.user.service.UserService;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
@@ -13,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +23,30 @@ public class PartnerService {
     private final WBCommonDao dao;
     private final String namespace = "kr.wrightbrothers.apps.partner.query.Partner.";
     private final UserService userService;
+
+    @Transactional(value = PartnerKey.WBDataBase.TransactionManager.Default)
+    public void updatePartner(PartnerUpdateDto.ReqBody paramDto) {
+
+        //  update updateParterContract
+        dao.update(namespace+"updateParterContract", PartnerUpdateDto.Param.Contract.builder()
+                        .partnerCode(paramDto.getPartnerCode())
+                        .contractManagerName(paramDto.getContractManagerName())
+                        .contractManagerPhone(paramDto.getContractManagerPhone())
+                        .userId(paramDto.getUserId())
+                        .build());
+
+        // update partnerNotification
+        //  -> delete nofification by partnerCode
+        dao.delete("deleteParterNotification", paramDto.getPartnerCode());
+        //  -> insert noficicationPhone list
+        if(!ObjectUtils.isEmpty(paramDto.getNotificationPhoneList())) {
+            dao.insert("insertParterNotification", PartnerUpdateDto.Param.Notification.builder()
+                    .partnerCode(paramDto.getPartnerCode())
+                    .notificationPhoneList(paramDto.getNotificationPhoneList())
+                    .userId(paramDto.getUserId())
+                    .build());
+        }
+    }
 
     public PartnerViewDto.ResBody findPartnerByPartnerCode(PartnerViewDto.Param paramDto) {
         return PartnerViewDto.ResBody
