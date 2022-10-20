@@ -49,13 +49,22 @@ public class PartnerService {
     }
 
     public PartnerViewDto.ResBody findPartnerByPartnerCode(PartnerViewDto.Param paramDto) {
-        return PartnerViewDto.ResBody
+        PartnerViewDto.ResBody result = PartnerViewDto.ResBody
                 .builder()
                 .partner(Optional.of((PartnerDto.ResBody) dao.selectOne(namespace + "findPartnerByPartnerCode", paramDto.getPartnerCode())).orElse(new PartnerDto.ResBody()))
                 .partnerContract(Optional.of((PartnerContractDto.ResBody) dao.selectOne(namespace + "findPartnerContractByPartnerCode", paramDto.getPartnerCode())).orElse(new PartnerContractDto.ResBody()))
                 .partnerOperator(userService.findUserByPartnerCodeAndAuthCode(paramDto))
                 .partnerNotification(dao.selectList(namespace + "findPartnerNotificationByPartnerCode", paramDto.getPartnerCode()))
                 .build();
+
+        // set code name
+        result.getPartner().changePartnerStatusName(Partner.Status.valueOfCode(result.getPartner().getPartnerStatus()).getName());
+        result.getPartner().changeBusinessClassificationCodeName(Partner.Classification.valueOfCode(result.getPartner().getBusinessClassificationCode()).getName());
+
+        result.getPartnerContract().changeContractStatusName(Partner.Contract.Status.valueOfCode(result.getPartnerContract().getContractStatus()).getName());
+        result.getPartnerContract().changeBankCodeName(Partner.Contract.Bank.valueOfCode(result.getPartnerContract().getBankCode()).getName());
+
+        return result;
     }
 
     public List<PartnerDto.ResBody> findPartnerListByBusinessNo(PartnerFindDto.Param paramDto) {

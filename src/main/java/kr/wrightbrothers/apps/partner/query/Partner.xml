@@ -56,7 +56,7 @@
 		select pc.partner_code
 			 , pc.contract_no
 			 , pc.contract_status
-			 , pc.contract_manager
+			 , pc.contract_manager_name
 			 , pc.contract_manager_phone
 			 , pc.tax_bill_email
 			 , pc.bank_code
@@ -154,7 +154,7 @@
 		     partner_code
 		     , contract_no
 		     , contract_status
-		     , contract_manager
+		     , contract_manager_name
 		     , contract_manager_phone
 		     , tax_bill_email
 		     , bank_code
@@ -172,7 +172,7 @@
 			#{partnerCode}
 			, #{contractNo}
 			, #{contractStatus}
-			, #{contractManager}
+			, #{contractManagerName}
 			, #{contractManagerPhone}
 			, #{taxBillEmail}
 			, #{bankCode}

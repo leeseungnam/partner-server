@@ -21,7 +21,7 @@ public class PartnerContractDto {
         @ApiModelProperty(value = "입점 담당자명", required = true)
         @NotBlank(message = "입점 담당자명")
         @Size(min = 2, max = 20, message = "입점 담당자명")
-        private String contractManager;
+        private String contractManagerName;
 
         @ApiModelProperty(value = "입점 담당자 연락처", required = true)
         @NotBlank(message = "입점 담당자 연락처")
@@ -113,5 +113,18 @@ public class PartnerContractDto {
 
         @ApiModelProperty(value = "파트너 코드")
         private String partnerCode;
+
+        @ApiModelProperty(value = "계약진행 상태명 공통코드:000087(C01:계약전, C02:계약중, C03:재계약, C04:계약갱신, C05:계약종료, C06:계약철회)")
+        private String contractStatusName;
+
+        @ApiModelProperty(value = "은행 코드명")
+        private String bankCodeName;
+
+        public void changeContractStatusName(String contractStatusName) {
+            this.contractStatusName = contractStatusName;
+        }
+        public void changeBankCodeName(String bankCodeName) {
+            this.bankCodeName = bankCodeName;
+        }
     }
 }

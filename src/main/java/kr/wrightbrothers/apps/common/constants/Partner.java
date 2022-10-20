@@ -88,5 +88,49 @@ public class Partner {
                 return CODE_MAP.get(code);
             }
         }
+
+        @Getter
+        @JsonFormat(shape = JsonFormat.Shape.OBJECT)
+        public enum Bank {
+            산업은행("002", "산업은행"),
+            기업은행("003", "기업은행"),
+            KB국민은행("004", "KB국민은행"),
+            수협은행("007", "수협은행"),
+            NH농협은행("011", "NH농협은행"),
+            우리은행("020", "우리은행"),
+            SC제일은행("023", "SC제일은행"),
+            씨티은행("027", "씨티은행"),
+            DGB대구은행("031", "DGB대구은행"),
+            BNK부산은행("032", "BNK부산은행"),
+            광주은행("034", "광주은행"),
+            제주은행("035", "제주은행"),
+            전북은행("037", "전북은행"),
+            BNK경남은행("039", "BNK경남은행"),
+            새마을금고("045", "새마을금고"),
+            신협중앙회("048", "신협중앙회"),
+            상호저축은행("050", "상호저축은행"),
+            우체국("071", "우체국"),
+            KEB하나은행("081", "KEB하나은행"),
+            신한은행("088", "신한은행"),
+            케이뱅크("089", "케이뱅크"),
+            카카오뱅크("090", "카카오뱅크"),
+            토스뱅크("092", "토스뱅크")
+            ;
+
+            private final String code;
+            private final String name;
+
+            Bank(String code, String name) {
+                this.code = code;
+                this.name = name;
+            }
+
+            private static final Map<String, Partner.Contract.Bank> CODE_MAP =
+                    Stream.of(values()).collect(Collectors.toMap(Partner.Contract.Bank::getCode, Function.identity()));
+
+            public static Partner.Contract.Bank valueOfCode(String code) {
+                return CODE_MAP.get(code);
+            }
+        }
     }
 }
