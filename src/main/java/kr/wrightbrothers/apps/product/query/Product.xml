@@ -651,5 +651,12 @@
 		 order by create_date desc
 		 limit 1
 	</select>
-	
+
+	<select id="isZeroStock" parameterType="java.lang.String" resultType="int">
+		select
+			if(count(product_code) = 0, true, false) as isZeroStock
+		  from product_sell_info
+		 where product_code = #{productCode}
+	</select>
+
 </mapper>

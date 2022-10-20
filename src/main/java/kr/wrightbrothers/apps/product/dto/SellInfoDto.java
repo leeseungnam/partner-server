@@ -62,9 +62,8 @@ public class SellInfoDto {
 
         @ApiModelProperty(value = "재고", required = true)
         @NotNull(message = "재고")
-        @Min(value = 1, message = "재고")
         @Max(value = 9999, message = "재고")
-        private int productStockQty;
+        private Integer productStockQty;
     }
 
     @Data

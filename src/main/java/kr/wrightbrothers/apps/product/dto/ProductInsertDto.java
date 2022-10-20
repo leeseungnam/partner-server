@@ -119,6 +119,14 @@ public class ProductInsertDto {
     public void validProduct() {
         // 자전거 상품 추가 유효성 검사
         // validBike();
+
+        // 상품 판매 상태일 경우 판매재고 0 이상의 유효성 체크
+        if (ProductStatusCode.SALE.getCode().equals(this.sellInfo.getProductStatusCode()) ||
+                ProductStatusCode.RESERVATION.getCode().equals(this.sellInfo.getProductStatusCode())) {
+            if (this.sellInfo.getProductStockQty() == 0)
+                throw new WBBusinessException(ErrorCode.INVALID_NUMBER_MIN.getErrCode(), new String[]{"판매재고", "1"});
+        }
+
         // 상품 판매 옵션 유효성 검사
         validOption();
         // 재생자전거 유효성 검사 제외

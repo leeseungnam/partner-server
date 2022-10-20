@@ -1,10 +1,12 @@
 package kr.wrightbrothers.apps.product.service;
 
 import kr.wrightbrothers.apps.common.type.ProductStatusCode;
+import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.ProductUtil;
 import kr.wrightbrothers.apps.file.service.FileService;
 import kr.wrightbrothers.apps.product.dto.*;
+import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
@@ -142,6 +144,19 @@ public class ProductService {
                                     "DP".equals(paramDto.getStatusType()) ? currentStatus : paramDto.getStatusValue()
                             )
                     );
+
+                    // 판매시작, 예약중 변경에 대한 재고 파악 체크
+                    if (!"DP".equals(paramDto.getStatusType()) &&
+                            (
+                                ProductStatusCode.SALE.getCode().equals(paramDto.getStatusType())
+                                ||
+                                ProductStatusCode.RESERVATION.getCode().equals(paramDto.getStatusType())
+                            )
+                    ) {
+                        // 판매 재고 0일 경우 예외처리 발생
+                        if (dao.selectOne(namespace + "isZeroStock", productCode))
+                            throw new WBBusinessException(ErrorCode.INVALID_NUMBER_MIN.getErrCode(), new String[]{"판매재고", "1"});
+                    }
                 });
 
         // 상태값 변경
