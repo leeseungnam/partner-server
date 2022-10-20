@@ -14,6 +14,7 @@ import javax.validation.constraints.Size;
 public class InfoNoticeDto {
 
     @Getter
+    @Setter
     @Jacksonized
     @SuperBuilder
     @AllArgsConstructor

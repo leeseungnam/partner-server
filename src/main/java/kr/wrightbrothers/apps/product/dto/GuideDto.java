@@ -15,6 +15,7 @@ import javax.validation.constraints.Size;
 public class GuideDto {
 
     @Getter
+    @Setter
     @Jacksonized
     @SuperBuilder
     @AllArgsConstructor

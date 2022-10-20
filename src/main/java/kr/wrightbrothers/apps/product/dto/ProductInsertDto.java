@@ -189,16 +189,18 @@ public class ProductInsertDto {
 
     /**
      * 상품 등록 시 상품 변경이력 정보에 상품 등록으로 처리한다.
-     * 상태값은 이력 로그 코드는 등록, 상품 상태 코드는 검수대기 처리한다.
+     * 상태값은 이력 로그 코드는 등록이고 상품 상태 코드는 입점몰 입력 시 검수요청, 라이트브라더스
+     * 등록 시 판매 중 으로 로그 등록 처리.
      *
      * @return 상품 변경 이력 DTO
      */
     public ChangeInfoDto.ReqBody toChangeInfo() {
         return ChangeInfoDto.ReqBody.builder()
                 .productCode(this.getProduct().getProductCode())
-                .productStatusCode(ProductStatusCode.PRODUCT_INSPECTION.getCode())
+                .productStatusCode(sellInfo.getProductStatusCode())
                 .productLogCode(ProductLogCode.REGISTER.getCode())
-                .productLog("상품 등록")
+                .productLog(ProductStatusCode.SALE.getCode().equals(sellInfo.getProductStatusCode())
+                        ? "상품 등록(라이트브라더스 입력)" : "상품 등록")
                 .userId(this.getProduct().getUserId())
                 .build();
     }

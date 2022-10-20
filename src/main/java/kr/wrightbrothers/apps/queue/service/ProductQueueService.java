@@ -1,21 +1,23 @@
 package kr.wrightbrothers.apps.queue.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.ProductUtil;
 import kr.wrightbrothers.apps.product.dto.*;
 import kr.wrightbrothers.apps.product.service.ProductService;
+import kr.wrightbrothers.apps.queue.dto.ProductReceiveDto;
 import kr.wrightbrothers.apps.queue.dto.ProductSendDto;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
-import kr.wrightbrothers.framework.util.JsonUtil;
 import lombok.RequiredArgsConstructor;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,27 +31,6 @@ public class ProductQueueService {
 
     private String findCategoryName(String categoryCode) {
         return dao.selectOne("kr.wrightbrothers.apps.category.query.Category.findCategoryName", categoryCode, PartnerKey.WBDataBase.Alias.Admin);
-    }
-
-    private List<OptionDto.ReqBody> jsonToOptionList(JSONObject object) {
-        if (ObjectUtils.isEmpty(object.getJSONArray("ProductOptin"))) return null;
-
-        List<OptionDto.ReqBody> optionList = new ArrayList<>();
-        JSONArray jsonOptionList = object.getJSONArray("ProductOptin");
-        for (int i = 0; i < jsonOptionList.length(); i++) {
-            optionList.add(
-                    OptionDto.ReqBody.builder()
-                            .productCode(object.getJSONObject("ProductMain").getString("ProductCode"))
-                            .userId(object.getJSONObject("ProductMain").getString("UpdateUserId"))
-                            .optionSeq(jsonOptionList.getJSONObject(i).getInt("OptionSequence"))
-                            .optionName(jsonOptionList.getJSONObject(i).getString("OptionName"))
-                            .optionValue(jsonOptionList.getJSONObject(i).getString("OptionValue"))
-                            .optionSurcharge(jsonOptionList.getJSONObject(i).getLong("OptionSurcharge"))
-                            .optionStockQty(jsonOptionList.getJSONObject(i).getInt("InventoryQuantity"))
-                            .build());
-        }
-
-        return optionList;
     }
 
     // SNS 입점몰 상품 정보 조회
@@ -94,25 +75,9 @@ public class ProductQueueService {
      * @param body SQS 수신 상품 등록 데이터
      */
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
-    public void insertProductSqsData(JSONObject body) {
-        // Json -> ProductInsertDto
-        ProductInsertDto paramDto = ProductInsertDto.builder()
-                .product(ProductDto.ReqBody.jsonToProductDto(body))
-                .basicSpec(BasicSpecDto.ReqBody.jsonToBasicSpecDto(body))
-                .sellInfo(SellInfoDto.ReqBody.jsonToSellInfoDto(body))
-                .optionList(jsonToOptionList(body))
-                .delivery(DeliveryDto.ReqBody.jsonToDeliveryDto(body))
-                .infoNotice(InfoNoticeDto.ReqBody.jsonToInfoNoticeDto(body))
-                .guide(GuideDto.ReqBody.jsonToGuideDto(body))
-                .build();
-
-        // 카테고리 코드 -> 이름 데이터 셋팅
-        paramDto.getProduct().setCategoryOneName(findCategoryName(paramDto.getProduct().getCategoryOneCode()));
-        paramDto.getProduct().setCategoryTwoName(findCategoryName(paramDto.getProduct().getCategoryTwoCode()));
-        paramDto.getProduct().setCategoryThrName(findCategoryName(paramDto.getProduct().getCategoryThrCode()));
-
-        // SQS 입점몰 상품 등록
-        productService.insertProduct(paramDto);
+    public void insertProductSqsData(JSONObject body) throws JsonProcessingException {
+        // 입점몰 상품 등록
+        productService.insertProduct(convertProductDto(body));
     }
 
     /**
@@ -125,42 +90,26 @@ public class ProductQueueService {
      * @param body SQS 수신 상품 수정 데이터
      */
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
-    public void updateProductSqsData(JSONObject body) {
-
-        org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
-
-        ProductUpdateDto paramDto = ProductUpdateDto.builder()
-                .productCode(body.getJSONObject("ProductMain").getString("ProductCode"))
-                .product(ProductDto.ReqBody.jsonToProductDto(body))
-                .basicSpec(BasicSpecDto.ReqBody.jsonToBasicSpecDto(body))
-                .sellInfo(SellInfoDto.ReqBody.jsonToSellInfoDto(body))
-                .optionList(jsonToOptionList(body))
-                .delivery(DeliveryDto.ReqBody.jsonToDeliveryDto(body))
-                .infoNotice(InfoNoticeDto.ReqBody.jsonToInfoNoticeDto(body))
-                .guide(GuideDto.ReqBody.jsonToGuideDto(body))
-                .build();
-
-        // 카테고리 코드 -> 이름 데이터 셋팅
-        paramDto.getProduct().setCategoryOneName(findCategoryName(paramDto.getProduct().getCategoryOneCode()));
-        paramDto.getProduct().setCategoryTwoName(findCategoryName(paramDto.getProduct().getCategoryTwoCode()));
-        paramDto.getProduct().setCategoryThrName(findCategoryName(paramDto.getProduct().getCategoryThrCode()));
+    public void updateProductSqsData(JSONObject body) throws JsonProcessingException {
+        // JSON -> ProductDTO 객체 변환
+        ProductUpdateDto updateDto = convertProductDto(body);
 
         // 변경사항 로그 체크
-        paramDto.setSqsLog(
+        updateDto.setSqsLog(
                 productUtil.productModifyCheck(
                         productService.findProduct(ProductFindDto.Param.builder()
-                                .partnerCode(paramDto.getProduct().getPartnerCode())
-                                .productCode(paramDto.getProductCode())
+                                .partnerCode(updateDto.getProduct().getPartnerCode())
+                                .productCode(updateDto.getProductCode())
                                 .build()),
-                        paramDto.getProduct(),
-                        paramDto.getBasicSpec(),
-                        paramDto.getSellInfo(),
-                        paramDto.getDelivery(),
-                        paramDto.getInfoNotice(),
-                        paramDto.getGuide()));
+                        updateDto.getProduct(),
+                        updateDto.getBasicSpec(),
+                        updateDto.getSellInfo(),
+                        updateDto.getDelivery(),
+                        updateDto.getInfoNotice(),
+                        updateDto.getGuide()));
 
         // SQS 입점몰 상품 수정
-        productService.updateProduct(paramDto);
+        productService.updateProduct(updateDto);
     }
 
     /**
@@ -176,6 +125,72 @@ public class ProductQueueService {
     public void updateInspectionSqsData(ProductUpdateDto productUpdateDto) {
         // SQS 입점몰 검수 결과
         productService.updateProduct(productUpdateDto);
+    }
+
+    private ProductUpdateDto convertProductDto(JSONObject body) throws JsonProcessingException {
+        ProductReceiveDto receiveDto = new ObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
+                .readValue(body.toString(), ProductReceiveDto.class);
+
+        // 탑승자 연령대 세팅
+        receiveDto.getBasicSpec().setAgeList(
+                Optional.ofNullable(receiveDto.getAgeList()).orElse(Collections.emptyList())
+                        .stream()
+                        .map(ProductReceiveDto.Age::getAge)
+                        .collect(Collectors.toList())
+        );
+
+        // 배송타입 세팅
+        // 재생 자전거는 배송정보 없으므로 해당 부분 널 체크 확인
+        if (!ObjectUtils.isEmpty(receiveDto.getDelivery()))
+            receiveDto.getDelivery().setDeliveryType(
+                    Optional.ofNullable(receiveDto.getDeliveryList()).orElse(Collections.emptyList())
+                            .stream()
+                            .map(ProductReceiveDto.DeliveryCode::getCode)
+                            .findFirst()
+                            .orElse(null)
+            );
+
+        // 객체 셋팅
+        ProductUpdateDto updateDto = ProductUpdateDto.builder()
+                .product(ProductDto.ReqBody.builder().build())
+                .basicSpec(BasicSpecDto.ReqBody.builder().build())
+                .sellInfo(SellInfoDto.ReqBody.builder().build())
+                .delivery(DeliveryDto.ReqBody.builder().build())
+                .infoNotice(InfoNoticeDto.ReqBody.builder().build())
+                .guide(GuideDto.ReqBody.builder().build())
+                .optionList(
+                        receiveDto.getOptionList()
+                                .stream()
+                                .map(source -> {
+                                    OptionDto.ReqBody target = OptionDto.ReqBody.builder().build();
+                                    BeanUtils.copyProperties(source, target);
+                                    return target;
+                                })
+                                .collect(Collectors.toList())
+                )
+                .build();
+        BeanUtils.copyProperties(receiveDto.getProduct(), updateDto.getProduct());
+        BeanUtils.copyProperties(receiveDto.getBasicSpec(), updateDto.getBasicSpec());
+        BeanUtils.copyProperties(receiveDto.getSellInfo(), updateDto.getSellInfo());
+        BeanUtils.copyProperties(receiveDto.getDelivery(), updateDto.getDelivery());
+        BeanUtils.copyProperties(receiveDto.getInfoNotice(), updateDto.getInfoNotice());
+        BeanUtils.copyProperties(receiveDto.getGuide(), updateDto.getGuide());
+
+        // 상품 상세 설명 셋팅
+        updateDto.getProduct().setProductDescription(receiveDto.getGuide().getProductDescription());
+
+        // 사용자 아이디 셋팅
+        updateDto.setAopUserId(receiveDto.getProduct().getUpdateUserId());
+        updateDto.setSqsProductCode(updateDto.getProduct().getProductCode());
+
+        // 카테고리 코드 -> 이름 데이터 셋팅
+        updateDto.getProduct().setCategoryOneName(findCategoryName(updateDto.getProduct().getCategoryOneCode()));
+        updateDto.getProduct().setCategoryTwoName(findCategoryName(updateDto.getProduct().getCategoryTwoCode()));
+        updateDto.getProduct().setCategoryThrName(findCategoryName(updateDto.getProduct().getCategoryThrCode()));
+
+        return updateDto;
     }
 
 }

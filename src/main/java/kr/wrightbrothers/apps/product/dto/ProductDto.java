@@ -15,6 +15,7 @@ import javax.validation.constraints.Size;
 public class ProductDto {
 
     @Getter
+    @Setter
     @Jacksonized
     @SuperBuilder
     @AllArgsConstructor
@@ -82,24 +83,13 @@ public class ProductDto {
         @ApiModelProperty(value = "상품 상세 설명", required = true)
         @NotBlank(message = "상품 상세설명")
         private String productDescription;  // 상품 상세 설명
-
-        public void setCategoryOneName(String categoryOneName) {
-            this.categoryOneName = categoryOneName;
-        }
-
-        public void setCategoryTwoName(String categoryTwoName) {
-            this.categoryTwoName = categoryTwoName;
-        }
-
-        public void setCategoryThrName(String categoryThrName) {
-            this.categoryThrName = categoryThrName;
-        }
     }
 
     @Data
     @Jacksonized
     @SuperBuilder
     @ApiModel(value = "상품 기본 정보")
+    @NoArgsConstructor
     @EqualsAndHashCode(callSuper = false)
     public static class ReqBody extends Product {
         private String partnerCode;         // 파트너 코드

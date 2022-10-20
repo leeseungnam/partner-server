@@ -19,6 +19,7 @@ import javax.validation.constraints.NotNull;
 public class DeliveryDto {
 
     @Getter
+    @Setter
     @Jacksonized
     @SuperBuilder
     @AllArgsConstructor

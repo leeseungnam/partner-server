@@ -16,6 +16,7 @@ import java.util.List;
 public class BasicSpecDto {
 
     @Getter
+    @Setter
     @Jacksonized
     @SuperBuilder
     @AllArgsConstructor

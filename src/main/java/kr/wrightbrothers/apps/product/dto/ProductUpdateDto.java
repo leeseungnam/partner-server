@@ -2,12 +2,14 @@ package kr.wrightbrothers.apps.product.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import kr.wrightbrothers.apps.common.type.ProductLogCode;
+import kr.wrightbrothers.apps.common.type.ProductStatusCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.ObjectUtils;
 
 import javax.validation.constraints.NotNull;
 
@@ -31,10 +33,18 @@ public class ProductUpdateDto extends ProductInsertDto {
      * @return 상품 변경 이력 DTO
      */
     public ChangeInfoDto.ReqBody toChangeInfo() {
+        String productLogCode = ProductLogCode.MODIFY.getCode();
+
+        if (ProductStatusCode.REJECT_INSPECTION.getCode().equals(this.getSellInfo().getProductStatusCode()))
+            productLogCode = ProductLogCode.REJECT.getCode();
+
+        if (!ObjectUtils.isEmpty(changeLogList) && StringUtils.join(changeLogList, ", ").contains("검수 완료"))
+            productLogCode = ProductLogCode.INSPECTION.getCode();
+
         return ChangeInfoDto.ReqBody.builder()
                 .productCode(this.productCode)
                 .productStatusCode(this.getSellInfo().getProductStatusCode())
-                .productLogCode(ProductLogCode.MODIFY.getCode())
+                .productLogCode(productLogCode)
                 .productLog(StringUtils.join(changeLogList, ", "))
                 .userId(this.getProduct().getUserId())
                 .build();
@@ -42,5 +52,10 @@ public class ProductUpdateDto extends ProductInsertDto {
 
     public void setSqsLog(String[] sqsLog) {
         this.changeLogList = sqsLog;
+    }
+
+    public void setSqsProductCode(String productCode) {
+        this.productCode = productCode;
+        this.setProductCode(productCode);
     }
 }

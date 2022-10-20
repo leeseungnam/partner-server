@@ -95,6 +95,9 @@ public class ProductService {
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void updateProduct(ProductUpdateDto paramDto) {
+        // 상품 판매 기간 처리
+        productUtil.updateProductSellDate(paramDto.getProductCode(), paramDto.getSellInfo().getProductStatusCode());
+
         // 상품 기본정보 수정
         dao.update(namespace + "updateProduct", paramDto.getProduct());
         // 상품 기본스펙 수정
@@ -120,8 +123,6 @@ public class ProductService {
         dao.update(namespace + "mergeGuide", paramDto.getGuide());
 
 
-        // 상품 판매 기간 처리
-        productUtil.updateProductSellDate(paramDto.getProductCode(), paramDto.getSellInfo().getProductStatusCode());
         // 상품 변경 이력
         changeInfoService.insertChangeInfo(paramDto.toChangeInfo());
         // 임시저장 파일 AWS S3 업로드

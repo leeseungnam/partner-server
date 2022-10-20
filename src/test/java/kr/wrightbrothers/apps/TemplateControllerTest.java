@@ -43,10 +43,10 @@ class TemplateControllerTest extends BaseControllerTests {
                 .delivery(TemplateDeliveryDto.builder()
                         .deliveryType("D01")
                         .deliveryBundleFlag("N")
-                        .chargeType("CT2")
+                        .chargeType("2")
                         .chargeBase(3000)
                         .termsFreeCharge(10000000L)
-                        .paymentType("P02")
+                        .paymentType("2")
                         .surchargeFlag("N")
                         .unstoringZipCode("06035")
                         .unstoringAddress("서울특별시 강남구 강남대로 154길 37")
@@ -118,10 +118,10 @@ class TemplateControllerTest extends BaseControllerTests {
                 .delivery(TemplateDeliveryDto.builder()
                         .deliveryType("D01")
                         .deliveryBundleFlag("N")
-                        .chargeType("CT2")
+                        .chargeType("2")
                         .chargeBase(3000)
                         .termsFreeCharge(10000000L)
-                        .paymentType("P02")
+                        .paymentType("2")
                         .surchargeFlag("N")
                         .unstoringZipCode("06035")
                         .unstoringAddress("서울특별시 강남구 강남대로 154길 37")
@@ -156,7 +156,7 @@ class TemplateControllerTest extends BaseControllerTests {
                                         fieldWithPath("templateName").type(JsonFieldType.STRING).description("템플릿 명").attributes(key("etc").value("")),
                                         fieldWithPath("templateGuide").type(JsonFieldType.STRING).description("템플릿 안내사항").optional().attributes(key("etc").value("")),
                                         fieldWithPath("delivery").type(JsonFieldType.OBJECT).description("템플릿 배송 정보").optional().attributes(key("etc").value("")),
-                                        fieldWithPath("delivery.deliveryType").type(JsonFieldType.STRING).description("배송방법").attributes(key("etc").value("1 택배/소포/등기, 3 직접배송(화물배달)")),
+                                        fieldWithPath("delivery.deliveryType").type(JsonFieldType.STRING).description("배송방법").attributes(key("etc").value("D01 택배/소포/등기, D07 직접배송(화물배달)")),
                                         fieldWithPath("delivery.deliveryBundleFlag").type(JsonFieldType.STRING).description("묶음배송").attributes(key("etc").value("Y 가능, N 불가")),
                                         fieldWithPath("delivery.chargeType").type(JsonFieldType.STRING).description("배송비 설정").attributes(key("etc").value("공통코드 000023")),
                                         fieldWithPath("delivery.chargeBase").type(JsonFieldType.NUMBER).description("기본 배송비").attributes(key("etc").value("")),
@@ -272,10 +272,10 @@ class TemplateControllerTest extends BaseControllerTests {
                 .delivery(TemplateDeliveryDto.builder()
                         .deliveryType("D01")
                         .deliveryBundleFlag("N")
-                        .chargeType("CT2")
+                        .chargeType("2")
                         .chargeBase(3000)
                         .termsFreeCharge(10000000L)
-                        .paymentType("P01")
+                        .paymentType("1")
                         .surchargeFlag("N")
                         .unstoringZipCode("11111")
                         .unstoringAddress("수정 서울특별시 강남구 강남대로 154길 37")
@@ -309,7 +309,7 @@ class TemplateControllerTest extends BaseControllerTests {
                                         fieldWithPath("templateName").type(JsonFieldType.STRING).description("템플릿 명").attributes(key("etc").value("")),
                                         fieldWithPath("templateGuide").type(JsonFieldType.STRING).description("템플릿 안내사항").optional().attributes(key("etc").value("")),
                                         fieldWithPath("delivery").type(JsonFieldType.OBJECT).description("템플릿 배송 정보").optional().attributes(key("etc").value("")),
-                                        fieldWithPath("delivery.deliveryType").type(JsonFieldType.STRING).description("배송방법").attributes(key("etc").value("1 택배/소포/등기, 3 직접배송(화물배달)")),
+                                        fieldWithPath("delivery.deliveryType").type(JsonFieldType.STRING).description("배송방법").attributes(key("etc").value("D01 택배/소포/등기, D07 직접배송(화물배달)")),
                                         fieldWithPath("delivery.deliveryBundleFlag").type(JsonFieldType.STRING).description("묶음배송").attributes(key("etc").value("Y 가능, N 불가")),
                                         fieldWithPath("delivery.chargeType").type(JsonFieldType.STRING).description("배송비 설정").attributes(key("etc").value("공통코드 000023")),
                                         fieldWithPath("delivery.chargeBase").type(JsonFieldType.NUMBER).description("기본 배송비").attributes(key("etc").value("")),

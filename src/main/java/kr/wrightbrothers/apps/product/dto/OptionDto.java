@@ -14,6 +14,7 @@ import javax.validation.constraints.Size;
 public class OptionDto {
 
     @Getter
+    @Setter
     @Jacksonized
     @SuperBuilder
     @AllArgsConstructor

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.apps.common.type.DocumentSNS;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
-import kr.wrightbrothers.apps.product.dto.ProductInsertDto;
 import kr.wrightbrothers.apps.product.dto.ProductUpdateDto;
 import kr.wrightbrothers.apps.queue.service.ProductQueueService;
 import kr.wrightbrothers.framework.support.WBSQS;
@@ -12,7 +11,8 @@ import kr.wrightbrothers.framework.support.dto.WBSnsDTO;
 import kr.wrightbrothers.framework.util.WBAwsSns;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.aws.messaging.listener.SqsMessageDeletionPolicy;
 import org.springframework.cloud.aws.messaging.listener.annotation.SqsListener;
@@ -77,7 +77,8 @@ public class ProductQueue extends WBSQS {
             initMessage(message, queueName);
             snsDto = getSqsMessage(WBSnsDTO.class);
             Header header = snsDto.getHeader();
-            JSONObject body = new JSONObject(new ObjectMapper().writeValueAsString(snsDto.getBody()));
+            JSONParser parser = new JSONParser();
+            JSONObject body = (JSONObject) parser.parse(new ObjectMapper().writeValueAsString(snsDto.getBody()));
 
             log.info("Header SQS Info. {}", header);
             log.info("Product SQS Info. {}", body);
@@ -96,13 +97,14 @@ public class ProductQueue extends WBSQS {
                                 .convertValue(snsDto.getBody(), ProductUpdateDto.class);
 
                 // 기본 데이터 초기화 설정
-                productUpdateDto.setSqsLog(new String[]{"검수완료"});
-                productUpdateDto.setAopUserId(body.getString("confirmUserId"));
-                productUpdateDto.setAopPartnerCode(body.getString("partnerCode"));
+                productUpdateDto.setSqsLog(new String[]{"검수 완료"});
+                productUpdateDto.setAopUserId(body.get("confirmUserId").toString());
+                productUpdateDto.setAopPartnerCode(body.get("partnerCode").toString());
                 productUpdateDto.setProductCode(productUpdateDto.getProduct().getProductCode());
 
-                if (!ObjectUtils.isEmpty(body.getString("rejectDesc"))) {
-                    String log = "검수반려\n(" + body.getString("rejectDesc") + ")";
+                // 반려 시 사유 설정
+                if (!ObjectUtils.isEmpty(body.get("rejectDesc"))) {
+                    String log = "검수 반려\n(" + body.get("rejectDesc") + ")";
                     productUpdateDto.setSqsLog(new String[]{log});
                 }
 

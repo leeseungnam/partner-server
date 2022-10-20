@@ -2,6 +2,7 @@ package kr.wrightbrothers.apps.aop;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.apps.common.type.DocumentSNS;
+import kr.wrightbrothers.apps.common.type.ProductStatusCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.product.dto.StatusUpdateDto;
 import kr.wrightbrothers.apps.queue.ProductQueue;
@@ -44,14 +45,12 @@ public class ProductAfterAop {
      * </pre>
      */
     @AfterReturning(value =
-                    "execution(* kr.wrightbrothers.apps.product.service.*Service.update*(..)) ||" +
-                    "execution(* kr.wrightbrothers.apps.product.service.ProductService.insert*(..))"
+                    "execution(* kr.wrightbrothers.apps.product.ProductController.update*(..)) ||" +
+                    "execution(* kr.wrightbrothers.apps.product.ProductController.insert*(..))"
     )
     public void sendProductSnsData(JoinPoint joinPoint) throws Exception {
         // AOP 호출 메소드 정보 추출
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-        // SQS 처리시 발생에 따른 부분은 SNS 제외
-        if (methodSignature.getMethod().getName().contains("SqsData")) return;
 
         JSONObject object = new JSONObject(JsonUtil.ToString(Arrays.stream(joinPoint.getArgs()).findFirst().orElseThrow()));
 
@@ -75,11 +74,14 @@ public class ProductAfterAop {
         else if (object.has("product")) {
             // 상품 등록 / 변경에 따른 SNS 발송 처리
             productQueue.sendToAdmin(
-                    DocumentSNS.REQUEST_INSPECTION,
+                    // 검수대기, 검수반려 수정 시 검수요청 Document 구분
+                    ProductStatusCode.PRODUCT_INSPECTION.getCode().equals(object.getJSONObject("sellInfo").getString("productStatusCode"))
+                            || ProductStatusCode.REJECT_INSPECTION.getCode().equals(object.getJSONObject("sellInfo").getString("productStatusCode")) ?
+                            DocumentSNS.REQUEST_INSPECTION : DocumentSNS.UPDATE_PRODUCT,
                     object.getJSONObject("product").getString("partnerCode"),
                     object.getJSONObject("product").getString("productCode"),
                     // 변경 사항 로그 유무를 통한 등록 / 수정 구분
-                    object.has("changeLogList") ?
+                    methodSignature.getMethod().getName().contains("update") ?
                             PartnerKey.TransactionType.Update : PartnerKey.TransactionType.Insert
             );
             log.debug("Product Send SNS. ProductCode::{}", object.getJSONObject("product").getString("productCode"));
