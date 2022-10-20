@@ -7,7 +7,7 @@ import lombok.Getter;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum DocumentSNS {
     REQUEST_INSPECTION("파트너검수요청"),
-    RESULT_INSPECTION("파트너심사결과"),
+    RESULT_INSPECTION("파트너검수결과"),
     UPDATE_PRODUCT("상품수정");
 
     private final String name;

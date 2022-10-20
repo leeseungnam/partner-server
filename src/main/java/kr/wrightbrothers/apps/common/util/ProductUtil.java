@@ -1,5 +1,7 @@
 package kr.wrightbrothers.apps.common.util;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.apps.common.type.ProductStatusCode;
 import kr.wrightbrothers.apps.product.dto.*;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
@@ -8,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -71,24 +72,25 @@ public class ProductUtil {
                                        DeliveryDto.Delivery delivery,
                                        InfoNoticeDto.InfoNotice infoNotice,
                                        GuideDto.Guide guide) {
+        ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         List<String> logList = new ArrayList<>();
 
-        if (!findDto.getProduct().equals(product))
+        if (!mapper.convertValue(findDto.getProduct(), ProductDto.Product.class).equals(mapper.convertValue(product, ProductDto.Product.class)))
             logList.add("상품 정보");
 
-        if (!ObjectUtils.isEmpty(findDto.getBasicSpec()) && !findDto.getBasicSpec().equals(basicSpec))
+        if (!mapper.convertValue(findDto.getBasicSpec(), BasicSpecDto.BasicSpec.class).equals(mapper.convertValue(basicSpec, BasicSpecDto.BasicSpec.class)))
             logList.add("기본 스펙");
 
-        if (!findDto.getSellInfo().equals(sellInfo))
+        if (!mapper.convertValue(findDto.getSellInfo(), SellInfoDto.SellInfo.class).equals(mapper.convertValue(sellInfo, SellInfoDto.SellInfo.class)))
             logList.add("판매 정보");
 
-        if (!ObjectUtils.isEmpty(findDto.getDelivery()) && !findDto.getDelivery().equals(delivery))
+        if (!mapper.convertValue(findDto.getDelivery(), DeliveryDto.Delivery.class).equals(mapper.convertValue(delivery, DeliveryDto.Delivery.class)))
             logList.add("배송 정보");
 
-        if (!findDto.getInfoNotice().equals(infoNotice))
+        if (!mapper.convertValue(findDto.getInfoNotice(), InfoNoticeDto.InfoNotice.class).equals(mapper.convertValue(infoNotice, InfoNoticeDto.InfoNotice.class)))
             logList.add("상품 정보 고시");
 
-        if (!findDto.getGuide().equals(guide))
+        if (!mapper.convertValue(findDto.getGuide(), GuideDto.Guide.class).equals(mapper.convertValue(guide, GuideDto.Guide.class)))
             logList.add("안내 사항");
 
         return logList.toArray(new String[0]);

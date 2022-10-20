@@ -70,35 +70,6 @@ public class BasicSpecDto {
         private String productCode;     // 파트너 코드
         @JsonIgnore
         private String userId;          // 사용자 아이디
-
-        // JSON -> BasicSpecDto
-        public static BasicSpecDto.ReqBody jsonToBasicSpecDto(JSONObject object) {
-            if (ObjectUtils.isEmpty(object.getJSONObject("ProductBasicSpecification"))) return null;
-            // 탑승자 연령
-            List<String> ageList = new ArrayList<>();
-            if (!ObjectUtils.isEmpty(object.getJSONArray("ProductEmbarkAge"))) {
-                JSONArray jsonArray = object.getJSONArray("ProductEmbarkAge");
-                for (int i = 0; i < jsonArray.length(); i++)
-                    ageList.add(jsonArray.getJSONObject(i).getString("EmbarkAge"));
-            }
-
-            return ReqBody.builder()
-                    .productCode(object.getJSONObject("ProductMain").getString("ProductCode"))
-                    .userId(object.getJSONObject("ProductMain").getString("UpdateUserId"))
-                    .salesCategoryCode(object.getJSONObject("ProductBasicSpecification").getString("SalesCategoryCode"))
-                    .drivetrainTypeCode(object.getJSONObject("ProductBasicSpecification").getString("DrivetrainTypeCode"))
-                    .frameMaterialCode(object.getJSONObject("ProductBasicSpecification").optString("FrameMaterialCode"))
-                    .frameSizeCode(object.getJSONObject("ProductBasicSpecification").getString("FrameSizeCode"))
-                    .brakeTypeCode(object.getJSONObject("ProductBasicSpecification").getString("BrakeTypeCode"))
-                    .purposeThemeCode(object.getJSONObject("ProductBasicSpecification").getString("PurposeThemeCode"))
-                    .wheelSizeCode(object.getJSONObject("ProductBasicSpecification").getString("WheelSizeCode"))
-                    .suspensionTypeCode(object.getJSONObject("ProductBasicSpecification").getString("SuspensionTypeCode"))
-                    .minHeightPerson(object.getJSONObject("ProductBasicSpecification").getString("MinimumHeightPerson"))
-                    .maxHeightPerson(object.getJSONObject("ProductBasicSpecification").getString("MaximumHeightPerson"))
-                    .bikeWeight(object.getJSONObject("ProductBasicSpecification").getString("BikeTare"))
-                    .ageList(ageList)
-                    .build();
-        }
     }
 
     @Getter

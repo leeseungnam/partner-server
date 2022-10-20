@@ -31,8 +31,8 @@ cloud:
     stack:
       auto: false
     credentials:
-      accessKey: AKIARL5GKSIL5OK4DO5V
-      secretKey: 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
+      accessKey: AKIATJJEE3LGZUGQPERY
+      secretKey: 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
     sns:
       accessKey: AKIATJJEE3LGZUGQPERY
       secretKey: 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

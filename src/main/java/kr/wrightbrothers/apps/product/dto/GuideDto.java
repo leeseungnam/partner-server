@@ -55,20 +55,6 @@ public class GuideDto {
         private String productCode;
         @JsonIgnore
         private String userId;
-
-        public static GuideDto.ReqBody jsonToGuideDto(JSONObject object) {
-            if (ObjectUtils.isEmpty(object.getJSONObject("ProductGuideanceComment"))) return null;
-
-            return ReqBody.builder()
-                    .productCode(object.getJSONObject("ProductMain").optString("ProductCode"))
-                    .userId(object.getJSONObject("ProductMain").optString("CreateUserId"))
-                    .productGuide(object.getJSONObject("ProductMain").optString("ProductGuideanceCommentTwo"))
-                    .deliveryGuide(object.getJSONObject("ProductMain").optString("ProductGuideanceCommentFour"))
-                    .exchangeReturnGuide(object.getJSONObject("ProductMain").optString("ExchangeReturnGuide"))
-                    .asGuide(object.getJSONObject("ProductMain").optString("AsGuide"))
-                    .qnaGuide(object.getJSONObject("ProductMain").optString("ProductGuideanceCommentThree"))
-                    .build();
-        }
     }
 
     @Getter

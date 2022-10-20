@@ -100,7 +100,7 @@ public class ProductQueue extends WBSQS {
                 productUpdateDto.setSqsLog(new String[]{"검수 완료"});
                 productUpdateDto.setAopUserId(body.get("confirmUserId").toString());
                 productUpdateDto.setAopPartnerCode(body.get("partnerCode").toString());
-                productUpdateDto.setProductCode(productUpdateDto.getProduct().getProductCode());
+                productUpdateDto.setSqsProductCode(productUpdateDto.getProduct().getProductCode());
 
                 // 반려 시 사유 설정
                 if (!ObjectUtils.isEmpty(body.get("rejectDesc"))) {

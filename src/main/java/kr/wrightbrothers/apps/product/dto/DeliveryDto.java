@@ -172,34 +172,6 @@ public class DeliveryDto {
         private String productCode;
         @JsonIgnore
         private String userId;
-
-        public static DeliveryDto.ReqBody jsonToDeliveryDto(JSONObject object) {
-            if (ObjectUtils.isEmpty(object.getJSONArray("ProductDelivery"))) return null;
-
-            return ReqBody.builder()
-                    .productCode(object.getJSONObject("ProductMain").getString("ProductCode"))
-                    .userId(object.getJSONObject("ProductMain").getString("CreateUserId"))
-                    .deliveryType(object.getJSONArray("ProductDelivery").getJSONObject(0).getString("ProductDeliveryCode"))
-                    .deliveryBundleFlag(object.getJSONObject("ProductDeliveryDetail").getString("DeliveryBundleFlag"))
-                    .chargeType(object.getJSONObject("ProductDeliveryDetail").getString("ChargeType"))
-                    .chargeBase(object.getJSONObject("ProductDeliveryDetail").getInt("ChargeBase"))
-                    .termsFreeCharge(object.getJSONObject("ProductDeliveryDetail").getLong("TermsFreeCharge"))
-                    .paymentType(object.getJSONObject("ProductDeliveryDetail").getString("PaymentType"))
-                    .surchargeFlag(object.getJSONObject("ProductDeliveryDetail").getString("SurchargeFlag"))
-                    .areaCode(object.getJSONObject("ProductDeliveryDetail").optString("AreaCode", null))
-                    .surchargeJejudo(object.getJSONObject("ProductDeliveryDetail").getInt("SurchargeJejudo"))
-                    .surchargeIsolated(object.getJSONObject("ProductDeliveryDetail").getInt("SurchargeIsolated"))
-                    .unstoringZipCode(object.getJSONObject("ProductDeliveryDetail").getString("UnstoringZipCode"))
-                    .unstoringAddress(object.getJSONObject("ProductDeliveryDetail").getString("UnstoringAddress"))
-                    .unstoringAddressDetail(object.getJSONObject("ProductDeliveryDetail").getString("UnstoringAddressDetail"))
-                    .returnZipCode(object.getJSONObject("ProductDeliveryDetail").getString("ReturnZipCode"))
-                    .returnAddress(object.getJSONObject("ProductDeliveryDetail").getString("ReturnAddress"))
-                    .returnAddressDetail(object.getJSONObject("ProductDeliveryDetail").getString("ReturnAddressDetail"))
-                    .exchangeCharge(object.getJSONObject("ProductDeliveryDetail").getInt("ExchangeCharge"))
-                    .returnCharge(object.getJSONObject("ProductDeliveryDetail").getInt("ReturnCharge"))
-                    .returnDeliveryCompanyCode(object.getJSONObject("ProductDeliveryDetail").getString("ReturnDeliveryCompanyCode"))
-                    .build();
-        }
     }
 
     @Getter

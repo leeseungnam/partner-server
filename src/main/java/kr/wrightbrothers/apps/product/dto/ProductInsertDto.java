@@ -61,6 +61,13 @@ public class ProductInsertDto {
     @NotNull(message = "상품 이미지 파일 목록")
     private List<FileUpdateDto> fileList;       // 상품 등록 이미지
 
+    public void setBasicSpec(BasicSpecDto.ReqBody paramDto) {
+        this.basicSpec = paramDto;
+    }
+    public void setDelivery(DeliveryDto.ReqBody paramDto) {
+        this.delivery = paramDto;
+    }
+
     // 자전거 상품 추가 유효성 검사
     private void validBike() {
         // 자전거 상품이 아닐경우 제외
@@ -207,8 +214,7 @@ public class ProductInsertDto {
                 .productCode(this.getProduct().getProductCode())
                 .productStatusCode(sellInfo.getProductStatusCode())
                 .productLogCode(ProductLogCode.REGISTER.getCode())
-                .productLog(ProductStatusCode.SALE.getCode().equals(sellInfo.getProductStatusCode())
-                        ? "상품 등록(라이트브라더스 입력)" : "상품 등록")
+                .productLog("상품 등록")
                 .userId(this.getProduct().getUserId())
                 .build();
     }

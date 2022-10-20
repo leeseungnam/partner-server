@@ -76,26 +76,6 @@ public class InfoNoticeDto {
         private String productCode;         // 상품 코드
         @JsonIgnore
         private String userId;              // 작성자 아이디
-
-        public static InfoNoticeDto.ReqBody jsonToInfoNoticeDto(JSONObject object) {
-            return ReqBody.builder()
-                    .productCode(object.getJSONObject("ProductMain").getString("ProductCode"))
-                    .userId(object.getJSONObject("ProductMain").getString("CreateUserId"))
-                    .categoryCode(object.getJSONObject("ProductInformationBulletin").getString("CategoryCode"))
-                    .modelName(object.getJSONObject("ProductInformationBulletin").getString("ProductAttribute1"))
-                    .productSize(object.getJSONObject("ProductInformationBulletin").getString("ProductAttribute2"))
-                    .productWeight(object.getJSONObject("ProductInformationBulletin").getString("ProductAttribute3"))
-                    .productMaterial(object.getJSONObject("ProductInformationBulletin").getString("ProductAttribute4"))
-                    .productComponent(object.getJSONObject("ProductInformationBulletin").getString("ProductAttribute5"))
-                    .modelYear(object.getJSONObject("ProductInformationBulletin").getString("ProductAttribute6"))
-                    .modelMonth(object.getJSONObject("ProductInformationBulletin").getString("ProductAttribute7"))
-                    .productMfr(object.getJSONObject("ProductInformationBulletin").getString("ProductAttribute8"))
-                    .detailSpec(object.getJSONObject("ProductInformationBulletin").getString("ProductAttribute9"))
-                    .qaStandard(object.getJSONObject("ProductInformationBulletin").getString("ProductAttribute10"))
-                    .asPhone(object.getJSONObject("ProductInformationBulletin").getString("ProductAttribute11"))
-                    .build();
-        }
-
     }
 
     @Getter

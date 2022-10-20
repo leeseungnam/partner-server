@@ -94,6 +94,13 @@ public class ProductQueueService {
         // JSON -> ProductDTO 객체 변환
         ProductUpdateDto updateDto = convertProductDto(body);
 
+        // 어드민2.0 아직 안내 X
+        // 이거 해봐야 합니닷
+        updateDto.getGuide().setProductGuide("상품 안내 사항 ..............................");
+        updateDto.getGuide().setAsGuide("A/S 안내 ..............................");
+        updateDto.getGuide().setDeliveryGuide("배송 안내 사항 ..............................");
+        updateDto.getGuide().setExchangeReturnGuide("교환/반품 안내 사항 ..............................");
+
         // 변경사항 로그 체크
         updateDto.setSqsLog(
                 productUtil.productModifyCheck(
@@ -123,6 +130,12 @@ public class ProductQueueService {
      */
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void updateInspectionSqsData(ProductUpdateDto productUpdateDto) {
+        // 어드민2.0 아직 안내 X
+        // 이거 해봐야 합니닷
+        productUpdateDto.getDelivery().setExchangeCharge(3000);
+        productUpdateDto.getDelivery().setReturnCharge(3000);
+        productUpdateDto.getDelivery().setReturnDeliveryCompanyCode("cjresg");
+
         // SQS 입점몰 검수 결과
         productService.updateProduct(productUpdateDto);
     }
@@ -134,12 +147,13 @@ public class ProductQueueService {
                 .readValue(body.toString(), ProductReceiveDto.class);
 
         // 탑승자 연령대 세팅
-        receiveDto.getBasicSpec().setAgeList(
-                Optional.ofNullable(receiveDto.getAgeList()).orElse(Collections.emptyList())
-                        .stream()
-                        .map(ProductReceiveDto.Age::getAge)
-                        .collect(Collectors.toList())
-        );
+        if (!ObjectUtils.isEmpty(receiveDto.getBasicSpec()))
+            receiveDto.getBasicSpec().setAgeList(
+                    Optional.ofNullable(receiveDto.getAgeList()).orElse(Collections.emptyList())
+                            .stream()
+                            .map(ProductReceiveDto.Age::getAge)
+                            .collect(Collectors.toList())
+            );
 
         // 배송타입 세팅
         // 재생 자전거는 배송정보 없으므로 해당 부분 널 체크 확인
@@ -155,13 +169,11 @@ public class ProductQueueService {
         // 객체 셋팅
         ProductUpdateDto updateDto = ProductUpdateDto.builder()
                 .product(ProductDto.ReqBody.builder().build())
-                .basicSpec(BasicSpecDto.ReqBody.builder().build())
                 .sellInfo(SellInfoDto.ReqBody.builder().build())
-                .delivery(DeliveryDto.ReqBody.builder().build())
                 .infoNotice(InfoNoticeDto.ReqBody.builder().build())
                 .guide(GuideDto.ReqBody.builder().build())
                 .optionList(
-                        receiveDto.getOptionList()
+                        Optional.ofNullable(receiveDto.getOptionList()).orElse(Collections.emptyList())
                                 .stream()
                                 .map(source -> {
                                     OptionDto.ReqBody target = OptionDto.ReqBody.builder().build();
@@ -172,11 +184,26 @@ public class ProductQueueService {
                 )
                 .build();
         BeanUtils.copyProperties(receiveDto.getProduct(), updateDto.getProduct());
-        BeanUtils.copyProperties(receiveDto.getBasicSpec(), updateDto.getBasicSpec());
         BeanUtils.copyProperties(receiveDto.getSellInfo(), updateDto.getSellInfo());
-        BeanUtils.copyProperties(receiveDto.getDelivery(), updateDto.getDelivery());
         BeanUtils.copyProperties(receiveDto.getInfoNotice(), updateDto.getInfoNotice());
         BeanUtils.copyProperties(receiveDto.getGuide(), updateDto.getGuide());
+
+        // 기본 스펙
+        if (!ObjectUtils.isEmpty(receiveDto.getBasicSpec())) {
+            updateDto.setBasicSpec(BasicSpecDto.ReqBody.builder().build());
+            BeanUtils.copyProperties(receiveDto.getBasicSpec(), updateDto.getBasicSpec());
+        }
+
+        // 배송 정보
+        if (!ObjectUtils.isEmpty(receiveDto.getDelivery())) {
+            updateDto.setDelivery(DeliveryDto.ReqBody.builder().build());
+            BeanUtils.copyProperties(receiveDto.getDelivery(), updateDto.getDelivery());
+        }
+
+        // 상품 옵션 설정 여부
+        updateDto.getSellInfo().setProductOptionFlag(
+                updateDto.getOptionList().size() > 0 ? "Y" : "N"
+        );
 
         // 상품 상세 설명 셋팅
         updateDto.getProduct().setProductDescription(receiveDto.getGuide().getProductDescription());
