@@ -2,7 +2,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="kr.wrightbrothers.apps.user.query.User">
-	
+	<select id="checkAuth" parameterType="kr.wrightbrothers.apps.user.dto.UserAuthDto" resultType="boolean">
+		select if(count(*) = 0, false, true) as isAuth
+		from users u
+		inner join users_partner up
+		   on u.user_id = up.user_id
+		   and up.partner_code = #{partnerCode}
+		   and up.auth_code = #{authCode}
+		   and up.user_id = #{userId}
+		inner join partner p
+		   on up.partner_code = p.partner_code
+		   and p.partner_status = #{partnerStatus}
+		   and p.partner_kind = #{partnerKind}
+		inner join partner_contract pc
+		   on p.partner_code = pc.partner_code
+		   and pc.contract_status = #{contractStatus}
+	</select>
+
 	<select id="findUserByDynamic" parameterType="kr.wrightbrothers.apps.user.dto.UserDto" resultType="kr.wrightbrothers.apps.user.dto.UserDto">
 		select
 		    user_id

@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.user;
 
 import io.swagger.annotations.*;
+import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
 import kr.wrightbrothers.apps.common.config.security.jwt.JwtTokenProvider;
 import kr.wrightbrothers.apps.common.constants.User;
 import kr.wrightbrothers.apps.common.util.AwsSesUtil;
@@ -152,8 +153,7 @@ public class UserController extends WBController {
         return  response;
     }
 
-    // [todo] old token 파기
-    // [todo] set userAuth validation
+    @UserPrincipalScope
     @ApiImplicitParams({
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", paramType = "header")
     })
@@ -165,6 +165,8 @@ public class UserController extends WBController {
             , @ApiParam  @Valid @RequestBody UserAuthDto userAuth
             , HttpServletResponse response
     ) {
+        // select userAuth
+        if(!userService.checkAuth(userAuth)) throw new WBBusinessException(ErrorCode.FORBIDDEN.getErrCode());
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         List<GrantedAuthority> updateAuthorities = new ArrayList<>();

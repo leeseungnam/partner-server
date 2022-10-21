@@ -1,5 +1,6 @@
 package kr.wrightbrothers.apps.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -20,5 +21,16 @@ public class UserAuthDto {
     private String partnerCode;
     @ApiModelProperty(value = "파트너 타입", required = true)
     private String partnerKind;
+    @ApiModelProperty(value = "파트너 상태", required = true)
+    private String partnerStatus;
+    @ApiModelProperty(value = "계약 상태", required = true)
+    private String contractStatus;
+
+    @JsonIgnore
+    private String userId;
+
+    public void setAopUserId (String userId) {
+        this.userId = userId;
+    }
 
 }
