@@ -25,11 +25,32 @@ public class PartnerService {
     private final UserService userService;
 
     @Transactional(value = PartnerKey.WBDataBase.TransactionManager.Default)
+    public void updatePartnerAll(PartnerInsertDto paramDto) {
+
+        //  update updatePartner
+        dao.update(namespace+"updatePartner", paramDto.getPartner());
+
+        //  update updatePartnerContractOperator
+        dao.update(namespace+"updatePartnerContract", PartnerUpdateDto.Param.Contract.builder()
+                        .partnerCode(paramDto.getPartner().getPartnerCode())
+                        .contractNo(paramDto.getPartnerContract().getContractNo())
+                        .contractManagerPhone(paramDto.getPartnerContract().getContractManagerPhone())
+                        .contractManagerName(paramDto.getPartnerContract().getContractManagerName())
+                        .accountNo(paramDto.getPartnerContract().getAccountNo())
+                        .accountHolder(paramDto.getPartnerContract().getAccountHolder())
+                        .bankCode(paramDto.getPartnerContract().getBankCode())
+                        .taxBillEmail(paramDto.getPartnerContract().getTaxBillEmail())
+                        .build()
+        );
+    }
+
+    @Transactional(value = PartnerKey.WBDataBase.TransactionManager.Default)
     public void updatePartner(PartnerUpdateDto.ReqBody paramDto) {
 
-        //  update updateParterContract
-        dao.update(namespace+"updateParterContract", PartnerUpdateDto.Param.Contract.builder()
+        //  update updatePartnerContractOperator
+        dao.update(namespace+"updatePartnerContractOperator", PartnerUpdateDto.Param.Contract.builder()
                         .partnerCode(paramDto.getPartnerCode())
+                        .contractNo(paramDto.getContractNo())
                         .contractManagerName(paramDto.getContractManagerName())
                         .contractManagerPhone(paramDto.getContractManagerPhone())
                         .userId(paramDto.getUserId())
@@ -37,10 +58,10 @@ public class PartnerService {
 
         // update partnerNotification
         //  -> delete nofification by partnerCode
-        dao.delete("deleteParterNotification", paramDto.getPartnerCode());
+        dao.delete("deletePartnerNotification", paramDto.getPartnerCode());
         //  -> insert noficicationPhone list
         if(!ObjectUtils.isEmpty(paramDto.getNotificationPhoneList())) {
-            dao.insert("insertParterNotification", PartnerUpdateDto.Param.Notification.builder()
+            dao.insert("insertPartnerNotification", PartnerUpdateDto.Param.Notification.builder()
                     .partnerCode(paramDto.getPartnerCode())
                     .notificationPhoneList(paramDto.getNotificationPhoneList())
                     .userId(paramDto.getUserId())
@@ -55,6 +76,7 @@ public class PartnerService {
                 .partnerContract(Optional.of((PartnerContractDto.ResBody) dao.selectOne(namespace + "findPartnerContractByPartnerCode", paramDto.getPartnerCode())).orElse(new PartnerContractDto.ResBody()))
                 .partnerOperator(userService.findUserByPartnerCodeAndAuthCode(paramDto))
                 .partnerNotification(dao.selectList(namespace + "findPartnerNotificationByPartnerCode", paramDto.getPartnerCode()))
+                .partnerReject(dao.selectList(namespace + "findPartnerRejectByPartnerCode", paramDto.getPartnerCode()))
                 .build();
 
         // set code name

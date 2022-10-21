@@ -21,8 +21,12 @@ public class PartnerUpdateDto {
     @NoArgsConstructor
     public static class ReqBody {
         @ApiModelProperty(value = "파트너 코드")
-        @NotBlank(message = "파트너 코드")
+        @JsonIgnore
         private String partnerCode;
+
+        @ApiModelProperty(value = "계약 번호")
+        @JsonIgnore
+        private String contractNo;
 
         @ApiModelProperty(value = "계약 담당자명")
         @NotBlank(message = "계약 담당자명")
@@ -42,6 +46,12 @@ public class PartnerUpdateDto {
         public void changeUserId(String userId) {
             this.userId = userId;
         }
+        public void changePartnerCode(String partnerCode) {
+            this.partnerCode = partnerCode;
+        }
+        public void changeContractNo(String contractNo) {
+            this.contractNo = contractNo;
+        }
     }
 
     public static class Param {
@@ -53,8 +63,13 @@ public class PartnerUpdateDto {
         @NoArgsConstructor
         public static class Contract {
             private String partnerCode;
+            private String contractNo;
             private String contractManagerName;
             private String contractManagerPhone;
+            private String accountNo;
+            private String accountHolder;
+            private String bankCode;
+            private String taxBillEmail;
             private String userId;
         }
         @Getter

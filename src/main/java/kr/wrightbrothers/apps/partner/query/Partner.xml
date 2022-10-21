@@ -3,11 +3,19 @@
 
 <mapper namespace="kr.wrightbrothers.apps.partner.query.Partner">
 
-	<delete id="deleteParterNotification" parameterType="java.lang.String">
+	<select id="checkPartnerAuth" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerAuthDto" resultType="boolean">
+		select if(count(partner_code) = 0, false, true) as isPartnerAuth
+		from users_partner
+		where user_id = #{userId}
+		and auth_code = #{authCode}
+		and partner_code = #{partnerCode}
+	</select>
+
+	<delete id="deletePartnerNotification" parameterType="java.lang.String">
 		delete from partner_notification where partner_code = #{partnerCode}
 	</delete>
 
-	<insert id="insertParterNotification" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerUpdateDto$Param$Notification">
+	<insert id="insertPartnerNotification" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerUpdateDto$Param$Notification">
 		insert into partner_notification
 		    (partner_code, notification_phone, create_user_id) values
 		<foreach collection="notificationPhoneList" item="notificationPhone" index="index" separator=",">
@@ -15,18 +23,58 @@
 		</foreach>
 	</insert>
 
-	<update id="updateParterContract" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerUpdateDto$Param$Contract">
+
+	<update id="updatePartner" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerDto$ReqBody">
+		update partner set
+			partner_name = #{partnerName}
+		,	business_classification_code = #{businessClassificationCode}
+		,	business_name = #{businessName}
+		,	business_no = #{businessNo}
+		,	business_condition = #{businessCondition}
+		,	business_type = #{businessType}
+		,	rep_name = #{repName}
+		,	rep_phone = #{repPhone}
+		,	cs_phone = #{csPhone}
+		,	business_address = #{businessAddress}
+		,	business_address_sub = #{businessAddressSub}
+		,	business_address_zip_code = #{businessAddressZipCode}
+		,	update_user_id = #{userId}
+		,	update_date = current_timestamp
+		where partner_code = #{partnerCode}
+	</update>
+
+	<update id="updatePartnerContractOperator" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerUpdateDto$Param$Contract">
 		update partner_contract set
 		    contract_manager_name = #{contractManagerName}
 		,	contract_manager_phone = #{contractManagerPhone}
 			where partner_code = #{partnerCode}
+			and contract_no = #{contractNo}
+	</update>
 
+	<update id="updatePartnerContract" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerUpdateDto$Param$Contract">
+		update partner_contract set
+			contract_manager_name = #{contractManagerName}
+		  ,	contract_manager_phone = #{contractManagerPhone}
+		  ,	account_no = #{accountNo}
+		  ,	account_holder = #{accountHolder}
+		  ,	bank_code = #{bankCode}
+		  ,	tax_bill_email = #{taxBillEmail}
+		where partner_code = #{partnerCode}
+		  and contract_no = #{contractNo}
 	</update>
 
 	<select id="findPartnerNotificationByPartnerCode" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.partner.dto.PartnerNotificationDto$ResBody">
 		select pn.notification_phone
 		from partner_notification pn
 		where pn.partner_code = #{partnerCode}
+	</select>
+
+	<select id="findPartnerRejectByPartnerCode" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.partner.dto.PartnerRejectDto$ResBody">
+		select pr.partner_status
+			,  pr.reject_comment
+			,  pr.create_date
+		from partner_reject pr
+		where pr.partner_code = #{partnerCode}
 	</select>
 
 	<select id="findPartnerByPartnerCode" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.partner.dto.PartnerDto$ResBody">

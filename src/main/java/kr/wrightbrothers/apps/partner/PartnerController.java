@@ -70,7 +70,7 @@ public class PartnerController extends WBController {
         // insertPartner
         partnerService.insertPartner(paramDto);
 
-        Object [] messageArgs = {messagePrefix+"word.audit"+messagePrefix+"word.request"};
+        Object [] messageArgs = {messageSourceAccessor.getMessage(messagePrefix+"word.audit")+messageSourceAccessor.getMessage(messagePrefix+"word.request")};
         wbResponse.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.complete", messageArgs));
 
         return  wbResponse;
@@ -130,18 +130,47 @@ public class PartnerController extends WBController {
                         .build()));
     }
 
+    @UserPrincipalScope
     @ApiImplicitParams({
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", paramType = "header")
     })
     @ApiOperation(value = "파트너 정보 수정", notes = "파트너 정보 수정 요청 API 입니다.")
-    @PutMapping("")
-    public WBModel updatePartner(@ApiParam @Valid @RequestBody PartnerUpdateDto.ReqBody paramDto
-                                 ,@ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
+    @PostMapping("/{partnerCode}/{contractNo}")
+    public WBModel updatePartnerAll(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode
+            ,@ApiParam(value = "계약번호") @PathVariable String contractNo
+            ,@ApiParam @Valid @RequestBody PartnerInsertDto paramDto
+            ,@ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
+
+        WBModel wbResponse = new WBModel();
+
+        paramDto.getPartner().changePartnerCode(partnerCode);
+        paramDto.getPartnerContract().changePartnerCode(partnerCode);
+        paramDto.getPartnerContract().changeContractNo(contractNo);
+
+        // create user set
+        partnerService.updatePartnerAll(paramDto);
+
+        wbResponse.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.save.success"));
+        return wbResponse;
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", paramType = "header")
+    })
+    @ApiOperation(value = "파트너 정보 수정", notes = "파트너 정보 수정 요청 API 입니다.")
+    @PutMapping("/{partnerCode}/{contractNo}")
+    public WBModel updatePartner(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode
+            ,@ApiParam(value = "계약번호") @PathVariable String contractNo
+            ,@ApiParam @Valid @RequestBody PartnerUpdateDto.ReqBody paramDto
+            ,@ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
 
         WBModel wbResponse = new WBModel();
 
         // create user set
         paramDto.changeUserId(user.getUsername());
+        paramDto.changePartnerCode(partnerCode);
+        paramDto.changeContractNo(contractNo);
+
         partnerService.updatePartner(paramDto);
 
         wbResponse.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.save.success"));

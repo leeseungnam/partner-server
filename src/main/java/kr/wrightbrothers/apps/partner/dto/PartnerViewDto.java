@@ -21,5 +21,6 @@ public class PartnerViewDto {
         private PartnerContractDto.ResBody partnerContract;
         private List<UserDto> partnerOperator;
         private List<PartnerNotificationDto.ResBody> partnerNotification;
+        private List<PartnerRejectDto.ResBody> partnerReject;
     }
 }
