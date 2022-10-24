@@ -48,11 +48,9 @@ public class PartnerDto {
         private String businessNo;
 
         @ApiModelProperty(value = "업태")
-        @Size(min = 2, max = 20, message = "업태")
         private String businessCondition;
 
         @ApiModelProperty(value = "업종")
-        @Size(min = 2, max = 20, message = "업종")
         private String businessType;
 
         @ApiModelProperty(value = "대표자명", required = true)
