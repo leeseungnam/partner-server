@@ -145,6 +145,7 @@
 			 , '' as comment
 			 , '' as partner_status_name
 			 , '' as contract_status_name
+			 , '' as auth_code_name
 		from users_partner up
 				 inner join partner p
 							on p.partner_code = up.partner_code
