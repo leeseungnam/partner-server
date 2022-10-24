@@ -128,7 +128,6 @@ public class PartnerController extends WBController {
 
         return defaultResponse(partnerService.findPartnerByPartnerCode(PartnerViewDto.Param.builder()
                         .partnerCode(partnerCode)
-                        .authCode(User.Auth.MANAGER.getType())
                         .build()));
     }
 

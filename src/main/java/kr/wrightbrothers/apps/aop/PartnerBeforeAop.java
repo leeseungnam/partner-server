@@ -90,7 +90,7 @@ public class PartnerBeforeAop {
 
                 checkOwn(PartnerAuthDto.builder()
                         .partnerCode(parmaDto.getPartnerCode())
-                        .authCode(parmaDto.getAuthCode())
+                        .authCode(user.getUserAuth().getAuthCode())
                         .userId(user.getUsername())
                         .build());
 
