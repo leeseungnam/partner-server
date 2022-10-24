@@ -29,10 +29,10 @@ public class PaymentService {
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void updateCancelPayment(PaymentCancelDto paramDto) {
         // 결제 취소 가능여부 체크
-        // 상품 준비중 상태 까지만 결제 취소 가능, O05(주문완료), D01(상품 준비중)
-        if (dao.selectOne(namespace + "isNonReadyProduct", paramDto, PartnerKey.WBDataBase.Alias.Admin)) {
-            log.error("Payment Unable Cancel Payment. Reason::Not Ready Product, OrderNo::{}", paramDto.getOrderNo());
-            throw new WBBusinessException(ErrorCode.UNABLE_CANCEL_PAYMENT.getErrCode(), new String[]{"상품 준비중"});
+        // 주문완료 상태만 결제 취소 가능, O05(주문완료)
+        if (dao.selectOne(namespace + "isAfterOrderComplete", paramDto, PartnerKey.WBDataBase.Alias.Admin)) {
+            log.error("Payment Unable Cancel Payment. Reason::After Order Complete, OrderNo::{}", paramDto.getOrderNo());
+            throw new WBBusinessException(ErrorCode.UNABLE_CANCEL_PAYMENT.getErrCode(), new String[]{"주문완료"});
         }
 
         // 중복 결제 취소 / 취소 요청 여부 확인
@@ -51,8 +51,8 @@ public class PaymentService {
         // 결제 취소 / 주문 취소  요청 & 사유 등록
         // 주문, 결제 상태 변경 요청 코드
         // S09 결제 취소 요청, O06 주문 취소 요청
-        dao.update(namespace + "updateRequestCancelPayment", paramDto, PartnerKey.WBDataBase.Alias.Admin);
-        dao.update(namespace + "updateRequestCancelOrder", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+        dao.update(namespace + "updateRequestCancelOrderPartner", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+        dao.update(namespace + "updateRequestCancelOrderProduct", paramDto, PartnerKey.WBDataBase.Alias.Admin);
         // 무통장 결제 시 환불 계좌 등록
         if (PaymentMethodCode.NON_BANK.getCode().equals(paramDto.getPaymentMethodCode())) {
             // 필수 입력값 체크

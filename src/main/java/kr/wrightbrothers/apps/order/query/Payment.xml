@@ -6,16 +6,19 @@
 	<select id="isCancelPayment" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto" resultType="boolean">
 		-- 결제 취소 / 취소 요청 상태 확인
 		select
-		    if(pay_stus in ('S08', 'S09'), true, false) as isCancelPayment
-		  from ord_prnr_info
+		    if(count(ord_prdt_idx) = ${orderProductSeq.length}, true, false) as isCancelPayment
+		  from ord_prdt_info
 		 where ord_no = #{orderNo}
-		   and prnr_cd = #{partnerCode}
+		   and ord_prdt_stus in ('O06', 'O07')
+		<foreach collection="orderProductSeq" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
+			#{item}
+		</foreach>
 	</select>
 
-	<select id="isNonReadyProduct" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto" resultType="boolean">
+	<select id="isAfterOrderComplete" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto" resultType="boolean">
 		-- 상품 준비중 상태인지 여부 확인
 		select
-		    if(ord_stus in ('O05', 'D01'), false, true) as isNonReadyProduct
+		    if(ord_stus in ('O05'), false, true) as isAfterOrderComplete
 		  from ord_prnr_info
 		 where ord_no = #{orderNo}
 		   and prnr_cd = #{partnerCode}
@@ -47,10 +50,11 @@
 		 where p.ord_no = #{orderNo}
 	</select>
 
-	<update id="updateRequestCancelPayment" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto">
-		-- 결제 취소요청
+	<update id="updateRequestCancelOrderPartner" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto">
+		-- 파트너 결제 취소요청
 		update ord_prnr_info
 		   set pay_stus = 'S09',	-- 취소요청 코드
+		       ord_stus = 'O06',	-- 취소요청 코드
 		       cnc_dt = now(),
 		       <if test="cancelReasonCode != null and cancelReasonCode != ''.toString()">
 				   cnc_rsn_cd = #{cancelReasonCode},
@@ -61,13 +65,16 @@
 		   and prnr_cd = #{partnerCode}
 	</update>
 
-	<update id="updateRequestCancelOrder" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto">
-		-- 주문 취소요청
-		update ord_prnr_info
-		   set ord_stus 	= 'O06',	-- 취소요청 코드
+	<update id="updateRequestCancelOrderProduct" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto">
+		-- 주문 상품 취소 요청 처리
+		update ord_prdt_info
+		   set ord_prdt_stus 	= 'O06',	-- 취소요청 코드
 			   upd_usr_id	= #{userId},
 			   upd_dt		= now()
-		 where ord_no = #{orderNo}
+		 where ord_no 		= #{orderNo}
+		<foreach collection="orderProductSeq" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
+			#{item}
+		</foreach>
 	</update>
 
 	<update id="updatePaymentDetailRefundInfo" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto">
