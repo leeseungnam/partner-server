@@ -7,6 +7,7 @@ import lombok.Getter;
 import java.util.List;
 
 public class PartnerViewDto {
+
     @Getter
     @Builder
     public static class Param {
