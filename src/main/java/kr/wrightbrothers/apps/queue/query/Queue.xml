@@ -16,4 +16,22 @@
          where order_no = #{orderNo}
     </select>
 
+    <select id="findAddressList" parameterType="java.lang.String" resultMap="findAddressListMap">
+        select
+            p.partner_name,
+            u.user_id
+          from users_partner u
+         inner join partner p
+            on u.partner_code = p.partner_code
+         where u.partner_code = #{partnerCode}
+           and u.auth_code in ('ROLE_ADMIN', 'ROLE_MANAGER')
+    </select>
+    
+    <resultMap id="findAddressListMap" type="kr.wrightbrothers.apps.queue.dto.FindAddressDto">
+        <result column="partner_name" property="partnerName"/>
+        <collection property="addressList" ofType="java.lang.String">
+            <result column="user_id"/>
+        </collection>
+    </resultMap>
+    
 </mapper>

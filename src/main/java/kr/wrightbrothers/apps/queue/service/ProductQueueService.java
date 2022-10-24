@@ -3,10 +3,13 @@ package kr.wrightbrothers.apps.queue.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.wrightbrothers.apps.common.constants.Email;
+import kr.wrightbrothers.apps.common.util.AwsSesUtil;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.ProductUtil;
 import kr.wrightbrothers.apps.product.dto.*;
 import kr.wrightbrothers.apps.product.service.ProductService;
+import kr.wrightbrothers.apps.queue.dto.FindAddressDto;
 import kr.wrightbrothers.apps.queue.dto.ProductReceiveDto;
 import kr.wrightbrothers.apps.queue.dto.ProductSendDto;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
@@ -17,6 +20,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import org.thymeleaf.context.Context;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,7 +33,8 @@ public class ProductQueueService {
     private final WBCommonDao dao;
     private final ProductService productService;
     private final ProductUtil productUtil;
-    private final String namespace = "kr.wrightbrothers.apps.product.query.Product.";
+    private final AwsSesUtil awsSesUtil;
+    private final String namespace = "kr.wrightbrothers.apps.product.query.Queue.";
 
     private String findCategoryName(String categoryCode) {
         return dao.selectOne("kr.wrightbrothers.apps.category.query.Category.findCategoryName", categoryCode, PartnerKey.WBDataBase.Alias.Admin);
@@ -38,13 +43,14 @@ public class ProductQueueService {
     // SNS 입점몰 상품 정보 조회
     public ProductSendDto findProductSnsData(String partnerCode,
                                              String productCode) {
+        String productNamespace = "kr.wrightbrothers.apps.product.query.Product.";
         return ProductSendDto.builder()
                 .partnerCode(partnerCode)
-                .product(dao.selectOne(namespace + "findProduct", productCode))
-                .basicSpec(dao.selectOne(namespace + "findBasicSpec", productCode))
-                .sellInfo(dao.selectOne(namespace + "findSellInfo", productCode))
+                .product(dao.selectOne(productNamespace + "findProduct", productCode))
+                .basicSpec(dao.selectOne(productNamespace + "findBasicSpec", productCode))
+                .sellInfo(dao.selectOne(productNamespace + "findSellInfo", productCode))
                 .optionList(
-                        dao.selectList(namespace + "findOptionList", productCode)
+                        dao.selectList(productNamespace + "findOptionList", productCode)
                                 .stream()
                                 .map(option -> {
                                     if (option instanceof OptionDto.ResBody)
@@ -61,9 +67,9 @@ public class ProductQueueService {
                                 })
                                 .collect(Collectors.toList())
                 )
-                .delivery(dao.selectOne(namespace + "findDelivery", productCode))
-                .infoNotice(dao.selectOne(namespace + "findInfoNotice", productCode))
-                .guide(dao.selectOne(namespace + "findGuide", productCode))
+                .delivery(dao.selectOne(productNamespace + "findDelivery", productCode))
+                .infoNotice(dao.selectOne(productNamespace + "findInfoNotice", productCode))
+                .guide(dao.selectOne(productNamespace + "findGuide", productCode))
                 .build();
     }
 
@@ -140,6 +146,24 @@ public class ProductQueueService {
 
         // SQS 입점몰 검수 결과
         productService.updateProduct(productUpdateDto);
+
+        // 상품 검수 요청 결과에 따른 메일 발송 처리
+        Email email = Arrays.toString(productUpdateDto.getChangeLogList()).contains("검수완료")
+                ? Email.COMPLETE_PRODUCT : Email.REJECT_PRODUCT;
+
+        FindAddressDto findAddressDto =
+                dao.selectOne(namespace + "findAddressList", productUpdateDto.getProduct().getPartnerCode());
+
+        Context context = new Context();
+        context.setVariable("partnerName", findAddressDto.getPartnerName());
+
+        // 메일 발송 처리
+        awsSesUtil.multiSend(
+                email.getTitle(),
+                email.getTemplate(),
+                context,
+                findAddressDto.getAddressList()
+        );
     }
 
     private ProductUpdateDto convertProductDto(JSONObject body) throws JsonProcessingException {

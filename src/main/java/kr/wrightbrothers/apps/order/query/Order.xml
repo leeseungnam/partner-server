@@ -248,11 +248,7 @@
 	</update>
 
 	<update id="updateOrderDeliveryStatus" parameterType="java.lang.String" statementType="CALLABLE">
-		{
-		    -- 주문 상품 상태 업데이트 처리
-		    -- 공통 부분에서 처리 작업을 진행 함
-		    CALL SP_updateOrderStatus(#{orderNo})
-		}
+		CALL SP_updateOrderStatus(#{orderNo})
 	</update>
 
 </mapper>

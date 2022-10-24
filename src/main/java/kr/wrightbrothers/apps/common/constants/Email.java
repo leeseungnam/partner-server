@@ -13,6 +13,8 @@ import java.util.stream.Stream;
 public enum Email {
     AUTH("1", "[라이트브라더스] 파트너센터 회원가입 인증", "join_email"),
     PASSWORD("2", "[라이트브라더스] 파트너센터 임시 비밀번호 안내", "join_pw"),
+    COMPLETE_PRODUCT("3", "[라이트브라더스] 파트너센터 상품 검수 완료 안내", "complete_product"),
+    REJECT_PRODUCT("4", "[라이트브라더스] 파트너센터 상품 검수 반려 안내", "reject_product"),
 
     END("","", "");
 
