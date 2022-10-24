@@ -91,6 +91,7 @@ public class PartnerController extends WBController {
 
             Partner.Status PartnerStatus = Partner.Status.valueOfCode(entry.getPartnerStatus());
             Partner.Contract.Status PartnerContractStatus = Partner.Contract.Status.valueOfCode(entry.getContractStatus());
+            User.Auth UserAuth = User.Auth.valueOfCode(entry.getAuthCode());
 
             int productCount = 0;
             Object [] messageArgs = null;
@@ -111,6 +112,7 @@ public class PartnerController extends WBController {
 
             entry.setPartnerStatusName(PartnerStatus.getName());
             entry.setContractStatusName(PartnerContractStatus.getName());
+            entry.setAuthCodeName(UserAuth.getName());
         });
 
         wbResponse.addObject(WBKey.WBModel.DefaultDataKey, partnerList);

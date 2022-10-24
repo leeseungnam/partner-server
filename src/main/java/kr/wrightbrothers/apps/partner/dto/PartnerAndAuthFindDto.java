@@ -43,5 +43,7 @@ public class PartnerAndAuthFindDto {
         @ApiModelProperty(value = "계약 상태 코드명")
         private String contractStatusName;
 
+        @ApiModelProperty(value = "권한 코드명")
+        private String authCodeName;
     }
 }
