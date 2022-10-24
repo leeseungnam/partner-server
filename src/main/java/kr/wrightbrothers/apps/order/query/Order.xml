@@ -13,7 +13,7 @@
 		 where o.ord_no = #{orderNo}
 	</select>
 
-	<select id="isDeliveryStatusCheck" parameterType="java.lang.String" resultType="boolean">
+	<select id="isDeliveryStatusCheck" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto" resultType="boolean">
 		select
 		    if(ord_stus in ('D01', 'D03'), false, true) as isDeliveryCheck
 		  from ord_prnr_info
@@ -247,23 +247,12 @@
 		   and prnr_cd = #{partnerCode}
 	</update>
 
-	<update id="updateOrderDeliveryStatus" parameterType="kr.wrightbrothers.apps.order.dto.OrderUpdateDto$Status">
-		-- 상품준비중 상태의 유무를 확인하여 부분배송 / 배송중 주문 상태코드 조회
-		<selectKey resultType="java.lang.String" keyProperty="orderStatusCode" order="BEFORE">
-			select
-			    if(count(ord_prdt_idx) = 0, 'D02', 'D03') as orderStatusCode
-			  from ord_prdt_info
-			 where ord_no = #{orderNo}
-			   and prnr_cd = #{partnerCode}
-			   and ord_prdt_stus = 'D01'
-		</selectKey>
-		update ord_prnr_info
-		   set ord_stus = #{orderStatusCode},
-		       upd_usr_id = #{userId},
-		       upd_dt = now()
-		 where ord_no = #{orderNo}
-		   and prnr_cd = #{partnerCode}
-		   and ord_stus in ('D01', 'D03')		-- 상품준비중, 부분배송
+	<update id="updateOrderDeliveryStatus" parameterType="java.lang.String" statementType="CALLABLE">
+		{
+		    -- 주문 상품 상태 업데이트 처리
+		    -- 공통 부분에서 처리 작업을 진행 함
+		    CALL SP_updateOrderStatus(#{orderNo})
+		}
 	</update>
 
 </mapper>

@@ -80,15 +80,17 @@
 
 	<select id="isDeliveryInvoiceCheck" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto" resultType="boolean">
 		select
-		    if(ord_prdt_stus in ('D01', 'D02'), false, true) as isInputDelivery		-- D01 상품준비중, D02 배송중
+		    if(ord_prdt_stus in ('D01', 'D02'), false, true) as isDeliveryInvoiceCheck		-- D01 상품준비중, D02 배송중
 		  from ord_prdt_info
 		 where ord_no = #{orderNo}
 		   and ord_prdt_idx = #{orderProductSeq}
+		   and prnr_cd = #{partnerCode}
 	</select>
 
 	<update id="updateDeliveryInvoice" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto">
 		update ord_shpn_info
 		   set dlvry_cmpny  = #{deliveryCompanyCode},
+		       dlvry_stus	= 'D02',
 		       invc_no		= #{invoiceNo},
 		       invc_inp_dt  = now(),
 		       upd_usr_id	= #{userId},

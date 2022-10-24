@@ -58,35 +58,18 @@ public class DeliveryService {
 
                     // 배송정보 입력 처리
                     dao.update(namespace + "updateDeliveryInvoice", paramDto, PartnerKey.WBDataBase.Alias.Admin);
-                    // 배치 프로그램에서 해당 상태 배송중으로 변경처리 할 것.
-                    // 주문 상품 배송중 상태값 변경
-                    // dao.update(namespace + "updateProductDeliveryStartStatus", paramDto);
-                });
 
-        /*
-         * 송장번호 입력 후 어드민 배치 프로세스 처리에서 주문 상태 정보에 대한 처리를 실행 함.
-         * 만약 입점몰에서 어느정도 상태 처리를 해야 한다라 하면 그때 아래 주석을 해제해야 함.
-         *
-         * 그 상황에 따라 아래 주석을 두고 QA 기간에도 변함이 없을 경우 해당 로직 삭제 처리.
-         *
-         */
+                    // 주문 상품 배송중 상태값 변경
+                    dao.update(namespace + "updateProductDeliveryStartStatus", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+                });
 
         // 주문 배송에 대한 상태값 변경 가능 여부에 대한 유효성 체크
         // 상품준비중, 부분배송 상태값일 경우 다음 로직 진행, 이외 상태값은 종료
-        // if (dao.selectOne("kr.wrightbrothers.apps.order.query.Order.isDeliveryStatusCheck", paramDto.getOrderNo()))
-        //    return;
+        if (dao.selectOne("kr.wrightbrothers.apps.order.query.Order.isDeliveryStatusCheck", paramDto, PartnerKey.WBDataBase.Alias.Admin))
+            return;
 
-        // 주문 진행 상태 배송 상태 변경 처리
-        // 주문 상품의 상태값이 상품준비중 데이터가 없을 경우 배송중으로 상태 처리
-        // 상품준비중 데이터가 있을 경우 부분배송으로 상태 처리되고 그 이외의 값은 이미 위 조건에서 종료 처리.
-        /*
-        // dao.update("kr.wrightbrothers.apps.order.query.Order.updateOrderDeliveryStatus",
-        //         OrderUpdateDto.Status.builder()
-        //                .orderNo(paramDto.getOrderNo())
-        //                .userId(paramDto.getUserId())
-        //                .build()
-        //        );
-         */
+        // 주문 진행 상태 배송 상태 변경 처리 (공통 프로시저 호출)
+        dao.update("kr.wrightbrothers.apps.order.query.Order.updateOrderDeliveryStatus", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin);
     }
 
     /**
