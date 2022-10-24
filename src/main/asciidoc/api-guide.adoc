@@ -380,16 +380,6 @@ include::{snippets}/delivery-list/request-parameters.adoc[]
 include::{snippets}/delivery-list/http-response.adoc[]
 include::{snippets}/delivery-list/response-fields.adoc[]
 
-==== 배송내역 상태 집계 조회
-
-.HTTP request
-include::{snippets}/delivery-status-statistics/http-request.adoc[]
-include::{snippets}/delivery-status-statistics/request-headers.adoc[]
-include::{snippets}/delivery-status-statistics/request-parameters.adoc[]
-.HTTP response
-include::{snippets}/delivery-status-statistics/http-response.adoc[]
-include::{snippets}/delivery-status-statistics/response-fields.adoc[]
-
 ==== 배송내역 조회
 
 .HTTP request

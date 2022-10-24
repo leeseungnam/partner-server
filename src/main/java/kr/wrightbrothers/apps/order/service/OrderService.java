@@ -1,5 +1,6 @@
 package kr.wrightbrothers.apps.order.service;
 
+import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.OrderFindDto;
 import kr.wrightbrothers.apps.order.dto.OrderListDto;
 import kr.wrightbrothers.apps.order.dto.OrderMemoUpdateDto;
@@ -19,22 +20,22 @@ public class OrderService {
 
     public List<OrderListDto.Response> findOrderList(OrderListDto.Param paramDto) {
         // 주문내역 목록 조회
-        return dao.selectList(namespace + "findOrderList", paramDto, paramDto.getRowBounds());
+        return dao.selectList(namespace + "findOrderList", paramDto, paramDto.getRowBounds(), PartnerKey.WBDataBase.Alias.Admin);
     }
 
     public OrderListDto.Statistics findOrderStatusStatistics(OrderListDto.Param paramDto) {
         // 주문내역 주문 집계 건수 조회
-        return dao.selectOne(namespace + "findOrderStatusStatistics", paramDto);
+        return dao.selectOne(namespace + "findOrderStatusStatistics", paramDto, PartnerKey.WBDataBase.Alias.Admin);
     }
 
     public OrderFindDto.Response findOrder(OrderFindDto.Param paramDto) {
         return OrderFindDto.Response.builder()
                 // 주문내역 기본 정보
-                .order(dao.selectOne(namespace + "findOrder", paramDto.getOrderNo()))
+                .order(dao.selectOne(namespace + "findOrder", paramDto, PartnerKey.WBDataBase.Alias.Admin))
                 // 결제 정보
-                .payment(paymentService.findPaymentToOrder(paramDto.getOrderNo()))
+                .payment(paymentService.findPaymentToOrder(paramDto))
                 // 주문 상품 리스트(상품 준비중 상태)
-                .productList(dao.selectList(namespace + "findOrderReadyProduct", paramDto.getOrderNo()))
+                .productList(dao.selectList(namespace + "findOrderReadyProduct", paramDto, PartnerKey.WBDataBase.Alias.Admin))
                 .build();
     }
 
@@ -48,6 +49,6 @@ public class OrderService {
      */
     public void updateOrder(OrderMemoUpdateDto paramDto) {
         // 송장번호 입력 시 배송지 정보 수정 제외
-        dao.update(namespace + "updateOrder", paramDto);
+        dao.update(namespace + "updateOrder", paramDto, PartnerKey.WBDataBase.Alias.Admin);
     }
 }

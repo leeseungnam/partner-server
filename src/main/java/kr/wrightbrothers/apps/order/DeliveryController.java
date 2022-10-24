@@ -29,10 +29,7 @@ public class DeliveryController extends WBController {
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
     })
     @ApiOperation(value = "배송관리 목록 조회", notes = "주문 정보의 배송 목록 조회")
-    @GetMapping(value = {
-            "/deliveries",
-            "/deliveries/status-statistics"
-    })
+    @GetMapping("/deliveries")
     public WBModel findDeliveryList(@ApiParam(value = "배송상태") @RequestParam String[] deliveryStatus,
                                     @ApiParam(value = "배송방법") @RequestParam String[] deliveryType,
                                     @ApiParam(value = "조회기간 시작일") @RequestParam String startDay,
@@ -41,8 +38,7 @@ public class DeliveryController extends WBController {
                                     @ApiParam(value = "키워드 값") @RequestParam(required = false) String keywordValue,
                                     @ApiParam(value = "페이지 행 수") @RequestParam int count,
                                     @ApiParam(value = "현재 페이지") @RequestParam int page,
-                                    @ApiIgnore @AuthenticationPrincipal UserPrincipal user,
-                                    @ApiIgnore HttpServletRequest request
+                                    @ApiIgnore @AuthenticationPrincipal UserPrincipal user
     ) {
         WBModel response = new WBModel();
         DeliveryListDto.Param paramDto = DeliveryListDto.Param.builder()
@@ -58,11 +54,6 @@ public class DeliveryController extends WBController {
                 .build();
         // 다건 검색조회 split 처리
         paramDto.splitKeywordValue();
-
-        // 배송 상태별 집계 건수 조회
-        if (request.getRequestURI().contains("statistics")) {
-            return defaultResponse(deliveryService.findDeliveryStatusStatistics(paramDto));
-        }
 
        // 배송 내역 목록 조회
         response.addObject(WBKey.WBModel.DefaultDataKey, deliveryService.findDeliveryList(paramDto));

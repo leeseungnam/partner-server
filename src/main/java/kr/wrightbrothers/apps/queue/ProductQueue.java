@@ -58,7 +58,7 @@ public class ProductQueue extends WBSQS {
                     productQueueService.findProductSnsData(partnerCode, productCode)
             );
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("Product SNS Sender Error. {}", e.getMessage());
         }
     }
 
@@ -79,9 +79,6 @@ public class ProductQueue extends WBSQS {
             Header header = snsDto.getHeader();
             JSONParser parser = new JSONParser();
             JSONObject body = (JSONObject) parser.parse(new ObjectMapper().writeValueAsString(snsDto.getBody()));
-
-            log.info("Header SQS Info. {}", header);
-            log.info("Product SQS Info. {}", body);
 
             // SQS 수신 된 Admin 2.0 입력 상품 입점몰 신규 등록
             if (PartnerKey.TransactionType.Insert.equals(snsDto.getHeader().getTrsctnTp())) {
@@ -117,7 +114,7 @@ public class ProductQueue extends WBSQS {
 
             ackMessage(snsDto);
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("Product SQS Receive Error. {}", e.getMessage());
             ackMessage(snsDto, e);
         }
     }

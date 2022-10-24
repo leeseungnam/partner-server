@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.aop;
 
 import kr.wrightbrothers.apps.common.util.ErrorCode;
+import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.OrderAuthDto;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
@@ -49,7 +50,8 @@ public class OrderBeforeAop {
                 OrderAuthDto.builder()
                         .partnerCode(object.getString("partnerCode"))
                         .orderNo(object.getString("orderNo"))
-                        .build())) {
+                        .build(),
+                PartnerKey.WBDataBase.Alias.Admin)) {
 
             log.error("Order Auth Error.");
             log.error("PartnerCode::{}, OrderNo::{}", object.getString("partnerCode"), object.getString("orderNo"));

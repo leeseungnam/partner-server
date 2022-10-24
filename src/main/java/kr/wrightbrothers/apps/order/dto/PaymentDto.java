@@ -12,8 +12,6 @@ import lombok.Getter;
 public class PaymentDto {
     private Long orderAmount;           // 주문 금액
     private Long deliveryChargeAmount;  // 배송료
-    private Long sspPoint;              // SSP 포인트
-    private Long salesAmount;           // 판매 대금
     private Long paymentAmount;         // 결제 금액
     private String paymentDate;         // 결제 일자
     private String transactionId;       // PG 승인번호

@@ -3,6 +3,17 @@
 
 <mapper namespace="kr.wrightbrothers.apps.queue.query.Queue">
 
-
+    <select id="findOrderDeliverySnsData" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.queue.dto.OrderDeliverySendDto$Delivery">
+        select
+            order_no,
+            order_product_seq,
+            product_code,
+            delivery_company_code,
+            invoice_no,
+            invoice_no_input_date,
+            update_user_id
+          from order_delivery
+         where order_no = #{orderNo}
+    </select>
 
 </mapper>

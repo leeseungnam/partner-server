@@ -49,8 +49,6 @@ public class OrderListDto {
         private String paymentMethodName;   // 결제방법 명
         private String orderName;           // 주문명
         private Long orderAmount;           // 주문금액
-        private Long sspPoint;              // SSP 포인트
-        private Long salesAmount;           // 판매대금
         private Long paymentAmount;         // 결제금액
         private String paymentDay;          // 결제일자
         private String cancelDay;           // 취소일자

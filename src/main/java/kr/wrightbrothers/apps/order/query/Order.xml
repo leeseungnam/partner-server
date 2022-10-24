@@ -5,236 +5,265 @@
 
 	<select id="isOrderAuth" parameterType="kr.wrightbrothers.apps.order.dto.OrderAuthDto" resultType="boolean">
 		select
-		    if(count(order_no) = 0, true, false) as isOrderAuth
-		  from order_info
-		 where partner_code = #{partnerCode}
-		   and order_no = #{orderNo}
+		    if(count(o.ord_no) = 0, true, false) as isOrderAuth
+		  from ord_info o
+		 inner join ord_prnr_info s
+		    on o.ord_no = s.ord_no
+		   and s.prnr_cd = #{partnerCode}
+		 where o.ord_no = #{orderNo}
 	</select>
 
 	<select id="isDeliveryStatusCheck" parameterType="java.lang.String" resultType="boolean">
 		select
-		    if(order_status_code in ('D01', 'D03'), false, true) as isDeliveryCheck
-		  from order_info
-		 where order_no = #{orderNo}
+		    if(ord_stus in ('D01', 'D03'), false, true) as isDeliveryCheck
+		  from ord_prnr_info
+		 where ord_no = #{orderNo}
+		   and prnr_cd = #{partnerCode}
 	</select>
 
 	<select id="findOrderList" parameterType="kr.wrightbrothers.apps.order.dto.OrderListDto$Param" resultType="kr.wrightbrothers.apps.order.dto.OrderListDto$Response">
+		-- 주문내역 목록 조회
 		select
-		    o.order_no,
-		    date_format(o.order_date, '%Y-%m-%d') as order_day,
-			o.order_user_name,
-			o.order_status_code,
-			o.order_status_code as order_status_name,
-			p.payment_method_code,
-			p.payment_method_code as payment_method_name,
-			o.order_name,
-			p.order_amount,
-			p.ssp_point,
-			p.sales_amount,
-			p.payment_amount,
-			date_format(p.payment_date, '%Y-%m-%d') as payment_day,
-			date_format(p.cancel_date, '%Y-%m-%d') as cancel_day,
-			p.payment_status_code,
-			p.payment_status_code as payment_status_name
-		  from order_info o
-		 inner join order_payment p
-			on o.order_no = p.order_no
-		 where o.partner_code = #{partnerCode}
-		<choose>
-			<when test="keywordValue != null and keywordValue != ''">
-				<choose>
-					<when test="keywordType == 'NO'">
-						<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-							o.order_no like #{item} '%'
-						</foreach>
-					</when>
-					<when test="keywordType == 'NAME'">
-						<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-							o.order_name like #{item} '%'
-						</foreach>
-					</when>
-					<when test="keywordType == 'USER'">
-						<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-							o.order_user_name like #{item} '%'
-						</foreach>
-					</when>
-				</choose>
-			</when>
-			<otherwise>
-				<choose>
-					<when test="rangeType == 'PAYMENT'.toString()">
-						and p.payment_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
-					</when>
-					<when test="rangeType == 'CANCEL'.toString()">
-						and p.cancel_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
-					</when>
-				</choose>
-				-- 주문 상태
-				<foreach collection="orderStatus" item="item" index="index" open="and o.order_status_code in (" separator="," close=")">
-					#{item}
-				</foreach>
-				-- 결제 상태
-				<foreach collection="paymentStatus" item="item" index="index" open="and p.payment_status_code in (" separator="," close=")">
-					#{item}
-				</foreach>
-				-- 결제 방법
-				<foreach collection="paymentMethod" item="item" index="index" open="and p.payment_method_code in (" separator="," close=")">
-					#{item}
-				</foreach>
-			</otherwise>
-		</choose>
-		<choose>
-			<when test="sortType == 'ORD'.toString()">
-				order by o.order_date desc
-			</when>
-			<when test="sortType == 'PYT'.toString()">
-				order by p.payment_date desc
-			</when>
-			<when test="sortType == 'LSAMT'.toString()">
-				order by p.order_amount
-			</when>
-			<when test="sortType == 'HSAMT'.toString()">
-				order by p.order_amount desc
-			</when>
-		</choose>
+		    o.ord_no as order_no,
+		    date_format(o.ord_dt, '%Y-%m-%d') as order_day,
+			m.usr_nm as order_user_name,
+			s.ord_stus as order_status_code,
+			s.ord_stus as order_status_name,
+			p.pay_meth as payment_method_code,
+			p.pay_meth as payment_method_name,
+			s.ord_nm as order_name,
+			s.ord_amt as order_amount,
+			s.pay_amt as payment_amount,
+			date_format(p.pym_dt, '%Y-%m-%d') as payment_day,
+			date_format(s.cnc_dt, '%Y-%m-%d') as cancel_day,
+			s.pay_stus as payment_status_code,
+			s.pay_stus as payment_status_name
+		  from ord_info o
+		  left join com_mbr_info m
+			on o.ord_usr_id = m.usr_id
+		 inner join ord_prnr_info s
+			on o.ord_no = s.ord_no
+		   and s.prnr_cd = #{partnerCode}
+		 inner join ord_pay_info p
+			on o.ord_no = p.ord_no
+		<where>
+			<choose>
+				<when test="keywordValue != null and keywordValue != ''">
+					<choose>
+						<when test="keywordType == 'NO'">
+							<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
+								o.ord_no like #{item} '%'
+							</foreach>
+						</when>
+						<when test="keywordType == 'NAME'">
+							<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
+								s.ord_nm like #{item} '%'
+							</foreach>
+						</when>
+						<when test="keywordType == 'USER'">
+							<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
+								m.usr_nm like #{item} '%'
+							</foreach>
+						</when>
+					</choose>
+				</when>
+				<otherwise>
+					<choose>
+						<when test="rangeType == 'PAYMENT'.toString()">
+							and p.pym_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+						</when>
+						<when test="rangeType == 'CANCEL'.toString()">
+							and s.cnc_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+						</when>
+					</choose>
+					-- 주문 상태
+					<foreach collection="orderStatus" item="item" index="index" open="and s.ord_stus in (" separator="," close=")">
+						#{item}
+					</foreach>
+					-- 결제 상태
+					<foreach collection="paymentStatus" item="item" index="index" open="and s.pay_stus in (" separator="," close=")">
+						#{item}
+					</foreach>
+					-- 결제 방법
+					<foreach collection="paymentMethod" item="item" index="index" open="and p.pay_meth in (" separator="," close=")">
+						#{item}
+					</foreach>
+				</otherwise>
+			</choose>
+			<choose>
+				<when test="sortType == 'ORD'.toString()">
+					order by o.ord_dt desc
+				</when>
+				<when test="sortType == 'PYT'.toString()">
+					order by p.pym_dt desc
+				</when>
+				<when test="sortType == 'LSAMT'.toString()">
+					order by s.pay_amt
+				</when>
+				<when test="sortType == 'HSAMT'.toString()">
+					order by s.pay_amt desc
+				</when>
+			</choose>
+		</where>
 	</select>
 
 	<select id="findOrderStatusStatistics" parameterType="kr.wrightbrothers.apps.order.dto.OrderListDto$Param" resultType="kr.wrightbrothers.apps.order.dto.OrderListDto$Statistics">
+		-- 주문내역 주문 집계 건수
 		select
 			count(1) as totalOrderCount,											-- 전체주문 건수
-		    ifnull(sum(if(o.order_status_code = 'O05', 1, 0)), 0) as completeOrderCount,		-- 주문완료 건수
-		    ifnull(sum(if(o.order_status_code = 'D01', 1, 0)), 0) as readyProductCount,		-- 상품준비 건수
-		    ifnull(sum(if(o.order_status_code = 'O06', 1, 0)), 0) as requestCancelCount,		-- 취소요청 건수
-		    ifnull(sum(if(o.order_status_code = 'C05', 1, 0)), 0) as confirmPurchaseCount,		-- 구매확정 건수
-		    ifnull(sum(if(o.order_status_code = 'R05', 1, 0)), 0) as completeReturnCount		-- 반품완료 건수
-		  from order_info o
-		 inner join order_payment p
-		    on o.order_no = p.order_no
-		 where o.partner_code = #{partnerCode}
-		<choose>
-			<when test="keywordValue != null and keywordValue != ''">
-				<choose>
-					<when test="keywordType == 'NO'">
-						<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-							o.order_no like #{item} '%'
-						</foreach>
-					</when>
-					<when test="keywordType == 'NAME'">
-						<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-							o.order_name like #{item} '%'
-						</foreach>
-					</when>
-					<when test="keywordType == 'USER'">
-						<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-							o.order_user_name like #{item} '%'
-						</foreach>
-					</when>
-				</choose>
-			</when>
-			<otherwise>
-				<choose>
-					<when test="rangeType == 'PAYMENT'.toString()">
-						and p.payment_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
-					</when>
-					<when test="rangeType == 'CANCEL'.toString()">
-						and p.cancel_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
-					</when>
-				</choose>
-				-- 주문 상태
-				<foreach collection="orderStatus" item="item" index="index" open="and o.order_status_code in (" separator="," close=")">
-					#{item}
-				</foreach>
-				-- 결제 상태
-				<foreach collection="paymentStatus" item="item" index="index" open="and p.payment_status_code in (" separator="," close=")">
-					#{item}
-				</foreach>
-				-- 결제 방법
-				<foreach collection="paymentMethod" item="item" index="index" open="and p.payment_method_code in (" separator="," close=")">
-					#{item}
-				</foreach>
-			</otherwise>
-		</choose>
+		    ifnull(sum(if(s.ord_stus = 'O05', 1, 0)), 0) as completeOrderCount,		-- 주문완료 건수
+		    ifnull(sum(if(s.ord_stus = 'D01', 1, 0)), 0) as readyProductCount,		-- 상품준비 건수
+		    ifnull(sum(if(s.ord_stus = 'O06', 1, 0)), 0) as requestCancelCount,		-- 취소요청 건수
+		    ifnull(sum(if(s.ord_stus = 'C05', 1, 0)), 0) as confirmPurchaseCount,	-- 구매확정 건수
+		    ifnull(sum(if(s.ord_stus = 'R05', 1, 0)), 0) as completeReturnCount		-- 반품완료 건수
+		  from ord_info o
+		 inner join ord_prnr_info s
+		    on o.ord_no = s.ord_no
+		   and s.prnr_cd = #{partnerCode}
+		 inner join ord_pay_info p
+		    on o.ord_no = p.ord_no
+		<where>
+			<choose>
+				<when test="keywordValue != null and keywordValue != ''">
+					<choose>
+						<when test="keywordType == 'NO'">
+							<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
+								o.ord_no like #{item} '%'
+							</foreach>
+						</when>
+						<when test="keywordType == 'NAME'">
+							<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
+								s.ord_nm like #{item} '%'
+							</foreach>
+						</when>
+						<when test="keywordType == 'USER'">
+							<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
+								m.usr_nm like #{item} '%'
+							</foreach>
+						</when>
+					</choose>
+				</when>
+				<otherwise>
+					<choose>
+						<when test="rangeType == 'PAYMENT'.toString()">
+							and p.pym_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+						</when>
+						<when test="rangeType == 'CANCEL'.toString()">
+							and s.cnc_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+						</when>
+					</choose>
+					-- 주문 상태
+					<foreach collection="orderStatus" item="item" index="index" open="and s.ord_stus in (" separator="," close=")">
+						#{item}
+					</foreach>
+					-- 결제 상태
+					<foreach collection="paymentStatus" item="item" index="index" open="and s.pay_stus in (" separator="," close=")">
+						#{item}
+					</foreach>
+					-- 결제 방법
+					<foreach collection="paymentMethod" item="item" index="index" open="and p.pay_meth in (" separator="," close=")">
+						#{item}
+					</foreach>
+				</otherwise>
+			</choose>
+		</where>
 	</select>
 	
-	<select id="findOrder" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.order.dto.OrderDto">
+	<select id="findOrder" parameterType="kr.wrightbrothers.apps.order.dto.OrderFindDto$Param" resultType="kr.wrightbrothers.apps.order.dto.OrderDto">
+		-- 주문내역 기본 정보
 		select
-		    order_no,
-		    order_date,
-		    order_status_code,
-		    order_status_code as order_status_name,
-		    order_qty,
-		    order_user_code,
-		    order_user_id,
-		    order_user_name,
-		    order_user_phone,
-		    recipient_name,
-		    recipient_phone,
-		    recipient_address_zip_code,
-		    recipient_address,
-		    recipient_address_detail,
-		    request_detail,
-		    order_memo,
-		    return_memo,
-		    delivery_memo
-		  from order_info
-		 where order_no = #{orderNo}
+		    o.ord_no as order_no,
+		    o.ord_dt as order_date,
+		    s.ord_stus as order_status_code,
+		    s.ord_stus as order_status_name,
+		    o.ord_qty as order_qty,
+		    m.usr_cd as order_user_code,
+		    m.usr_id as order_user_id,
+		    m.usr_nm as order_user_name,
+		    m.usr_phn as order_user_phone,
+		    s.rcpnt_nm as recipient_name,
+		    s.rcpnt_usr_phn as recipient_phone,
+		    s.rcpnt_adrs_zip_cd as recipient_address_zip_code,
+		    s.rcpnt_adrs as recipient_address,
+		    s.rcpnt_adrs_sub as recipient_address_detail,
+		    o.rqst_dtls as request_detail,
+		    s.ord_memo as order_memo,
+		    s.rtrn_memo as return_memo,
+		    s.dlvry_memo as delivery_memo
+		  from ord_info o
+		 inner join ord_prnr_info s
+			on o.ord_no = s.ord_no
+		   and s.prnr_cd = #{partnerCode}
+		  left join com_mbr_info m
+		    on o.ord_usr_id = m.usr_id
+		 where o.ord_no = #{orderNo}
 	</select>
 
-	<select id="findOrderReadyProduct" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.order.dto.ProductDto">
+	<select id="findOrderReadyProduct" parameterType="kr.wrightbrothers.apps.order.dto.OrderFindDto$Param" resultType="kr.wrightbrothers.apps.order.dto.ProductDto">
+		-- 주문내역 상품 리스트(상품 준비중 상태만 조회)
 		select
-		    order_product_seq,
-		    product_code,
-		    product_name,
-		    order_product_status_code,
-		    order_product_status_code as order_product_status_name,
-		    final_sell_amount,
-		    option_name,
-		    option_surcharge,
-		    product_qty
-		  from order_product
-		 where order_no = #{orderNo}
-		   and order_product_status_code = 'D01'		-- 상품 준비중
+		    ord_prdt_idx as order_product_seq,
+		    prdt_cd as product_code,
+		    prdt_nm as product_name,
+		    ord_prdt_stus as order_product_status_code,
+		    ord_prdt_stus as order_product_status_name,
+		    fnl_sell_amt as final_sell_amount,
+		    optn_nm as option_name,
+		    optn_schg as option_surcharge,
+		    prdt_qty as product_qty
+		  from ord_prdt_info
+		 where ord_no = #{orderNo}
+		   and prnr_cd = #{partnerCode}
+		   and ord_prdt_stus = 'D01'		-- 상품 준비중
 	</select>
 
 	<update id="updateOrder" parameterType="kr.wrightbrothers.apps.order.dto.OrderMemoUpdateDto">
 		-- 송장번호 입력 유무에 대한 체크
 		<selectKey resultType="boolean" keyProperty="isInvoiceNo" order="BEFORE">
 			select
-			    if(count(order_product_seq) = 0, true, false) as isInvoice
-			  from order_delivery
-			 where order_no = #{orderNo}
-			   and invoice_no is not null
+			    if(count(d.ord_prdt_idx) = 0, true, false) as isInvoice
+			  from  ord_prdt_info p
+			 inner join ord_shpn_info d
+			    on d.ord_no = p.ord_no
+			   and d.ord_prdt_idx = p.ord_prdt_idx
+			   and d.prdt_cd = p.prnr_cd
+			 where p.ord_no = #{orderNo}
+			   and p.prnr_cd = #{partnerCode}
+			   and d.invc_no is not null
 		</selectKey>
-		update order_info
-		   set order_memo = #{orderMemo},
+		update ord_prnr_info
+		   set ord_memo = #{orderMemo},
 		       -- 송장번호 미입력 시 수령자 정보 변경 가능
 		       <if test="isInvoiceNo">
-				   recipient_name = #{recipientName},
-				   recipient_phone = #{recipientPhone},
-				   recipient_address_zip_code = #{recipientAddressZipCode},
-				   recipient_address = #{recipientAddress},
-				   recipient_address_detail = #{recipientAddressDetail},
+				   rcpnt_nm = #{recipientName},
+				   rcpnt_usr_phn = #{recipientPhone},
+				   rcpnt_adrs_zip_cd = #{recipientAddressZipCode},
+				   rcpnt_adrs = #{recipientAddress},
+				   rcpnt_adrs_sub = #{recipientAddressDetail},
 			   </if>
-		       update_user_id = #{userId},
-		       update_date = now()
-		 where order_no = #{orderNo}
+		       upd_usr_id = #{userId},
+		       upd_dt = now()
+		 where ord_no = #{orderNo}
+		   and prnr_cd = #{partnerCode}
 	</update>
 
 	<update id="updateOrderDeliveryStatus" parameterType="kr.wrightbrothers.apps.order.dto.OrderUpdateDto$Status">
 		-- 상품준비중 상태의 유무를 확인하여 부분배송 / 배송중 주문 상태코드 조회
 		<selectKey resultType="java.lang.String" keyProperty="orderStatusCode" order="BEFORE">
 			select
-			    if(count(order_product_status_code) = 0, 'D02', 'D03') as orderStatusCode
-			  from order_product
-			 where order_no = #{orderNo}
-			   and order_product_status_code = 'D01'
+			    if(count(ord_prdt_idx) = 0, 'D02', 'D03') as orderStatusCode
+			  from ord_prdt_info
+			 where ord_no = #{orderNo}
+			   and prnr_cd = #{partnerCode}
+			   and ord_prdt_stus = 'D01'
 		</selectKey>
-		update order_info
-		   set order_status_code = #{orderStatusCode},	-- 조회된 상태코드로 업데이트
-			   update_user_id = #{userId},
-			   update_date = now()
-		 where order_no = #{orderNo}
-		   and order_status_code in ('D01', 'D03')		-- 상품준비중, 부분배송
+		update ord_prnr_info
+		   set ord_stus = #{orderStatusCode},
+		       upd_usr_id = #{userId},
+		       upd_dt = now()
+		 where ord_no = #{orderNo}
+		   and prnr_cd = #{partnerCode}
+		   and ord_stus in ('D01', 'D03')		-- 상품준비중, 부분배송
 	</update>
 
 </mapper>

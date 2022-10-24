@@ -4,214 +4,173 @@
 <mapper namespace="kr.wrightbrothers.apps.order.query.Delivery">
 
 	<select id="findDeliveryList" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryListDto$Param" resultType="kr.wrightbrothers.apps.order.dto.DeliveryListDto$Response">
+		-- 배송 관리 목록 조회
 		select
-			date_format(p.payment_date, '%Y-%m-%d') as payment_day,
-			o.order_no,
-			o.order_user_name,
-			o.order_status_code,
-			o.order_status_code as order_status_name,
-			p.payment_method_code,
-			p.payment_method_code as payment_method_name,
-			o.order_name,
+			date_format(p.pym_dt, '%Y-%m-%d') as payment_day,
+			o.ord_no as order_no,
+			m.usr_nm as order_user_name,
+			s.ord_stus as order_status_code,
+			s.ord_stus as order_status_name,
+			p.pay_meth as payment_method_code,
+			p.pay_meth as payment_method_name,
+			s.ord_nm as order_name,
 			g.delivery_name,
-			o.recipient_name,
-			o.recipient_phone,
-			o.recipient_address,
-			o.recipient_address_detail
-		  from order_info o
+			s.rcpnt_nm as recipient_name,
+			s.rcpnt_usr_phn as recipient_phone,
+			s.rcpnt_adrs as recipient_address,
+			s.rcpnt_adrs_sub as recipient_address_detail
+		  from ord_info o
+		 inner join ord_prnr_info s
+		    on o.ord_no = s.ord_no
+		  left join com_mbr_info m
+		    on o.ord_usr_id = m.usr_id
 		 inner join (
 		     select
-		         _p.order_no,
+		         _p.ord_no,
 		         concat(
-		             if(sum(if(_p.delivery_type = 'D01', 1, 0)) > 0, '택배', ''),
-					 if(sum(if(_p.delivery_type = 'D01', 1, 0)) > 0 and sum(if(_p.delivery_type = 'D07', 1, 0)) > 0, ' / ', ''),
-					 if(sum(if(_p.delivery_type = 'D07', 1, 0)) > 0, '화물', '')
+		             if(sum(if(_p.dlvr_tp = 'D01', 1, 0)) > 0, '택배', ''),
+					 if(sum(if(_p.dlvr_tp = 'D01', 1, 0)) > 0 and sum(if(_p.dlvr_tp = 'D07', 1, 0)) > 0, ' / ', ''),
+					 if(sum(if(_p.dlvr_tp = 'D07', 1, 0)) > 0, '화물', '')
 				 ) as delivery_name
-		       from order_product _p
-		       left join order_delivery _d
-		       	 on _p.order_no = _d.order_no
-				and _p.order_product_seq = _d.order_product_seq
-				and _p.product_code = _d.product_code
-			  where 1 = 1
+		       from ord_prdt_info _p
+		       left join ord_shpn_info _d
+		       	 on _p.ord_no = _d.ord_no
+				and _p.ord_prdt_idx = _d.ord_prdt_idx
+				and _p.prdt_cd = _d.prdt_cd
+			  where _p.prnr_cd = #{partnerCode}
 			-- 배송 상태
-			<foreach collection="deliveryStatus" item="item" index="index" open="and _d.delivery_status_code in (" separator="," close=")">
+			<foreach collection="deliveryStatus" item="item" index="index" open="and _p.ord_prdt_stus in (" separator="," close=")">
 				#{item}
 			</foreach>
 			-- 배송 방법
-			<foreach collection="deliveryType" item="item" index="index" open="and _p.delivery_type in (" separator="," close=")">
+			<foreach collection="deliveryType" item="item" index="index" open="and _p.dlvr_tp in (" separator="," close=")">
 				#{item}
 			</foreach>
-		      group by _p.order_no
-		) g on o.order_no = g.order_no
-		 inner join order_payment p
-			on o.order_no = p.order_no
-		 where o.partner_code = #{partnerCode}
+		      group by _p.ord_no
+		) g on o.ord_no = g.ord_no
+		 inner join ord_pay_info p
+			on o.ord_no = p.ord_no
+		 where s.prnr_cd = #{partnerCode}
 		<choose>
 			<when test="keywordValue != null and keywordValue != ''">
 				<choose>
 					<when test="keywordType == 'NO'">
 						<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-							o.order_no like #{item} '%'
+							o.ord_no like #{item} '%'
 						</foreach>
 					</when>
 					<when test="keywordType == 'NAME'">
 						<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-							o.order_name like #{item} '%'
+							s.ord_nm like #{item} '%'
 						</foreach>
 					</when>
 					<when test="keywordType == 'USER'">
 						<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-							o.order_user_name like #{item} '%'
+							m.usr_nm like #{item} '%'
 						</foreach>
 					</when>
 				</choose>
 			</when>
 			<otherwise>
-				and	p.payment_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+				and	p.pym_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
 			</otherwise>
 		</choose>
-		order by p.payment_date desc
-	</select>
-
-	<select id="findDeliveryStatusStatistics" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryListDto$Param" resultType="kr.wrightbrothers.apps.order.dto.DeliveryListDto$Statistics">
-		select
-		    count(1) as totalDeliveryCount,
-			ifnull(sum(if(g.delivery_status_code = 'D01', 1, 0)), 0) as readyProductCount,
-			ifnull(sum(if(g.delivery_status_code = 'D02', 1, 0)), 0) as startDeliveryCount,
-			ifnull(sum(if(g.delivery_status_code = 'D03', 1, 0)), 0) as partialDeliveryCount,
-			ifnull(sum(if(g.delivery_status_code = 'D11', 1, 0)), 0) as exchangeDeliveryCount,
-			ifnull(sum(if(g.delivery_status_code = 'D05', 1, 0)), 0) as finishDeliveryCount
-		  from order_info o
-		 inner join (
-			select
-			    _p.order_no,
-			    _d.delivery_status_code
-			  from order_product _p
-			  left join order_delivery _d
-			    on _p.order_no = _d.order_no
-			   and _p.order_product_seq = _d.order_product_seq
-			   and _p.product_code = _d.product_code
-		     where 1 = 1
-			-- 배송 상태
-			<foreach collection="deliveryStatus" item="item" index="index" open="and _d.delivery_status_code in (" separator="," close=")">
-				#{item}
-			</foreach>
-			-- 배송 방법
-			<foreach collection="deliveryType" item="item" index="index" open="and _p.delivery_type in (" separator="," close=")">
-				#{item}
-			</foreach>
-		) g on o.order_no = g.order_no
-		 inner join order_payment p
-		    on o.order_no = p.order_no
-		 where o.partner_code = #{partnerCode}
-		<choose>
-			<when test="keywordValue != null and keywordValue != ''">
-				<choose>
-					<when test="keywordType == 'NO'">
-						<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-							o.order_no like #{item} '%'
-						</foreach>
-					</when>
-					<when test="keywordType == 'NAME'">
-						<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-							o.order_name like #{item} '%'
-						</foreach>
-					</when>
-					<when test="keywordType == 'USER'">
-						<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-							o.order_user_name like #{item} '%'
-						</foreach>
-					</when>
-				</choose>
-			</when>
-			<otherwise>
-				and	p.payment_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
-			</otherwise>
-		</choose>
+		order by p.pym_dt desc
 	</select>
 
 	<select id="isDeliveryInvoiceCheck" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto" resultType="boolean">
 		select
-		    if(order_product_status_code in ('D01', 'D02'), false, true) as isInputDelivery		-- D01 상품준비중, D02 배송중
-		  from order_product
-		 where order_no = #{orderNo}
-		   and order_product_seq = #{orderProductSeq}
+		    if(ord_prdt_stus in ('D01', 'D02'), false, true) as isInputDelivery		-- D01 상품준비중, D02 배송중
+		  from ord_prdt_info
+		 where ord_no = #{orderNo}
+		   and ord_prdt_idx = #{orderProductSeq}
 	</select>
 
 	<update id="updateDeliveryInvoice" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto">
-		update order_delivery
-		   set delivery_company_code = #{deliveryCompanyCode},
-		       delivery_company_name = #{deliveryCompanyName},
-		       invoice_no			 = #{invoiceNo},
-		       invoice_no_input_date = now(),
-		       update_user_id		 = #{userId},
-		       update_date			 = now()
-		 where order_no = #{orderNo}
-		   and order_product_seq = #{orderProductSeq}
+		update ord_shpn_info
+		   set dlvry_cmpny  = #{deliveryCompanyCode},
+		       invc_no		= #{invoiceNo},
+		       invc_inp_dt  = now(),
+		       upd_usr_id	= #{userId},
+		       upd_dt		= now()
+		 where ord_no 		= #{orderNo}
+		   and ord_prdt_idx = #{orderProductSeq}
 	</update>
 
 	<update id="updateProductDeliveryStartStatus" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto">
-		update order_product
-		   set order_product_status_code = 'D02',	-- 배송중
-			   update_user_id		 = #{userId},
-			   update_date			 = now()
-		 where order_no = #{orderNo}
-		   and order_product_seq = #{orderProductSeq}
+		update ord_prdt_info
+		   set ord_prdt_stus = 'D02',	-- 배송중
+			   upd_usr_id 	 = #{userId},
+			   upd_dt		 = now()
+		 where ord_no 		 = #{orderNo}
+		   and ord_prdt_idx  = #{orderProductSeq}
 	</update>
 
 	<update id="updateDelivery" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryMemoUpdateDto">
 		-- 송장번호 입력 유무에 대한 체크
 		<selectKey resultType="boolean" keyProperty="isInvoiceNo" order="BEFORE">
 			select
-			if(count(order_product_seq) = 0, true, false) as isInvoice
-			from order_delivery
-			where order_no = #{orderNo}
-			and invoice_no is not null
+			    if(count(s.ord_no) = 0, true, false) as isInvoice
+			  from ord_prdt_info p
+		   	 inner join ord_shpn_info s
+			    on p.ord_no = s.ord_no
+			   and p.ord_prdt_idx = s.ord_prdt_idx
+			   and p.prdt_cd = s.prdt_cd
+			 where p.ord_no = #{orderNo}
+			   and p.prnr_cd = #{partnerCode}
+			   and s.invc_no is not null
 		</selectKey>
-		update order_info
-		   set delivery_memo = #{deliveryMemo},
+		update ord_prnr_info
+		   set dlvry_memo = #{deliveryMemo},
 		       -- 송장번호 미입력 시 수령자 정보 변경 가능
 		       <if test="isInvoiceNo">
-		       		recipient_name = #{recipientName},
-					recipient_phone = #{recipientPhone},
-					recipient_address_zip_code = #{recipientAddressZipCode},
-					recipient_address = #{recipientAddress},
-					recipient_address_detail = #{recipientAddressDetail},
+		       		rcpnt_nm = #{recipientName},
+					rcpnt_usr_phn = #{recipientPhone},
+					rcpnt_adrs_zip_cd = #{recipientAddressZipCode},
+					rcpnt_adrs = #{recipientAddress},
+					rcpnt_adrs_sub = #{recipientAddressDetail},
 			   </if>
-			   update_user_id = #{userId},
-			   update_date = now()
-		 where order_no = #{orderNo}
+			   upd_usr_id = #{userId},
+			   upd_dt = now()
+		 where ord_no = #{orderNo}
 	</update>
 
 	<sql id="findDeliveryProductSql">
 		select
-			p.order_product_seq,
-			p.product_code,
-			p.product_name,
-			p.option_name,
-			p.product_qty,
-			d.delivery_company_code,
-			d.delivery_company_name,
-			d.invoice_no,
-			d.delivery_status_code,
-			d.delivery_status_code as delivery_status_name,
-			date_format(d.delivery_start_date, '%Y-%m-%d') as delivery_start_day,
-			date_format(d.delivery_end_date, '%Y-%m-%d') as delivery_end_day
-		  from order_product p
-		  left join order_delivery d
-		    on p.order_no = d.order_no
-		   and p.order_product_seq = d.order_product_seq
-		   and p.product_code = d.product_code
+			p.ord_prdt_idx as order_product_seq,
+			p.prdt_cd as product_code,
+			p.prdt_nm as product_name,
+			p.optn_nm as option_name,
+			p.prdt_qty as product_qty,
+			d.dlvry_cmpny as delivery_company_code,
+			cd.intg_cd_val_nm as delivery_company_name,
+			d.invc_no as invoice_no,
+			d.dlvry_stus as delivery_status_code,
+			d.dlvry_stus as delivery_status_name,
+			date_format(d.dlvry_st_dt, '%Y-%m-%d') as delivery_start_day,
+			date_format(d.dlvry_end_dt, '%Y-%m-%d') as delivery_end_day
+		  from ord_prdt_info p
+		  left join ord_shpn_info d
+		    on p.ord_no = d.ord_no
+		   and p.ord_prdt_idx = d.ord_prdt_idx
+		   and p.prdt_cd = d.prdt_cd
+		  left join com_intg_cd_dtl cd
+			on d.dlvry_cmpny = cd.intg_cd_val
+		   and cd.intg_cd_id = '000044'
 	</sql>
-	<select id="findDeliveryProductList" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.order.dto.DeliveryProductDto">
+	<select id="findDeliveryProductList" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryFindDto$Param" resultType="kr.wrightbrothers.apps.order.dto.DeliveryProductDto">
 		<include refid="findDeliveryProductSql"/>
-	     where p.order_no = #{orderNo}
-	       and d.delivery_status_code in ('D01', 'D02')
+	    -- 상품 준비 중, 배송중 목록
+		 where p.ord_no = #{orderNo}
+	       and p.prnr_cd = #{partnerCode}
+	       and d.dlvry_stus in ('D01', 'D02')
 	</select>
-	<select id="findDeliveryCompleteProductList" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.order.dto.DeliveryProductDto">
+	<select id="findDeliveryCompleteProductList" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryFindDto$Param" resultType="kr.wrightbrothers.apps.order.dto.DeliveryProductDto">
 		<include refid="findDeliveryProductSql"/>
-		 where p.order_no = #{orderNo}
-		   and d.delivery_status_code = 'D05'
+		-- 배송완료 주문 목록
+		 where p.ord_no = #{orderNo}
+		   and p.prnr_cd = #{partnerCode}
+		   and d.dlvry_stus = 'D05'
 	</select>
 
 </mapper>

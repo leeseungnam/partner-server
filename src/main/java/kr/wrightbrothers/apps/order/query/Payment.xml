@@ -3,81 +3,90 @@
 
 <mapper namespace="kr.wrightbrothers.apps.order.query.Payment">
 
-	<select id="isCancelPayment" parameterType="java.lang.String" resultType="boolean">
+	<select id="isCancelPayment" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto" resultType="boolean">
+		-- 결제 취소 / 취소 요청 상태 확인
 		select
-		    if(payment_status_code in ('S08'), true, false) as isCancelPayment
-		  from order_payment
-		 where order_no = #{orderNo}
+		    if(pay_stus in ('S08', 'S09'), true, false) as isCancelPayment
+		  from ord_prnr_info
+		 where ord_no = #{orderNo}
+		   and prnr_cd = #{partnerCode}
 	</select>
 
-	<select id="isDelivery" parameterType="java.lang.String" resultType="boolean">
+	<select id="isNonReadyProduct" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto" resultType="boolean">
+		-- 상품 준비중 상태인지 여부 확인
 		select
-		    if(order_status_code in ('O05', 'D01'), false, true) as isNonOrderComplete
-		  from order_info
-		 where order_no = #{orderNo}
+		    if(ord_stus in ('O05', 'D01'), false, true) as isNonReadyProduct
+		  from ord_prnr_info
+		 where ord_no = #{orderNo}
+		   and prnr_cd = #{partnerCode}
 	</select>
 
-	<select id="findPaymentToOrder" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.order.dto.PaymentDto">
+	<select id="findPaymentToOrder" parameterType="kr.wrightbrothers.apps.order.dto.OrderFindDto$Param" resultType="kr.wrightbrothers.apps.order.dto.PaymentDto">
+		-- 주문내역 상세정보 시 결제정보 조회
 		select
-		    p.order_amount,
-		    p.delivery_charge_amount,
-		    p.ssp_point,
-		    p.sales_amount,
-		    p.payment_amount,
-		    p.payment_date,
-		    t.transaction_id,
-		    p.payment_method_code,
-		    p.payment_method_code as payment_method_name,
-		    p.payment_status_code,
-		    p.payment_status_code as payment_status_name,
-		    p.cancel_date,
-		    if(p.cancel_reason_code = 'C99', p.cancel_reason_etc, p.cancel_reason_name) as cancel_reason
-		  from order_payment p
-		  left join order_transaction t
-			on p.order_no = t.order_no
-		   and p.pg_type = t.pg_type
-		 where p.order_no = #{orderNo}
+		    s.ord_amt as order_amount,
+		    s.dlvr_chrg_amt as delivery_charge_amount,
+		    s.pay_amt as payment_amount,
+		    p.pym_dt as payment_date,
+		    t.trsctn_id as transaction_id,
+		    p.pay_meth as payment_method_code,
+		    p.pay_meth as payment_method_name,
+		    s.pay_stus as payment_status_code,
+		    s.pay_stus as payment_status_name,
+		    s.cnc_dt as cancel_date,
+		    if(s.cnc_rsn_cd = 'C99', s.cnc_rsn, cd.intg_cd_val_nm) as cancel_reason
+		  from ord_pay_info p
+		 inner join ord_prnr_info s
+		    on p.ord_no = s.ord_no
+		   and s.prnr_cd = #{partnerCode}
+		  left join ord_trsctn_info t
+			on p.ord_no = t.ord_no
+		  left join com_intg_cd_dtl cd
+		    on s.cnc_rsn_cd = cd.intg_cd_val
+		   and cd.intg_cd_id = '000074'
+		 where p.ord_no = #{orderNo}
 	</select>
 
 	<update id="updateRequestCancelPayment" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto">
-		update order_payment
-		   set payment_status_code 	= 'S09',	-- 취소요청 코드
-		       cancel_date			= now(),
+		-- 결제 취소요청
+		update ord_prnr_info
+		   set pay_stus = 'S09',	-- 취소요청 코드
+		       cnc_dt = now(),
 		       <if test="cancelReasonCode != null and cancelReasonCode != ''.toString()">
-				   cancel_reason_code = #{cancelReasonCode},
+				   cnc_rsn_cd = #{cancelReasonCode},
 			   </if>
-		       <if test="cancelReasonName != null and cancelReasonName != ''.toString()">
-				   cancel_reason_name = #{cancelReasonName},
-			   </if>
-		       update_user_id 		= #{userId},
-		       update_date 			= now()
-		 where order_no = #{orderNo}
+		       upd_usr_id = #{userId},
+		       upd_dt = now()
+		 where ord_no = #{orderNo}
+		   and prnr_cd = #{partnerCode}
 	</update>
 
 	<update id="updateRequestCancelOrder" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto">
-		update order_info
-		   set order_status_code 	= 'O06',	-- 취소요청 코드
-			   update_user_id		= #{userId},
-			   update_date 			= now()
-		 where order_no = #{orderNo}
+		-- 주문 취소요청
+		update ord_prnr_info
+		   set ord_stus 	= 'O06',	-- 취소요청 코드
+			   upd_usr_id	= #{userId},
+			   upd_dt		= now()
+		 where ord_no = #{orderNo}
 	</update>
 
 	<update id="updatePaymentDetailRefundInfo" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto">
 		-- 취소 요청 후 환불 정보에 대한 수정으로
 		-- 불필요 한 수정자, 수정일시는 제외(로직 변경 시 해당부분 추가할 것)
-		update order_payment
-		   set refund_bank_code			= #{refundBankCode},
-		       refund_bank_name 		= #{refundBankName},
-			   refund_bank_account_no 	= #{refundBankAccountNo},
-			   refund_depositor_name 	= #{refundDepositorName}
-		 where order_no = #{orderNo}
+		update ord_pay_info
+		   set bank_cd		= #{refundBankCode},
+			   bank_acnt_no = #{refundBankAccountNo},
+			   dpstr_nm 	= #{refundDepositorName}
+		 where ord_no = #{orderNo}
 	</update>
 
 	<select id="isCancelPartialPayment" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto" resultType="boolean">
+		-- 부분취소를 지원 안하는 관계로 등록되어있는 상품 수와 취소 요청 상품 수 일치여부 확인
 		select
-			if(count(order_product_seq) != ${orderProductSeq.length}, true, false) as isPartialPaymentCancel
-		  from order_product
-		 where order_no = #{orderNo}
+			if(count(ord_prdt_idx) != ${orderProductSeq.length}, true, false) as isPartialPaymentCancel
+		  from ord_prdt_info
+		 where ord_no = #{orderNo}
+		   and prnr_cd = #{partnerCode}
 	</select>
 
 </mapper>

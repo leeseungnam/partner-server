@@ -25,7 +25,7 @@ public class ReturnService {
 
     public List<ReturnListDto.Response> findReturnList(ReturnListDto.Param paramDto) {
         // 반품관리 목록 조회
-        return dao.selectList(namespace + "findReturnList", paramDto, paramDto.getRowBounds());
+        return dao.selectList(namespace + "findReturnList", paramDto, paramDto.getRowBounds(), PartnerKey.WBDataBase.Alias.Admin);
     }
 
     public ReturnFindDto.Response findReturn(ReturnFindDto.Param paramDto) {
@@ -33,13 +33,19 @@ public class ReturnService {
 
         return ReturnFindDto.Response.builder()
                 // 주문내역 기본 정보
-                .order(dao.selectOne(orderNamespace + "findOrder", paramDto.getOrderNo()))
+                .order(dao.selectOne(orderNamespace + "findOrder", OrderFindDto.Param.builder()
+                                .partnerCode(paramDto.getPartnerCode())
+                                .orderNo(paramDto.getOrderNo())
+                        .build(), PartnerKey.WBDataBase.Alias.Admin))
                 // 결제 정보
-                .payment(paymentService.findPaymentToOrder(paramDto.getOrderNo()))
+                .payment(paymentService.findPaymentToOrder(OrderFindDto.Param.builder()
+                                .partnerCode(paramDto.getPartnerCode())
+                                .orderNo(paramDto.getOrderNo())
+                        .build()))
                 // 주문 상품 리스트(취소 상품 제외)
-                .orderProductList(dao.selectList(namespace + "findNonCancelOrderProduct", paramDto.getOrderNo()))
+                .orderProductList(dao.selectList(namespace + "findNonCancelOrderProduct", paramDto, PartnerKey.WBDataBase.Alias.Admin))
                 // 반품 요청 상품 리스트
-                .returnProductList(dao.selectList(namespace + "findReturnProductList", paramDto.getOrderNo()))
+                .returnProductList(dao.selectList(namespace + "findReturnProductList", paramDto, PartnerKey.WBDataBase.Alias.Admin))
                 .build();
     }
 
@@ -53,7 +59,7 @@ public class ReturnService {
      */
     public void updateReturn(ReturnMemoUpdateDto paramDto) {
         // 송장번호 입력 시 배송지 정보 수정 제외
-        dao.update(namespace + "updateReturn", paramDto);
+        dao.update(namespace + "updateReturn", paramDto, PartnerKey.WBDataBase.Alias.Admin);
     }
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
@@ -65,7 +71,7 @@ public class ReturnService {
         }
 
         // 중복 반품 요청 확인
-        if (dao.selectOne(namespace + "isRequestReturn", paramDto))
+        if (dao.selectOne(namespace + "isRequestReturn", paramDto, PartnerKey.WBDataBase.Alias.Admin))
             throw new WBBusinessException(ErrorCode.ALREADY_RETURN.getErrCode(), new String[]{OrderStatusCode.of(paramDto.getReturnProcessCode()).getName()});
 
         // 주문 상품 반품 상태값 변경 처리
@@ -73,7 +79,7 @@ public class ReturnService {
             // 주문 상품 SEQ 설정
             paramDto.setOrderProductSeq(orderProductSeq);
             // 현재 주문 상품 상태 코드 조회
-            String currentStatusCode = dao.selectOne(namespace + "findOrderProductStatusCode", paramDto);
+            String currentStatusCode = dao.selectOne(namespace + "findOrderProductStatusCode", paramDto, PartnerKey.WBDataBase.Alias.Admin);
 
 
             // 반품 요청 처리
@@ -84,7 +90,7 @@ public class ReturnService {
                         throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"배송정보"});
 
                     // 배송정보 업데이트
-                    dao.update(namespace + "updateOrderDeliveryReturn", paramDto);
+                    dao.update(namespace + "updateOrderDeliveryReturn", paramDto, PartnerKey.WBDataBase.Alias.Admin);
 
                     // 아래 반품 취소 조건으로 진행을 이어나가게 하며,
                     // 단순 배송 정보 수정에 대해서는 아래 반품 요청이 아니므로 진행 중지가 됨.
@@ -94,14 +100,14 @@ public class ReturnService {
                         break;
 
                     // 주문 상품 반품 진행 / 반품 철회 처리
-                    dao.update(namespace + "updateOrderProductReturnCode", paramDto);
+                    dao.update(namespace + "updateOrderProductReturnCode", paramDto, PartnerKey.WBDataBase.Alias.Admin);
 
-                    // 반품 취소 시 주문 상태 값은 반품취소 -> 배송완료 변경되야 함.
+                    // 반품 취소 시 주문 상태 값은 반품요청 -> 배송완료 변경되야 함.
                     if (OrderProductStatusCode.WITHDRAWAL_RETURN.getCode().equals(paramDto.getRequestCode()))
                         paramDto.setReturnProcessCode(OrderStatusCode.FINISH_DELIVERY.getCode());
 
                     // 주문 상태 변경 처리
-                    dao.update(namespace + "updateOrderReturnCode", paramDto);
+                    dao.update(namespace + "updateOrderReturnCode", paramDto, PartnerKey.WBDataBase.Alias.Admin);
                     break;
                 case COMPLETE_RETURN:
                 case NON_RETURN:
@@ -110,10 +116,10 @@ public class ReturnService {
                         break;
 
                     // 주문 상품 반품 완료 / 반품 불가 처리
-                    dao.update(namespace + "updateOrderProductReturnCode", paramDto);
+                    dao.update(namespace + "updateOrderProductReturnCode", paramDto, PartnerKey.WBDataBase.Alias.Admin);
 
                     // 주문 상태 변경 처리
-                    dao.update(namespace + "updateOrderReturnCode", paramDto);
+                    dao.update(namespace + "updateOrderReturnCode", paramDto, PartnerKey.WBDataBase.Alias.Admin);
 
                     // 반품 완료 요청 시 결제는 결제취소 요청으로 처리
                     if (OrderStatusCode.COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()))
@@ -121,7 +127,8 @@ public class ReturnService {
                                 PaymentCancelDto.builder()
                                         .orderNo(paramDto.getOrderNo())
                                         .userId(paramDto.getUserId())
-                                        .build());
+                                        .partnerCode(paramDto.getPartnerCode())
+                                        .build(), PartnerKey.WBDataBase.Alias.Admin);
                     break;
             }
         });

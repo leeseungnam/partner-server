@@ -55,8 +55,6 @@ public class ReturnListDto {
         private String returnReason;                // 반품사유
         private Long orderAmount;                   // 주문금액
         private Long finalSellAmount;               // 판매금액
-        private Long sspPoint;                      // S.S.P
-        private Long salesAmount;                   // 판매대금
         private String cancelDay;                   // 취소일자
         private String paymentStatusCode;           // 결제상태 코드
         private String paymentStatusName;           // 결제상태 이름
