@@ -54,6 +54,7 @@ cloud:
       product: DEV-PARTNER-PRODUCT2.fifo
       accessKey: AKIATJJEE3LGZUGQPERY
       secretKey: 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
+      order: DEV-PARTNER-ORDER2.fifo
     ses:
       accessKey: AKIARL5GKSILRUJFMCMR
       secretKey: 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
