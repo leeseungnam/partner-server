@@ -11,6 +11,11 @@ spring:
     username: admin
     password: rBEdceIdPrQMaHrQVcZj
     maximumPoolSize: 5
+  devtools:
+    livereload:
+      enabled: true
+  freemarker:
+    cache: false
 
 cloud:
   aws:
