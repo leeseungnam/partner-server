@@ -22,7 +22,7 @@ public class BrandController extends WBController {
     private final BrandService brandService;
 
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "access token", required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "access token", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "브랜드 목록 조회", notes = "브랜드 SelectBox 조회를 위한 번호, 브랜드 명을 제공")
     @GetMapping("/brands")

@@ -28,7 +28,7 @@ public class ReturnController extends WBController {
     private final ReturnService returnService;
 
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "반품내역 목록 조회", notes = "반품 정보의 목록 조회")
     @GetMapping(value = {
@@ -67,7 +67,7 @@ public class ReturnController extends WBController {
     }
 
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "반품내역 조회", notes = "반품내역 상세 정보 조회")
     @GetMapping("/returns/{orderNo}")
@@ -83,7 +83,7 @@ public class ReturnController extends WBController {
 
     @UserPrincipalScope
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "반품내역 수정", notes = "반품내역의 배송지 정보, 반품 메모의 내용을 수정")
     @PutMapping("/returns")
@@ -96,7 +96,7 @@ public class ReturnController extends WBController {
 
     @UserPrincipalScope
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "반품요청 처리", notes = "고객 반품 요청에 대한 처리 수행")
     @PutMapping("/returns/{orderNo}/request-return")

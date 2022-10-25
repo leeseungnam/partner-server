@@ -38,7 +38,7 @@ public class PartnerController extends WBController {
 
     @UserPrincipalScope
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "파트너 등록", notes = "파트너 등록 요청 API 입니다.")
     @PostMapping("")
@@ -77,7 +77,7 @@ public class PartnerController extends WBController {
     }
 
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "파트너 권한 리스트 조회", notes = "파트너 권한 리스트 조회 요청 API 입니다.")
     @GetMapping("")
@@ -120,7 +120,7 @@ public class PartnerController extends WBController {
     }
 
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "파트너 정보 조회", notes = "파트너 정보 조회 요청 API 입니다.")
     @GetMapping("/{partnerCode}")
@@ -133,7 +133,7 @@ public class PartnerController extends WBController {
 
     @UserPrincipalScope
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "파트너 정보 수정", notes = "파트너 정보 수정 요청 API 입니다.")
     @PostMapping("/{partnerCode}/{contractNo}")
@@ -158,7 +158,7 @@ public class PartnerController extends WBController {
     }
 
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "파트너 정보 수정", notes = "파트너 정보 수정 요청 API 입니다.")
     @PutMapping("/{partnerCode}/{contractNo}")

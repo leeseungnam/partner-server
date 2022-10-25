@@ -27,7 +27,7 @@ public class ProductController extends WBController {
     private final ProductUtil productUtil;
 
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "상품 목록 조회", notes = "등록된 상품의 목록 조회")
     @GetMapping("/products")
@@ -69,7 +69,7 @@ public class ProductController extends WBController {
 
     @UserPrincipalScope
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "상품 등록", notes = "상품 정보 등록")
     @PostMapping("/products")
@@ -91,7 +91,7 @@ public class ProductController extends WBController {
     }
 
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "상품 조회", notes = "등록된 상품 상세 정보 조회")
     @GetMapping("/products/{productCode}")
@@ -109,7 +109,7 @@ public class ProductController extends WBController {
 
     @UserPrincipalScope
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "상품 수정", notes = "등록된 상품 정보 수정")
     @PutMapping("/products")
@@ -125,7 +125,7 @@ public class ProductController extends WBController {
 
     @UserPrincipalScope
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "상품 상태 수정", notes = "등록된 상품 상태를 일괄 변경 처리 기능 제공")
     @PatchMapping("/products")

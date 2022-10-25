@@ -22,7 +22,7 @@ public class PaymentController extends WBController {
 
     @UserPrincipalScope
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "결제 취소 요청", notes = "주문 정보의 결제 취소 처리(ADMIN2.0 취소 요청 후 처리)")
     @PutMapping("/payments/{orderNo}/cancel")

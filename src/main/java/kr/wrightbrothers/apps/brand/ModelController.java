@@ -20,7 +20,7 @@ public class ModelController extends WBController {
     private final ModelService modelService;
 
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "access token", required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "access token", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "브랜드 모델 목록 조회", notes = "모델 SelectBox 조회를 위한 브랜드에 해당하는 모델 정보 제공")
     @GetMapping("/brands/{brandNo}/models")

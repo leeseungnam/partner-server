@@ -28,7 +28,7 @@ public class OrderController extends WBController {
     private final OrderService orderService;
 
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "주문내역 목록 조회", notes = "주문 정보의 목록 조회")
     @GetMapping(value = {
@@ -80,7 +80,7 @@ public class OrderController extends WBController {
     }
 
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "주문내역 조회", notes = "주문내역 상세 정보 조회")
     @GetMapping("/orders/{orderNo}")
@@ -96,7 +96,7 @@ public class OrderController extends WBController {
 
     @UserPrincipalScope
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "주문내역 수정", notes = "주문내역의 배송지 정보, 주문 메모의 내용을 수정")
     @PutMapping("/orders")

@@ -20,7 +20,7 @@ public class CodeController extends WBController {
     private final CodeService codeService;
 
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "access token", required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "access token", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "공통 코드 목록 조회", notes = "코드 SelectBox 조회를 위한 코드 정보 제공")
     @GetMapping("/master-code/{codeGroup}/codes")

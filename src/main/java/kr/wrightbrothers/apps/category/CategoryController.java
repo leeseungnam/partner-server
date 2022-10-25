@@ -20,7 +20,7 @@ public class CategoryController extends WBController {
     private final CategoryService categoryService;
 
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "access token", required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "access token", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "공통 카테고리 목록 조회", notes = "카테고리 SelectBox 조회를 위한 카테고리 정보 제공")
     @GetMapping("/categories")

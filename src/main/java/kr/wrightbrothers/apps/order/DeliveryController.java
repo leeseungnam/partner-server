@@ -26,7 +26,7 @@ public class DeliveryController extends WBController {
     private final DeliveryService deliveryService;
 
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "배송관리 목록 조회", notes = "주문 정보의 배송 목록 조회")
     @GetMapping("/deliveries")
@@ -63,7 +63,7 @@ public class DeliveryController extends WBController {
     }
 
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "배송 관리 상세 정보 조회", notes = "주문 내역의 및 배송에 대한 상세 정보 조회")
     @GetMapping("/deliveries/{orderNo}")
@@ -80,7 +80,7 @@ public class DeliveryController extends WBController {
 
     @UserPrincipalScope
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "배송 정보 수정", notes = "배송지 정보, 배송 메모에 대한 정보 수정")
     @PutMapping("/deliveries")
@@ -93,7 +93,7 @@ public class DeliveryController extends WBController {
 
     @UserPrincipalScope
     @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", paramType = "header")
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "송장번호 저장", notes = "택배 발송되는 주문 상품의 택배사 / 송장번호 등록 및 수정")
     @PutMapping("/deliveries/{orderNo}/invoice")
