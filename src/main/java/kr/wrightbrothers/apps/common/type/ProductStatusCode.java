@@ -18,6 +18,7 @@ public enum ProductStatusCode {
     SOLD_OUT("S03", "판매완료"),
     END_OF_SALE("S08", "판매종료"),
     REJECT_INSPECTION("S10", "검수반려"),
+    APPROVAL_INSPECTION("S09", "검수승인"),
     NULL("", "");
 
     private final String code;

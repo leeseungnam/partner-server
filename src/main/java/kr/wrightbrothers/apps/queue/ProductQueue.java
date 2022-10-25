@@ -3,6 +3,7 @@ package kr.wrightbrothers.apps.queue;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.apps.common.type.DocumentSNS;
+import kr.wrightbrothers.apps.common.type.ProductStatusCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.product.dto.ProductUpdateDto;
 import kr.wrightbrothers.apps.queue.service.ProductQueueService;
@@ -87,7 +88,7 @@ public class ProductQueue extends WBSQS {
                 return;
             }
 
-            // SQS 수신 된 Admin 2.0 입력 파트너 검수 결과 등록
+            // SQS 수신 된 Admin 2.0 입력 파트너 검수  결과 등록
             if (DocumentSNS.RESULT_INSPECTION.getName().equals(header.getDocuNm())) {
                 ProductUpdateDto productUpdateDto =
                         new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -99,8 +100,8 @@ public class ProductQueue extends WBSQS {
                 productUpdateDto.setAopPartnerCode(body.get("partnerCode").toString());
                 productUpdateDto.setSqsProductCode(productUpdateDto.getProduct().getProductCode());
 
-                // 반려 시 사유 설정
-                if (!ObjectUtils.isEmpty(body.get("rejectDesc"))) {
+                // 검수반려 처리
+                if (ProductStatusCode.REJECT_INSPECTION.getCode().equals(productUpdateDto.getSellInfo().getProductStatusCode())) {
                     String log = "검수 반려\n(" + body.get("rejectDesc") + ")";
                     productUpdateDto.setSqsLog(new String[]{log});
                 }

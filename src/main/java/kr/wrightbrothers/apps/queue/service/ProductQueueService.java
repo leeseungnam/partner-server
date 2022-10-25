@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.apps.common.constants.Email;
+import kr.wrightbrothers.apps.common.type.ProductStatusCode;
 import kr.wrightbrothers.apps.common.util.AwsSesUtil;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.ProductUtil;
@@ -12,11 +13,14 @@ import kr.wrightbrothers.apps.product.service.ProductService;
 import kr.wrightbrothers.apps.queue.dto.FindAddressDto;
 import kr.wrightbrothers.apps.queue.dto.ProductReceiveDto;
 import kr.wrightbrothers.apps.queue.dto.ProductSendDto;
+import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -45,6 +49,7 @@ public class ProductQueueService {
                                              String productCode) {
         String productNamespace = "kr.wrightbrothers.apps.product.query.Product.";
         return ProductSendDto.builder()
+                .reqUserId(((UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername())
                 .partnerCode(partnerCode)
                 .product(dao.selectOne(productNamespace + "findProduct", productCode))
                 .basicSpec(dao.selectOne(productNamespace + "findBasicSpec", productCode))
@@ -102,13 +107,6 @@ public class ProductQueueService {
         // JSON -> ProductDTO 객체 변환
         ProductUpdateDto updateDto = convertProductDto(body);
 
-        // 어드민2.0 아직 안내 X
-        // 이거 해봐야 합니닷
-        updateDto.getGuide().setProductGuide("상품 안내 사항 ..............................");
-        updateDto.getGuide().setAsGuide("A/S 안내 ..............................");
-        updateDto.getGuide().setDeliveryGuide("배송 안내 사항 ..............................");
-        updateDto.getGuide().setExchangeReturnGuide("교환/반품 안내 사항 ..............................");
-
         // 변경사항 로그 체크
         updateDto.setSqsLog(
                 productUtil.productModifyCheck(
@@ -138,15 +136,13 @@ public class ProductQueueService {
      */
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void updateInspectionSqsData(ProductUpdateDto productUpdateDto) {
-        // 어드민2.0 아직 안내 X
-        // 이거 해봐야 합니닷
-        productUpdateDto.getDelivery().setExchangeCharge(3000);
-        productUpdateDto.getDelivery().setReturnCharge(3000);
-        productUpdateDto.getDelivery().setReturnDeliveryCompanyCode("cjresg");
+        // SQS 검수 승인 상태가 없으므로 해당 상태코드는 판매 중으로 상태 변경.
+        // Admin 검수 승인시 상품 이관 후 SQS 전송 하기에 데이터 정합성 문제 없음.
+        if (ProductStatusCode.APPROVAL_INSPECTION.getCode().equals(productUpdateDto.getSellInfo().getProductStatusCode()))
+            productUpdateDto.getSellInfo().setProductStatusCode(ProductStatusCode.SALE.getCode());
 
-        // SQS 입점몰 검수 결과
+        // SQS 입점몰 검수 결과 처리
         productService.updateProduct(productUpdateDto);
-
         // 상품 검수 요청 결과에 따른 메일 발송 처리
         Email email = Arrays.toString(productUpdateDto.getChangeLogList()).contains("검수완료")
                 ? Email.COMPLETE_PRODUCT : Email.REJECT_PRODUCT;

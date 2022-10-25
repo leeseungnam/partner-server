@@ -127,6 +127,7 @@ class ProductControllerTest extends BaseControllerTests {
                         .finalSellAmount(2900000L)
                         .productStatusCode(ProductStatusCode.PRODUCT_INSPECTION.getCode())
                         .productStockQty(1)
+                        .supplyAmount(0L)
                         .build())
                 .optionList(List.of(
                         OptionDto.ReqBody.builder()
@@ -160,9 +161,13 @@ class ProductControllerTest extends BaseControllerTests {
                         .modelName("Propel Advanced Disc 2")
                         .productSize("S")
                         .productWeight("9.2")
+                        .productMaterial("재질")
+                        .productComponent("재질구성")
                         .modelYear("2022")
                         .modelMonth("05")
                         .productMfr("(주)라이트브라더스")
+                        .detailSpec("세부사양")
+                        .qaStandard("품질보증기준")
                         .asPhone("02-000-0000")
                         .build())
                 .guide(GuideDto.ReqBody.builder()
@@ -176,7 +181,7 @@ class ProductControllerTest extends BaseControllerTests {
 
         // 기초 데이터 초기화 처리
         productDto.setAopUserId("test@wrightbrothers.kr");
-        productDto.getProduct().setPartnerCode("PT0000001");
+        productDto.getProduct().setPartnerCode("35");
         productDto.setProductCode(
                 productUtil.generateProductCode(productDto.getProduct().getCategoryTwoCode())
         );
@@ -274,7 +279,6 @@ class ProductControllerTest extends BaseControllerTests {
     }
 
     @Test
-    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     @DisplayName("상품 등록")
     void insertProduct() throws Exception {
         // 상품 등록 API 테스트
