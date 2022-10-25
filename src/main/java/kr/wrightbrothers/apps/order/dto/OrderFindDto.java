@@ -19,6 +19,7 @@ public class OrderFindDto {
     public static class Response {
         private OrderDto order;                 // 주문 정보
         private PaymentDto payment;             // 결제 정보
+        private RefundDto refundBank;           // 환불 은행 정보
         private List<ProductDto> productList;   // 주문 상품 목록
     }
 

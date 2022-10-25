@@ -200,7 +200,7 @@
 	</select>
 
 	<select id="findOrderReadyProduct" parameterType="kr.wrightbrothers.apps.order.dto.OrderFindDto$Param" resultType="kr.wrightbrothers.apps.order.dto.ProductDto">
-		-- 주문내역 상품 리스트(상품 준비중 상태만 조회)
+		-- 주문내역 상품 리스트(주문완료, 취소 상태만 조회)
 		select
 		    ord_prdt_idx as order_product_seq,
 		    prdt_cd as product_code,
@@ -214,7 +214,7 @@
 		  from ord_prdt_info
 		 where ord_no = #{orderNo}
 		   and prnr_cd = #{partnerCode}
-		   and ord_prdt_stus = 'D01'		-- 상품 준비중
+		   and ord_prdt_stus in('O05', 'O06', 'O07')		-- 주문완료, 결제취소요청, 결제취소
 	</select>
 
 	<update id="updateOrder" parameterType="kr.wrightbrothers.apps.order.dto.OrderMemoUpdateDto">
@@ -247,7 +247,21 @@
 		   and prnr_cd = #{partnerCode}
 	</update>
 
-	<update id="updateOrderDeliveryStatus" parameterType="java.lang.String" statementType="CALLABLE">
+
+	<select id="findRefundBankInfo" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.order.dto.RefundDto">
+		select
+			cnc_bank_cd as refundBankCode,
+			c.intg_cd_val_nm as refundBankName,
+			cnc_bank_acnt_no as refundBankAccountNo,
+			cnc_rmtr_nm as refundDepositorName
+		from ord_pay_info p
+				 left join com_intg_cd_dtl c
+						   on p.cnc_bank_cd = c.intg_cd_val
+							   and c.intg_cd_id = '000046'
+		where ord_no = #{orderNo}
+	</select>
+
+	<update id="updateOrderStatusRefresh" parameterType="java.lang.String" statementType="CALLABLE">
 		CALL SP_updateOrderStatus(#{orderNo})
 	</update>
 

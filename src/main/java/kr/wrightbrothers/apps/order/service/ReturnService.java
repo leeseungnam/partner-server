@@ -1,10 +1,12 @@
 package kr.wrightbrothers.apps.order.service;
 
+import kr.wrightbrothers.apps.common.type.DocumentSNS;
 import kr.wrightbrothers.apps.common.type.OrderProductStatusCode;
 import kr.wrightbrothers.apps.common.type.OrderStatusCode;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.*;
+import kr.wrightbrothers.apps.queue.OrderQueue;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ public class ReturnService {
 
     private final WBCommonDao dao;
     private final PaymentService paymentService;
+    private final OrderQueue orderQueue;
     private final String namespace = "kr.wrightbrothers.apps.order.query.Return.";
 
     public List<ReturnListDto.Response> findReturnList(ReturnListDto.Param paramDto) {
@@ -122,15 +125,28 @@ public class ReturnService {
                     dao.update(namespace + "updateOrderReturnCode", paramDto, PartnerKey.WBDataBase.Alias.Admin);
 
                     // 반품 완료 요청 시 결제는 결제취소 요청으로 처리
-                    if (OrderStatusCode.COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()))
+                    if (OrderStatusCode.COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode())) {
                         dao.update("kr.wrightbrothers.apps.order.query.Payment.updateRequestCancelPayment",
                                 PaymentCancelDto.builder()
                                         .orderNo(paramDto.getOrderNo())
                                         .userId(paramDto.getUserId())
                                         .partnerCode(paramDto.getPartnerCode())
                                         .build(), PartnerKey.WBDataBase.Alias.Admin);
+
+                        // 반품 완료 요청에 대한 Queue 전송
+                        orderQueue.sendToAdmin(
+                                DocumentSNS.REQUEST_RETURN_PRODUCT,
+                                // Queue 전송 데이터 객체 변환
+                                paramDto.toCancelQueueDto(),
+                                PartnerKey.TransactionType.Update
+                                );
+                    }
                     break;
             }
         });
+
+        if (!OrderStatusCode.COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()))
+            // 반품완료 요청 제외한 나머지 프로시저 호출로 주문정보 상태값 변경
+            dao.update("kr.wrightbrothers.apps.order.query.Order.updateOrderStatusRefresh", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin);
     }
 }

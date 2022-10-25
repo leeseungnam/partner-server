@@ -68,7 +68,9 @@
 	<update id="updateRequestCancelOrderProduct" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto">
 		-- 주문 상품 취소 요청 처리
 		update ord_prdt_info
-		   set ord_prdt_stus 	= 'O06',	-- 취소요청 코드
+		   set ord_prdt_stus= 'O06',	-- 취소요청 코드
+		       cnc_rsn_cd	= #{cancelReasonCode},
+		       cnc_rq_dt	= now(),
 			   upd_usr_id	= #{userId},
 			   upd_dt		= now()
 		 where ord_no 		= #{orderNo}
@@ -81,9 +83,9 @@
 		-- 취소 요청 후 환불 정보에 대한 수정으로
 		-- 불필요 한 수정자, 수정일시는 제외(로직 변경 시 해당부분 추가할 것)
 		update ord_pay_info
-		   set bank_cd		= #{refundBankCode},
-			   bank_acnt_no = #{refundBankAccountNo},
-			   dpstr_nm 	= #{refundDepositorName}
+		   set cnc_bank_cd		= ifnull(cnc_bank_cd, #{refundBankCode}),
+			   cnc_bank_acnt_no = ifnull(cnc_bank_acnt_no, #{refundBankAccountNo}),
+			   cnc_rmtr_nm		= ifnull(cnc_rmtr_nm, #{refundDepositorName})
 		 where ord_no = #{orderNo}
 	</update>
 

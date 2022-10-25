@@ -68,8 +68,8 @@ public class DeliveryService {
         if (dao.selectOne("kr.wrightbrothers.apps.order.query.Order.isDeliveryStatusCheck", paramDto, PartnerKey.WBDataBase.Alias.Admin))
             return;
 
-        // 주문 진행 상태 배송 상태 변경 처리 (공통 프로시저 호출)
-        dao.update("kr.wrightbrothers.apps.order.query.Order.updateOrderDeliveryStatus", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin);
+        // 진행상태 변청 처리 (공통 프로시저 호출)
+        dao.update("kr.wrightbrothers.apps.order.query.Order.updateOrderStatusRefresh", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin);
     }
 
     /**

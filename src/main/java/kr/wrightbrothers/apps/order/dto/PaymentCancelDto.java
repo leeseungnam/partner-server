@@ -15,6 +15,9 @@ import org.springframework.util.ObjectUtils;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -72,10 +75,34 @@ public class PaymentCancelDto {
             throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"환불 예금주"});
     }
 
+    public Queue toCancelQueueDto() {
+        return Queue.builder()
+                .ordNo(this.orderNo)
+                .prnrCd(this.partnerCode)
+                .ordPrdtIdxList(Arrays.stream(this.orderProductSeq).map(orderProductSeq -> Queue_Int.builder().ordPrdtIdx(orderProductSeq).build()).collect(Collectors.toList()))
+                .cncRsnCd(this.cancelReasonCode)
+                .build();
+    }
+
     public void setAopPartnerCode(String partnerCode) {
         this.partnerCode = partnerCode;
     }
     public void setAopUserId(String userId) {
         this.userId = userId;
+    }
+
+    @Getter
+    @Builder
+    public static class Queue {
+        private String ordNo;               // 주문번호
+        private String prnrCd;              // 파트너코드
+        private List<Queue_Int> ordPrdtIdxList;  // 주문상품 IDX 배열
+        private String cncRsnCd;            // 취소 사유 코드
+    }
+
+    @Getter
+    @Builder
+    public static class Queue_Int {
+        private Integer ordPrdtIdx;
     }
 }

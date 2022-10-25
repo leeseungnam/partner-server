@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -48,6 +50,14 @@ public class RequestReturnUpdateDto {
 
         public void setReturnProcessCode(String returnProcessCode){
             this.returnProcessCode = returnProcessCode;
+        }
+
+        public PaymentCancelDto.Queue toCancelQueueDto() {
+                return PaymentCancelDto.Queue.builder()
+                        .ordNo(this.orderNo)
+                        .prnrCd(this.partnerCode)
+                        .ordPrdtIdxList(Arrays.stream(this.orderProductSeqArray).map(orderProductSeq -> PaymentCancelDto.Queue_Int.builder().ordPrdtIdx(orderProductSeq).build()).collect(Collectors.toList()))
+                        .build();
         }
 
 }
