@@ -658,5 +658,41 @@
 		  from product_sell_info
 		 where product_code = #{productCode}
 	</select>
-
+	
+	<select id="findExcelProductList" parameterType="java.util.List" resultType="kr.wrightbrothers.apps.product.dto.ProductExcelDto">
+		select
+		    count(*) over (partition by p.product_code) as optionCount,
+		    p.product_code,
+		    p.brand_name,
+		    p.category_one_name,
+		    p.category_two_name,
+			p.category_thr_name,
+			p.product_name,
+			if(s.product_option_flag = 'Y', concat(o.option_name, '-', o.option_value), '') as product_option,
+			if(s.product_option_flag = 'Y', o.option_stock_qty, s.product_stock_qty) as product_stock_qty,
+			if(s.product_option_flag = 'Y', s.final_sell_amount + o.option_surcharge, s.final_sell_amount) as final_sell_amount,
+			s.product_status_code,
+			if(s.display_flag = 'Y', '노출', '미노출') as display_flag,
+			d.delivery_type,
+			d.delivery_bundle_flag,
+			ifnull(date_format(s.product_sell_start_date, '%Y-%m-%d'), '') as product_sell_start_day,
+			ifnull(date_format(s.product_sell_end_date, '%Y-%m-%d'), '') as product_sell_end_day,
+			ifnull(date_format(o.create_date, '%Y-%m-%d'), '') as create_day,
+			ifnull(date_format(o.update_date, '%Y-%m-%d'), '') as update_day,
+			if(u.user_id is null, '라이트브라더스', concat(u.user_name, '(', u.user_id, ')')) as create_user_name
+		  from product p
+		 inner join product_sell_info s
+			on p.product_code = s.product_code
+		  left join users u
+		    on p.create_user_id = u.user_id
+		  left join product_option o
+			on p.product_code = o.product_code
+		  left join product_delivery d
+			on p.product_code = d.product_code
+		 where p.product_code in
+		<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	
 </mapper>

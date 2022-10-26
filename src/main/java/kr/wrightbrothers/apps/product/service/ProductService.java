@@ -2,6 +2,7 @@ package kr.wrightbrothers.apps.product.service;
 
 import kr.wrightbrothers.apps.common.type.ProductStatusCode;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
+import kr.wrightbrothers.apps.common.util.ExcelUtil;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.ProductUtil;
 import kr.wrightbrothers.apps.file.service.FileService;
@@ -11,10 +12,20 @@ import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -34,6 +45,7 @@ public class ProductService {
     private final String namespace = "kr.wrightbrothers.apps.product.query.Product.";
     private final ProductUtil productUtil;
     private final FileService fileService;
+    private final ResourceLoader resourceLoader;
     private final ChangeInfoService changeInfoService;
 
     public List<ProductListDto.Response> findProductList(ProductListDto.Param paramDto) {
@@ -169,7 +181,64 @@ public class ProductService {
     }
 
     public int findProductCountByPartnerCode(String partnerCode) {
-        return dao.selectOne(namespace+"findProductCountByPartnerCode", partnerCode);
+        return dao.selectOne(namespace + "findProductCountByPartnerCode", partnerCode);
     }
 
+    public void makeExcelFile(List<String> productCodeList,
+                              HttpServletResponse response) throws IOException {
+        // 엑셀 템플릿 사용하여 기본 설정
+        ExcelUtil excel = new ExcelUtil(
+                new FileInputStream(resourceLoader.getResource("classpath:templates/excel/productList.xlsx").getFile()),
+                1
+        );
+
+        List<ProductExcelDto> productList = dao.selectList(namespace + "findExcelProductList", productCodeList);
+
+        // 엑셀 시트 생성
+        excel.sheet = excel.workbook.getSheetAt(0);
+
+        // 엑셀 생성
+        productList.forEach(product -> {
+            int colIndex = 0;
+            // 병합 사용 처리에 대한 카운트 처리
+            ++excel.mergeCount;
+
+            excel.row = excel.sheet.createRow(excel.rowNumber++);
+
+            excel.setCellValue(colIndex++, product.getProductCode());
+            excel.setCellValue(colIndex++, product.getBrandName());
+            excel.setCellValue(colIndex++, product.getCategoryOneName());
+            excel.setCellValue(colIndex++, product.getCategoryTwoName());
+            excel.setCellValue(colIndex++, product.getCategoryThrName());
+            excel.setCellValue(colIndex++, product.getProductName(), true);
+            excel.setCellValue(colIndex++, product.getProductOption(), true);
+            excel.setCellValue(colIndex++, product.getProductStockQty());
+            excel.setCellValue(colIndex++, product.getFinalSellAmount());
+            excel.setCellValue(colIndex++, product.getProductStatusCode());
+            excel.setCellValue(colIndex++, product.getDisplayFlag());
+            excel.setCellValue(colIndex++, product.getDeliveryType());
+            excel.setCellValue(colIndex++, product.getDeliveryBundleFlag());
+            excel.setCellValue(colIndex++, product.getProductSellStartDay());
+            excel.setCellValue(colIndex++, product.getProductSellEndDay());
+            excel.setCellValue(colIndex++, product.getCreateDay());
+            excel.setCellValue(colIndex++, product.getUpdateDay());
+            excel.setCellValue(colIndex, product.getCreateUserName(), true);
+
+            // 셀 병합처리
+            if (excel.mergeCount == product.getOptionCount()) {
+                if (excel.mergeCount > 1)
+                    for (int col = 0; col <= colIndex; col++) {
+                        if (col < 6 | col > 8)
+                            excel.sheet.addMergedRegion(new CellRangeAddress(excel.rowNumber - excel.mergeCount, excel.rowNumber - 1, col, col));
+                    }
+
+                excel.mergeCount = 0;
+            }
+        });
+
+        response.setContentType("ms-vnd/excel");
+        response.setHeader("Content-Disposition", "attachment;filename=\"" + URLEncoder.encode("상품목록리스트.xlsx", StandardCharsets.UTF_8) + "\";");
+        excel.workbook.write(response.getOutputStream());
+        excel.workbook.close();
+    }
 }

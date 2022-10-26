@@ -11,12 +11,19 @@ import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Api(tags = {"상품"})
 @RestController
 @RequestMapping("/v1")
@@ -42,10 +49,10 @@ public class ProductController extends WBController {
                                    @ApiParam(value = "페이지 행 수") @RequestParam int count,
                                    @ApiParam(value = "현재 페이지") @RequestParam int page,
                                    @ApiIgnore @AuthenticationPrincipal UserPrincipal user
-    ) {
-        WBModel response = new WBModel();
+                                   ) {
+        WBModel res = new WBModel();
         ProductListDto.Param paramDto = ProductListDto.Param.builder()
-                .partnerCode(user.getUserAuth().getPartnerCode())
+                .partnerCode("PT0000001")
                 .displayFlag(displayFlag)
                 .status(status)
                 .rangeType(rangeType)
@@ -61,10 +68,56 @@ public class ProductController extends WBController {
         paramDto.splitKeywordValue();
 
         // 상품 목록 조회
-        response.addObject(WBKey.WBModel.DefaultDataKey, productService.findProductList(paramDto));
-        response.addObject(WBKey.WBModel.DefaultDataTotalCountKey, paramDto.getTotalItems());
+        res.addObject(WBKey.WBModel.DefaultDataKey, productService.findProductList(paramDto));
+        res.addObject(WBKey.WBModel.DefaultDataTotalCountKey, paramDto.getTotalItems());
 
-        return response;
+        return res;
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
+    })
+    @ApiOperation(value = "상품 목록 엑셀 다운로드", notes = "등록된 상품의 엑셀 다운로드 파일 저장")
+    @GetMapping("/products/excel")
+    public void productExcelDownload(@ApiParam(value = "전시여부") @RequestParam String[] displayFlag,
+                                     @ApiParam(value = "판매상태") @RequestParam String[] status,
+                                     @ApiParam(value = "조회기간 구분") @RequestParam String rangeType,
+                                     @ApiParam(value = "조회기간 시작일") @RequestParam String startDay,
+                                     @ApiParam(value = "조회기간 종료일") @RequestParam String endDay,
+                                     @ApiParam(value = "키워드 구분") @RequestParam String keywordType,
+                                     @ApiParam(value = "키워드 값") @RequestParam(required = false) String keywordValue,
+                                     @ApiParam(value = "정렬 타입") @RequestParam String sortType,
+                                     @ApiParam(value = "페이지 행 수") @RequestParam int count,
+                                     @ApiParam(value = "현재 페이지") @RequestParam int page,
+                                     @ApiIgnore @AuthenticationPrincipal UserPrincipal user,
+                                     @ApiIgnore HttpServletResponse response
+    ) throws IOException {
+        ProductListDto.Param paramDto = ProductListDto.Param.builder()
+                .partnerCode("PT0000001")
+                .displayFlag(displayFlag)
+                .status(status)
+                .rangeType(rangeType)
+                .startDay(startDay)
+                .endDay(endDay)
+                .keywordType(keywordType)
+                .keywordValue(keywordValue)
+                .sortType(sortType)
+                .count(count)
+                .page(page)
+                .build();
+        // 다건 검색조회 split 처리
+        paramDto.splitKeywordValue();
+
+        // 상품 목록 조회
+        List<ProductListDto.Response> productList = productService.findProductList(paramDto);
+
+        // 엑셀 다운로드
+        productService.makeExcelFile(
+                productList.stream()
+                        .map(ProductListDto.Response::getProductCode)
+                        .collect(Collectors.toList()),
+                response
+        );
     }
 
     @UserPrincipalScope
