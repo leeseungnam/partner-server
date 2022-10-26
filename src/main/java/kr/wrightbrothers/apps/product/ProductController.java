@@ -52,7 +52,7 @@ public class ProductController extends WBController {
                                    ) {
         WBModel res = new WBModel();
         ProductListDto.Param paramDto = ProductListDto.Param.builder()
-                .partnerCode("PT0000001")
+                .partnerCode(user.getUserAuth().getPartnerCode())
                 .displayFlag(displayFlag)
                 .status(status)
                 .rangeType(rangeType)
@@ -93,7 +93,7 @@ public class ProductController extends WBController {
                                      @ApiIgnore HttpServletResponse response
     ) throws IOException {
         ProductListDto.Param paramDto = ProductListDto.Param.builder()
-                .partnerCode("PT0000001")
+                .partnerCode(user.getUserAuth().getPartnerCode())
                 .displayFlag(displayFlag)
                 .status(status)
                 .rangeType(rangeType)
