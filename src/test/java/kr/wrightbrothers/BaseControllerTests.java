@@ -70,13 +70,13 @@ public class BaseControllerTests {
 				.userId("test@wrightbrothers.kr")
 				.userPwd("")
 				.userAuth(UserAuthDto.builder()
-								//.partnerCode("PT0000001")
-						.partnerCode("35")
+								.partnerCode("PT0000001")
+						//.partnerCode("35")
 								.authCode("ROLE_ADMIN")
 						.build())
 				.build();
 
-		UserPrincipal principal = new UserPrincipal("test@wrightbrothers.kr", "", List.of(new SimpleGrantedAuthority("ROLE_ADMIN")), UserAuthDto.builder().authCode("ROLE_ADMIN").partnerCode("35").build());
+		UserPrincipal principal = new UserPrincipal("test@wrightbrothers.kr", "", List.of(new SimpleGrantedAuthority("ROLE_ADMIN")), UserAuthDto.builder().authCode("ROLE_ADMIN").partnerCode("PT0000001").build());
 		context.setAuthentication(new UsernamePasswordAuthenticationToken(principal, "", List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))));
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
