@@ -32,7 +32,8 @@ public class PartnerContractDto {
         @NotBlank(message = "세금계산서 이메일")
         private String taxBillEmail;
 
-        @ApiModelProperty(value = "은행 코드", required = true)
+        @ApiModelProperty(value = "은행 코드 공통코드:000046(04:국민은행,02:산업은행,23:SC제일은행,71:우체국,89:케이뱅크,03:기업은행,20:우리은행,39:경남은행,45:새마을금고,37:전북은행"+
+                ",11:농협은행,27:씨티은행,34:광주은행,32:부산은행,07:수협은행,35:제주은행,88:신한은행,81:KEB하나은행,31:대구은행,48:신협중앙회,90:카카오뱅크,92:토스뱅크)", required = true)
         @NotBlank(message = "은행 코드")
         @Size(min = 2, max = 20, message = "은행 코드")
         private String bankCode;
