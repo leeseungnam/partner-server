@@ -693,6 +693,7 @@
 		<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
 			#{item}
 		</foreach>
+		 order p.product_code
 	</select>
 	
 </mapper>

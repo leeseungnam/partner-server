@@ -265,4 +265,47 @@
 		CALL SP_updateOrderStatus(#{orderNo})
 	</update>
 
+	<select id="findExcelOrderList" parameterType="kr.wrightbrothers.apps.order.dto.OrderExcelDto$Param" resultType="kr.wrightbrothers.apps.order.dto.OrderExcelDto$Response">
+		select
+		    count(*) over (partition by o.ord_no) as product_count,
+		    date_format(o.ord_dt, '%Y-%m-%d') as order_day,
+		    o.ord_no as order_no,
+		    m.usr_nm as order_user_name,
+		    s.ord_stus as order_status,
+		    s.ord_nm as order_name,
+		    p.prdt_nm as product_name,
+		    if(p.optn_nm is null, '', concat(p.optn_nm, '-', p.optn_val)) as product_option,
+		    p.prdt_qty as product_qty,
+		    p.fnl_sell_amt as product_sell_amount,
+		    p.fnl_sell_amt as product_amount,
+		    s.pay_amt as payment_amount,
+		    p.dlvr_chrg_amt as product_delivery_charge_amount,
+		    pi.pay_meth as payment_method,
+		    date_format(pi.pym_dt, '%Y-%m-%d') as payment_day,
+		    s.pay_stus as payment_status,
+		    date_format(s.cnc_dt, '%Y-%m-%d') as cancel_day,
+		    if(c.intg_cd_val_nm is null or c.intg_cd_val = 'C99', s.cnc_rsn, c.intg_cd_val_nm) as cancel_reason,
+		    concat('(', s.rcpnt_adrs_zip_cd, ') ', s.rcpnt_adrs, ', ', s.rcpnt_adrs_sub) as address,
+		    o.rqst_dtls as request_detail,
+		    s.ord_memo as order_memo
+		  from ord_info o
+		 inner join ord_prnr_info s
+			on o.ord_no = s.ord_no
+		   and s.prnr_cd = #{partnerCode}
+		 inner join ord_prdt_info p
+			on o.ord_no = p.ord_no
+		  left join com_intg_cd_dtl c
+		    on s.cnc_rsn_cd = c.intg_cd_val
+		   and c.intg_cd_id = '000074'
+		 inner join ord_pay_info pi
+		    on o.ord_no = pi.ord_no
+		  left join com_mbr_info m
+			on o.ord_usr_id = m.usr_id
+		 where o.ord_no in
+		<foreach collection="orderNoList" item="item" index="index" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		  order by o.ord_no
+	</select>
+
 </mapper>
