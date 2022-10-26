@@ -33,7 +33,7 @@ public class PartnerService {
         //  update updatePartnerContractOperator
         dao.update(namespace+"updatePartnerContract", PartnerUpdateDto.Param.Contract.builder()
                         .partnerCode(paramDto.getPartner().getPartnerCode())
-                        .contractNo(paramDto.getPartnerContract().getContractNo())
+                        .contractCode(paramDto.getPartnerContract().getContractCode())
                         .contractManagerPhone(paramDto.getPartnerContract().getContractManagerPhone())
                         .contractManagerName(paramDto.getPartnerContract().getContractManagerName())
                         .accountNo(paramDto.getPartnerContract().getAccountNo())
@@ -50,7 +50,7 @@ public class PartnerService {
         //  update updatePartnerContractOperator
         dao.update(namespace+"updatePartnerContractOperator", PartnerUpdateDto.Param.Contract.builder()
                         .partnerCode(paramDto.getPartnerCode())
-                        .contractNo(paramDto.getContractNo())
+                        .contractCode(paramDto.getContractCode())
                         .contractManagerName(paramDto.getContractManagerName())
                         .contractManagerPhone(paramDto.getContractManagerPhone())
                         .userId(paramDto.getUserId())
@@ -107,9 +107,9 @@ public class PartnerService {
         // insert partner
         dao.insert(namespace + "insertPartner", paramDto.getPartner());
 
-        // create contractNo
-        String contractNo = RandomStringUtils.randomAlphanumeric(10).toUpperCase();
-        paramDto.getPartnerContract().changeContractNo(contractNo);
+        // create contractCode
+        String contractCode = RandomStringUtils.randomAlphanumeric(10).toUpperCase();
+        paramDto.getPartnerContract().changeContractCode(contractCode);
         paramDto.getPartnerContract().changePartnerCode(partnerCode);
         paramDto.getPartnerContract().changeContractStatus(Partner.Contract.Status.EMPTY.getCode());
 

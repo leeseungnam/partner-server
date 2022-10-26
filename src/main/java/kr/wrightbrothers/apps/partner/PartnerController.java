@@ -103,7 +103,7 @@ public class PartnerController extends WBController {
             }
 
             messageId.append(messagePrefix)
-                    .append("partner.status.")
+                    .append("partner.comment.")
                     .append(entry.getPartnerStatus())
                     .append(".")
                     .append(entry.getContractStatus());
@@ -136,9 +136,9 @@ public class PartnerController extends WBController {
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "파트너 정보 수정", notes = "파트너 정보 수정 요청 API 입니다.")
-    @PostMapping("/{partnerCode}/{contractNo}")
+    @PostMapping("/{partnerCode}/{contractCode}")
     public WBModel updatePartnerAll(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode
-            ,@ApiParam(value = "계약번호") @PathVariable String contractNo
+            ,@ApiParam(value = "계약 코드") @PathVariable String contractCode
             ,@ApiParam @Valid @RequestBody PartnerInsertDto paramDto
             ,@ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
 
@@ -146,7 +146,7 @@ public class PartnerController extends WBController {
 
         paramDto.getPartner().changePartnerCode(partnerCode);
         paramDto.getPartnerContract().changePartnerCode(partnerCode);
-        paramDto.getPartnerContract().changeContractNo(contractNo);
+        paramDto.getPartnerContract().changeContractCode(contractCode);
 
         // create user set
         partnerService.updatePartnerAll(paramDto);
@@ -161,9 +161,9 @@ public class PartnerController extends WBController {
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "파트너 정보 수정", notes = "파트너 정보 수정 요청 API 입니다.")
-    @PutMapping("/{partnerCode}/{contractNo}")
+    @PutMapping("/{partnerCode}/{contractCode}")
     public WBModel updatePartner(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode
-            ,@ApiParam(value = "계약번호") @PathVariable String contractNo
+            ,@ApiParam(value = "계약 코드") @PathVariable String contractCode
             ,@ApiParam @Valid @RequestBody PartnerUpdateDto.ReqBody paramDto
             ,@ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
 
@@ -172,7 +172,7 @@ public class PartnerController extends WBController {
         // create user set
         paramDto.changeUserId(user.getUsername());
         paramDto.changePartnerCode(partnerCode);
-        paramDto.changeContractNo(contractNo);
+        paramDto.changeContractCode(contractCode);
 
         partnerService.updatePartner(paramDto);
 

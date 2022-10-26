@@ -24,9 +24,9 @@ public class PartnerUpdateDto {
         @JsonIgnore
         private String partnerCode;
 
-        @ApiModelProperty(value = "계약 번호")
+        @ApiModelProperty(value = "계약 코드")
         @JsonIgnore
-        private String contractNo;
+        private String contractCode;
 
         @ApiModelProperty(value = "계약 담당자명")
         @NotBlank(message = "계약 담당자명")
@@ -49,8 +49,8 @@ public class PartnerUpdateDto {
         public void changePartnerCode(String partnerCode) {
             this.partnerCode = partnerCode;
         }
-        public void changeContractNo(String contractNo) {
-            this.contractNo = contractNo;
+        public void changeContractCode(String contractCode) {
+            this.contractCode = contractCode;
         }
     }
 
@@ -63,7 +63,7 @@ public class PartnerUpdateDto {
         @NoArgsConstructor
         public static class Contract {
             private String partnerCode;
-            private String contractNo;
+            private String contractCode;
             private String contractManagerName;
             private String contractManagerPhone;
             private String accountNo;

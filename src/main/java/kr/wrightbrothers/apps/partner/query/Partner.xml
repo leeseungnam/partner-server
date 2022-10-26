@@ -48,7 +48,7 @@
 		    contract_manager_name = #{contractManagerName}
 		,	contract_manager_phone = #{contractManagerPhone}
 			where partner_code = #{partnerCode}
-			and contract_no = #{contractNo}
+			and contract_code = #{contractCode}
 	</update>
 
 	<update id="updatePartnerContract" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerUpdateDto$Param$Contract">
@@ -60,7 +60,7 @@
 		  ,	bank_code = #{bankCode}
 		  ,	tax_bill_email = #{taxBillEmail}
 		where partner_code = #{partnerCode}
-		  and contract_no = #{contractNo}
+		  and contract_code = #{contractCode}
 	</update>
 
 	<select id="findPartnerNotificationByPartnerCode" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.partner.dto.PartnerNotificationDto$ResBody">
@@ -102,7 +102,7 @@
 
 	<select id="findPartnerContractByPartnerCode" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.partner.dto.PartnerContractDto$ResBody">
 		select pc.partner_code
-			 , pc.contract_no
+			 , pc.contract_code
 			 , pc.contract_status
 			 , pc.contract_manager_name
 			 , pc.contract_manager_phone
@@ -201,7 +201,7 @@
 		insert into partner_contract
 		    (
 		     partner_code
-		     , contract_no
+		     , contract_code
 		     , contract_status
 		     , contract_manager_name
 		     , contract_manager_phone
@@ -219,7 +219,7 @@
 		values
 			(
 			#{partnerCode}
-			, #{contractNo}
+			, #{contractCode}
 			, #{contractStatus}
 			, #{contractManagerName}
 			, #{contractManagerPhone}

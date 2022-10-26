@@ -75,16 +75,16 @@ public class PartnerContractDto {
         @JsonIgnore
         private String contractStatus;
 
-        @ApiModelProperty(value = "계약번호")
+        @ApiModelProperty(value = "계약 코드")
         @JsonIgnore
-        private String contractNo;
+        private String contractCode;
 
         @ApiModelProperty(value = "작성자 아이디")
         @JsonIgnore
         private String userId;
 
-        public void changeContractNo(String contractNo) {
-            this.contractNo = contractNo;
+        public void changeContractCode(String contractCode) {
+            this.contractCode = contractCode;
         }
         public void changeUserId(String userId) {
             this.userId = userId;
@@ -105,8 +105,8 @@ public class PartnerContractDto {
     @NoArgsConstructor
     public static class ResBody extends PartnerContract{
 
-        @ApiModelProperty(value = "계약번호")
-        private String contractNo;
+        @ApiModelProperty(value = "계약 코드")
+        private String contractCode;
 
         @ApiModelProperty(value = "계약진행 상태 공통코드:000087(C01:계약전, C02:계약중, C03:재계약, C04:계약갱신, C05:계약종료, C06:계약철회)")
         private String contractStatus;
