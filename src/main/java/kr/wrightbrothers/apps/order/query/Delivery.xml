@@ -39,7 +39,7 @@
 				and _p.prdt_cd = _d.prdt_cd
 			  where _p.prnr_cd = #{partnerCode}
 			-- 배송 상태
-			<foreach collection="deliveryStatus" item="item" index="index" open="and _p.ord_prdt_stus in (" separator="," close=")">
+			<foreach collection="deliveryStatus" item="item" index="index" open="and _d.ord_dlvr_stus in (" separator="," close=")">
 				#{item}
 			</foreach>
 			-- 배송 방법
@@ -91,7 +91,7 @@
 		insert into ord_shpn_info(ord_no,
 		                          ord_prdt_idx,
 		                          prdt_cd,
-		                          dlvry_stus,
+		                          ord_dlvr_stus,
 		                          dlvry_cmpny,
 		                          invc_no,
 		                          invc_inp_dt,
@@ -115,12 +115,12 @@
 		       )
 		on duplicate key
 		update
-		    dlvry_cmpny = #{deliveryCompanyCode},
-		    dlvry_stus	= 'D02',
-		    invc_no		= #{invoiceNo},
-		    invc_inp_dt = now(),
-		    upd_usr_id	= #{userId},
-		    upd_dt		= now()
+		    dlvry_cmpny 	= #{deliveryCompanyCode},
+		    ord_dlvr_stus	= 'D02',
+		    invc_no			= #{invoiceNo},
+		    invc_inp_dt 	= now(),
+		    upd_usr_id		= #{userId},
+		    upd_dt			= now()
 	</update>
 
 	<update id="updateProductDeliveryStartStatus" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto">
@@ -171,8 +171,8 @@
 			d.dlvry_cmpny as delivery_company_code,
 			cd.intg_cd_val_nm as delivery_company_name,
 			d.invc_no as invoice_no,
-			d.dlvry_stus as delivery_status_code,
-			d.dlvry_stus as delivery_status_name,
+			d.ord_dlvr_stus as delivery_status_code,
+			d.ord_dlvr_stus as delivery_status_name,
 			date_format(d.dlvry_st_dt, '%Y-%m-%d') as delivery_start_day,
 			date_format(d.dlvry_end_dt, '%Y-%m-%d') as delivery_end_day
 		  from ord_prdt_info p
@@ -189,14 +189,64 @@
 	    -- 상품 준비 중, 배송중 목록
 		 where p.ord_no = #{orderNo}
 	       and p.prnr_cd = #{partnerCode}
-	       and d.dlvry_stus in ('D01', 'D02')
+	       and d.ord_dlvr_stus in ('D01', 'D02')
 	</select>
 	<select id="findDeliveryCompleteProductList" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryFindDto$Param" resultType="kr.wrightbrothers.apps.order.dto.DeliveryProductDto">
 		<include refid="findDeliveryProductSql"/>
 		-- 배송완료 주문 목록
 		 where p.ord_no = #{orderNo}
 		   and p.prnr_cd = #{partnerCode}
-		   and d.dlvry_stus = 'D05'
+		   and d.ord_dlvr_stus = 'D05'
 	</select>
-
+	
+	<select id="findExcelDeliveryList" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryExcelDto$Param" resultType="kr.wrightbrothers.apps.order.dto.DeliveryExcelDto$Response">
+		select
+		    count(*) over (partition by o.ord_no) as order_product_count,
+		    count(*) over (partition by o.ord_no, p.prdt_cd) as product_count,
+		    date_format(pi.pym_dt, '%Y-%m-%d') as payment_day,
+		    o.ord_no as order_no,
+		    date_format(o.ord_dt, '%Y-%m-%d') as order_day,
+		    s.ord_nm as order_name,
+		    p.prdt_cd as product_code,
+		    p.prdt_nm as product_name,
+			if(p.optn_nm is null, '', concat(p.optn_nm, '-', p.optn_val)) as product_option,
+			p.prdt_qty as product_qty,
+			p.fnl_sell_amt as product_sell_amount,
+			p.fnl_sell_amt as product_amount,
+			p.dlvr_chrg_amt as product_delivery_charge_amount,
+			s.pay_amt as payment_amount,
+			m.usr_nm as order_user_name,
+			p.dlvr_tp as delivery_type,
+			ifnull(d.ord_dlvr_stus, '') as delivery_status,
+			ifnull(c.intg_cd_val_nm, '') as delivery_company,
+			ifnull(d.invc_no, '') as invoice_no,
+			s.rcpnt_nm as recipient_name,
+			s.rcpnt_usr_phn as recipient_user_phone,
+			concat('(', s.rcpnt_adrs_zip_cd, ') ', s.rcpnt_adrs) as recipient_address,
+			s.rcpnt_adrs_sub as recipient_address_detail,
+			ifnull(o.rqst_dtls, '') as request_detail,
+			ifnull(s.dlvry_memo, '') as delivery_memo
+		  from ord_info o
+		 inner join ord_prnr_info s
+			on o.ord_no = s.ord_no
+		   and s.prnr_cd = #{partnerCode}
+		 inner join ord_prdt_info p
+			on o.ord_no = p.ord_no
+		 inner join ord_pay_info pi
+		    on o.ord_no = pi.ord_no
+		  left join ord_shpn_info d
+			on p.ord_no = d.ord_no
+		   and p.ord_prdt_idx = d.ord_prdt_idx
+		  left join com_mbr_info m
+		  	on o.ord_usr_id = m.usr_id
+		  left join com_intg_cd_dtl c
+		  	on d.dlvry_cmpny = c.intg_cd_val
+		   and c.intg_cd_id = '000044'
+		 where o.ord_no in
+		<foreach collection="deliveryList" item="item" index="index" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		 order by o.ord_no desc, p.prdt_cd
+	</select>
+	
 </mapper>

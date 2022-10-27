@@ -15,7 +15,11 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Api(tags = {"배송"})
 @RestController
@@ -60,6 +64,47 @@ public class DeliveryController extends WBController {
         response.addObject(WBKey.WBModel.DefaultDataTotalCountKey, paramDto.getTotalItems());
 
         return response;
+    }
+
+    @GetMapping("/deliveries/excel")
+    public void deliveryExcelDownload(@ApiParam(value = "배송상태") @RequestParam String[] deliveryStatus,
+                                      @ApiParam(value = "배송방법") @RequestParam String[] deliveryType,
+                                      @ApiParam(value = "조회기간 시작일") @RequestParam String startDay,
+                                      @ApiParam(value = "조회기간 종료일") @RequestParam String endDay,
+                                      @ApiParam(value = "키워드 구분") @RequestParam String keywordType,
+                                      @ApiParam(value = "키워드 값") @RequestParam(required = false) String keywordValue,
+                                      @ApiParam(value = "페이지 행 수") @RequestParam int count,
+                                      @ApiParam(value = "현재 페이지") @RequestParam int page,
+                                      @ApiIgnore @AuthenticationPrincipal UserPrincipal user,
+                                      @ApiIgnore HttpServletResponse response
+    ) throws IOException {
+        DeliveryListDto.Param paramDto = DeliveryListDto.Param.builder()
+                .partnerCode("PT0000001")
+                .deliveryType(deliveryType)
+                .deliveryStatus(deliveryStatus)
+                .startDay(startDay)
+                .endDay(endDay)
+                .keywordType(keywordType)
+                .keywordValue(keywordValue)
+                .count(count)
+                .page(page)
+                .build();
+        // 다건 검색조회 split 처리
+        paramDto.splitKeywordValue();
+
+        // 배송 내역 목록 조회
+        List<DeliveryListDto.Response> deliveryList = deliveryService.findDeliveryList(paramDto);
+
+        // 엑셀 다운로드
+        deliveryService.makeExcelFile(
+                DeliveryExcelDto.Param.builder()
+                        .partnerCode("PT0000001")
+                        .deliveryList(deliveryList.stream()
+                                .map(DeliveryListDto.Response::getOrderNo)
+                                .collect(Collectors.toList()))
+                        .build(),
+                response
+        );
     }
 
     @ApiImplicitParams({

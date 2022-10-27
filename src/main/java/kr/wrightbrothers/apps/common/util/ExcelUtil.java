@@ -19,6 +19,7 @@ public class ExcelUtil {
     public XSSFCell cell;               // 셀
     public int rowNumber;               // 시트 행 번호
     public int mergeCount;              // 병합 처리 건수
+    public int subMergeCount;           // 소분류 병합 처리 건수
 
     public ExcelUtil() {
         new ExcelUtil(null, 0);

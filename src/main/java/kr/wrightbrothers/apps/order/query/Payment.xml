@@ -31,7 +31,6 @@
 		    s.dlvr_chrg_amt as delivery_charge_amount,
 		    s.pay_amt as payment_amount,
 		    p.pym_dt as payment_date,
-		    t.trsctn_id as transaction_id,
 		    p.pay_meth as payment_method_code,
 		    p.pay_meth as payment_method_name,
 		    s.pay_stus as payment_status_code,
@@ -42,8 +41,6 @@
 		 inner join ord_prnr_info s
 		    on p.ord_no = s.ord_no
 		   and s.prnr_cd = #{partnerCode}
-		  left join ord_trsctn_info t
-			on p.ord_no = t.ord_no
 		  left join com_intg_cd_dtl cd
 		    on s.cnc_rsn_cd = cd.intg_cd_val
 		   and cd.intg_cd_id = '000074'

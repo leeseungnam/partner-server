@@ -186,8 +186,8 @@
 			cd.intg_cd_val as delivery_company_code,
 			cd.intg_cd_val_nm as delivery_company_name,
 			d.invc_no as invoice_no,
-			d.dlvry_stus as delivery_status_code,
-			d.dlvry_stus as delivery_status_name,
+			d.ord_dlvr_stus as delivery_status_code,
+			d.ord_dlvr_stus as delivery_status_name,
 			date_format(d.dlvry_st_dt, '%Y-%m-%d') as delivery_start_day,
 			date_format(d.dlvry_end_dt, '%Y-%m-%d') as delivery_end_day
 		  from ord_prdt_info p
