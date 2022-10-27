@@ -28,7 +28,10 @@ public class ExcelUtil {
         // Excel 템플릿 사용 여부에 따른 초기화 설정.
         try {
             this.workbook = stream == null ? new XSSFWorkbook() : new XSSFWorkbook(stream);
-        } catch (IOException ignored){};
+        } catch (IOException ioException){
+            // 템플릿 파일 실패일 경우 기본 생성자 처리
+            this.workbook = new XSSFWorkbook();
+        }
 
         // 로우 설정
         rowNumber = startRowNumber;
@@ -54,19 +57,19 @@ public class ExcelUtil {
     }
 
     // POI 폰트 초기화
-    public static void initFont(XSSFFont font,
-                                int fontSize,
-                                boolean isBold) {
+    public void initFont(XSSFFont font,
+                         int fontSize,
+                         boolean isBold) {
         font.setFontHeightInPoints((short) fontSize);
         font.setFontName("맑은고딕");
         font.setBold(isBold);
     }
 
     // POI 셀 초기화
-    public static void initCellStyle(XSSFCellStyle cs,
-                                     XSSFFont font,
-                                     HorizontalAlignment align,
-                                     short[] options) {
+    public void initCellStyle(XSSFCellStyle cs,
+                              XSSFFont font,
+                              HorizontalAlignment align,
+                              short[] options) {
         // 폰트 설정
         cs.setFont(font);
 
@@ -82,8 +85,8 @@ public class ExcelUtil {
         setCellBackgroundColor(cs, options[4]);
     }
 
-    public static void setCellBoldStyle(XSSFCellStyle cs,
-                                        short[] options) {
+    public void setCellBoldStyle(XSSFCellStyle cs,
+                                 short[] options) {
         // 셀 테두리 설정
         // XSSFCellStyle.BORDER_THIN 활성화 1, 비활성화 0
         cs.setBorderLeft(BorderStyle.valueOf(options[0]));
@@ -92,8 +95,8 @@ public class ExcelUtil {
         cs.setBorderBottom(BorderStyle.valueOf(options[3]));
     }
 
-    public static void setCellBackgroundColor(XSSFCellStyle cs,
-                                              short isBackgroundColor) {
+    public void setCellBackgroundColor(XSSFCellStyle cs,
+                                       short isBackgroundColor) {
         // 셀 배경샛 유무
         if (isBackgroundColor == 0x1) {
             cs.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
@@ -101,7 +104,7 @@ public class ExcelUtil {
         }
     }
 
-    public static short[] convertShort(char[] options) {
+    public short[] convertShort(char[] options) {
         int[] before = new int[5];
         for (int i = 0; i < 5; i++)
             before[i] = Character.getNumericValue(options[i]);
