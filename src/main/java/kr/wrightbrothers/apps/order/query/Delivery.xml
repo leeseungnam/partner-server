@@ -222,7 +222,7 @@
 			ifnull(d.invc_no, '') as invoice_no,
 			s.rcpnt_nm as recipient_name,
 			s.rcpnt_usr_phn as recipient_user_phone,
-			concat('(', s.rcpnt_adrs_zip_cd, ') ', s.rcpnt_adrs) as recipient_address,
+			ifnull(concat('(', s.rcpnt_adrs_zip_cd, ') ', s.rcpnt_adrs), '') as recipient_address,
 			s.rcpnt_adrs_sub as recipient_address_detail,
 			ifnull(o.rqst_dtls, '') as request_detail,
 			ifnull(s.dlvry_memo, '') as delivery_memo

@@ -79,7 +79,7 @@ public class DeliveryController extends WBController {
                                       @ApiIgnore HttpServletResponse response
     ) throws IOException {
         DeliveryListDto.Param paramDto = DeliveryListDto.Param.builder()
-                .partnerCode("PT0000001")
+                .partnerCode(user.getUserAuth().getPartnerCode())
                 .deliveryType(deliveryType)
                 .deliveryStatus(deliveryStatus)
                 .startDay(startDay)
@@ -98,7 +98,7 @@ public class DeliveryController extends WBController {
         // 엑셀 다운로드
         deliveryService.makeExcelFile(
                 DeliveryExcelDto.Param.builder()
-                        .partnerCode("PT0000001")
+                        .partnerCode(user.getUserAuth().getPartnerCode())
                         .deliveryList(deliveryList.stream()
                                 .map(DeliveryListDto.Response::getOrderNo)
                                 .collect(Collectors.toList()))
