@@ -283,11 +283,11 @@
 		    pi.pay_meth as payment_method,
 		    date_format(pi.pym_dt, '%Y-%m-%d') as payment_day,
 		    s.pay_stus as payment_status,
-		    date_format(s.cnc_dt, '%Y-%m-%d') as cancel_day,
-		    if(c.intg_cd_val_nm is null or c.intg_cd_val = 'C99', s.cnc_rsn, c.intg_cd_val_nm) as cancel_reason,
-		    concat('(', s.rcpnt_adrs_zip_cd, ') ', s.rcpnt_adrs, ', ', s.rcpnt_adrs_sub) as address,
-		    o.rqst_dtls as request_detail,
-		    s.ord_memo as order_memo
+		    ifnull(date_format(s.cnc_dt, '%Y-%m-%d'), '') as cancel_day,
+			ifnull(if(c.intg_cd_val_nm is null or c.intg_cd_val = 'C99', s.cnc_rsn, c.intg_cd_val_nm), '') as cancel_reason,
+		    ifnull(concat('(', s.rcpnt_adrs_zip_cd, ') ', s.rcpnt_adrs, ', ', s.rcpnt_adrs_sub), '') as address,
+		    ifnull(o.rqst_dtls, '') as request_detail,
+		    ifnull(s.ord_memo, '') as order_memo
 		  from ord_info o
 		 inner join ord_prnr_info s
 			on o.ord_no = s.ord_no
@@ -305,7 +305,7 @@
 		<foreach collection="orderNoList" item="item" index="index" open="(" separator="," close=")">
 			#{item}
 		</foreach>
-		  order by o.ord_no
+		  order by o.ord_no desc
 	</select>
 
 </mapper>

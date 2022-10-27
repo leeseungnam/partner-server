@@ -110,7 +110,7 @@ public class OrderService {
             if (excel.mergeCount == order.getProductCount()) {
                 if (excel.mergeCount > 1)
                     for (int col = 0; col <= colIndex; col++) {
-                        if (col < 5 | col == 10 | (col > 11 & col < 15) | (col > 16 & col < 19))
+                        if (col < 5 | (col > 10 & col < 15) | (col > 16 & col < 20))
                             excel.sheet.addMergedRegion(new CellRangeAddress(excel.rowNumber - excel.mergeCount, excel.rowNumber - 1, col, col));
                     }
 

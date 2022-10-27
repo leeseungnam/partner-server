@@ -100,7 +100,7 @@ public class OrderController extends WBController {
                                    @ApiIgnore HttpServletResponse response
     ) throws IOException {
         OrderListDto.Param paramDto = OrderListDto.Param.builder()
-                .partnerCode("PT0000001")
+                .partnerCode(user.getUserAuth().getPartnerCode())
                 .orderStatus(orderStatus)
                 .paymentStatus(paymentStatus)
                 .paymentMethod(paymentMethod)
@@ -122,7 +122,7 @@ public class OrderController extends WBController {
         // 엑셀 다운로드
         orderService.makeExcelFile(
                 OrderExcelDto.Param.builder()
-                        .partnerCode("PT0000001")
+                        .partnerCode(user.getUserAuth().getPartnerCode())
                         .orderNoList(orderList.stream()
                                 .map(OrderListDto.Response::getOrderNo)
                                 .collect(Collectors.toList()))
