@@ -3,10 +3,7 @@ package kr.wrightbrothers.apps.order;
 import io.swagger.annotations.*;
 import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
-import kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto;
-import kr.wrightbrothers.apps.order.dto.ReturnFindDto;
-import kr.wrightbrothers.apps.order.dto.ReturnListDto;
-import kr.wrightbrothers.apps.order.dto.ReturnMemoUpdateDto;
+import kr.wrightbrothers.apps.order.dto.*;
 import kr.wrightbrothers.apps.order.service.ReturnService;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import kr.wrightbrothers.framework.support.WBController;
@@ -17,7 +14,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Api(tags = {"반품"})
 @RestController
@@ -64,6 +65,47 @@ public class ReturnController extends WBController {
         response.addObject(WBKey.WBModel.DefaultDataTotalCountKey, paramDto.getTotalItems());
 
         return response;
+    }
+
+    @GetMapping("/returns/excel")
+    public void returnExcelDownload(@ApiParam(value = "반품상태") @RequestParam String[] returnStatus,
+                                    @ApiParam(value = "조회기간 구분") @RequestParam String rangeType,
+                                    @ApiParam(value = "조회기간 시작일") @RequestParam String startDay,
+                                    @ApiParam(value = "조회기간 종료일") @RequestParam String endDay,
+                                    @ApiParam(value = "키워드 구분") @RequestParam String keywordType,
+                                    @ApiParam(value = "키워드 값") @RequestParam(required = false) String keywordValue,
+                                    @ApiParam(value = "페이지 행 수") @RequestParam int count,
+                                    @ApiParam(value = "현재 페이지") @RequestParam int page,
+                                    @ApiIgnore @AuthenticationPrincipal UserPrincipal user,
+                                    @ApiIgnore HttpServletResponse response
+    ) throws IOException {
+        ReturnListDto.Param paramDto = ReturnListDto.Param.builder()
+                .partnerCode(user.getUserAuth().getPartnerCode())
+                .returnStatus(returnStatus)
+                .rangeType(rangeType)
+                .startDay(startDay)
+                .endDay(endDay)
+                .keywordType(keywordType)
+                .keywordValue(keywordValue)
+                .count(count)
+                .page(page)
+                .build();
+        // 다건 검색조회 split 처리
+        paramDto.splitKeywordValue();
+
+        // 반품 내역 목록 조회
+        List<ReturnListDto.Response> returnList = returnService.findReturnList(paramDto);
+
+        // 엑셀 다운로드
+        returnService.makeExcelFile(
+                ReturnExcelDto.Param.builder()
+                        .partnerCode(user.getUserAuth().getPartnerCode())
+                        .returnList(returnList.stream()
+                                .map(ReturnListDto.Response::getOrderNo)
+                                .collect(Collectors.toList()))
+                        .build(),
+                response
+        );
     }
 
     @ApiImplicitParams({

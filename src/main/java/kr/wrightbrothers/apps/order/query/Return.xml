@@ -65,6 +65,9 @@
 		 		order by g.cnc_rq_dt desc
 			</when>
 			<otherwise>
+				<foreach collection="returnStatus" item="item" index="index" open="and g.ord_prdt_stus in (" separator="," close=")">
+					#{item}
+				</foreach>
 				<choose>
 					<when test="rangeType == 'PAYMENT'.toString()">
 						and p.pym_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
@@ -224,5 +227,58 @@
 		 where ord_no = #{orderNo}
 		   and prnr_cd = #{partnerCode}
 	</update>
+
+	<select id="findExcelReturnList" parameterType="kr.wrightbrothers.apps.order.dto.ReturnExcelDto$Param" resultType="kr.wrightbrothers.apps.order.dto.ReturnExcelDto$Response">
+		select
+			count(*) over (partition by o.ord_no) as order_product_count,
+			count(*) over (partition by o.ord_no, p.prdt_cd) as product_count,
+			date_format(p.cnc_rq_dt, '%Y-%m-%d') as request_return_day,
+			o.ord_no as order_no,
+			date_format(o.ord_dt, '%Y-%m-%d') as order_day,
+			s.ord_nm as order_name,
+			p.prdt_cd as product_code,
+			p.prdt_nm as product_name,
+			if(p.optn_nm is null, '', concat(p.optn_nm, '-', p.optn_val)) as product_option,
+			p.prdt_qty as product_qty,
+			p.fnl_sell_amt as product_sell_amount,
+			p.fnl_sell_amt as product_amount,
+			p.dlvr_chrg_amt as product_delivery_charge_amount,
+			s.pay_amt as payment_amount,
+			m.usr_nm as order_user_name,
+			p.dlvr_tp as delivery_type,
+			p.cnc_cplt_dt as complete_return_day,
+			p.ord_prdt_stus as return_status,
+			ifnull(c.intg_cd_val_nm, '') as delivery_company,
+			ifnull(d.rtrn_invc_no, '') as invoice_no,
+			s.rcpnt_nm as recipient_name,
+			s.rcpnt_usr_phn as recipient_user_phone,
+			ifnull(concat('(', s.rcpnt_adrs_zip_cd, ') ', s.rcpnt_adrs), '') as recipient_address,
+			s.rcpnt_adrs_sub as recipient_address_detail,
+			ifnull(r.intg_cd_val_nm, '') as reason
+		  from ord_info o
+		 inner join ord_prnr_info s
+			on o.ord_no = s.ord_no
+		   and s.prnr_cd = #{partnerCode}
+		 inner join ord_prdt_info p
+			on o.ord_no = p.ord_no
+		 inner join ord_pay_info pi
+			on o.ord_no = pi.ord_no
+		  left join ord_shpn_info d
+			on p.ord_no = d.ord_no
+		   and p.ord_prdt_idx = d.ord_prdt_idx
+		  left join com_mbr_info m
+			on o.ord_usr_id = m.usr_id
+		  left join com_intg_cd_dtl c
+			on d.rtrn_dlvry_cmpny = c.intg_cd_val
+		  and c.intg_cd_id = '000044'
+		 left join com_intg_cd_dtl r
+		   on p.non_rtn_tp_cd = r.intg_cd_val
+		  and r.intg_cd_id = '000085'
+		where o.ord_no in
+		<foreach collection="returnList" item="item" index="index" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		 order by o.ord_no desc, p.prdt_cd
+	</select>
 
 </mapper>

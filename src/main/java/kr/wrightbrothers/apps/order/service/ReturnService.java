@@ -4,16 +4,24 @@ import kr.wrightbrothers.apps.common.type.DocumentSNS;
 import kr.wrightbrothers.apps.common.type.OrderProductStatusCode;
 import kr.wrightbrothers.apps.common.type.OrderStatusCode;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
+import kr.wrightbrothers.apps.common.util.ExcelUtil;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.*;
 import kr.wrightbrothers.apps.queue.OrderQueue;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,6 +31,7 @@ public class ReturnService {
 
     private final WBCommonDao dao;
     private final PaymentService paymentService;
+    private final ResourceLoader resourceLoader;
     private final OrderQueue orderQueue;
     private final String namespace = "kr.wrightbrothers.apps.order.query.Return.";
 
@@ -148,5 +157,80 @@ public class ReturnService {
         if (!OrderStatusCode.COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()))
             // 반품완료 요청 제외한 나머지 프로시저 호출로 주문정보 상태값 변경
             dao.update("kr.wrightbrothers.apps.order.query.Order.updateOrderStatusRefresh", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin);
+    }
+
+    public void makeExcelFile(ReturnExcelDto.Param paramDto,
+                              HttpServletResponse response) throws IOException {
+        // 엑셀 템플릿 초기화
+        ExcelUtil excel = new ExcelUtil(
+                new FileInputStream(resourceLoader.getResource("classpath:templates/excel/returnList.xlsx").getFile()),
+                1
+        );
+
+        List<ReturnExcelDto.Response> returnList = dao.selectList(namespace + "findExcelReturnList", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+
+        // 엑셀 시트 생성
+        excel.sheet = excel.workbook.getSheetAt(0);
+
+        // 엑셀 생성
+        returnList.forEach(returns -> {
+            int colIndex = 0;
+            // 병합 사용 처리에 대한 카운트 처리
+            ++excel.mergeCount;
+            ++excel.subMergeCount;
+
+            excel.row = excel.sheet.createRow(excel.rowNumber++);
+
+            excel.setCellValue(colIndex++, returns.getRequestReturnDay());
+            excel.setCellValue(colIndex++, returns.getOrderNo());
+            excel.setCellValue(colIndex++, returns.getOrderDay());
+            excel.setCellValue(colIndex++, returns.getOrderName());
+            excel.setCellValue(colIndex++, returns.getProductCode());
+            excel.setCellValue(colIndex++, returns.getProductName());
+            excel.setCellValue(colIndex++, returns.getProductOption());
+            excel.setCellValue(colIndex++, returns.getProductQty());
+            excel.setCellValue(colIndex++, returns.getProductSellAmount());
+            excel.setCellValue(colIndex++, returns.getProductAmount());
+            excel.setCellValue(colIndex++, returns.getProductDeliveryChargeAmount());
+            excel.setCellValue(colIndex++, returns.getPaymentAmount());
+            excel.setCellValue(colIndex++, returns.getOrderUserName());
+            excel.setCellValue(colIndex++, returns.getDeliveryType());
+            excel.setCellValue(colIndex++, returns.getCompleteReturnDay());
+            excel.setCellValue(colIndex++, returns.getReturnStatus());
+            excel.setCellValue(colIndex++, returns.getDeliveryCompany());
+            excel.setCellValue(colIndex++, returns.getInvoiceNo());
+            excel.setCellValue(colIndex++, returns.getRecipientName());
+            excel.setCellValue(colIndex++, returns.getRecipientUserPhone());
+            excel.setCellValue(colIndex++, returns.getRecipientAddress());
+            excel.setCellValue(colIndex++, returns.getRecipientAddressDetail());
+            excel.setCellValue(colIndex, returns.getReason());
+
+            // 주문번호 기준 셀 병합처리
+            if (excel.mergeCount == returns.getOrderProductCount()) {
+                if (excel.mergeCount > 1)
+                    for (int col = 0; col <= colIndex; col++) {
+                        if ((col > 0 & col < 4) | (col > 10 & col < 13) | (col > 17 & col < 22))
+                            excel.sheet.addMergedRegion(new CellRangeAddress(excel.rowNumber - excel.mergeCount, excel.rowNumber - 1, col, col));
+                    }
+
+                excel.mergeCount = 0;
+            }
+
+            // 상품코드 기준 셀 병합처리
+            if (excel.subMergeCount == returns.getProductCount()) {
+                if (excel.subMergeCount > 1)
+                    for (int col = 0; col <= colIndex; col++) {
+                        if (col > 3 & col <6)
+                            excel.sheet.addMergedRegion(new CellRangeAddress(excel.rowNumber - excel.subMergeCount, excel.rowNumber - 1, col, col));
+                    }
+
+                excel.subMergeCount = 0;
+            }
+        });
+
+        response.setContentType("ms-vnd/excel");
+        response.setHeader("Content-Disposition", "attachment;filename=\"" + URLEncoder.encode("반품목록리스트.xlsx", StandardCharsets.UTF_8) + "\";");
+        excel.workbook.write(response.getOutputStream());
+        excel.workbook.close();
     }
 }
