@@ -89,15 +89,12 @@ public class PartnerController extends WBController {
 
         partnerList.forEach(entry -> {
 
-            Partner.Status PartnerStatus = Partner.Status.valueOfCode(entry.getPartnerStatus());
-            Partner.Contract.Status PartnerContractStatus = Partner.Contract.Status.valueOfCode(entry.getContractStatus());
-            User.Auth UserAuth = User.Auth.valueOfCode(entry.getAuthCode());
-
             int productCount = 0;
             Object [] messageArgs = null;
             StringBuffer messageId = new StringBuffer();
 
-            if(Partner.Status.COMPLETE_SUCESS.getCode().equals(entry.getPartnerStatus()) && Partner.Contract.Status.COMPLETE.getCode().equals(entry.getContractStatus())) {
+            // 파트너 상태 운영중:1 일 경우 계약 상태 - 계약승인, 재계약(계약승인), 계약갱신
+            if(Partner.Status.RUN.getCode().equals(entry.getPartnerStatus())) {
                 productCount = productService.findProductCountByPartnerCode(entry.getPartnerCode());
                 messageArgs = new Object[]{Integer.toString(productCount)};
             }
@@ -110,8 +107,20 @@ public class PartnerController extends WBController {
 
             entry.setComment(messageSourceAccessor.getMessage(messageId.toString(), messageArgs));
 
-            entry.setPartnerStatusName(PartnerStatus.getName());
-            entry.setContractStatusName(PartnerContractStatus.getName());
+            // Name Set
+            Partner.Status PartnerStatus = Partner.Status.valueOfCode(entry.getPartnerStatus());
+            Partner.Contract.Status PartnerContractStatus = Partner.Contract.Status.valueOfCode(entry.getContractStatus());
+            User.Auth UserAuth = User.Auth.valueOfCode(entry.getAuthCode());
+
+//            entry.setPartnerStatusName(PartnerStatus.getName());
+//            entry.setContractStatusName(PartnerContractStatus.getName());
+            String displayName = PartnerStatus.getName();
+            if(PartnerContractStatus.getCode().equals(Partner.Contract.Status.VIOLATE.getCode())
+                    || PartnerContractStatus.getCode().equals(Partner.Contract.Status.WITHDRAWAL.getCode()))
+            {
+                displayName = PartnerContractStatus.getName();
+            }
+            entry.setDisplayStatusName(displayName);
             entry.setAuthCodeName(UserAuth.getName());
         });
 
@@ -123,11 +132,14 @@ public class PartnerController extends WBController {
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "파트너 정보 조회", notes = "파트너 정보 조회 요청 API 입니다.")
-    @GetMapping("/{partnerCode}")
-    public WBModel findPartner(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode) {
+    @GetMapping("/{partnerCode}/{contractCode}")
+    public WBModel findPartner(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode
+                               ,@ApiParam(value = "계약 코드") @PathVariable String contractCode
+    ) {
 
         return defaultResponse(partnerService.findPartnerByPartnerCode(PartnerViewDto.Param.builder()
                         .partnerCode(partnerCode)
+                        .contractCode(contractCode)
                         .build()));
     }
 

@@ -22,12 +22,14 @@ cloud:
     sqs:
       auto: false
       product: DEV-PARTNER-PRODUCT2.fifo
+      partner: DEV-PARTNER-PARTNER2.fifo
     sns:
       arn: 'arn:aws:sns:ap-northeast-2:226098469581:'
       auto: false
       ack: DEV-ACKMSG2.fifo
       product: DEV-PARTNER-PRODUCT2.fifo
       order: DEV-PARTNER-ORDER2.fifo
+      partner: DEV-PARTNER-PARTNER2.fifo
 system:
   file:
     temp:

@@ -73,7 +73,7 @@ public class PartnerService {
         PartnerViewDto.ResBody result = PartnerViewDto.ResBody
                 .builder()
                 .partner(Optional.of((PartnerDto.ResBody) dao.selectOne(namespace + "findPartnerByPartnerCode", paramDto.getPartnerCode())).orElse(new PartnerDto.ResBody()))
-                .partnerContract(Optional.of((PartnerContractDto.ResBody) dao.selectOne(namespace + "findPartnerContractByPartnerCode", paramDto.getPartnerCode())).orElse(new PartnerContractDto.ResBody()))
+                .partnerContract(Optional.of((PartnerContractDto.ResBody) dao.selectOne(namespace + "findPartnerContractByPartnerCode", paramDto)).orElse(new PartnerContractDto.ResBody()))
                 .partnerOperator(userService.findUserByPartnerCodeAndAuthCode(paramDto))
                 .partnerNotification(dao.selectList(namespace + "findPartnerNotificationByPartnerCode", paramDto.getPartnerCode()))
                 .partnerReject(dao.selectList(namespace + "findPartnerRejectByPartnerCode", paramDto.getPartnerCode()))
@@ -102,7 +102,7 @@ public class PartnerService {
         // create partnerCode
         String partnerCode = RandomStringUtils.randomAlphanumeric(10).toUpperCase();
         paramDto.getPartner().changePartnerCode(partnerCode);
-        paramDto.getPartner().changePartnerStatus(Partner.Status.REQUEST.getCode());
+        paramDto.getPartner().changePartnerStatus(Partner.Status.STOP.getCode());
 
         // insert partner
         dao.insert(namespace + "insertPartner", paramDto.getPartner());
@@ -111,7 +111,7 @@ public class PartnerService {
         String contractCode = RandomStringUtils.randomAlphanumeric(10).toUpperCase();
         paramDto.getPartnerContract().changeContractCode(contractCode);
         paramDto.getPartnerContract().changePartnerCode(partnerCode);
-        paramDto.getPartnerContract().changeContractStatus(Partner.Contract.Status.EMPTY.getCode());
+        paramDto.getPartnerContract().changeContractStatus(Partner.Contract.Status.REQUEST.getCode());
 
         // insert contract
         dao.insert(namespace + "insertPartnerContract", paramDto.getPartnerContract());

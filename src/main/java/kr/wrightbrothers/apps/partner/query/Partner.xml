@@ -100,7 +100,7 @@
 		where p.partner_code = #{partnerCode}
 	</select>
 
-	<select id="findPartnerContractByPartnerCode" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.partner.dto.PartnerContractDto$ResBody">
+	<select id="findPartnerContractByPartnerCode" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerViewDto$Param" resultType="kr.wrightbrothers.apps.partner.dto.PartnerContractDto$ResBody">
 		select pc.partner_code
 			 , pc.contract_code
 			 , pc.contract_status
@@ -116,8 +116,7 @@
 			 , pc.contract_file_no
 		from partner_contract pc
 	   where pc.partner_code = #{partnerCode}
-		order by pc.contract_day desc
-		limit 1
+		and pc.contract_code = #{contractCode}
 	</select>
 
 	<select id="findPartnerListByBusinessNo" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerFindDto$Param" resultType="kr.wrightbrothers.apps.partner.dto.PartnerDto$ResBody">
@@ -143,8 +142,7 @@
 			 ,  p.partner_status
 			 ,  pc.contract_status
 			 , '' as comment
-			 , '' as partner_status_name
-			 , '' as contract_status_name
+			 , '' as display_status_name
 			 , '' as auth_code_name
 		from users_partner up
 				 inner join partner p

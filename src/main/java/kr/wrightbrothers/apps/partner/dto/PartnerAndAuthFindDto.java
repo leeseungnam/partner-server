@@ -37,11 +37,14 @@ public class PartnerAndAuthFindDto {
         @ApiModelProperty(value = "파트너 권한에 따른 문구")
         private String comment;
 
-        @ApiModelProperty(value = "파트너 상태 코드명")
-        private String partnerStatusName;
+        @ApiModelProperty(value = "노출 상태 코드명")
+        private String displayStatusName;
 
-        @ApiModelProperty(value = "계약 상태 코드명")
-        private String contractStatusName;
+//        @ApiModelProperty(value = "파트너 상태 코드명")
+//        private String partnerStatusName;
+
+//        @ApiModelProperty(value = "계약 상태 코드명")
+//        private String contractStatusName;
 
         @ApiModelProperty(value = "권한 코드명")
         private String authCodeName;

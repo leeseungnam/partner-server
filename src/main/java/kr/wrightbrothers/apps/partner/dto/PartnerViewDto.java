@@ -12,6 +12,7 @@ public class PartnerViewDto {
     @Builder
     public static class Param {
         private String partnerCode;
+        private String contractCode;
         private String authCode;
     }
 
