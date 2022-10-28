@@ -97,7 +97,7 @@ public class PartnerDto {
         @ApiModelProperty(value = "파트너 코드")
         @JsonIgnore
         private String partnerCode;
-        @ApiModelProperty(value = "파트너 상태 공통코드:000086(P01:심사중, P02:운영중, P03:심사반려, P04:운영중지)")
+        @ApiModelProperty(value = "파트너 상태 공통코드:000049(1:운영중, 2:운영중지)")
         @JsonIgnore
         private String partnerStatus;
 
@@ -122,10 +122,10 @@ public class PartnerDto {
         @ApiModelProperty(value = "파트너 코드")
         private String partnerCode;
 
-        @ApiModelProperty(value = "파트너 상태 공통코드:000086(P01:심사중, P02:운영중, P03:심사반려, P04:운영중지)")
+        @ApiModelProperty(value = "파트너 상태 공통코드:000049(1:운영중, 2:운영중지)")
         private String partnerStatus;
 
-        @ApiModelProperty(value = "파트너 상태명 공통코드:000086(P01:심사중, P02:운영중, P03:심사반려, P04:운영중지)")
+        @ApiModelProperty(value = "파트너 상태 공통코드:000049(1:운영중, 2:운영중지)")
         private String partnerStatusName;
 
         @ApiModelProperty(value = "사업자 유형명 공통코드 : 000048(1: 일반과세자, 2:간이과세자, 3:단위과세자, 4:법인사업자, 5:면세사업자, 6:기타사업자)")

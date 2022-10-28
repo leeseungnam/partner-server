@@ -13,7 +13,7 @@ public class Partner {
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     public enum Status {
-        STOP("1", "운영중지"),
+        STOP("1", "운영중"),
         RUN("2", "운영중")
         ;
 
@@ -64,13 +64,14 @@ public class Partner {
         @JsonFormat(shape = JsonFormat.Shape.OBJECT)
         public enum Status {
             REQUEST("C01", "심사중"),
+            //  최소 계약 or 재계약(중지 -> 운영)
             COMPLETE("C02", "심사승인"),
-            RENEWAL("C03", "재계약"),
+            REJECT("C03", "심사반려"),
+            //  자동 갱신
             AUTOMATIC("C04", "계약갱신"),
             WITHDRAWAL("C05", "계약종료"),
             CANCEL("C06", "계약철회"),
-            REJECT("C07", "심사반려"),
-            VIOLATE("C08", "계약/정책 위한")
+            VIOLATE("C07", "계약/정책 위한")
             ;
 
             private final String code;
