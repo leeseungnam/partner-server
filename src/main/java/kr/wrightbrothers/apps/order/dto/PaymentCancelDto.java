@@ -17,6 +17,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Getter
@@ -84,6 +85,21 @@ public class PaymentCancelDto {
                 .build();
     }
 
+    public Queue toCancelQueueDto(BankInfo bankInfo) {
+        // Null Safe
+        bankInfo = Optional.ofNullable(bankInfo).orElseGet(PaymentCancelDto.BankInfo::new);
+
+        return Queue.builder()
+                .ordNo(this.orderNo)
+                .prnrCd(this.partnerCode)
+                .ordPrdtIdxList(Arrays.stream(this.orderProductSeq).map(orderProductSeq -> Queue_Int.builder().ordPrdtIdx(orderProductSeq).build()).collect(Collectors.toList()))
+                .cncRsnCd(this.cancelReasonCode)
+                .bankCd(bankInfo.getBankCd())
+                .bankAcntNo(bankInfo.getBankAcntNo())
+                .dpstrNm(bankInfo.getDpstrNm())
+                .build();
+    }
+
     public void setAopPartnerCode(String partnerCode) {
         this.partnerCode = partnerCode;
     }
@@ -94,15 +110,27 @@ public class PaymentCancelDto {
     @Getter
     @Builder
     public static class Queue {
-        private String ordNo;               // 주문번호
-        private String prnrCd;              // 파트너코드
-        private List<Queue_Int> ordPrdtIdxList;  // 주문상품 IDX 배열
-        private String cncRsnCd;            // 취소 사유 코드
+        private String ordNo;                   // 주문번호
+        private String prnrCd;                  // 파트너코드
+        private List<Queue_Int> ordPrdtIdxList; // 주문상품 IDX 배열
+        private String cncRsnCd;                // 취소 사유 코드
+        private String bankCd;                  // 은행코드
+        private String bankAcntNo;              // 계좌번호
+        private String dpstrNm;                 // 예금주
     }
 
     @Getter
     @Builder
     public static class Queue_Int {
         private Integer ordPrdtIdx;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class BankInfo {
+        private String bankCd;                  // 은행코드
+        private String bankAcntNo;              // 계좌번호
+        private String dpstrNm;                 // 예금주
     }
 }

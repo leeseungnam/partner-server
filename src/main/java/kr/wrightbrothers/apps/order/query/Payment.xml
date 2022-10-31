@@ -95,4 +95,13 @@
 		   and prnr_cd = #{partnerCode}
 	</select>
 
+	<select id="findBankInfo" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto$BankInfo">
+		select
+			cnc_bank_cd as bank_cd,
+			cnc_bank_acnt_no as bank_acnt_no,
+			cnc_rmtr_nm as dpstr_nm
+		  from ord_pay_info
+		 where ord_no = #{orderNo}
+	</select>
+
 </mapper>

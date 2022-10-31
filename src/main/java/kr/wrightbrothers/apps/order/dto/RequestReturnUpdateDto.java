@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Getter
@@ -52,11 +53,17 @@ public class RequestReturnUpdateDto {
             this.returnProcessCode = returnProcessCode;
         }
 
-        public PaymentCancelDto.Queue toCancelQueueDto() {
+        public PaymentCancelDto.Queue toCancelQueueDto(PaymentCancelDto.BankInfo bankInfo) {
+                // Null Safe
+                bankInfo = Optional.ofNullable(bankInfo).orElseGet(PaymentCancelDto.BankInfo::new);
+
                 return PaymentCancelDto.Queue.builder()
                         .ordNo(this.orderNo)
                         .prnrCd(this.partnerCode)
                         .ordPrdtIdxList(Arrays.stream(this.orderProductSeqArray).map(orderProductSeq -> PaymentCancelDto.Queue_Int.builder().ordPrdtIdx(orderProductSeq).build()).collect(Collectors.toList()))
+                        .bankCd(bankInfo.getBankCd())
+                        .bankAcntNo(bankInfo.getBankAcntNo())
+                        .dpstrNm(bankInfo.getDpstrNm())
                         .build();
         }
 

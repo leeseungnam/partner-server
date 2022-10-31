@@ -65,12 +65,13 @@ public class PaymentService {
         }
 
         log.debug("Update Request Cancel Payment. OrderNo::{}", paramDto.getOrderNo());
+        PaymentCancelDto.BankInfo bankInfo = dao.selectOne(namespace + "findBankInfo", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin);
 
         // 결제취소 요청에 대한 Queue 전송
         orderQueue.sendToAdmin(
                 DocumentSNS.REQUEST_CANCEL_PAYMENT,
                 // Queue 전송 데이터 객체 변환
-                paramDto.toCancelQueueDto(),
+                paramDto.toCancelQueueDto(bankInfo),
                 PartnerKey.TransactionType.Update
                 );
     }

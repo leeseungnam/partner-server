@@ -145,13 +145,17 @@ public class ReturnService {
         });
 
         // 반품 완료 요청에 대한 Queue 전송
-        if (requestCompleteReturnCount.get() > 0)
+        if (requestCompleteReturnCount.get() > 0) {
+            PaymentCancelDto.BankInfo bankInfo =
+                    dao.selectOne("kr.wrightbrothers.apps.order.query.Payment.findBankInfo", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin);
+
             orderQueue.sendToAdmin(
                     DocumentSNS.REQUEST_RETURN_PRODUCT,
                     // Queue 전송 데이터 객체 변환
-                    paramDto.toCancelQueueDto(),
+                    paramDto.toCancelQueueDto(bankInfo),
                     PartnerKey.TransactionType.Update
             );
+        }
 
         if (!OrderStatusCode.REQUEST_COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()))
             // 반품완료 요청 제외한 나머지 프로시저 호출로 주문정보 상태값 변경
