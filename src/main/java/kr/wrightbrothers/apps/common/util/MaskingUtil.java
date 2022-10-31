@@ -14,6 +14,7 @@ public class MaskingUtil {
      * 마스킹 처리 예
      * 홍길동 -> 홍*동
      * 선우용녀 -> 선**녀
+     * Chris Martin -> Chr** Mar***
      *
      * </pre>
      * @param name 이름
