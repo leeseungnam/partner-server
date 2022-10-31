@@ -221,7 +221,7 @@
 		-- 파트너 반품완료로 인한 취소요청
 		update ord_prnr_info
 		   set pay_stus = 'S09',	-- 취소요청 코드
-		       ord_stus = 'R01',	-- 취소요청 코드
+		       ord_stus = 'R06',	-- 취소요청 코드
 		       upd_usr_id = #{userId},
 		       upd_dt = now()
 		 where ord_no = #{orderNo}

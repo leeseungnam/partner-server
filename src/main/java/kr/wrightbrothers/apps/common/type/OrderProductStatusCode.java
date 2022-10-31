@@ -22,6 +22,7 @@ public enum OrderProductStatusCode {
     WITHDRAWAL_RETURN("R02", "반품취소"),
     START_RETURN("R03", "반품진행"),
     NON_RETURN("R04", "반품불가"),
+    REQUEST_COMPLETE_RETURN("R06", "반품완료요청"),
     COMPLETE_RETURN("R05", "반품완료"),
     CONFIRM_PURCHASE("C05", "구매확정"),
     NULL("", "");

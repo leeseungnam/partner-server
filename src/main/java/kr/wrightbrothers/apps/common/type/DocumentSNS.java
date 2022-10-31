@@ -9,8 +9,8 @@ public enum DocumentSNS {
     REQUEST_INSPECTION("파트너검수요청"),
     RESULT_INSPECTION("파트너검수결과"),
     UPDATE_PRODUCT("상품수정"),
-    REQUEST_CANCEL_PAYMENT("파트너결제취소요청"),
-    REQUEST_RETURN_PRODUCT("파트너반품완료요청")
+    REQUEST_CANCEL_PAYMENT("P-CANCEL"),
+    REQUEST_RETURN_PRODUCT("P-RETURN")
 
     ;
 

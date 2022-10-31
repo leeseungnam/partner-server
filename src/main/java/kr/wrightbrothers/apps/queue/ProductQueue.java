@@ -20,7 +20,6 @@ import org.springframework.cloud.aws.messaging.listener.annotation.SqsListener;
 import org.springframework.stereotype.Component;
 
 import kr.wrightbrothers.framework.support.dto.WBSnsDTO.Header;
-import org.springframework.util.ObjectUtils;
 
 @Slf4j
 @Component
@@ -102,7 +101,7 @@ public class ProductQueue extends WBSQS {
 
                 // 검수반려 처리
                 if (ProductStatusCode.REJECT_INSPECTION.getCode().equals(productUpdateDto.getSellInfo().getProductStatusCode())) {
-                    String log = "검수 반려\n(" + body.get("rejectDesc") + ")";
+                    String log = "검수 반려\n(" + body.get("rejectReason") + ")";
                     productUpdateDto.setSqsLog(new String[]{log});
                 }
 

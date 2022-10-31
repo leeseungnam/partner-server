@@ -26,6 +26,7 @@ public enum OrderStatusCode {
     WITHDRAWAL_RETURN("R02", "반품철회"),
     START_RETURN("R03", "반품진행"),
     NON_RETURN("R04", "반품불가"),
+    REQUEST_COMPLETE_RETURN("R06", "반품완료요청"),
     COMPLETE_RETURN("R05", "반품완료"),
     EXCHANGE_DELIVERY("O11", "교환배송"),
     COMPLETE_PICKUP("O12", "픽업완료"),

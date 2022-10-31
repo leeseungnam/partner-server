@@ -28,7 +28,7 @@ cloud:
       auto: false
       ack: DEV-ACKMSG2.fifo
       product: DEV-PARTNER-PRODUCT2.fifo
-      order: DEV-PARTNER-ORDER2.fifo
+      order: DEV-PARTNER-PLATFORM-ORDER.fifo
       partner: DEV-PARTNER-PARTNER2.fifo
 system:
   file:

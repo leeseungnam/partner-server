@@ -24,6 +24,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @RequiredArgsConstructor
@@ -86,13 +87,13 @@ public class ReturnService {
         if (dao.selectOne(namespace + "isRequestReturn", paramDto, PartnerKey.WBDataBase.Alias.Admin))
             throw new WBBusinessException(ErrorCode.ALREADY_RETURN.getErrCode(), new String[]{OrderStatusCode.of(paramDto.getReturnProcessCode()).getName()});
 
+        AtomicInteger requestCompleteReturnCount = new AtomicInteger();
         // 주문 상품 반품 상태값 변경 처리
         Arrays.stream(paramDto.getOrderProductSeqArray()).forEach(orderProductSeq -> {
             // 주문 상품 SEQ 설정
             paramDto.setOrderProductSeq(orderProductSeq);
             // 현재 주문 상품 상태 코드 조회
             String currentStatusCode = dao.selectOne(namespace + "findOrderProductStatusCode", paramDto, PartnerKey.WBDataBase.Alias.Admin);
-
 
             // 반품 요청 처리
             switch (OrderProductStatusCode.of(paramDto.getReturnProcessCode())) {
@@ -121,40 +122,38 @@ public class ReturnService {
                     // 주문 상태 변경 처리
                     dao.update(namespace + "updateOrderReturnCode", paramDto, PartnerKey.WBDataBase.Alias.Admin);
                     break;
-                case COMPLETE_RETURN:
+                case REQUEST_COMPLETE_RETURN:
                 case NON_RETURN:
                     // 반품 진행이 아닐 경우 예외
                     if (!OrderProductStatusCode.START_RETURN.getCode().equals(currentStatusCode))
                         break;
 
-                    // 주문 상품 반품 완료 / 반품 불가 처리
+                    // 주문 상품 반품 완료 요청 / 반품 불가 처리
                     dao.update(namespace + "updateOrderProductReturnCode", paramDto, PartnerKey.WBDataBase.Alias.Admin);
 
                     // 주문 상태 변경 처리
                     dao.update(namespace + "updateOrderReturnCode", paramDto, PartnerKey.WBDataBase.Alias.Admin);
 
                     // 반품 완료 요청 시 결제는 결제취소 요청으로 처리
-                    if (OrderStatusCode.COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode())) {
-                        dao.update("kr.wrightbrothers.apps.order.query.Payment.updateRequestCancelPayment",
-                                PaymentCancelDto.builder()
-                                        .orderNo(paramDto.getOrderNo())
-                                        .userId(paramDto.getUserId())
-                                        .partnerCode(paramDto.getPartnerCode())
-                                        .build(), PartnerKey.WBDataBase.Alias.Admin);
-
-                        // 반품 완료 요청에 대한 Queue 전송
-                        orderQueue.sendToAdmin(
-                                DocumentSNS.REQUEST_RETURN_PRODUCT,
-                                // Queue 전송 데이터 객체 변환
-                                paramDto.toCancelQueueDto(),
-                                PartnerKey.TransactionType.Update
-                                );
+                    if (OrderStatusCode.REQUEST_COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode())) {
+                        dao.update(namespace + "updateRequestReturnOrderPartner", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+                        requestCompleteReturnCount.incrementAndGet();
                     }
+
                     break;
             }
         });
 
-        if (!OrderStatusCode.COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()))
+        // 반품 완료 요청에 대한 Queue 전송
+        if (requestCompleteReturnCount.get() > 0)
+            orderQueue.sendToAdmin(
+                    DocumentSNS.REQUEST_RETURN_PRODUCT,
+                    // Queue 전송 데이터 객체 변환
+                    paramDto.toCancelQueueDto(),
+                    PartnerKey.TransactionType.Update
+            );
+
+        if (!OrderStatusCode.REQUEST_COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()))
             // 반품완료 요청 제외한 나머지 프로시저 호출로 주문정보 상태값 변경
             dao.update("kr.wrightbrothers.apps.order.query.Order.updateOrderStatusRefresh", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin);
     }
