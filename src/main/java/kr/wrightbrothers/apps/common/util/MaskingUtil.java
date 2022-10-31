@@ -23,13 +23,22 @@ public class MaskingUtil {
         // Null OR 한글자 예외 처리
         if (ObjectUtils.isEmpty(name) || name.length() < 2) return name;
 
-        // 마스킹 대상 문자열
-        if (name.length() > 2) {
-            String target = name.substring(1, name.length() - 1);
-            return name.charAt(0) + "*".repeat(target.length()) + name.charAt(name.length() - 1);
+        if (name.length() == 2) return name.charAt(0) + "*";
+
+        // 영문 이름 마스킹 처리
+        if (Pattern.matches("^[a-zA-Z]*$", name.trim().replaceAll(" ", "")) && name.contains(" ")) {
+            // 영문 이름 경우 가운데 공백 으로 인한 스플릿 처리
+            String[] names = name.split(" ");
+
+            String firstName = names[0].substring(0, (int) Math.ceil((double) names[0].length()/(double) 2));
+            String lastName = names[1].substring(0, (int) Math.ceil((double) names[1].length()/(double) 2));
+
+            return firstName + "*".repeat(names[0].length() - firstName.length()) + " "
+                    + lastName + "*".repeat(names[1].length() - lastName.length());
         }
 
-        return name.charAt(0) + "*";
+        String target = name.substring(1, name.length() - 1);
+        return name.charAt(0) + "*".repeat(target.length()) + name.charAt(name.length() - 1);
     }
 
     /**
