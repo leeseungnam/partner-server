@@ -45,7 +45,7 @@ public class ReturnControllerTest extends BaseControllerTests {
                 )
                 .rangeType("PAYMENT")
                 .startDay("2022-01-01")
-                .endDay("2022-10-10")
+                .endDay("2022-10-30")
                 .keywordType("NO")
                 .keywordValue("")
                 .build();

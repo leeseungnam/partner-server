@@ -5,6 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ErrorCode {
 
+    NO_CONTENT(2401),
     FORBIDDEN(4300),
     UNAUTHORIZED(4100),
     UNAUTHORIZED_LOGIN(4101),

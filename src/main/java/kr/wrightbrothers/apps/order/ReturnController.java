@@ -2,15 +2,18 @@ package kr.wrightbrothers.apps.order;
 
 import io.swagger.annotations.*;
 import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
+import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.*;
 import kr.wrightbrothers.apps.order.service.ReturnService;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
+import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -95,6 +98,9 @@ public class ReturnController extends WBController {
 
         // 반품 내역 목록 조회
         List<ReturnListDto.Response> returnList = returnService.findReturnList(paramDto);
+
+        if (ObjectUtils.isEmpty(returnList))
+            throw new WBBusinessException(ErrorCode.NO_CONTENT.getErrCode(), new String[]{"반품 목록"});
 
         // 엑셀 다운로드
         returnService.makeExcelFile(
