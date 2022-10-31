@@ -78,7 +78,7 @@ public class ProductBeforeAop {
 
         switch (ProductStatusCode.of(changeStatusCode)) {
             case SALE:
-                if (!ProductStatusCode.RESERVATION.getCode().equals(currentStatusCode))
+                if (!ProductStatusCode.RESERVATION.getCode().equals(currentStatusCode) && !ProductStatusCode.PRODUCT_INSPECTION.getCode().equals(currentStatusCode))
                     throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"예약중"});
                 break;
             case END_OF_SALE:
