@@ -23,12 +23,23 @@ public class PartnerOperatorDto {
 
     }
 
-    @ApiModel(value = "파트너 운영자 응답 정보")
+    @ApiModel(value = "파트너 운영자 요청 정보")
     @Getter
     @SuperBuilder
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ReqBody extends PartnerOperator{
+        @ApiModelProperty(value = "운영자 아이디")
+        private String userId;
+
+    }
+
+    @ApiModel(value = "파트너 운영자 응답 정보")
+    @Getter
+    @SuperBuilder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class ResBody extends PartnerOperator{
         @ApiModelProperty(value = "운영자 아이디")
         private String userId;
 

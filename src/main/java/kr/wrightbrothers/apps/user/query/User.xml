@@ -57,7 +57,7 @@
 		where user.user_id = #{userId}
 	</select>
 
-	<select id="findUserByPartnerCodeAndAuthCode" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerViewDto$Param" resultType="kr.wrightbrothers.apps.partner.dto.PartnerOperatorDto$ReqBody">
+	<select id="findUserByPartnerCodeAndAuthCode" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerViewDto$Param" resultType="kr.wrightbrothers.apps.partner.dto.PartnerOperatorDto$ResBody">
 		select
 		       u.user_id
 		     , u.user_name

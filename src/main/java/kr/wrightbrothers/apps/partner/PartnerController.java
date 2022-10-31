@@ -2,20 +2,27 @@ package kr.wrightbrothers.apps.partner;
 
 import io.swagger.annotations.*;
 import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
+import kr.wrightbrothers.apps.common.constants.Email;
 import kr.wrightbrothers.apps.common.constants.Partner;
 import kr.wrightbrothers.apps.common.constants.User;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.email.dto.SingleEmailDto;
+import kr.wrightbrothers.apps.email.service.EmailService;
 import kr.wrightbrothers.apps.partner.dto.*;
 import kr.wrightbrothers.apps.partner.service.PartnerService;
 import kr.wrightbrothers.apps.product.service.ProductService;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
+import kr.wrightbrothers.apps.user.dto.UserDto;
+import kr.wrightbrothers.apps.user.service.UserService;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
+import kr.wrightbrothers.framework.lang.WBCustomException;
 import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.ObjectUtils;
@@ -35,6 +42,8 @@ public class PartnerController extends WBController {
     private final MessageSourceAccessor messageSourceAccessor;
     private final PartnerService partnerService;
     private final ProductService productService;
+    private final UserService userService;
+    private final EmailService emailService;
 
     @UserPrincipalScope
     @ApiImplicitParams({
@@ -71,7 +80,7 @@ public class PartnerController extends WBController {
         partnerService.insertPartner(paramDto);
 
         Object [] messageArgs = {messageSourceAccessor.getMessage(messagePrefix+"word.audit")+messageSourceAccessor.getMessage(messagePrefix+"word.request")};
-        wbResponse.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.complete", messageArgs));
+        wbResponse.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.complete.custom", messageArgs));
 
         return  wbResponse;
     }
@@ -164,7 +173,7 @@ public class PartnerController extends WBController {
         partnerService.updatePartnerAll(paramDto);
 
         Object [] messageArgs = {messageSourceAccessor.getMessage(messagePrefix+"word.audit")+messageSourceAccessor.getMessage(messagePrefix+"word.request")};
-        wbResponse.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.complete", messageArgs));
+        wbResponse.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.complete.custom", messageArgs));
 
         return wbResponse;
     }
@@ -189,6 +198,115 @@ public class PartnerController extends WBController {
         partnerService.updatePartner(paramDto);
 
         wbResponse.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.save.success"));
+        return wbResponse;
+    }
+
+    @UserPrincipalScope
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
+    })
+    @ApiOperation(value = "파트너 운영자 초대", notes = "파트너 운영자 초대 요청 API 입니다.")
+    @PostMapping("/{partnerCode}/operator")
+    public WBModel invitePartnerOperator(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode
+            ,@ApiParam @Valid @RequestBody PartnerInviteInsertDto paramDto
+    ) {
+        WBModel wbResponse = new WBModel();
+
+        //  select partner operator count And auth count
+        if(!partnerService.checkPartnerOperatorAuthCount(PartnerInviteDto.PartnerOperator.builder()
+                .partnerCode(paramDto.getPartnerOperator().getPartnerCode())
+                .authCode(paramDto.getPartnerOperator().getAuthCode())
+                .build())
+        ) {
+            throw new WBCustomException(messagePrefix+"partner.invite.fail.max.sender"
+                    , new Object[] {
+                            messageSourceAccessor.getMessage(messagePrefix+"user.status."+paramDto.getPartnerOperator().getAuthCode())
+                                    ,messageSourceAccessor.getMessage(messagePrefix+"partner.invite.max.count")
+                    });
+        }
+        if(!partnerService.checkPartnerOperatorCount(PartnerInviteDto.Param.builder()
+                .partnerCode(paramDto.getPartnerOperator().getPartnerCode())
+                .authCode(paramDto.getPartnerOperator().getAuthCode())
+                .userId(paramDto.getPartnerOperator().getInviteReceiver())
+                .build()
+            )
+        ){
+            throw new WBCustomException(messagePrefix+"common.already.insert.custom"
+                    , new Object[] {
+                    messageSourceAccessor.getMessage(messagePrefix+"user.status."+paramDto.getPartnerOperator().getAuthCode())
+            });
+        }
+
+        //  insert invite
+        String inviteCode = RandomStringUtils.randomAlphanumeric(10).toUpperCase();
+        paramDto.getPartnerOperator().changeInviteCode(inviteCode);
+        paramDto.getPartnerOperator().changeInviteStatus("0");
+        partnerService.insetPartnerOperator(paramDto);
+
+        //  send invite email
+        String redirectUrl = "";
+        redirectUrl = "http://localhost:8080/partner/"+partnerCode+"/operator/"+inviteCode;
+
+        UserDto user = userService.findUserByDynamic(UserDto.builder().userId(paramDto.getPartnerOperator().getInviteReceiver()).build());
+        //  send email
+        SingleEmailDto.ResBody resBody = emailService.singleSendEmail(SingleEmailDto.ReqBody.builder()
+                        .emailType(Email.INVITE_OPERATOR.getCode())
+                        .authCode(redirectUrl)
+                        .userId(paramDto.getPartnerOperator().getInviteReceiver())
+                        .userName(user.getUserName())
+                        .build());
+
+        wbResponse.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"partner.invite.send"));
+
+        return wbResponse;
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
+    })
+    @ApiOperation(value = "파트너 운영자 초대 수락", notes = "파트너 운영자 초대 수락 요청 API 입니다.")
+    @GetMapping("/{partnerCode}/operator/{code}")
+    public WBModel invitePartnerOperator(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode
+                                         ,@ApiParam(value = "운영자 초대 코드") @PathVariable String code
+                                        ,@ApiIgnore @AuthenticationPrincipal UserPrincipal user
+    ) {
+        WBModel wbResponse = new WBModel();
+
+        log.debug("[invitePartnerOperator]::partnerCode={},code={}",partnerCode,code);
+
+        //  set paramDto
+        PartnerInviteDto.Param paramDto = PartnerInviteDto.Param.builder()
+                .inviteCode(code)
+                .inviteStatus(PartnerKey.INTSTRING_TRUE) // acceptInvite 초대 수락상태 set
+                .partnerCode(partnerCode)
+                .userId(user.getUsername())
+                .build();
+        //  select partnerCode, code, userId, inviteStatus
+        PartnerInviteDto.ResBody inviteInfo = partnerService.findOperatorInvite(paramDto);
+
+        if(ObjectUtils.isEmpty(inviteInfo)) throw new WBCustomException(messagePrefix+"common.not.exist.custom"
+                , new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.invite")});
+
+        if(partnerService.checkPartnerOperatorCount(PartnerInviteDto.Param.builder()
+                .partnerCode(partnerCode)
+                .authCode(inviteInfo.getAuthCode())
+                .userId(user.getUsername())
+                .build())) {
+            throw new WBCustomException(messagePrefix+"common.already.insert.custom"
+                    , new Object[] {
+                    messageSourceAccessor.getMessage(messagePrefix+"user.status."+inviteInfo.getAuthCode())
+            });
+        }
+
+        //  전 exception 중복처리?
+        if(inviteInfo.getInviteStatus().equals(PartnerKey.INTSTRING_TRUE)) throw new WBCustomException(messagePrefix+"common.already.process.custom"
+                , new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.accept")});
+
+        //  update invite and insert users_partner
+        paramDto.changeAuthCode(inviteInfo.getAuthCode()); // 초대 받은 권한 set
+        partnerService.acceptInvite(paramDto);
+
+        wbResponse.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.complete"));
         return wbResponse;
     }
 }

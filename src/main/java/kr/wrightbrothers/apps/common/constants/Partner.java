@@ -71,7 +71,7 @@ public class Partner {
             AUTOMATIC("C04", "계약갱신"),
             WITHDRAWAL("C05", "계약종료"),
             CANCEL("C06", "계약철회"),
-            VIOLATE("C07", "계약/정책 위한")
+            VIOLATE("C07", "계약/정책 위반")
             ;
 
             private final String code;

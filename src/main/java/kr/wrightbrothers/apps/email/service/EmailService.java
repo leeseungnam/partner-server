@@ -30,11 +30,13 @@ public class EmailService {
         Context context = new Context();
         context.setVariable("code", authCode);
 
-        if(paramDto.getEmailType().equals(Email.PASSWORD.getCode())) context.setVariable("userName", paramDto.getUserName());
+        if(paramDto.getEmailType().equals(Email.PASSWORD.getCode()) || paramDto.getEmailType().equals(Email.INVITE_OPERATOR.getCode())) context.setVariable("userName", paramDto.getUserName());
 
+        log.info("[singleSendEmail]::type={}",email.getCode());
         log.info("[singleSendEmail]::code={}",authCode);
         log.info("[singleSendEmail]::subject={}",subject);
         log.info("[singleSendEmail]::template={}",template);
+        log.info("[singleSendEmail]::to={}", paramDto.getUserId());
 
         try {
 

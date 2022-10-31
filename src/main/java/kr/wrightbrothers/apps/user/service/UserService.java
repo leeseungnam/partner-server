@@ -3,6 +3,7 @@ package kr.wrightbrothers.apps.user.service;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.email.dto.SingleEmailDto;
 import kr.wrightbrothers.apps.email.service.EmailService;
+import kr.wrightbrothers.apps.partner.dto.PartnerOperatorDto;
 import kr.wrightbrothers.apps.partner.dto.PartnerViewDto;
 import kr.wrightbrothers.apps.user.dto.*;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
@@ -23,7 +24,7 @@ public class UserService {
     public boolean checkAuth(UserAuthDto paramDto) {
         return dao.selectOne(namespace + "checkAuth", paramDto, PartnerKey.WBDataBase.Alias.Default);
     }
-    public List<UserDto>  findUserByPartnerCodeAndAuthCode(PartnerViewDto.Param paramDto) {
+    public List<PartnerOperatorDto.ResBody>  findUserByPartnerCodeAndAuthCode(PartnerViewDto.Param paramDto) {
         return dao.selectList(namespace + "findUserByPartnerCodeAndAuthCode", paramDto, PartnerKey.WBDataBase.Alias.Default);
     }
 
@@ -40,7 +41,7 @@ public class UserService {
         dao.insert(namespace + "insertUser", paramDto, PartnerKey.WBDataBase.Alias.Default);
     }
 
-    public void _insertUser(UserAuthInsertDto.ReqBody paramDto) {
+    public void _insertUsersPartner(UserAuthInsertDto.ReqBody paramDto) {
         dao.insert(namespace + "insertUsersPartner", paramDto, PartnerKey.WBDataBase.Alias.Default);
     }
 

@@ -68,7 +68,7 @@ public class UserController extends WBController {
         userService.insertUser(paramDto);
 
         Object [] messageArgs = {"회원가입"};
-        response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.complete", messageArgs));
+        response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.complete.custom", messageArgs));
 
         return  response;
     }
@@ -90,7 +90,7 @@ public class UserController extends WBController {
 
         Object [] messageArgs = {messageSourceAccessor.getMessage(messagePrefix+"word.password")
                 + " " + messageSourceAccessor.getMessage(messagePrefix+"action.change")};
-        response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.complete", messageArgs));
+        response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.complete.custom", messageArgs));
 
         return response;
     }

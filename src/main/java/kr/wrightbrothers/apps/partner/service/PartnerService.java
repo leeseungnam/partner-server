@@ -8,6 +8,7 @@ import kr.wrightbrothers.apps.user.dto.UserAuthInsertDto;
 import kr.wrightbrothers.apps.user.service.UserService;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import org.springframework.util.ObjectUtils;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PartnerService {
@@ -23,6 +25,20 @@ public class PartnerService {
     private final WBCommonDao dao;
     private final String namespace = "kr.wrightbrothers.apps.partner.query.Partner.";
     private final UserService userService;
+
+    @Transactional(value = PartnerKey.WBDataBase.TransactionManager.Default)
+    public void acceptInvite(PartnerInviteDto.Param paramDto) {
+        log.info("[acceptInvite]::authCode={}",paramDto.getAuthCode());
+        // update inviteStatus
+        dao.update(namespace+"updateInviteStatus", paramDto);
+
+        // insert usersPartner
+        userService._insertUsersPartner(UserAuthInsertDto.ReqBody.builder()
+                        .partnerCode(paramDto.getPartnerCode())
+                        .authCode(paramDto.getAuthCode())
+                        .userId(paramDto.getUserId())
+                        .build());
+    }
 
     @Transactional(value = PartnerKey.WBDataBase.TransactionManager.Default)
     public void updatePartnerAll(PartnerInsertDto paramDto) {
@@ -69,6 +85,13 @@ public class PartnerService {
         }
     }
 
+    public boolean checkPartnerOperatorCount(PartnerInviteDto.Param paramDto) {
+        return dao.selectOne(namespace + "checkPartnerOperatorCount", paramDto);
+    }
+    public boolean checkPartnerOperatorAuthCount(PartnerInviteDto.PartnerOperator paramDto) {
+        return dao.selectOne(namespace + "checkPartnerOperatorAuthCount", paramDto);
+    }
+
     public PartnerViewDto.ResBody findPartnerByPartnerCode(PartnerViewDto.Param paramDto) {
         PartnerViewDto.ResBody result = PartnerViewDto.ResBody
                 .builder()
@@ -89,12 +112,19 @@ public class PartnerService {
         return result;
     }
 
+    public PartnerInviteDto.ResBody findOperatorInvite(PartnerInviteDto.Param paramDto) {
+        return dao.selectOne(namespace + "findOperatorInvite", paramDto);
+    }
+
     public List<PartnerDto.ResBody> findPartnerListByBusinessNo(PartnerFindDto.Param paramDto) {
         return dao.selectList(namespace + "findPartnerListByBusinessNo", paramDto);
     }
 
     public List<PartnerAndAuthFindDto.ResBody> findUserAuthAndPartnerListByUserId(PartnerAndAuthFindDto.Param paramDto) {
         return dao.selectList(namespace + "findUserAuthAndPartnerListByUserId", paramDto);
+    }
+    public void insetPartnerOperator(PartnerInviteInsertDto paramDto) {
+        dao.insert(namespace + "insertPartnerOperator", paramDto.getPartnerOperator());
     }
     @Transactional(value = PartnerKey.WBDataBase.TransactionManager.Default)
     public void insertPartner(PartnerInsertDto paramDto) {
@@ -117,7 +147,7 @@ public class PartnerService {
         dao.insert(namespace + "insertPartnerContract", paramDto.getPartnerContract());
 
         // insert usersPartner
-        userService._insertUser(UserAuthInsertDto.ReqBody.builder()
+        userService._insertUsersPartner(UserAuthInsertDto.ReqBody.builder()
                         .authCode(User.Auth.ADMIN.getType())
                         .partnerCode(partnerCode)
                         .userId(paramDto.getPartner().getUserId())

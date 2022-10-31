@@ -5,6 +5,9 @@ public class PartnerKey {
 	public static final String ApplicationName 	= "PARTNER";
 	public static final String BasePackage		= "kr.wrightbrothers.apps";
 
+	public static final String INTSTRING_TRUE 	= "1";
+	public static final String INTSTRING_FALSE 	= "0";
+
 	public static class WBConfig {
 
 		public static class Message {
@@ -95,18 +98,6 @@ public class PartnerKey {
 		public static class Sns {
 			public static final String GroupId = "WB";
 		}
-	}
-
-	public static class Code {
-		public static class User {
-			public static class Status {
-				public static final String JOIN = "U01";
-				public static final String DROP_REQUEST = "U02";
-				public static final String DROP_COMPLETE = "U03";
-			}
-
-		}
-
 	}
 
 	public static class Regex {
