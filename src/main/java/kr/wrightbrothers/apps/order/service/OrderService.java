@@ -44,8 +44,8 @@ public class OrderService {
                 .order(dao.selectOne(namespace + "findOrder", paramDto, PartnerKey.WBDataBase.Alias.Admin))
                 // 결제 정보
                 .payment(paymentService.findPaymentToOrder(paramDto))
-                // 주문 상품 리스트(상품 준비중 상태)
-                .productList(dao.selectList(namespace + "findOrderReadyProduct", paramDto, PartnerKey.WBDataBase.Alias.Admin))
+                // 주문 상품 리스트
+                .productList(dao.selectList(namespace + "findOrderProduct", paramDto, PartnerKey.WBDataBase.Alias.Admin))
                 // 환불 입금 정보
                 .refundBank(dao.selectOne(namespace + "findRefundBankInfo", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin))
                 .build();
