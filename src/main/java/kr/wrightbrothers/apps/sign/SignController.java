@@ -37,6 +37,7 @@ public class SignController extends WBController {
     public WBModel signIn(@ApiParam @Valid @RequestBody SignInDto paramDto
             , HttpServletRequest request
             , HttpServletResponse response) {
+
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(paramDto.getUserId(), paramDto.getUserPwd());
 
@@ -52,7 +53,6 @@ public class SignController extends WBController {
         log.debug("refresh token={}",refreshToken);
 
         wbResponse.addObject("UserAuth", userService.findAuthById(authentication.getName()));
-
 
         response.setHeader(PartnerKey.Jwt.Header.AUTHORIZATION, PartnerKey.Jwt.Type.BEARER + accessToken);
         response.addCookie(TokenUtil.createCookie(PartnerKey.Jwt.Alias.REFRESH_TOKEN, refreshToken, REFRESH_TOKEN_VALIDATION_SECOND));
