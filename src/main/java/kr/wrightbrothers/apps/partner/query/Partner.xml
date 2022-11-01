@@ -174,8 +174,8 @@
 			 ,  p.partner_name
 			 ,  p.partner_kind
 			 ,  p.partner_status
-			 , (select contract_code from partner_contract where up.partner_code = up.partner_code order by up.create_date desc limit 1) as contract_code
-     		 , (select contract_status from partner_contract where up.partner_code = up.partner_code order by up.create_date desc limit 1) as contract_status
+			 , (select contract_code from partner_contract where partner_code = up.partner_code order by create_date desc limit 1) as contract_code
+     		 , (select contract_status from partner_contract where partner_code = up.partner_code order by create_date desc limit 1) as contract_status
 			 , '' as comment
 			 , '' as display_status_name
 			 , '' as auth_code_name
