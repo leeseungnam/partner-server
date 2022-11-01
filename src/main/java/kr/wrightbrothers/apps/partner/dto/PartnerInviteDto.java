@@ -26,6 +26,10 @@ public class PartnerInviteDto {
         public void changeAuthCode(String authCode) {
             this.authCode = authCode;
         }
+        @ApiIgnore
+        public void changePartnerCode(String partnerCode) {
+            this.partnerCode = partnerCode;
+        }
 
     }
     @ApiModel(value = "파트너 운영자 파라미터 정보")

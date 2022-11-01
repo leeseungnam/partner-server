@@ -236,6 +236,7 @@ public class PartnerController extends WBController {
                     messageSourceAccessor.getMessage(messagePrefix+"word.user.status."+paramDto.getPartnerOperator().getAuthCode())
             });
         }
+        // [todo] already invite check 
 
         //  insert invite
         String inviteCode = RandomStringUtils.randomAlphanumeric(10).toUpperCase();
@@ -245,7 +246,8 @@ public class PartnerController extends WBController {
 
         //  send invite email
         String redirectUrl = "";
-        redirectUrl = "http://localhost:8080/partner/"+partnerCode+"/operator/"+inviteCode;
+//        redirectUrl = "http://localhost:8080/partner/"+partnerCode+"/operator/"+inviteCode;
+        redirectUrl = "http://localhost:3300/partner/login?invite="+inviteCode;
 
         UserDto user = userService.findUserByDynamic(UserDto.builder().userId(paramDto.getPartnerOperator().getInviteReceiver()).build());
         //  send email
@@ -265,20 +267,18 @@ public class PartnerController extends WBController {
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "파트너 운영자 초대 수락", notes = "파트너 운영자 초대 수락 요청 API 입니다.")
-    @GetMapping("/{partnerCode}/operator/{code}")
-    public WBModel invitePartnerOperator(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode
-                                         ,@ApiParam(value = "운영자 초대 코드") @PathVariable String code
+    @GetMapping("/invite/{inviteCode}")
+    public WBModel invitePartnerOperator(@ApiParam(value = "운영자 초대 코드") @PathVariable String inviteCode
                                         ,@ApiIgnore @AuthenticationPrincipal UserPrincipal user
     ) {
         WBModel wbResponse = new WBModel();
 
-        log.debug("[invitePartnerOperator]::partnerCode={},code={}",partnerCode,code);
+        log.debug("[invitePartnerOperator]::inviteCode={}", inviteCode);
 
         //  set paramDto
         PartnerInviteDto.Param paramDto = PartnerInviteDto.Param.builder()
-                .inviteCode(code)
+                .inviteCode(inviteCode)
                 .inviteStatus(PartnerKey.INTSTRING_TRUE) // acceptInvite 초대 수락상태 set
-                .partnerCode(partnerCode)
                 .userId(user.getUsername())
                 .build();
         //  select partnerCode, code, userId, inviteStatus
@@ -288,7 +288,7 @@ public class PartnerController extends WBController {
                 , new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.invite")});
 
         if(partnerService.checkPartnerOperatorCount(PartnerInviteDto.Param.builder()
-                .partnerCode(partnerCode)
+                .partnerCode(inviteInfo.getPartnerCode())
                 .authCode(inviteInfo.getAuthCode())
                 .userId(user.getUsername())
                 .build())) {
@@ -304,6 +304,7 @@ public class PartnerController extends WBController {
 
         //  update invite and insert users_partner
         paramDto.changeAuthCode(inviteInfo.getAuthCode()); // 초대 받은 권한 set
+        paramDto.changePartnerCode(inviteInfo.getPartnerCode()); // 초대 받은 파트너코드 set
         partnerService.acceptInvite(paramDto);
 
         wbResponse.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.complete"));

@@ -17,7 +17,6 @@
 			 ,  invite_sender
 		from partner_invite
 		where invite_code = #{inviteCode}
-		  and partner_code = #{partnerCode}
 		  and invite_receiver = #{userId}
 		order by create_date desc
          limit 1
