@@ -143,7 +143,8 @@ public class OrderControllerTest extends BaseControllerTests {
                                 OrderStatusCode.COMPLETE_CANCEL.getCode(),
                                 OrderStatusCode.START_DELIVERY.getCode(),
                                 OrderStatusCode.PARTIAL_DELIVERY.getCode(),
-                                OrderStatusCode.FINISH_DELIVERY.getCode()
+                                OrderStatusCode.FINISH_DELIVERY.getCode(),
+                                "O10"
                         }
                 )
                 .paymentStatus(

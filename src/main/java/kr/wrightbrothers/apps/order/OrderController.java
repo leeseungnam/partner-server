@@ -72,8 +72,8 @@ public class OrderController extends WBController {
                 .count(count)
                 .page(page)
                 .build();
-        // 다건 검색조회 split 처리
-        paramDto.splitKeywordValue();
+        // 파라미터 초기설정 처리(다건검색, 반품 상태값 추가)
+        paramDto.parameterInit();
 
         // 주문내역 주문 집계 건수 조회
         if (request.getRequestURI().contains("statistics")) {
@@ -116,8 +116,8 @@ public class OrderController extends WBController {
                 .count(count)
                 .page(page)
                 .build();
-        // 다건 검색조회 split 처리
-        paramDto.splitKeywordValue();
+        // 파라미터 초기설정 처리(다건검색, 반품 상태값 추가)
+        paramDto.parameterInit();
 
         // 주문 내역 목록 조회
         List<OrderListDto.Response> orderList = orderService.findOrderList(paramDto);

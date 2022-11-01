@@ -7,7 +7,10 @@ import kr.wrightbrothers.apps.common.type.PaymentStatusCode;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.util.ObjectUtils;
+
+import java.util.Arrays;
 
 public class OrderListDto {
 
@@ -28,12 +31,19 @@ public class OrderListDto {
         private String sortType;            // 정렬 타입
         private String[] keywordValueList;  // 여러검색 조건
 
-        // 여러 상품 검색을 위해 구분자인 ; Split 처리
-        public void splitKeywordValue() {
+        // 파라미터 초기 설정
+        public void parameterInit() {
+            // 반품상태 체크시 일괄 상태 추가
+            if (Arrays.toString(orderStatus).contains("O10")) {
+                this.orderStatus = ArrayUtils.addAll(this.orderStatus, "R01", "R02", "R03", "R04", "R05", "R06");
+            }
+
+            // 여러 상품 검색을 위해 구분자인 ; Split 처리
             if (ObjectUtils.isEmpty(this.keywordValue))
                 return;
 
             this.keywordValueList = this.keywordValue.split(";");
+
         }
     }
 
