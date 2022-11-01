@@ -13,8 +13,8 @@ public class Partner {
     @Getter
     @JsonFormat(shape = JsonFormat.Shape.OBJECT)
     public enum Status {
-        STOP("1", "운영중"),
-        RUN("2", "운영중")
+        RUN("1", "운영중"),
+        STOP("2", "운영중지")
         ;
 
         private final String code;
