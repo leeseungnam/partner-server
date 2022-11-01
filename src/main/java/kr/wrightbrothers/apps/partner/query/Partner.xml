@@ -174,15 +174,14 @@
 			 ,  p.partner_name
 			 ,  p.partner_kind
 			 ,  p.partner_status
-			 ,  pc.contract_status
+			 , (select contract_code from partner_contract where up.partner_code = up.partner_code order by up.create_date desc limit 1) as contract_code
+     		 , (select contract_status from partner_contract where up.partner_code = up.partner_code order by up.create_date desc limit 1) as contract_status
 			 , '' as comment
 			 , '' as display_status_name
 			 , '' as auth_code_name
 		from users_partner up
-				 inner join partner p
-							on p.partner_code = up.partner_code
-				 inner join partner_contract pc
-							on p.partner_code = pc.partner_code
+	    inner join partner p
+		   on p.partner_code = up.partner_code
 		where up.user_id = #{userId}
 	</select>
 
