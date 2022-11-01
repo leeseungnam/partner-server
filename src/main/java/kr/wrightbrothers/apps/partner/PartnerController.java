@@ -220,7 +220,7 @@ public class PartnerController extends WBController {
         ) {
             throw new WBCustomException(messagePrefix+"partner.invite.fail.max.sender"
                     , new Object[] {
-                            messageSourceAccessor.getMessage(messagePrefix+"user.status."+paramDto.getPartnerOperator().getAuthCode())
+                            messageSourceAccessor.getMessage(messagePrefix+"word.user.status."+paramDto.getPartnerOperator().getAuthCode())
                                     ,messageSourceAccessor.getMessage(messagePrefix+"partner.invite.max.count")
                     });
         }
@@ -233,7 +233,7 @@ public class PartnerController extends WBController {
         ){
             throw new WBCustomException(messagePrefix+"common.already.insert.custom"
                     , new Object[] {
-                    messageSourceAccessor.getMessage(messagePrefix+"user.status."+paramDto.getPartnerOperator().getAuthCode())
+                    messageSourceAccessor.getMessage(messagePrefix+"word.user.status."+paramDto.getPartnerOperator().getAuthCode())
             });
         }
 
@@ -294,7 +294,7 @@ public class PartnerController extends WBController {
                 .build())) {
             throw new WBCustomException(messagePrefix+"common.already.insert.custom"
                     , new Object[] {
-                    messageSourceAccessor.getMessage(messagePrefix+"user.status."+inviteInfo.getAuthCode())
+                    messageSourceAccessor.getMessage(messagePrefix+"word.user.status."+inviteInfo.getAuthCode())
             });
         }
 
