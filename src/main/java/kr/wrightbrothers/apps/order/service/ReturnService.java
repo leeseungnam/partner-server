@@ -98,12 +98,9 @@ public class ReturnService {
             // 반품 요청 처리
             switch (OrderProductStatusCode.of(paramDto.getReturnProcessCode())) {
                 case START_RETURN:
-                    // 반품 배송정보 확인
-                    if (ObjectUtils.isEmpty(paramDto.getRequestCode()) || ObjectUtils.isEmpty(paramDto.getRequestName()) || ObjectUtils.isEmpty(paramDto.getRequestValue()))
-                        throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"배송정보"});
-
-                    // 배송정보 업데이트
-                    dao.update(namespace + "updateOrderDeliveryReturn", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+                    // 반품 배송정보 수정
+                    if (!ObjectUtils.isEmpty(paramDto.getRequestCode()) & !ObjectUtils.isEmpty(paramDto.getRequestValue()))
+                        dao.update(namespace + "updateOrderDeliveryReturn", paramDto, PartnerKey.WBDataBase.Alias.Admin);
 
                     // 아래 반품 취소 조건으로 진행을 이어나가게 하며,
                     // 단순 배송 정보 수정에 대해서는 아래 반품 요청이 아니므로 진행 중지가 됨.
