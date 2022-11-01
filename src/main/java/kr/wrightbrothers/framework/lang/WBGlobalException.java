@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -29,31 +30,10 @@ import java.util.Objects;
 @ControllerAdvice
 public class WBGlobalException {
 
+    private String MESSAGE_PREFIX="api.message.";
     private final MessageSourceAccessor messageSourceAccessor;
-
     public WBGlobalException(MessageSourceAccessor messageSourceAccessor) {
         this.messageSourceAccessor = messageSourceAccessor;
-    }
-
-    /**
-     * 라이트브라더스 WBCustomException Handler
-     */
-    @ExceptionHandler({
-            WBCustomException.class
-    })
-    private ResponseEntity<JSONObject> customException(WBCustomException ex) {
-        if (ObjectUtils.isEmpty(ex)) ex.getCause();
-
-        log.error("[WBCustomException]:: ===============================");
-        log.error("[WBCustomException]:: CODE, {}", ex.getErrorCode());
-        log.error("[WBCustomException]:: TYPE, {}", WBKey.Message.Type.Error);
-        log.error("[WBCustomException]:: MESSAGE ID, {}", ex.getMessageId());
-        log.error("[WBCustomException]:: ===============================");
-
-        return new ResponseEntity<>(
-                exceptionResponse(ex.getErrorCode(),ex.getMessageId(), ex.getMessageArgs()),
-                HttpStatus.OK
-        );
     }
 
     /**
@@ -94,13 +74,59 @@ public class WBGlobalException {
     	 return new ResponseEntity<>(exceptionResponse(3, WBKey.Message.Type.Notification), HttpStatus.OK);
     }
 
+    /**
+     * WBCustomException Handler
+     * Message Properties 사용
+     */
+    @ExceptionHandler({
+            WBCustomException.class
+    })
+    private ResponseEntity<JSONObject> customException(WBCustomException ex) {
+        if (ObjectUtils.isEmpty(ex)) ex.getCause();
+
+        log.error("[WBCustomException]:: ===============================");
+        log.error("[WBCustomException]:: CODE, {}", ex.getErrorCode());
+        log.error("[WBCustomException]:: TYPE, {}", WBKey.Message.Type.Error);
+        log.error("[WBCustomException]:: MESSAGE ID, {}", ex.getMessageId());
+        log.error("[WBCustomException]:: ===============================");
+
+        return new ResponseEntity<>(
+                exceptionResponse(ex.getErrorCode(),ex.getMessageId(), ex.getMessageArgs()),
+                HttpStatus.OK
+        );
+    }
+
+    /**
+     * BadCredentialsException Handler
+     * security AuthenticationException 처리
+     */
     @ExceptionHandler({
             BadCredentialsException.class
     })
-    private ResponseEntity<JSONObject> badCredentialsException(Exception e) {
-        return new ResponseEntity<>(exceptionResponse(ErrorCode.UNAUTHORIZED_LOGIN.getErrCode(), WBKey.Message.Type.Error), HttpStatus.OK);
+    private ResponseEntity<JSONObject> badCredentialsException(BadCredentialsException ex) {
+        log.error("[BadCredentialsException]::{}",ex.getMessage());
+        return new ResponseEntity<>(
+                exceptionResponse(ErrorCode.UNAUTHORIZED_LOGIN, MESSAGE_PREFIX+"user.login.empty", null),
+                HttpStatus.OK
+        );
     }
 
+    /**
+     * InternalAuthenticationServiceException Handler
+     * security AuthenticationException(UsernameNotFoundException, LockedException) 처리
+     */
+    @ExceptionHandler({
+            AuthenticationException.class
+    })
+    private ResponseEntity<JSONObject> AuthenticationException(AuthenticationException ex) {
+        if (ObjectUtils.isEmpty(ex)) ex.getCause();
+
+        log.error("[AuthenticationException]::{}",ex.getMessage());
+        return new ResponseEntity<>(
+                exceptionResponse(ErrorCode.FORBIDDEN, ex.getMessage()),
+                HttpStatus.OK
+        );
+    }
 
     /**
      * Exception Handler
@@ -173,6 +199,23 @@ public class WBGlobalException {
                 exceptionResponse(errorCode, WBKey.Message.Type.Error, convert),
                 HttpStatus.OK
         );
+    }
+
+    /**
+     * 예외 Api Response
+     * Use Direct Message
+     */
+    private JSONObject exceptionResponse(ErrorCode errorCode, String message) {
+        JSONObject json = new JSONObject();
+        json.put("WBCommon",
+                WBCommon.builder()
+                        .state(WBKey.Error)
+                        .msgCode(StringUtils.leftPad(String.valueOf(errorCode.getErrCode()), 4, "0"))
+                        .msgType(WBKey.Message.Type.Error)
+                        .message(message)
+                        .build()
+        );
+        return json;
     }
 
     /**

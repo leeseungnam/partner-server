@@ -17,5 +17,4 @@ public class UserDetailDto {
     private String userName;
     private String userStatusCode;
     private UserAuthDto userAuth;
-
 }

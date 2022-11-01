@@ -1,12 +1,10 @@
 package kr.wrightbrothers.apps.sign.service;
 
-import kr.wrightbrothers.apps.common.constants.User;
 import kr.wrightbrothers.apps.sign.dto.UserDetailDto;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,7 +17,6 @@ import org.springframework.util.ObjectUtils;
 public class WBUserDetailService implements UserDetailsService {
 
     private final SignService signService;
-
     private final String messagePrefix = "api.message.";
     private final MessageSourceAccessor messageSourceAccessor;
 

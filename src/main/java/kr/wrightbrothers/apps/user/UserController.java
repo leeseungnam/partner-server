@@ -14,6 +14,7 @@ import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import kr.wrightbrothers.apps.user.dto.*;
 import kr.wrightbrothers.apps.user.service.UserService;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
+import kr.wrightbrothers.framework.lang.WBCustomException;
 import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
@@ -109,7 +110,7 @@ public class UserController extends WBController {
                 .userPhone(paramDto.getUserPhone())
                 .build());
 
-        if(ObjectUtils.isEmpty(userDto)) throw new WBBusinessException(ErrorCode.ETC.getErrCode(), new String[] {messageSourceAccessor.getMessage(messagePrefix+"user.unknown")});
+        if(ObjectUtils.isEmpty(userDto)) throw new WBCustomException(ErrorCode.UNAUTHORIZED, messagePrefix+"user.unknown", null);
 
         response.addObject("userId", userDto.getUserId());
 
@@ -134,7 +135,7 @@ public class UserController extends WBController {
                 .userPhone(paramDto.getUserPhone())
                 .build());
 
-        if(ObjectUtils.isEmpty(userDto)) throw new WBBusinessException(ErrorCode.ETC.getErrCode(), new String[] {messageSourceAccessor.getMessage(messagePrefix+"user.unknown")});
+        if(ObjectUtils.isEmpty(userDto)) throw new WBCustomException(ErrorCode.UNAUTHORIZED, messagePrefix+"user.unknown", null);
 
         String authCode = RandomStringUtils.randomAlphanumeric(10).toUpperCase();
         userDto.changePwd(passwordEncoder.encode(authCode));
@@ -166,7 +167,7 @@ public class UserController extends WBController {
             , HttpServletResponse response
     ) {
         // select userAuth
-        if(!userService.checkAuth(userAuth)) throw new WBBusinessException(ErrorCode.FORBIDDEN.getErrCode());
+        if(!userService.checkAuth(userAuth)) throw new WBCustomException(ErrorCode.FORBIDDEN, messagePrefix+"common.forbidden", null);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         List<GrantedAuthority> updateAuthorities = new ArrayList<>();
@@ -186,8 +187,6 @@ public class UserController extends WBController {
 
         log.info("REFRESH_TOKEN[OLD]::{}",refreshToke);
         log.info("REFRESH_TOKEN[NEW]::{}",newRefreshToken);
-
-        UserPrincipal userDetail = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         log.info(userPrincipal.getUsername());
 
