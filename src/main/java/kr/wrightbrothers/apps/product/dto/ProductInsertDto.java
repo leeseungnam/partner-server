@@ -151,29 +151,29 @@ public class ProductInsertDto {
             throw new WBBusinessException(ErrorCode.INVALID_TEXT_SIZE.getErrCode(), new String[]{"교환/반품 안내", "30", "2000"});
 
         // 배송정보 유효성 검사
-        delivery.validDelivery();
+        this.delivery.validDelivery();
     }
 
     public void setAopUserId(String userId) {
         // 필수 데이터 입력 부분
-        product.setUserId(userId);
-        sellInfo.setUserId(userId);
-        infoNotice.setUserId(userId);
-        guide.setUserId(userId);
+            this.product.setUserId(userId);
+            this.sellInfo.setUserId(userId);
+            this.infoNotice.setUserId(userId);
+            this.guide.setUserId(userId);
 
-        Optional.ofNullable(optionList).orElseGet(Collections::emptyList)
+        Optional.ofNullable(this.optionList).orElseGet(Collections::emptyList)
                 .forEach(option -> option.setUserId(userId));
-        Optional.ofNullable(fileList).orElseGet(Collections::emptyList)
+        Optional.ofNullable(this.fileList).orElseGet(Collections::emptyList)
                 .forEach(file -> file.setUserId(userId));
-        if (!ObjectUtils.isEmpty(delivery))
-            delivery.setUserId(userId);
-        if (!ObjectUtils.isEmpty(basicSpec))
-            basicSpec.setUserId(userId);
+        if (!ObjectUtils.isEmpty(this.delivery))
+            this.delivery.setUserId(userId);
+        if (!ObjectUtils.isEmpty(this.basicSpec))
+            this.basicSpec.setUserId(userId);
     }
 
     public void setAopPartnerCode(String partnerCode) {
         // 필수 데이터 입력 부분
-        product.setPartnerCode(partnerCode);
+        this.product.setPartnerCode(partnerCode);
     }
 
     public void setProductType(String partnerKind) {
@@ -189,17 +189,17 @@ public class ProductInsertDto {
 
     public void setProductCode(String productCode) {
         // 필수 데이터 입력 부분
-        product.setProductCode(productCode);
-        sellInfo.setProductCode(productCode);
-        infoNotice.setProductCode(productCode);
-        guide.setProductCode(productCode);
+        this.product.setProductCode(productCode);
+        this.sellInfo.setProductCode(productCode);
+        this.infoNotice.setProductCode(productCode);
+        this.guide.setProductCode(productCode);
 
-        Optional.ofNullable(optionList).orElseGet(Collections::emptyList)
+        Optional.ofNullable(this.optionList).orElseGet(Collections::emptyList)
                 .forEach(option -> option.setProductCode(productCode));
-        if (!ObjectUtils.isEmpty(delivery))
-            delivery.setProductCode(productCode);
-        if (!ObjectUtils.isEmpty(productCode))
-            basicSpec.setProductCode(productCode);
+        if (!ObjectUtils.isEmpty(this.delivery))
+            this.delivery.setProductCode(productCode);
+        if (!ObjectUtils.isEmpty(this.basicSpec))
+            this.basicSpec.setProductCode(productCode);
     }
 
     /**
@@ -212,7 +212,7 @@ public class ProductInsertDto {
     public ChangeInfoDto.ReqBody toChangeInfo() {
         return ChangeInfoDto.ReqBody.builder()
                 .productCode(this.getProduct().getProductCode())
-                .productStatusCode(sellInfo.getProductStatusCode())
+                .productStatusCode(this.sellInfo.getProductStatusCode())
                 .productLogCode(ProductLogCode.REGISTER.getCode())
                 .productLog("상품 등록")
                 .userId(this.getProduct().getUserId())

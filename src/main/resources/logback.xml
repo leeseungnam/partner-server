@@ -10,10 +10,13 @@
 	<logger name="jdbc.audit" level="error">
 		<appender-ref ref="Console" />
 	</logger>
-	<logger name="jdbc.sqlonly" level="info">
+	<logger name="jdbc.sqlonly" level="error">
 		<appender-ref ref="Console" />
 	</logger>
 	<logger name="jdbc.resultset" level="error">
+		<appender-ref ref="Console" />
+	</logger>
+	<logger name="jdbc.resultsettable" level="error">
 		<appender-ref ref="Console" />
 	</logger>
 	<logger name="jdbc.sqltiming" level="error">

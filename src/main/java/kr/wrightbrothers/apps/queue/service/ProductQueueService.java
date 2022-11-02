@@ -38,7 +38,7 @@ public class ProductQueueService {
     private final ProductService productService;
     private final ProductUtil productUtil;
     private final AwsSesUtil awsSesUtil;
-    private final String namespace = "kr.wrightbrothers.apps.product.query.Queue.";
+    private final String namespace = "kr.wrightbrothers.apps.queue.query.Queue.";
 
     private String findCategoryName(String categoryCode) {
         return dao.selectOne("kr.wrightbrothers.apps.category.query.Category.findCategoryName", categoryCode, PartnerKey.WBDataBase.Alias.Admin);
@@ -90,7 +90,12 @@ public class ProductQueueService {
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void insertProductSqsData(JSONObject body) throws JsonProcessingException {
         // 입점몰 상품 등록
-        productService.insertProduct(convertProductDto(body));
+        ProductInsertDto paramDto = convertProductDto(body);
+
+        log.info("Product Insert From Admin. Partner Code::{}, Product Code::{}",
+                paramDto.getProduct().getPartnerCode(), paramDto.getProduct().getProductCode());
+
+        productService.insertProduct(paramDto);
     }
 
     /**
@@ -121,6 +126,10 @@ public class ProductQueueService {
                         updateDto.getInfoNotice(),
                         updateDto.getGuide()));
 
+        log.info("Product Update From Admin. Partner Code::{}, Product Code::{}, ChangeLog::{}",
+                updateDto.getProduct().getPartnerCode(), updateDto.getProduct().getProductCode(), Arrays.toString(updateDto.getChangeLogList()));
+
+
         // SQS 입점몰 상품 수정
         productService.updateProduct(updateDto);
     }
@@ -141,6 +150,9 @@ public class ProductQueueService {
         if (ProductStatusCode.APPROVAL_INSPECTION.getCode().equals(productUpdateDto.getSellInfo().getProductStatusCode()))
             productUpdateDto.getSellInfo().setProductStatusCode(ProductStatusCode.SALE.getCode());
 
+        log.info("Product Inspection Result From Admin. Partner Code::{}, Product Code::{}, ResultLog::{}",
+                productUpdateDto.getProduct().getPartnerCode(), productUpdateDto.getProduct().getProductCode(), Arrays.toString(productUpdateDto.getChangeLogList()));
+
         // SQS 입점몰 검수 결과 처리
         productService.updateProduct(productUpdateDto);
         // 상품 검수 요청 결과에 따른 메일 발송 처리
@@ -149,6 +161,9 @@ public class ProductQueueService {
 
         FindAddressDto findAddressDto =
                 dao.selectOne(namespace + "findAddressList", productUpdateDto.getProduct().getPartnerCode());
+
+        // 메일 발송 대상자 없을 시 종료
+        if (ObjectUtils.isEmpty(findAddressDto)) return;
 
         Context context = new Context();
         context.setVariable("partnerName", findAddressDto.getPartnerName());

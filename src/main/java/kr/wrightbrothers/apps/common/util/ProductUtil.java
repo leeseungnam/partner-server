@@ -36,6 +36,7 @@ public class ProductUtil {
      * 예: PABFA0B0HZ
      * </pre>
      */
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public String generateProductCode(String categoryTwoCode) {
         StringBuilder productCode = new StringBuilder();
         String productGroupCode = dao.selectOne(namespace + "findProductGroupCode", categoryTwoCode, PartnerKey.WBDataBase.Alias.Admin);
