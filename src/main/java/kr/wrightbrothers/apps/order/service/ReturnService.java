@@ -42,14 +42,9 @@ public class ReturnService {
     }
 
     public ReturnFindDto.Response findReturn(ReturnFindDto.Param paramDto) {
-        String orderNamespace = "kr.wrightbrothers.apps.order.query.Order.";
-
         return ReturnFindDto.Response.builder()
-                // 주문내역 기본 정보
-                .order(dao.selectOne(orderNamespace + "findOrder", OrderFindDto.Param.builder()
-                                .partnerCode(paramDto.getPartnerCode())
-                                .orderNo(paramDto.getOrderNo())
-                        .build(), PartnerKey.WBDataBase.Alias.Admin))
+                // 주문 기본 정보(반품 배송지 정보의 필드명은 수령 배송지 정보의 필드와 동일하게 처리, DTO 재활용을 위해)
+                .order(dao.selectOne(namespace + "findReturn", paramDto, PartnerKey.WBDataBase.Alias.Admin))
                 // 결제 정보
                 .payment(paymentService.findPaymentToOrder(OrderFindDto.Param.builder()
                                 .partnerCode(paramDto.getPartnerCode())
@@ -65,6 +60,8 @@ public class ReturnService {
     /**
      * <pre>
      * 반품 관련해서 해당 부분의 송장번호가 입력 되어있으면, 배송지 정보 수정을 하지 않음.
+     * 반품 배송지의 필드명은 수령 배송지의 필드명과 동일하게 하였으며, 해당부분은 DTO 재활용을 위한 처리.
+     * 해당부분 인지하고 개발 필요 함.
      *
      * 반품에 관련된 사항이라 예외를 하여도 되지만,
      * 위 사항은 혹시 모를 사항을 생각하여 해당 부분 로직을 추가 처리.

@@ -12,6 +12,36 @@
 		   and ord_stus = #{returnProcessCode}
 	</select>
 
+	<select id="findReturn" parameterType="kr.wrightbrothers.apps.order.dto.ReturnFindDto$Param" resultType="kr.wrightbrothers.apps.order.dto.OrderDto">
+		-- 주문내역 기본 정보
+		select
+			o.ord_no as order_no,
+			o.ord_dt as order_date,
+			s.ord_stus as order_status_code,
+			s.ord_stus as order_status_name,
+			o.ord_qty as order_qty,
+			m.usr_cd as order_user_code,
+			m.usr_id as order_user_id,
+			m.usr_nm as order_user_name,
+			m.usr_phn as order_user_phone,
+			s.rtrn_rcpnt_nm as recipient_name,
+			s.rtrn_rcpnt_usr_phn as recipient_phone,
+			s.rtrn_rcpnt_adrs_zip_cd as recipient_address_zip_code,
+			s.rtrn_rcpnt_adrs as recipient_address,
+			s.rtrn_rcpnt_adrs_sub as recipient_address_detail,
+			o.rqst_dtls as request_detail,
+			s.ord_memo as order_memo,
+			s.rtrn_memo as return_memo,
+			s.dlvry_memo as delivery_memo
+		from ord_info o
+	   inner join ord_prnr_info s
+		  on o.ord_no = s.ord_no
+		 and s.prnr_cd = #{partnerCode}
+		left join com_mbr_info m
+		  on o.ord_usr_id = m.usr_id
+	   where o.ord_no = #{orderNo}
+	</select>
+
 	<select id="findReturnList" parameterType="kr.wrightbrothers.apps.order.dto.ReturnListDto$Param" resultType="kr.wrightbrothers.apps.order.dto.ReturnListDto$Response">
 		select
 		    date_format(g.cnc_rq_dt, '%Y-%m-%d') as return_request_day,
@@ -98,16 +128,16 @@
 			   and p.prdt_cd = d.prdt_cd
 			 where p.ord_no = #{orderNo}
 			   and p.prnr_cd = #{partnerCode}
-			   and d.invc_no is not null
+			   and d.rtrn_invc_no is not null
 		</selectKey>
 		update ord_prnr_info
 		   set rtrn_memo = #{returnMemo},
-		       -- 송장번호 미입력 시 수령자 정보 변경 가능
+		       -- 송장번호 미입력 시 반송자 정보 변경 가능
 		       <if test="isInvoiceNo">
-				   rcpnt_usr_phn = #{recipientPhone},
-				   rcpnt_adrs_zip_cd = #{recipientAddressZipCode},
-				   rcpnt_adrs = #{recipientAddress},
-				   rcpnt_adrs_sub = #{recipientAddressDetail},
+				   rtrn_rcpnt_usr_phn = #{recipientPhone},
+				   rtrn_rcpnt_adrs_zip_cd = #{recipientAddressZipCode},
+				   rtrn_rcpnt_adrs = #{recipientAddress},
+				   rtrn_rcpnt_adrs_sub = #{recipientAddressDetail},
 			   </if>
 			   upd_usr_id = #{userId},
 			   upd_dt = now()
