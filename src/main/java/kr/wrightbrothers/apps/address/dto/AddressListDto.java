@@ -27,8 +27,8 @@ public class AddressListDto {
         private String address;             // 주소
         private String addressDetail;       // 상세주소
         private String addressPhone;        // 주소지 연락처
-        private String reqUnstoringFlag;    // 대표 출고지 주소 지정 여부
-        private String reqReturnFlag;       // 대표 반품/교환지 주소 지정 여부
+        private String repUnstoringFlag;    // 대표 출고지 주소 지정 여부
+        private String repReturnFlag;       // 대표 반품/교환지 주소 지정 여부
     }
 
 }

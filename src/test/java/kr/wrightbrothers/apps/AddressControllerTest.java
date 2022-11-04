@@ -84,8 +84,8 @@ class AddressControllerTest extends BaseControllerTests {
                                         fieldWithPath("data[].address").type(JsonFieldType.STRING).description("주소"),
                                         fieldWithPath("data[].addressDetail").type(JsonFieldType.STRING).description("상세주소"),
                                         fieldWithPath("data[].addressPhone").type(JsonFieldType.STRING).description("연락처"),
-                                        fieldWithPath("data[].reqUnstoringFlag").type(JsonFieldType.STRING).description("대표 출고지 주소로 지정 여부"),
-                                        fieldWithPath("data[].reqReturnFlag").type(JsonFieldType.STRING).description("대표 반품/교환지 주소로 지정 여부"),
+                                        fieldWithPath("data[].repUnstoringFlag").type(JsonFieldType.STRING).description("대표 출고지 주소로 지정 여부"),
+                                        fieldWithPath("data[].repReturnFlag").type(JsonFieldType.STRING).description("대표 반품/교환지 주소로 지정 여부"),
                                         fieldWithPath("totalItems").type(JsonFieldType.NUMBER).description("전체 조회 건수"),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
                                 )
