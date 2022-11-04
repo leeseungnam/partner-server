@@ -8,27 +8,20 @@ import kr.wrightbrothers.apps.file.dto.FileListDto;
 import kr.wrightbrothers.apps.file.dto.FileUpdateDto;
 import kr.wrightbrothers.apps.file.dto.FileUploadDto;
 import kr.wrightbrothers.apps.file.service.FileService;
-import kr.wrightbrothers.apps.file.service.S3Service;
 import kr.wrightbrothers.apps.partner.dto.*;
 import kr.wrightbrothers.apps.user.dto.UserAuthInsertDto;
 import kr.wrightbrothers.apps.user.service.UserService;
-import kr.wrightbrothers.framework.lang.WBException;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -67,18 +60,14 @@ public class PartnerService {
         if(!ObjectUtils.isEmpty(partnerDto.getThumbnail())) {
             List<FileListDto> fileListDto = fileService.findFileList(partnerDto.getThumbnail());
 
-            List<FileUpdateDto> fileList = new ArrayList<>();
+            List<FileUpdateDto> fileList = fileListDto.stream().map(obj -> FileUpdateDto.builder()
+                    .fileNo(obj.getFileNo())
+                    .fileSeq(obj.getFileSeq())
+                    .fileStatus(WBKey.TransactionType.Delete)
+                    .userId(userId)
+                    .build()).collect(Collectors.toList());
 
-            fileListDto.forEach(fileDto -> {
-                fileList.add(FileUpdateDto.builder()
-                        .fileNo(fileDto.getFileNo())
-                        .fileSeq(fileDto.getFileSeq())
-                        .fileStatus(WBKey.TransactionType.Delete)
-                        .userId(userId)
-                        .build());
-
-                fileService.s3FileUpload(fileList, null, false);
-            });
+            fileService.s3FileUpload(fileList, null, false);
         }
     }
 
