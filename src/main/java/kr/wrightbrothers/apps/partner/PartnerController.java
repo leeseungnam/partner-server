@@ -27,6 +27,7 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
@@ -156,12 +157,11 @@ public class PartnerController extends WBController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
-    @ApiOperation(value = "파트너 정보 수정", notes = "파트너 정보 수정 요청 API 입니다.")
+    @ApiOperation(value = "파트너 정보 수정(스토어 등록 포맷, 재심사요청 시 수정)", notes = "파트너 정보 수정 요청 API 입니다.")
     @PostMapping("/{partnerCode}/{contractCode}")
     public WBModel updatePartnerAll(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode
             ,@ApiParam(value = "계약 코드") @PathVariable String contractCode
-            ,@ApiParam @Valid @RequestBody PartnerInsertDto paramDto
-            ,@ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
+            ,@ApiParam @Valid @RequestBody PartnerInsertDto paramDto) {
 
         WBModel wbResponse = new WBModel();
 
@@ -181,7 +181,42 @@ public class PartnerController extends WBController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
-    @ApiOperation(value = "파트너 정보 수정", notes = "파트너 정보 수정 요청 API 입니다.")
+    @ApiOperation(value = "파트너 섬네일 저장", notes = "파트너 섬네일 저장 요청 API 입니다.")
+    @PostMapping("/{partnerCode}/thumbnail")
+    public WBModel updatePartnerThumbnail(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode
+                                          , @ApiParam(value = "섬네일 이미지 파일") @RequestParam MultipartFile multipartFile
+                                          ,@ApiIgnore @AuthenticationPrincipal UserPrincipal user
+    ) {
+        WBModel wbResponse = new WBModel();
+
+        log.info("[updatePartnerThumbnail]::partnerCode={}, file={}", partnerCode, multipartFile.getSize());
+        partnerService.savePartnerThumbnail(user.getUsername(), partnerCode, multipartFile);
+
+        wbResponse.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.save.success"));
+        return wbResponse;
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
+    })
+    @ApiOperation(value = "파트너 섬네일 삭제", notes = "파트너 섬네일 삭제 요청 API 입니다.")
+    @DeleteMapping("/{partnerCode}/thumbnail")
+    public WBModel deletePartnerThumbnail(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode
+            ,@ApiIgnore @AuthenticationPrincipal UserPrincipal user
+    ) {
+        WBModel wbResponse = new WBModel();
+
+        log.info("[deletePartnerThumbnail]::partnerCode={}", partnerCode);
+        partnerService.deletePartnerThumbnail(user.getUsername(), partnerCode);
+
+        wbResponse.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.complete"));
+        return wbResponse;
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
+    })
+    @ApiOperation(value = "파트너 정보 수정(판매자 정보 포맷, 입점 담당자/알림톡 정보", notes = "파트너 정보 수정 요청 API 입니다.")
     @PutMapping("/{partnerCode}/{contractCode}")
     public WBModel updatePartner(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode
             ,@ApiParam(value = "계약 코드") @PathVariable String contractCode
@@ -236,7 +271,7 @@ public class PartnerController extends WBController {
                     messageSourceAccessor.getMessage(messagePrefix+"word.user.status."+paramDto.getPartnerOperator().getAuthCode())
             });
         }
-        // [todo] already invite check 
+        // [todo] already invite check
 
         //  insert invite
         String inviteCode = RandomStringUtils.randomAlphanumeric(10).toUpperCase();

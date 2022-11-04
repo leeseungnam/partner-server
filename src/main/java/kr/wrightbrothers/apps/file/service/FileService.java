@@ -7,6 +7,7 @@ import kr.wrightbrothers.framework.lang.WBException;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
@@ -23,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -33,6 +36,38 @@ public class FileService {
     private final S3Service s3Service;
     private final WBCommonDao dao;
     private final String namespace = "kr.wrightbrothers.apps.file.query.File.";
+
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Admin)
+    public FileUploadDto uploadProfileThumbnail(final MultipartFile multipartFile,
+                                       final String fileNo) {
+        try {
+            File file = new File(multipartFile.getOriginalFilename());
+            file.createNewFile();
+
+            // resource auto close
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                fos.write(multipartFile.getBytes());
+            }
+            log.info("[uploadProfileThumbnail] transfer to filesize={}",file.length());
+
+            String fileSource = s3Service.uploadFile(file, PartnerKey.Aws.A3.Product_Img_Path);
+
+            // 파일정보 저장
+            FileUploadDto fileDto = FileUploadDto.builder()
+                    .fileNo(fileNo)
+                    .fileOriginalName(multipartFile.getOriginalFilename())
+                    .fileSource(fileSource)
+                    .fileSize(String.valueOf(multipartFile.getSize()))
+                    .fileStatus(WBKey.TransactionType.Read)
+                    .build();
+
+            dao.insert(namespace + "insertFile", fileDto, PartnerKey.WBDataBase.Alias.Admin);
+
+            return fileDto;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Admin)
     public List<FileUploadDto> uploadFile(final MultipartFile[] files,

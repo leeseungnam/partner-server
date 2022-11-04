@@ -3,19 +3,35 @@ package kr.wrightbrothers.apps.partner.service;
 import kr.wrightbrothers.apps.common.constants.Partner;
 import kr.wrightbrothers.apps.common.constants.User;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.common.util.RandomUtil;
+import kr.wrightbrothers.apps.file.dto.FileListDto;
+import kr.wrightbrothers.apps.file.dto.FileUpdateDto;
+import kr.wrightbrothers.apps.file.dto.FileUploadDto;
+import kr.wrightbrothers.apps.file.service.FileService;
+import kr.wrightbrothers.apps.file.service.S3Service;
 import kr.wrightbrothers.apps.partner.dto.*;
 import kr.wrightbrothers.apps.user.dto.UserAuthInsertDto;
 import kr.wrightbrothers.apps.user.service.UserService;
+import kr.wrightbrothers.framework.lang.WBException;
+import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -25,6 +41,46 @@ public class PartnerService {
     private final WBCommonDao dao;
     private final String namespace = "kr.wrightbrothers.apps.partner.query.Partner.";
     private final UserService userService;
+    private final FileService fileService;
+
+    @Transactional(value = PartnerKey.WBDataBase.TransactionManager.Global)
+    public FileUploadDto savePartnerThumbnail(String userId, String partnerCode, MultipartFile multipartFile) {
+
+        // 기존 thumbnail 존재하는 경우 삭제
+        deletePartnerThumbnail(userId, partnerCode);
+
+        String fileNo = RandomUtil.generateNo();
+        dao.update(namespace+"updatePartnerThumbnail", PartnerDto.ReqBody.builder()
+                        .partnerCode(partnerCode)
+                        .thumbnail(fileNo)
+                        .build());
+
+        return fileService.uploadProfileThumbnail(multipartFile, fileNo);
+    }
+
+    @Transactional(value = PartnerKey.WBDataBase.TransactionManager.Global)
+    public void deletePartnerThumbnail(String userId, String partnerCode) {
+
+        PartnerDto.ResBody partnerDto = dao.selectOne(namespace + "findPartnerByPartnerCode", partnerCode);
+
+        // 기존 thumbnail 존재하는 경우 삭제
+        if(!ObjectUtils.isEmpty(partnerDto.getThumbnail())) {
+            List<FileListDto> fileListDto = fileService.findFileList(partnerDto.getThumbnail());
+
+            List<FileUpdateDto> fileList = new ArrayList<>();
+
+            fileListDto.forEach(fileDto -> {
+                fileList.add(FileUpdateDto.builder()
+                        .fileNo(fileDto.getFileNo())
+                        .fileSeq(fileDto.getFileSeq())
+                        .fileStatus(WBKey.TransactionType.Delete)
+                        .userId(userId)
+                        .build());
+
+                fileService.s3FileUpload(fileList, null, false);
+            });
+        }
+    }
 
     @Transactional(value = PartnerKey.WBDataBase.TransactionManager.Default)
     public void acceptInvite(PartnerInviteDto.Param paramDto) {

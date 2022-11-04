@@ -8,6 +8,12 @@
 		where invite_code = #{inviteCode}
 	</update>
 
+	<update id="updatePartnerThumbnail" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerDto$ReqBody">
+		update partner set
+			thumbnail = #{thumbnail}
+		where partner_code = #{partnerCode}
+	</update>
+
 	<select id="findOperatorInvite" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerInviteDto$Param" resultType="kr.wrightbrothers.apps.partner.dto.PartnerInviteDto$ResBody">
 		select invite_code
 			 ,  partner_code
@@ -109,6 +115,44 @@
 			,  pr.create_date
 		from partner_reject pr
 		where pr.partner_code = #{partnerCode}
+	</select>
+
+	<select id="findPartnerSNS" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.partner.dto.PartnerSNSDto">
+		select p.partner_code
+			 , p.partner_name
+			 , p.thumbnail
+			 , p.partner_kind
+			 , p.business_classification_code
+			 , p.business_name
+			 , p.business_no
+			 , p.business_condition
+			 , p.business_type
+			 , p.rep_name
+			 , p.rep_phone
+			 , p.cs_phone
+			 , p.business_address
+			 , p.business_address_sub
+			 , p.business_address_zip_code
+			 , p.partner_status
+		from partner p
+		where p.partner_code = #{partnerCode}
+	</select>
+	<select id="findPartnerContractSNS" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.partner.dto.PartnerContractSNSDto">
+		select pc.partner_code
+			 , pc.contract_code
+			 , pc.contract_status
+			 , pc.contract_manager_name
+			 , pc.contract_manager_phone
+			 , pc.tax_bill_email
+			 , pc.bank_code
+			 , pc.account_no
+			 , pc.account_holder
+			 , pc.contract_day
+			 , pc.contract_start_day
+			 , pc.contract_end_day
+			 , pc.contract_file_no
+		from partner_contract pc
+		where pc.contract_code = #{contractCode}
 	</select>
 
 	<select id="findPartnerByPartnerCode" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.partner.dto.PartnerDto$ResBody">

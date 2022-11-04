@@ -17,7 +17,10 @@ public class WBKey {
 	public static final String Single 				= "S";
 	public static final String WBAdminUser			= "A";
 	public static final String UTF8					= "UTF-8";
+	public static final String RequestMethodGet		= "GET";
+	public static final String RequestMethodPup		= "PUT";
 	public static final String RequestMethodPost	= "POST";
+	public static final String RequestMethodDelete	= "DELETE";
 	public static final String RequestMethodOption	= "OPTIONS";
 	public static final String TempUser				= "Temp-System";
 	public static final String JWTExpired			= "JWT-expired";
