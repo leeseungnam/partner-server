@@ -4,9 +4,11 @@ import kr.wrightbrothers.apps.partner.dto.PartnerContractSNSDto;
 import kr.wrightbrothers.apps.partner.dto.PartnerSNSDto;
 import kr.wrightbrothers.apps.partner.service.PartnerService;
 import kr.wrightbrothers.apps.queue.dto.PartnerSendDto;
+import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -34,6 +36,7 @@ public class PartnerQueueService {
     public PartnerSendDto findPartnerSnsData(String partnerCode,
                                              String contractCode) {
         return PartnerSendDto.builder()
+                .registerId(((UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername())
                 .partnerCode(partnerCode)
                 .contractCode(contractCode)
                 .partner(Optional.of((PartnerSNSDto) dao.selectOne(namespace + "findPartnerSNS", partnerCode)).orElse(new PartnerSNSDto()))
