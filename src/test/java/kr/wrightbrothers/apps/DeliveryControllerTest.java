@@ -243,7 +243,8 @@ class DeliveryControllerTest extends BaseControllerTests {
                                         fieldWithPath("deliveryMemo").type(JsonFieldType.STRING).description("배송 메모").optional().attributes(key("etc").value(""))
                                 ),
                                 responseFields(
-                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
+                                        fieldWithPath("WBCommon.message").type(JsonFieldType.STRING).description("메시지")
                                 )
                 ))
         ;
@@ -302,7 +303,8 @@ class DeliveryControllerTest extends BaseControllerTests {
                                         fieldWithPath("invoiceNo").type(JsonFieldType.STRING).description("송장번호").attributes(key("etc").value(""))
                                 ),
                                 responseFields(
-                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
+                                        fieldWithPath("WBCommon.message").type(JsonFieldType.STRING).description("메시지")
                                 )
                         ))
         ;

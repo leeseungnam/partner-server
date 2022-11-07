@@ -10,6 +10,7 @@ import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -22,6 +23,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class AddressController extends WBController {
 
+    private final MessageSourceAccessor messageSourceAccessor;
     private final AddressService addressService;
 
     @ApiImplicitParams({
@@ -56,7 +58,7 @@ public class AddressController extends WBController {
         // 주소록 등록
         addressService.insertAddress(paramDto);
 
-        return noneDataResponse();
+        return insertMsgResponse(messageSourceAccessor);
     }
 
     @ApiImplicitParams({
@@ -85,7 +87,7 @@ public class AddressController extends WBController {
         // 주소록 수정
         addressService.updateAddress(paramDto);
 
-        return noneDataResponse();
+        return noneMgsResponse(messageSourceAccessor);
     }
 
     @ApiImplicitParams({
@@ -102,7 +104,7 @@ public class AddressController extends WBController {
                         .addressNo(addressNo)
                         .build());
 
-        return noneDataResponse();
+        return noneMgsResponse(messageSourceAccessor);
     }
 
 }

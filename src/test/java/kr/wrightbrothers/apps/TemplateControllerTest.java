@@ -177,7 +177,8 @@ class TemplateControllerTest extends BaseControllerTests {
                                         fieldWithPath("delivery.returnDeliveryCompanyCode").type(JsonFieldType.STRING).description("반품/교환 택배사 코드").attributes(key("etc").value("공통코드 000044"))
                                 ),
                                 responseFields(
-                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
+                                        fieldWithPath("WBCommon.message").type(JsonFieldType.STRING).description("메시지")
                                 )
                 ))
         ;
@@ -330,7 +331,8 @@ class TemplateControllerTest extends BaseControllerTests {
                                         fieldWithPath("delivery.returnDeliveryCompanyCode").type(JsonFieldType.STRING).description("반품/교환 택배사 코드").attributes(key("etc").value("공통코드 000044"))
                                 ),
                                 responseFields(
-                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
+                                        fieldWithPath("WBCommon.message").type(JsonFieldType.STRING).description("메시지")
                                 )
                 ))
                 ;
@@ -391,7 +393,8 @@ class TemplateControllerTest extends BaseControllerTests {
                                         parameterWithName("templateNoList").description("템플릿 번호").attributes(key("etc").value("여러 건일경우 배열로 보낼 것"))
                                 ),
                                 responseFields(
-                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
+                                        fieldWithPath("WBCommon.message").type(JsonFieldType.STRING).description("메시지")
                                 )
                 ))
                 ;

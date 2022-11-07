@@ -8,6 +8,7 @@ import kr.wrightbrothers.apps.order.service.PaymentService;
 import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -18,6 +19,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class PaymentController extends WBController {
 
+    private final MessageSourceAccessor messageSourceAccessor;
     private final PaymentService paymentService;
 
     @UserPrincipalScope
@@ -30,7 +32,7 @@ public class PaymentController extends WBController {
         // 결제 취소
         paymentService.updateCancelPayment(paramDto);
 
-        return noneDataResponse();
+        return noneMgsResponse(messageSourceAccessor);
     }
 
 }

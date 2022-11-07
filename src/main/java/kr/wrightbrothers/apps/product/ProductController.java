@@ -15,6 +15,7 @@ import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProductController extends WBController {
 
+    private final MessageSourceAccessor messageSourceAccessor;
     private final ProductService productService;
     private final ProductUtil productUtil;
 
@@ -148,7 +150,7 @@ public class ProductController extends WBController {
         // 상품정보 등록
         productService.insertProduct(paramDto);
 
-        return noneDataResponse();
+        return insertMsgResponse(messageSourceAccessor);
     }
 
     @ApiImplicitParams({
@@ -181,7 +183,7 @@ public class ProductController extends WBController {
         // 상품정보 수정
         productService.updateProduct(paramDto);
 
-        return noneDataResponse();
+        return noneMgsResponse(messageSourceAccessor);
     }
 
     @UserPrincipalScope
@@ -194,7 +196,7 @@ public class ProductController extends WBController {
         // 상품 일괄 상태 변경
         productService.updateProductStatus(paramDto);
 
-        return noneDataResponse();
+        return noneMgsResponse(messageSourceAccessor);
     }
 
 }

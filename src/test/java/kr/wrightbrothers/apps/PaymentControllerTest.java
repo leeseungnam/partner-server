@@ -70,7 +70,8 @@ public class PaymentControllerTest extends BaseControllerTests {
                                         fieldWithPath("refundDepositorName").type(JsonFieldType.STRING).description("환불 은행 예금주").optional().attributes(key("etc").value("무통장 거래시 처리"))
                                 ),
                                 responseFields(
-                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
+                                        fieldWithPath("WBCommon.message").type(JsonFieldType.STRING).description("메시지")
                                 )
                 ))
                 ;

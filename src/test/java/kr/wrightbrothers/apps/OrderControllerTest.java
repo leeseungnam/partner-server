@@ -347,7 +347,8 @@ public class OrderControllerTest extends BaseControllerTests {
                                         fieldWithPath("orderMemo").type(JsonFieldType.STRING).description("주문 메모").optional().attributes(key("etc").value(""))
                                 ),
                                 responseFields(
-                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
+                                        fieldWithPath("WBCommon.message").type(JsonFieldType.STRING).description("메시지")
                                 )
                 ))
                 ;

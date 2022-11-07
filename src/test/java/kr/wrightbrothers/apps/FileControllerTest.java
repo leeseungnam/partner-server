@@ -150,7 +150,8 @@ public class FileControllerTest extends BaseControllerTests {
                                         fieldWithPath("fileDataSet[].displaySeq").type(JsonFieldType.NUMBER).description("디스플레이 순서"),
                                         fieldWithPath("fileDataSet[].tifPath").type(JsonFieldType.STRING).optional().description("TIF 경로"),
                                         fieldWithPath("fileNo").type(JsonFieldType.STRING).description("파일 대표 번호"),
-                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
+                                        fieldWithPath("WBCommon.message").type(JsonFieldType.STRING).description("메시지")
                                 )
                 ))
                 ;
@@ -202,7 +203,8 @@ public class FileControllerTest extends BaseControllerTests {
                                         fieldWithPath("fileDataSet.displaySeq").type(JsonFieldType.NUMBER).description("디스플레이 순서"),
                                         fieldWithPath("fileDataSet.tifPath").type(JsonFieldType.STRING).description("TIF 경로"),
                                         fieldWithPath("fileNo").type(JsonFieldType.STRING).description("파일 대표 번호"),
-                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
+                                        fieldWithPath("WBCommon.message").type(JsonFieldType.STRING).description("메시지")
                                 )
                 ))
                 ;
@@ -239,7 +241,8 @@ public class FileControllerTest extends BaseControllerTests {
                                 ),
                                 responseFields(
                                         fieldWithPath("data").type(JsonFieldType.STRING).description("이미지 업로드 경로"),
-                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
+                                        fieldWithPath("WBCommon.message").type(JsonFieldType.STRING).description("메시지")
                                 )
                 ))
         ;

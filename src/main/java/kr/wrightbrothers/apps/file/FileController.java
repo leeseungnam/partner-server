@@ -10,6 +10,7 @@ import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,9 @@ import java.nio.charset.StandardCharsets;
 @RequiredArgsConstructor
 public class FileController extends WBController {
 
+    private final String MSG_PRE_FIX = "api.message.common.";
     private final FileService fileService;
+    private final MessageSourceAccessor messageSourceAccessor;
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "access token", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
@@ -45,6 +48,7 @@ public class FileController extends WBController {
 
         response.addObject(WBKey.File.UploadFileDataSet, fileService.uploadFile(files, fileNo));
         response.addObject(WBKey.File.UploadFileNo, fileNo);
+        response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(MSG_PRE_FIX + "save.success"));
 
         return response;
     }
@@ -63,6 +67,7 @@ public class FileController extends WBController {
 
         response.addObject(WBKey.File.UploadFileDataSet, fileService.uploadTifFile(file, fileNo, productCode));
         response.addObject(WBKey.File.UploadFileNo, fileNo);
+        response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(MSG_PRE_FIX + "save.success"));
 
         return response;
     }
@@ -73,7 +78,7 @@ public class FileController extends WBController {
     @ApiOperation(value = "파일 업로드(이미지)", notes = "파일 업로드 후 이미지 업로드 경로 URL을 제공")
     @PostMapping("/files/upload-image")
     public WBModel uploadImageFile(@ApiParam(value = "이미지 파일") @RequestParam MultipartFile file) throws IOException {
-        return defaultResponse(fileService.uploadImageFile(file));
+        return defaultInsertResponse(fileService.uploadImageFile(file), messageSourceAccessor);
     }
 
     @ApiImplicitParams({

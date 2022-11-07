@@ -12,6 +12,7 @@ import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DeliveryController extends WBController {
 
+    private final MessageSourceAccessor messageSourceAccessor;
     private final DeliveryService deliveryService;
 
     @ApiImplicitParams({
@@ -139,7 +141,7 @@ public class DeliveryController extends WBController {
         // 배송관리 정보 수정
         deliveryService.updateDelivery(paramDto);
 
-        return noneDataResponse();
+        return noneMgsResponse(messageSourceAccessor);
     }
 
     @UserPrincipalScope
@@ -152,7 +154,7 @@ public class DeliveryController extends WBController {
         // 배송정보 수정
         deliveryService.updateDeliveryInvoice(paramDto);
 
-        return noneDataResponse();
+        return noneMgsResponse(messageSourceAccessor);
     }
 
 }

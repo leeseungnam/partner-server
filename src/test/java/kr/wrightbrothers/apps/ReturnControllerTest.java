@@ -237,7 +237,8 @@ public class ReturnControllerTest extends BaseControllerTests {
                                         fieldWithPath("returnMemo").type(JsonFieldType.STRING).description("반품 메모").optional().attributes(key("etc").value(""))
                                 ),
                                 responseFields(
-                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
+                                        fieldWithPath("WBCommon.message").type(JsonFieldType.STRING).description("메시지")
                                 )
                 ))
                 ;
@@ -284,7 +285,8 @@ public class ReturnControllerTest extends BaseControllerTests {
                                         fieldWithPath("requestValue").type(JsonFieldType.STRING).description("반품 요청 데이터").optional().attributes(key("etc").value("반품 진행 송장번호"))
                                 ),
                                 responseFields(
-                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
+                                        fieldWithPath("WBCommon.message").type(JsonFieldType.STRING).description("메시지")
                                 )
                 ))
                 ;

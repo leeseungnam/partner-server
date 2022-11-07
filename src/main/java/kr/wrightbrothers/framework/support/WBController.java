@@ -2,13 +2,17 @@ package kr.wrightbrothers.framework.support;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.wrightbrothers.apps.common.util.PartnerKey;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.MessageSourceAccessor;
 
 @Slf4j
 public class WBController {
 
 	private final ObjectMapper mapper = new ObjectMapper();
-	
+	private final String MSG_PRE_FIX = "api.message.common.";
+
 	/**
 	 * 오류 로그 설정
 	 * @param e
@@ -27,6 +31,24 @@ public class WBController {
 	}
 
 	/**
+	 * 정상 처리 메시지 처리
+	 */
+	public WBModel noneMgsResponse(MessageSourceAccessor messageSourceAccessor) {
+		WBModel response = new WBModel();
+		response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(MSG_PRE_FIX + "complete"));
+		return response;
+	}
+
+	/**
+	 * 정상 등록 메시지 처리
+	 */
+	public WBModel insertMsgResponse(MessageSourceAccessor messageSourceAccessor) {
+		WBModel response = new WBModel();
+		response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(MSG_PRE_FIX + "save.success"));
+		return response;
+	}
+
+	/**
 	 * 기본 Data Response
 	 *
 	 * @param obj 요청 데이터
@@ -36,6 +58,20 @@ public class WBController {
 		WBModel response = new WBModel();
 		response.addObject(WBKey.WBModel.DefaultDataKey, obj);
 //		dataLog(WBKey.WBModel.DefaultDataKey, obj);
+
+		return response;
+	}
+
+	/**
+	 * 기본 Data Response
+	 *
+	 * @param obj 요청 데이터
+	 * @return WBModel
+	 */
+	public WBModel defaultInsertResponse(Object obj, MessageSourceAccessor messageSourceAccessor) {
+		WBModel response = new WBModel();
+		response.addObject(WBKey.WBModel.DefaultDataKey, obj);
+		response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(MSG_PRE_FIX + "save.success"));
 
 		return response;
 	}

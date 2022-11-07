@@ -80,36 +80,39 @@
 			on p.create_user_id = u.user_id
 		 where p.partner_code = #{partnerCode}
 		<choose>
-			<when test="rangeType == 'PRODUCT'.toString()">
-		   and p.create_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
-			</when>
-			<when test="rangeType == 'SALE'.toString()">
-		   and ps.product_sell_start_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
-			</when>
+		   <when test="keywordValueList != null and keywordValueList.length != 0">
+			   <choose>
+				   <when test="keywordType == 'NAME'.toString()">
+					   <foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
+						   p.product_name like #{item} '%'
+					   </foreach>
+				   </when>
+				   <when test="keywordType == 'CODE'.toString()">
+					   <foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
+						   p.product_code like #{item} '%'
+					   </foreach>
+				   </when>
+			   </choose>
+		   </when>
+		   <otherwise>
+			   <choose>
+				   <when test="rangeType == 'PRODUCT'.toString()">
+					   and p.create_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+				   </when>
+				   <when test="rangeType == 'SALE'.toString()">
+					   and ps.product_sell_start_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+				   </when>
+			   </choose>
+			   -- 전시상태
+			   <foreach collection="displayFlag" item="item" index="index" open="and ps.display_flag in (" separator="," close=")">
+				   #{item}
+			   </foreach>
+			   -- 상품상태
+			   <foreach collection="status" item="item" index="index" open="and ps.product_status_code in (" separator="," close=")">
+				   #{item}
+			   </foreach>
+		   </otherwise>
 		</choose>
-		-- 전시상태
-		<foreach collection="displayFlag" item="item" index="index" open="and ps.display_flag in (" separator="," close=")">
-				#{item}
-		</foreach>
-		-- 상품상태
-		<foreach collection="status" item="item" index="index" open="and ps.product_status_code in (" separator="," close=")">
-				#{item}
-		</foreach>
-		-- 조회기간
-		<if test="keywordValue != null and keywordValue != ''">
-			<choose>
-				<when test="keywordType == 'NAME'.toString()">
-					<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-						p.product_name like #{item} '%'
-					</foreach>
-				</when>
-				<when test="keywordType == 'CODE'.toString()">
-					<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-						p.product_code like #{item} '%'
-					</foreach>
-				</when>
-			</choose>
-		</if>
 		<choose>
 			<when test="sortType == 'CRE'.toString()">
 		order by p.create_date desc
@@ -685,8 +688,8 @@
 			d.delivery_bundle_flag,
 			ifnull(date_format(s.product_sell_start_date, '%Y-%m-%d'), '') as product_sell_start_day,
 			ifnull(date_format(s.product_sell_end_date, '%Y-%m-%d'), '') as product_sell_end_day,
-			ifnull(date_format(o.create_date, '%Y-%m-%d'), '') as create_day,
-			ifnull(date_format(o.update_date, '%Y-%m-%d'), '') as update_day,
+			ifnull(date_format(p.create_date, '%Y-%m-%d'), '') as create_day,
+			ifnull(date_format(p.update_date, '%Y-%m-%d'), '') as update_day,
 			if(u.user_id is null, '라이트브라더스', concat(u.user_name, '(', u.user_id, ')')) as create_user_name
 		  from product p
 		 inner join product_sell_info s

@@ -15,6 +15,7 @@ import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 public class OrderController extends WBController {
 
     private final OrderService orderService;
+    private final MessageSourceAccessor messageSourceAccessor;
 
     @ApiImplicitParams({
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
@@ -162,7 +164,7 @@ public class OrderController extends WBController {
         // 주문 정보 수정
         orderService.updateOrder(paramDto);
 
-        return noneDataResponse();
+        return noneMgsResponse(messageSourceAccessor);
     }
 
 }

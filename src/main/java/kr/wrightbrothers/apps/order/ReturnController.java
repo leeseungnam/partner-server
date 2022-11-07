@@ -12,6 +12,7 @@ import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ReturnController extends WBController {
 
+    private final MessageSourceAccessor messageSourceAccessor;
     private final ReturnService returnService;
 
     @ApiImplicitParams({
@@ -139,7 +141,7 @@ public class ReturnController extends WBController {
         // 반품관리 정보 수정
         returnService.updateReturn(paramDto);
 
-        return noneDataResponse();
+        return noneMgsResponse(messageSourceAccessor);
     }
 
     @UserPrincipalScope
@@ -152,7 +154,7 @@ public class ReturnController extends WBController {
         // 반품 요청에 대한 처리 수행
         returnService.updateRequestReturn(paramDto);
 
-        return noneDataResponse();
+        return noneMgsResponse(messageSourceAccessor);
     }
 
 }

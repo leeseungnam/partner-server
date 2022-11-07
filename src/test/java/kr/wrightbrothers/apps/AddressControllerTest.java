@@ -134,7 +134,8 @@ class AddressControllerTest extends BaseControllerTests {
                                         fieldWithPath("repReturnFlag").type(JsonFieldType.STRING).description("대표 반품/교환지 주소로 지정 여부").attributes(key("etc").value("Y 지정, N 미지정"))
                                 ),
                                 responseFields(
-                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
+                                        fieldWithPath("WBCommon.message").type(JsonFieldType.STRING).description("메시지")
                                 )
                 ))
                 ;
@@ -230,7 +231,8 @@ class AddressControllerTest extends BaseControllerTests {
                                         fieldWithPath("repReturnFlag").type(JsonFieldType.STRING).description("대표 반품/교환지 주소로 지정 여부").attributes(key("etc").value("Y 지정, N 미지정"))
                                 ),
                                 responseFields(
-                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
+                                        fieldWithPath("WBCommon.message").type(JsonFieldType.STRING).description("메시지")
                                 )
                 ))
                 ;
@@ -277,7 +279,8 @@ class AddressControllerTest extends BaseControllerTests {
                                         parameterWithName("addressNo").description("주소록 번호").attributes(key("etc").value(""))
                                 ),
                                 responseFields(
-                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
+                                        fieldWithPath("WBCommon.message").type(JsonFieldType.STRING).description("메시지")
                                 )
                 ))
 
