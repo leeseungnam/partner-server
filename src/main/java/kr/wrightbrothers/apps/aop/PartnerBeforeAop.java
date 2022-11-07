@@ -2,7 +2,10 @@ package kr.wrightbrothers.apps.aop;
 
 import kr.wrightbrothers.apps.common.constants.User;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
-import kr.wrightbrothers.apps.partner.dto.*;
+import kr.wrightbrothers.apps.partner.dto.PartnerAuthDto;
+import kr.wrightbrothers.apps.partner.dto.PartnerInsertDto;
+import kr.wrightbrothers.apps.partner.dto.PartnerUpdateDto;
+import kr.wrightbrothers.apps.partner.dto.PartnerViewDto;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
@@ -73,7 +76,7 @@ public class PartnerBeforeAop {
     public void checkOwnPartner(JoinPoint joinPoint) throws Exception {
         UserPrincipal user = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        log.info("[ownFindCheck]::userId={}",user.getUsername());
+        log.info("[ownFindCheck]::userId={}, auth={}",user.getUsername(), user.getUserAuth().getAuthCode());
 
         Arrays.stream(joinPoint.getArgs()).forEach(entity -> log.info("[checkFindPartnerAuth]::{}",entity.toString()));
 

@@ -71,6 +71,11 @@ public class PartnerUpdateDto {
             private String bankCode;
             private String taxBillEmail;
             private String userId;
+            private String contractStatus;
+
+            public void changeContractStatus(String contractStatus) {
+                this.contractStatus = contractStatus;
+            }
         }
         @Getter
         @Jacksonized

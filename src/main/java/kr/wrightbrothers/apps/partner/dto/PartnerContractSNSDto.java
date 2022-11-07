@@ -1,8 +1,8 @@
 package kr.wrightbrothers.apps.partner.dto;
 
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
+@Data
 public class PartnerContractSNSDto {
     private String partnerCode;
     private String contractCode;

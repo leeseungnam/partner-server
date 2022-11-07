@@ -30,6 +30,7 @@ public class PartnerAfterAop {
      *     해당 전송 결과 로그는 Admin 2.0 모니터링 테이블에 결과가 수신되고 있으니 해당 테이블을 통하여
      *     결과를 참고하면 됩니다.
      *
+     *     PartnerInsertDto Body 처리
      *     insertPartner, updatePartnerAll(partnerCode, contractCode)
      *     심사 요청(sns) -> return 심사결과 (sqs)
      *
@@ -42,26 +43,22 @@ public class PartnerAfterAop {
     public void sendPartnerSnsData(JoinPoint joinPoint) throws Exception {
         log.info("[sendPartnerSnsData]::Partner Send SNS.");
 
-        // 입점몰 API -> ADMIN 2.0 API
-        // AWS SNS Message Queue 상품 변경에 따른 발송 처리
-        if(Arrays.stream(joinPoint.getArgs()).findFirst().isPresent()){
-            Object obj = Arrays.stream(joinPoint.getArgs()).findFirst().get();
+        Arrays.stream(joinPoint.getArgs()).forEach(obj -> {
 
             if(obj instanceof PartnerInsertDto){
-                log.info("[sendPartnerSnsData]::PartnerInsertDto");
                 PartnerInsertDto parmaDto = (PartnerInsertDto) obj;
 
                 String partnerCode = parmaDto.getPartner().getPartnerCode();
                 String contractCode = parmaDto.getPartnerContract().getContractCode();
 
                 partnerQueue.sendToAdmin(
-                    DocumentSNS.REQUEST_INSPECTION
-                    , partnerCode
-                    , contractCode
-                    , PartnerKey.TransactionType.Insert
+                        DocumentSNS.REQUEST_INSPECTION_PARTNER
+                        , partnerCode
+                        , contractCode
+                        , PartnerKey.TransactionType.Insert
                 );
                 log.info("[sendPartnerSnsData]::partnerCode={}, contractCode={}", partnerCode, contractCode);
             }
-        }
+        });
     }
 }

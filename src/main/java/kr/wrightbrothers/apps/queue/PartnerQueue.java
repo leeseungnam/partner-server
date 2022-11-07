@@ -1,6 +1,8 @@
 package kr.wrightbrothers.apps.queue;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.apps.common.type.DocumentSNS;
+import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.queue.service.PartnerQueueService;
 import kr.wrightbrothers.framework.support.WBSQS;
 import kr.wrightbrothers.framework.support.dto.WBSnsDTO;
@@ -8,6 +10,8 @@ import kr.wrightbrothers.framework.support.dto.WBSnsDTO.Header;
 import kr.wrightbrothers.framework.util.WBAwsSns;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.aws.messaging.listener.SqsMessageDeletionPolicy;
 import org.springframework.cloud.aws.messaging.listener.annotation.SqsListener;
@@ -62,7 +66,7 @@ public class PartnerQueue extends WBSQS {
      *
      * @param message SQS 스토어 수신 데이터
      */
-    @SqsListener(value = "${cloud.aws.sqs.product}", deletionPolicy = SqsMessageDeletionPolicy.ALWAYS)
+    @SqsListener(value = "${cloud.aws.sqs.partner}", deletionPolicy = SqsMessageDeletionPolicy.ALWAYS)
     public void receiveFromAdmin(String message) {
         WBSnsDTO snsDto = null;
 
@@ -71,8 +75,26 @@ public class PartnerQueue extends WBSQS {
             snsDto = getSqsMessage(WBSnsDTO.class);
             Header header = snsDto.getHeader();
 
-            if (DocumentSNS.RESULT_INSPECTION.getName().equals(header.getDocuNm())) {
+            JSONParser parser = new JSONParser();
+            JSONObject body = (JSONObject) parser.parse(new ObjectMapper().writeValueAsString(snsDto.getBody()));
 
+            log.info("[receiveFromAdmin]::Partner");
+            log.info("[receiveFromAdmin]::Partner, docName={}",header.getDocuNm());
+
+            switch (DocumentSNS.of(header.getDocuNm())){
+                case RESULT_INSPECTION_PARTNER:
+                    if (PartnerKey.TransactionType.Update.equals(snsDto.getHeader().getTrsctnTp())) {
+                        log.info("[receiveFromAdmin]::RESULT_INSPECTION_PARTNER={}",snsDto.getBody());
+
+                        partnerQueueService.updatePartnerSnsData(body);
+                        ackMessage(snsDto);
+                    }
+                    break;
+                case UPDATE_PARTNER:
+                    if(true){
+
+                    }
+                    break;
             }
         } catch (Exception e) {
             log.error("Partner SQS Receive Error. {}", e.getMessage());

@@ -168,7 +168,7 @@ public class PartnerController extends WBController {
         paramDto.getPartner().changePartnerCode(partnerCode);
         paramDto.getPartnerContract().changePartnerCode(partnerCode);
         paramDto.getPartnerContract().changeContractCode(contractCode);
-
+        if(partnerService.findPartnerContract(partnerCode, contractCode).getContractStatus().equals(Partner.Contract.Status.REQUEST.getCode())) throw new WBCustomException(messagePrefix+"partner.comment."+Partner.Status.STOP.getCode()+"."+Partner.Contract.Status.REQUEST.getCode());
         // create user set
         partnerService.updatePartnerAll(paramDto);
 

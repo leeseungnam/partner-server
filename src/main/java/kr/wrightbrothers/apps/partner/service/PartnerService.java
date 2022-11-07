@@ -101,8 +101,14 @@ public class PartnerService {
                         .accountHolder(paramDto.getPartnerContract().getAccountHolder())
                         .bankCode(paramDto.getPartnerContract().getBankCode())
                         .taxBillEmail(paramDto.getPartnerContract().getTaxBillEmail())
+                        .contractStatus(Partner.Contract.Status.REQUEST.getCode())
                         .build()
         );
+
+        if(Partner.Contract.Status.REJECT.getCode().equals(paramDto.getPartnerContract().getContractStatus())) {
+            log.info("[insertPartnerReject]");
+            dao.insert(namespace+"insertPartnerReject", paramDto.getPartnerReject());
+        }
     }
 
     @Transactional(value = PartnerKey.WBDataBase.TransactionManager.Default)
@@ -137,6 +143,13 @@ public class PartnerService {
         return dao.selectOne(namespace + "checkPartnerOperatorAuthCount", paramDto);
     }
 
+    public PartnerContractDto.ResBody findPartnerContract(String partnerCode, String contractCode) {
+        return dao.selectOne(namespace + "findPartnerContractByPartnerCode", PartnerViewDto.Param.builder()
+                .partnerCode(partnerCode)
+                .contractCode(contractCode)
+        );
+    }
+
     public PartnerViewDto.ResBody findPartnerByPartnerCode(PartnerViewDto.Param paramDto) {
         PartnerViewDto.ResBody result = PartnerViewDto.ResBody
                 .builder()
@@ -144,7 +157,7 @@ public class PartnerService {
                 .partnerContract(Optional.of((PartnerContractDto.ResBody) dao.selectOne(namespace + "findPartnerContractByPartnerCode", paramDto)).orElse(new PartnerContractDto.ResBody()))
                 .partnerOperator(userService.findUserByPartnerCodeAndAuthCode(paramDto))
                 .partnerNotification(dao.selectList(namespace + "findPartnerNotificationByPartnerCode", paramDto.getPartnerCode()))
-                .partnerReject(dao.selectList(namespace + "findPartnerRejectByPartnerCode", paramDto.getPartnerCode()))
+                .partnerReject(dao.selectList(namespace + "findPartnerRejectByPartnerCode", paramDto))
                 .build();
 
         // set code name

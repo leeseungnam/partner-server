@@ -99,6 +99,7 @@
 		  ,	account_holder = #{accountHolder}
 		  ,	bank_code = #{bankCode}
 		  ,	tax_bill_email = #{taxBillEmail}
+		  ,	contract_status = #{contractStatus}
 		where partner_code = #{partnerCode}
 		  and contract_code = #{contractCode}
 	</update>
@@ -109,13 +110,33 @@
 		where pn.partner_code = #{partnerCode}
 	</select>
 
-	<select id="findPartnerRejectByPartnerCode" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.partner.dto.PartnerRejectDto$ResBody">
-		select pr.partner_status
+	<select id="findPartnerRejectByPartnerCode" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerViewDto$Param" resultType="kr.wrightbrothers.apps.partner.dto.PartnerRejectDto$ResBody">
+		select pr.contract_status
 			,  pr.reject_comment
 			,  pr.create_date
 		from partner_reject pr
 		where pr.partner_code = #{partnerCode}
+		  and pr.contract_code = #{contractCode}
 	</select>
+
+	<insert id="insertPartnerReject" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerRejectDto$Param">
+		insert into partner_reject
+		    (
+		     partner_code
+		     , contract_code
+		     , contract_status
+		     , reject_comment
+		     , create_user_id
+		     )
+		     VALUES
+			(
+			 #{partnerCode}
+			, #{contractCode}
+			, #{contractStatus}
+			, #{rejectComment}
+			, #{userId}
+			)
+	</insert>
 
 	<select id="findPartnerSNS" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.partner.dto.PartnerSNSDto">
 		select p.partner_code

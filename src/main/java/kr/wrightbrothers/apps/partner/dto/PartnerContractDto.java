@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -12,7 +13,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 public class PartnerContractDto {
-    @Getter
+    @Data
     @SuperBuilder
     @AllArgsConstructor
     @NoArgsConstructor
@@ -63,7 +64,7 @@ public class PartnerContractDto {
     }
 
     @ApiModel(value = "파트너 계약사항 정보")
-    @Getter
+    @Data
     @SuperBuilder
     @AllArgsConstructor
     @NoArgsConstructor
@@ -90,7 +91,6 @@ public class PartnerContractDto {
         public void changeUserId(String userId) {
             this.userId = userId;
         }
-
         public void changeContractStatus(String contractStatus) {
             this.contractStatus = contractStatus;
         }

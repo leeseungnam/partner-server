@@ -3,10 +3,7 @@ package kr.wrightbrothers.apps.partner.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
@@ -16,10 +13,12 @@ import javax.validation.constraints.Size;
 public class PartnerDto {
 
     @Getter
+    @Setter
     @Jacksonized
     @SuperBuilder
     @AllArgsConstructor
     @NoArgsConstructor
+    @EqualsAndHashCode
     @ApiModel(value = "파트너 데이터")
     public static class Partner {
         @ApiModelProperty(value = "스토어명", required = true)
@@ -84,10 +83,11 @@ public class PartnerDto {
         private String businessAddressZipCode;
     }
 
-    @ApiModel(value = "파트너 요청 데이터")
-    @Getter
+    @Data
     @Jacksonized
     @SuperBuilder
+    @ApiModel(value = "파트너 요청 데이터")
+    @NoArgsConstructor
     @EqualsAndHashCode(callSuper = false)
     public static class ReqBody extends Partner{
         @ApiModelProperty(value = "작성자 아이디")
@@ -111,6 +111,7 @@ public class PartnerDto {
             this.partnerStatus = partnerStatus;
         }
     }
+
     @Getter
     @Jacksonized
     @SuperBuilder
