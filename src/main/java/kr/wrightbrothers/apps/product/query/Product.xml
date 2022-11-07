@@ -3,6 +3,14 @@
 
 <mapper namespace="kr.wrightbrothers.apps.product.query.Product">
 	
+	<select id="isProductInspection" parameterType="java.lang.String" resultType="boolean">
+		select
+		    if(count(product_code) = 0, false, true) as isProductInspection
+		  from product_sell_info
+		 where product_code = #{productCode}
+		   and product_status_code in ('S06', 'S09', 'S10')
+	</select>
+	
 	<select id="isProductCode" parameterType="java.lang.String" resultType="boolean">
 		select
 		    if(count(product_code) = 0, false, true) as isProductCode
@@ -693,7 +701,7 @@
 		<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
 			#{item}
 		</foreach>
-		 order p.product_code
+		 order by p.create_date desc
 	</select>
 	
 </mapper>

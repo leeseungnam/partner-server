@@ -77,7 +77,6 @@ public class ExcelUtil {
         // 텍스트 정렬 설정
         cs.setAlignment(align);
         cs.setVerticalAlignment(VerticalAlignment.CENTER);
-        cs.setWrapText(true);
 
         // 셀 테두리 설정
         setCellBoldStyle(cs, options);

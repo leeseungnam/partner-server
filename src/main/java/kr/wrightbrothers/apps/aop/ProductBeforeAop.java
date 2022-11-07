@@ -3,6 +3,7 @@ package kr.wrightbrothers.apps.aop;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.apps.common.type.ProductStatusCode;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
+import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.product.dto.ProductAuthDto;
 import kr.wrightbrothers.apps.product.dto.StatusUpdateDto;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
@@ -16,6 +17,7 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.json.JSONObject;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 
@@ -83,7 +85,7 @@ public class ProductBeforeAop {
                 break;
             case END_OF_SALE:
             case RESERVATION:
-                if (!ProductStatusCode.SALE.getCode().equals(changeStatusCode))
+                if (!ProductStatusCode.SALE.getCode().equals(currentStatusCode))
                     throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매중인"});
                 break;
 
@@ -94,6 +96,7 @@ public class ProductBeforeAop {
             "execution(* kr.wrightbrothers.apps.product.service.*Service.update*(..)) ||" +
             "execution(* kr.wrightbrothers.apps.product.service.*Service.findProduct(..))"
     )
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void ownProductCheck(JoinPoint joinPoint) throws Exception {
         JSONObject object = new JSONObject(JsonUtil.ToString(Arrays.stream(joinPoint.getArgs()).findFirst().orElseThrow()));
 
@@ -142,6 +145,7 @@ public class ProductBeforeAop {
      * </pre>
      */
     @Before(value = "execution(* kr.wrightbrothers.apps.product.service.*Service.update*(..))")
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void productStatusCheck(JoinPoint joinPoint) throws Exception {
         JSONObject object = new JSONObject(JsonUtil.ToString(Arrays.stream(joinPoint.getArgs()).findFirst().orElseThrow()));
 
@@ -152,6 +156,10 @@ public class ProductBeforeAop {
                             .getProductCodeList()
                     )
                     .forEach(productCode -> {
+                        // 검수단계 예외처리
+                        if (dao.selectOne(namespace + "isProductInspection", productCode))
+                            throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매중/예약중/판매완료/판매종료"});
+
                         // 노출 상태 변경
                         if (object.getString("statusType").equals("DP")) {
                             validDisplayChange(productCode, object.getString("statusValue"));

@@ -2,6 +2,7 @@ package kr.wrightbrothers.apps.product;
 
 import io.swagger.annotations.*;
 import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
+import kr.wrightbrothers.apps.common.type.ProductStatusCode;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.ProductUtil;
@@ -141,6 +142,8 @@ public class ProductController extends WBController {
         );
         // 추가 유효성 검사
         paramDto.validProduct();
+        // 검수대기 상태 변경
+        paramDto.getSellInfo().setProductStatusCode(ProductStatusCode.PRODUCT_INSPECTION.getCode());
 
         // 상품정보 등록
         productService.insertProduct(paramDto);

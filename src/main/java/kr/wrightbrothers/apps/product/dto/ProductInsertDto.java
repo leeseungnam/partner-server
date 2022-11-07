@@ -74,32 +74,18 @@ public class ProductInsertDto {
         if (!CategoryCode.BIKE.getCode().equals(this.product.getCategoryOneCode()))
             return;
 
-        if (ObjectUtils.isEmpty(basicSpec))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"기본 스펙"});
-        if (ObjectUtils.isEmpty(basicSpec.getSalesCategoryCode()))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"완차 구분"});
-        if (ObjectUtils.isEmpty(basicSpec.getDrivetrainTypeCode()))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"구동계"});
-        if (ObjectUtils.isEmpty(basicSpec.getFrameMaterialCode()))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"프레임 소재"});
-        if (ObjectUtils.isEmpty(basicSpec.getFrameSizeCode()))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"프레임 사이즈"});
-        if (ObjectUtils.isEmpty(basicSpec.getBrakeTypeCode()))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"브레이크 타입"});
-        if (ObjectUtils.isEmpty(basicSpec.getPurposeThemeCode()))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"용도 테마"});
-        if (ObjectUtils.isEmpty(basicSpec.getWheelSizeCode()))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"휠 사이즈"});
-        if (ObjectUtils.isEmpty(basicSpec.getSuspensionTypeCode()))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"서스펜션"});
-        if (ObjectUtils.isEmpty(basicSpec.getMinHeightPerson()))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"호환키"});
-        if (ObjectUtils.isEmpty(basicSpec.getMaxHeightPerson()))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"호환키"});
-        if (ObjectUtils.isEmpty(basicSpec.getBikeWeight()))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"무게"});
-        if (ObjectUtils.isEmpty(basicSpec.getAgeList()))
-            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"탑승 연령대"});
+        // 브랜드 압력요청 처리
+        if (ObjectUtils.isEmpty(this.product.getBrandNo()) && ObjectUtils.isEmpty(this.product.getBrandName()))
+            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"브랜드명"});
+
+        // 모델 입력요청 처리
+        if (ObjectUtils.isEmpty(this.product.getModelCode()) && ObjectUtils.isEmpty(this.product.getModelName()))
+            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"모델명"});
+
+        if (ObjectUtils.isEmpty(this.product.getBrandNo()))
+            this.product.setBrandNo("0");
+        if (ObjectUtils.isEmpty(this.product.getModelCode()))
+            this.product.setModelCode("0");
     }
 
     // 상품 옵션 유효성 검사
@@ -125,7 +111,7 @@ public class ProductInsertDto {
 
     public void validProduct() {
         // 자전거 상품 추가 유효성 검사
-        // validBike();
+        validBike();
 
         // 상품 판매 상태일 경우 판매재고 0 이상의 유효성 체크
         if (ProductStatusCode.SALE.getCode().equals(this.sellInfo.getProductStatusCode()) ||

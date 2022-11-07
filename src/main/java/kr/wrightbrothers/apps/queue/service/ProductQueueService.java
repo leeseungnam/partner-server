@@ -156,7 +156,7 @@ public class ProductQueueService {
         // SQS 입점몰 검수 결과 처리
         productService.updateProduct(productUpdateDto);
         // 상품 검수 요청 결과에 따른 메일 발송 처리
-        Email email = Arrays.toString(productUpdateDto.getChangeLogList()).contains("검수완료")
+        Email email = Arrays.toString(productUpdateDto.getChangeLogList()).contains("검수 완료")
                 ? Email.COMPLETE_PRODUCT : Email.REJECT_PRODUCT;
 
         FindAddressDto findAddressDto =

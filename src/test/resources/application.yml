@@ -43,6 +43,7 @@ cloud:
     sqs:
       auto: false
       product: DEV-PARTNER-PRODUCT.fifo
+      partner: DEV-PARTNER-STORE2.fifo
     credentials:
       accessKey: AKIARL5GKSIL5OK4DO5V
       secretKey: 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
@@ -55,6 +56,7 @@ cloud:
       accessKey: AKIATJJEE3LGZUGQPERY
       secretKey: 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
       order: DEV-PARTNER-PLATFORM-ORDER.fifo
+      partner: DEV-PARTNER-STORE2.fifo
     ses:
       accessKey: AKIARL5GKSILRUJFMCMR
       secretKey: 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

@@ -36,7 +36,7 @@ public class ChangeInfoControllerTest extends ProductControllerTest {
                 .andExpect(jsonPath("$.data.productCode").value(productDto.getProduct().getProductCode()))
                 .andExpect(jsonPath("$.data.productName").value(productDto.getProduct().getProductName()))
                 .andExpect(jsonPath("$.data.changeHistory[0].productLog").value("상품 등록"))
-                .andExpect(jsonPath("$.data.changeHistory[0].productStatusCode").value(ProductStatusCode.PRODUCT_INSPECTION.getName()))
+                .andExpect(jsonPath("$.data.changeHistory[0].productStatusCode").value(ProductStatusCode.of(productDto.getSellInfo().getProductStatusCode()).getName()))
                 .andExpect(jsonPath("$.data.changeHistory[0].productLogCode").value(ProductLogCode.REGISTER.getName()))
                 .andDo(
                         document("change-history-find",

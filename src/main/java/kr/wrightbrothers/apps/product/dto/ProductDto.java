@@ -52,7 +52,6 @@ public class ProductDto {
         private String productName;         // 상품 이름
 
         @ApiModelProperty(value = "브랜드 번호", required = true)
-        @NotBlank(message = "브랜드")
         private String brandNo;             // 브랜드 번호
 
         @ApiModelProperty(value = "브랜드 이름", required = true)

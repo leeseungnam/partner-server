@@ -125,7 +125,7 @@ class ProductControllerTest extends BaseControllerTests {
                         .displayFlag("N")
                         .productOptionFlag("Y")
                         .finalSellAmount(2900000L)
-                        .productStatusCode(ProductStatusCode.PRODUCT_INSPECTION.getCode())
+                        .productStatusCode(ProductStatusCode.SALE.getCode())
                         .productStockQty(1)
                         .supplyAmount(0L)
                         .build())
@@ -181,7 +181,7 @@ class ProductControllerTest extends BaseControllerTests {
 
         // 기초 데이터 초기화 처리
         productDto.setAopUserId("test@wrightbrothers.kr");
-        productDto.getProduct().setPartnerCode("35");
+        productDto.getProduct().setPartnerCode("PT0000001");
         productDto.setProductCode(
                 productUtil.generateProductCode(productDto.getProduct().getCategoryTwoCode())
         );
@@ -279,6 +279,7 @@ class ProductControllerTest extends BaseControllerTests {
     }
 
     @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     @DisplayName("상품 등록")
     void insertProduct() throws Exception {
         // 상품 등록 API 테스트
