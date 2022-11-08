@@ -48,7 +48,7 @@ cloud:
       accessKey: AKIARL5GKSIL5OK4DO5V
       secretKey: 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
     sns:
-      arn: 'arn:aws:sns:ap-northeast-2:226098469581:'
+      arn: 'arn:aws:sns:ap-northeast-2:094301229591:'
       auto: false
       ack: DEV-ACKMSG2.fifo
       common: DEV-SNS-MSG2.fifo
