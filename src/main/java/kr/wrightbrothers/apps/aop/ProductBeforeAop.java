@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.reflect.MethodSignature;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,26 +69,29 @@ public class ProductBeforeAop {
      *
      * @param productNo 상품코드
      * @param changeStatusCode 변경 상태코드
+     * @param changeLog 변경 로그 정보
      */
-    private void validStatusChange(String productNo, String changeStatusCode) {
+    private void validStatusChange(String productNo, String changeStatusCode, String changeLog) {
         // 현재 상품 상태 코드
         String currentStatusCode = dao.selectOne(namespace + "findProductStatus", productNo);
         log.debug("Product Current Status::{}", currentStatusCode);
         log.debug("Product Change Status::{}", changeStatusCode);
+        log.debug("Product Change Log::{}", changeLog);
+
         // 상태 변경 아닐 시 종료
         if (currentStatusCode.equals(changeStatusCode)) return;
 
         switch (ProductStatusCode.of(changeStatusCode)) {
             case SALE:
-                if (!ProductStatusCode.RESERVATION.getCode().equals(currentStatusCode) && !ProductStatusCode.PRODUCT_INSPECTION.getCode().equals(currentStatusCode))
-                    throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"예약중"});
+                if (!ProductStatusCode.RESERVATION.getCode().equals(currentStatusCode)
+                        && !(ProductStatusCode.PRODUCT_INSPECTION.getCode().equals(currentStatusCode) & changeLog.contains("검수 완료")))
+                    throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"예약중/판매완료"});
                 break;
             case END_OF_SALE:
             case RESERVATION:
                 if (!ProductStatusCode.SALE.getCode().equals(currentStatusCode))
                     throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매중인"});
                 break;
-
         }
     }
 
@@ -127,21 +130,21 @@ public class ProductBeforeAop {
 
     /**
      * <pre>
-     *     스토어 소유의 상품을 변경할때 상태값의 유효성을 체크 합니다.
+     * 스토어 소유의 상품을 변경할때 상태값의 유효성을 체크 합니다.
      *
-     *     상품의 상태값은 두가지로 전시 여부에 대한 상태, 판매 진행에 대한 상태로 나눕니다.
-     *     변경 불가에 대한 정책은 아래와 같으니 해당 부분 업무에 있어 참고 바랍니다.
+     * 상품의 상태값은 두가지로 전시 여부에 대한 상태, 판매 진행에 대한 상태로 나눕니다.
+     * 변경 불가에 대한 정책은 아래와 같으니 해당 부분 업무에 있어 참고 바랍니다.
      *
-     *     현재 PointCut 영역은 패키지 product -> service 아래 함수 네이밍으로 되어 있습니다.
-     *     추가적인 상태값 변경에 대한 유효성 체크 필요 시 아래 구조를 참고하여 작업 하시기 바랍니다.
+     * 현재 PointCut 영역은 패키지 product -> service 아래 함수 네이밍으로 되어 있습니다.
+     * 추가적인 상태값 변경에 대한 유효성 체크 필요 시 아래 구조를 참고하여 작업 하시기 바랍니다.
      *
-     *     전시 상태 변경
-     *         - 노출 : 미노출 상태에서 노출 변경 가능
-     *         - 미노출 : 노출 상태에서 미노출 변경 가능
-     *     상품 상태 변경
-     *         - 판매 : 판매종료/예약 중 상태에서 가능
-     *         - 판매종료 : 판매 상태에서 가능
-     *         - 예약중 : 판매 상태에서 가능
+     * 전시 상태 변경 (검수단계 상태에서는 예외처리)
+     *     - 노출 : 미노출 상태에서 노출 변경 가능
+     *     - 미노출 : 노출 상태에서 미노출 변경 가능
+     * 상품 상태 변경 (검수단계 상태에서는 예외처리)
+     *     - 판매 : 판매종료/예약 중 상태에서 가능
+     *     - 판매종료 : 판매 상태에서 가능
+     *     - 예약중 : 판매 상태에서 가능
      * </pre>
      */
     @Before(value = "execution(* kr.wrightbrothers.apps.product.service.*Service.update*(..))")
@@ -158,7 +161,7 @@ public class ProductBeforeAop {
                     .forEach(productCode -> {
                         // 검수단계 예외처리
                         if (dao.selectOne(namespace + "isProductInspection", productCode))
-                            throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매중/예약중/판매완료/판매종료"});
+                            throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"검수단계의 상품은 검수 승인 후 판매중/예약중/판매완료/판매종료"});
 
                         // 노출 상태 변경
                         if (object.getString("statusType").equals("DP")) {
@@ -167,14 +170,21 @@ public class ProductBeforeAop {
                         }
 
                         // 판매 상태 변경
-                        validStatusChange(productCode, object.getString("statusValue"));
+                        validStatusChange(productCode, object.getString("statusValue"), "");
                     });
         // 상품 상태 변경 유효성 체크
-        else if (object.has("product"))
+        else if (object.has("product")) {
             validStatusChange(
                     object.getJSONObject("product").getString("productCode"),
-                    object.getJSONObject("sellInfo").getString("productStatusCode")
+                    object.getJSONObject("sellInfo").getString("productStatusCode"),
+                    // 검수 요청에서 승인나지 않은 상태에서 상품 판매 변경 시 예외 처리를 위한 데이터
+                    object.has("changeLogList") ?
+                            object.get("changeLogList") instanceof JSONArray ?
+                                    object.getJSONArray("changeLogList").toString() : object.getString("changeLogList")
+                                    : ""
             );
+        }
+
     }
 
 }
