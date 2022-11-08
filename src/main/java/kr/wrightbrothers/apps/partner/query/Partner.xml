@@ -339,6 +339,7 @@
 		    , auth_code
 		    , invite_status
 		    , invite_receiver
+			, invite_receiver_name
 		    , invite_sender
 		    , create_user_id
 		    )
@@ -349,7 +350,8 @@
 			, #{authCode}
 			, #{inviteStatus}
 			, #{inviteReceiver}
-			, #{inviteSender}
+			, #{inviteReceiverName}
+			, #{userId}
 			, #{userId}
 			)
 	</insert>

@@ -63,7 +63,7 @@ public class PartnerInviteDto {
         private String inviteReceiver;
 
         @ApiModelProperty(value = "운영자 초대 보낸 사람")
-        private String inviteSender;
+        private String inviteReceiverName;
 
         @ApiModelProperty(value = "운영자 초대 보낸 사람")
         @JsonIgnore
