@@ -28,10 +28,6 @@ public class AWSConfigure {
     private String sesAccessKey;
     @Value("${cloud.aws.ses.secretKey}")
     private String sesSecretKey;
-    @Value("${cloud.aws.sns.accessKey}")
-    private String snsAccessKey;
-    @Value("${cloud.aws.sns.secretKey}")
-    private String snsSecretKey;
 
     @Value("${cloud.aws.region.static}")
     private String region;
@@ -53,7 +49,7 @@ public class AWSConfigure {
                         .standard().withRegion(region)
                         .withCredentials(
                                 new AWSStaticCredentialsProvider(
-                                        new BasicAWSCredentials(snsAccessKey, snsSecretKey)
+                                        new BasicAWSCredentials(accessKey, secretKey)
                                 )
                         )
                         .build()

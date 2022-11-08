@@ -21,15 +21,15 @@ cloud:
   aws:
     sqs:
       auto: false
-      product: DEV-PARTNER-PRODUCT2.fifo
-      partner: DEV-PARTNER-STORE2.fifo
+      product: DEV-PARTNER-PRODUCT.fifo
+      partner: DEV-PARTNER-STORE.fifo
     sns:
       arn: 'arn:aws:sns:ap-northeast-2:226098469581:'
       auto: false
       ack: DEV-ACKMSG2.fifo
-      product: DEV-PARTNER-PRODUCT2.fifo
+      product: DEV-PARTNER-ADMIN-PRODUCT.fifo
       order: DEV-PARTNER-PLATFORM-ORDER.fifo
-      partner: DEV-PARTNER-STORE2.fifo
+      partner: DEV-PARTNER-ADMIN-STORE.fifo
 system:
   file:
     temp:
