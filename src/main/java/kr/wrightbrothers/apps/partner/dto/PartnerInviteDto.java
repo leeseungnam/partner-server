@@ -22,6 +22,12 @@ public class PartnerInviteDto {
         @ApiModelProperty(value = "파트너 코드")
         private String partnerCode;
 
+        @ApiModelProperty(value = "운영자 초대 받은 사람")
+        private String inviteReceiver;
+
+        @ApiModelProperty(value = "운영자 초대 받은 사람 이름")
+        private String inviteReceiverName;
+
         @ApiIgnore
         public void changeAuthCode(String authCode) {
             this.authCode = authCode;
@@ -45,9 +51,6 @@ public class PartnerInviteDto {
         @ApiModelProperty(value = "운영자 초대 상태 0:미수락, 1:수락")
         private String inviteStatus;
 
-        @ApiModelProperty(value = "운영자 초대 보낸 사람")
-        private String userId;
-
     }
     @ApiModel(value = "파트너 운영자 요청 정보")
     @Getter
@@ -63,9 +66,6 @@ public class PartnerInviteDto {
         private String inviteReceiver;
 
         @ApiModelProperty(value = "운영자 초대 보낸 사람")
-        private String inviteReceiverName;
-
-        @ApiModelProperty(value = "운영자 초대 보낸 사람")
         @JsonIgnore
         private String userId;
 
@@ -77,17 +77,14 @@ public class PartnerInviteDto {
         public void changeInviteCode(String inviteCode) {
             this.inviteCode = inviteCode;
         }
-
         @ApiIgnore
         public void changeInviteStatus(String inviteStatus) {
             this.inviteStatus = inviteStatus;
         }
-
         @ApiIgnore
         public void changeUserId(String userId) {
             this.userId = userId;
         }
-
     }
 
     @ApiModel(value = "파트너 운영자 응답 정보")
@@ -99,19 +96,11 @@ public class PartnerInviteDto {
         @ApiModelProperty(value = "운영자 초대 코드")
         private String inviteCode;
 
-        @ApiModelProperty(value = "운영자 아이디")
-        private String userId;
-
-        @ApiModelProperty(value = "운영자명")
-        private String userName;
-
         @ApiModelProperty(value = "운영자 초대 상태 0:미수락, 1:수락")
         private String inviteStatus;
 
-        @ApiModelProperty(value = "운영자 초대 받은 사람")
-        private String inviteReceiver;
-
         @ApiModelProperty(value = "운영자 초대 보낸 사람")
         private String inviteSender;
+
     }
 }

@@ -20,10 +20,11 @@
 			 ,  auth_code
 			 ,  invite_status
 			 ,  invite_receiver
+			 ,  invite_receiver_name
 			 ,  invite_sender
 		from partner_invite
 		where invite_code = #{inviteCode}
-		  and invite_receiver = #{userId}
+		  and invite_receiver = #{inviteReceiver}
 		order by create_date desc
          limit 1
 	</select>
@@ -36,19 +37,27 @@
 		and partner_code = #{partnerCode}
 	</select>
 
-	<select id="checkPartnerOperatorAuthCount" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerOperatorDto$PartnerOperator" resultType="boolean">
+	<select id="checkPartnerOperatorAuthCount" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerInviteDto$PartnerOperator" resultType="boolean">
 		select if(count(partner_code) = 3, false, true) as isPartnerOperatorCount
 		from users_partner
 		where auth_code = #{authCode}
 		  and partner_code = #{partnerCode}
 	</select>
 
-	<select id="checkPartnerOperatorCount" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerOperatorDto$PartnerOperator" resultType="boolean">
+	<select id="checkPartnerOperatorCount" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerInviteDto$Param" resultType="boolean">
 		select if(count(user_id) = 0, true, false) as isPartnerOperatorCount
 		from users_partner
 		where auth_code = #{authCode}
 		  and partner_code = #{partnerCode}
-		  and user_id = #{userId}
+		  and user_id = #{inviteReceiver}
+	</select>
+
+	<select id="checkNotAcceptInviteCount" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerInviteDto$ReqBody" resultType="boolean">
+		select if(count(invite_code) = 0, true, false) as isPartnerInviteCount
+		from partner_invite
+		where partner_code = #{partnerCode}
+		  and invite_receiver = #{inviteReceiver}
+		  and invite_status = 0
 	</select>
 
 	<delete id="deletePartnerNotification" parameterType="java.lang.String">

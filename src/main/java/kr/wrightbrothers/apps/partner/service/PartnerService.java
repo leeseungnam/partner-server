@@ -142,6 +142,9 @@ public class PartnerService {
     public boolean checkPartnerOperatorAuthCount(PartnerInviteDto.PartnerOperator paramDto) {
         return dao.selectOne(namespace + "checkPartnerOperatorAuthCount", paramDto);
     }
+    public boolean checkNotAcceptInviteCount(PartnerInviteDto.ReqBody paramDto) {
+        return dao.selectOne(namespace + "checkNotAcceptInviteCount", paramDto);
+    }
 
     public PartnerContractDto.ResBody findPartnerContract(String partnerCode, String contractCode) {
         return dao.selectOne(namespace + "findPartnerContractByPartnerCode", PartnerViewDto.Param.builder()

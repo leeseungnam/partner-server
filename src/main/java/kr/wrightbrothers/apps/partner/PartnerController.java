@@ -247,7 +247,7 @@ public class PartnerController extends WBController {
     ) {
         WBModel wbResponse = new WBModel();
 
-        //  select partner operator count And auth count
+        //  초대 가능 인원 확인
         if(!partnerService.checkPartnerOperatorAuthCount(PartnerInviteDto.PartnerOperator.builder()
                 .partnerCode(paramDto.getPartnerOperator().getPartnerCode())
                 .authCode(paramDto.getPartnerOperator().getAuthCode())
@@ -259,10 +259,12 @@ public class PartnerController extends WBController {
                                     ,messageSourceAccessor.getMessage(messagePrefix+"partner.invite.max.count")
                     });
         }
+
+        //  이미 등록 된 운영자 확인
         if(!partnerService.checkPartnerOperatorCount(PartnerInviteDto.Param.builder()
                 .partnerCode(paramDto.getPartnerOperator().getPartnerCode())
                 .authCode(paramDto.getPartnerOperator().getAuthCode())
-                .userId(paramDto.getPartnerOperator().getInviteReceiver())
+                .inviteReceiver(paramDto.getPartnerOperator().getInviteReceiver())
                 .build()
             )
         ){
@@ -271,7 +273,15 @@ public class PartnerController extends WBController {
                     messageSourceAccessor.getMessage(messagePrefix+"word.user.status."+paramDto.getPartnerOperator().getAuthCode())
             });
         }
-        // [todo] already invite check
+
+        // 수락 안 한 초대 확인
+        if(!partnerService.checkNotAcceptInviteCount(paramDto.getPartnerOperator())
+        ){
+            throw new WBCustomException(messagePrefix+"common.already.invite.custom"
+                    , new Object[] {
+                    messageSourceAccessor.getMessage(messagePrefix+"word.user.status."+paramDto.getPartnerOperator().getAuthCode())
+            });
+        }
 
         //  insert invite
         String inviteCode = RandomStringUtils.randomAlphanumeric(10).toUpperCase();
@@ -290,7 +300,7 @@ public class PartnerController extends WBController {
                         .emailType(Email.INVITE_OPERATOR.getCode())
                         .authCode(redirectUrl)
                         .userId(paramDto.getPartnerOperator().getInviteReceiver())
-                        .userName(user.getUserName())
+                        .userName(paramDto.getPartnerOperator().getInviteReceiverName())
                         .build());
 
         wbResponse.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"partner.invite.send"));
@@ -314,7 +324,7 @@ public class PartnerController extends WBController {
         PartnerInviteDto.Param paramDto = PartnerInviteDto.Param.builder()
                 .inviteCode(inviteCode)
                 .inviteStatus(PartnerKey.INTSTRING_TRUE) // acceptInvite 초대 수락상태 set
-                .userId(user.getUsername())
+                .inviteReceiver(user.getUsername())
                 .build();
         //  select partnerCode, code, userId, inviteStatus
         PartnerInviteDto.ResBody inviteInfo = partnerService.findOperatorInvite(paramDto);
@@ -322,17 +332,29 @@ public class PartnerController extends WBController {
         if(ObjectUtils.isEmpty(inviteInfo)) throw new WBCustomException(messagePrefix+"common.not.exist.custom"
                 , new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.invite")});
 
+        //  초대 가능 인원 확인
+        if(!partnerService.checkPartnerOperatorAuthCount(PartnerInviteDto.PartnerOperator.builder()
+                .partnerCode(inviteInfo.getPartnerCode())
+                .authCode(inviteInfo.getAuthCode())
+                .build())
+        ) {
+            throw new WBCustomException(messagePrefix+"partner.invite.fail.max.sender"
+                    , new Object[] {
+                    messageSourceAccessor.getMessage(messagePrefix+"word.user.status."+inviteInfo.getAuthCode())
+                    ,messageSourceAccessor.getMessage(messagePrefix+"partner.invite.max.count")
+            });
+        }
+
         if(partnerService.checkPartnerOperatorCount(PartnerInviteDto.Param.builder()
                 .partnerCode(inviteInfo.getPartnerCode())
                 .authCode(inviteInfo.getAuthCode())
-                .userId(user.getUsername())
+                .inviteReceiver(user.getUsername())
                 .build())) {
             throw new WBCustomException(messagePrefix+"common.already.insert.custom"
                     , new Object[] {
                     messageSourceAccessor.getMessage(messagePrefix+"word.user.status."+inviteInfo.getAuthCode())
             });
         }
-
         //  전 exception 중복처리?
         if(inviteInfo.getInviteStatus().equals(PartnerKey.INTSTRING_TRUE)) throw new WBCustomException(messagePrefix+"common.already.process.custom"
                 , new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.accept")});
