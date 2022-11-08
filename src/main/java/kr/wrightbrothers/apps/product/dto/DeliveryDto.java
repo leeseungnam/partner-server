@@ -104,14 +104,10 @@ public class DeliveryDto {
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"출고지 우편번호"});
             if (ObjectUtils.isEmpty(this.unstoringAddress))
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"출고지 주소"});
-            if (ObjectUtils.isEmpty(this.unstoringAddressDetail))
-                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"출고지 상세주소"});
             if (ObjectUtils.isEmpty(this.returnZipCode))
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"반품지 우편번호"});
             if (ObjectUtils.isEmpty(this.returnAddress))
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"반품지 주소"});
-            if (ObjectUtils.isEmpty(this.returnAddressDetail))
-                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"반품지 상세주소"});
             if (ObjectUtils.isEmpty(this.exchangeCharge))
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"교환배송비"});
             if (ObjectUtils.isEmpty(this.returnCharge))
