@@ -39,7 +39,9 @@ public class TemplateDto {
         // 가이드 템플릿 경우 체크
         if (!TemplateType.DELIVERY.getType().equals(this.templateType)) {
             if (ObjectUtils.isEmpty(this.templateGuide))
-                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"안내 내용"});
+                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"내용"});
+            if (this.templateGuide.length() < 30 | this.templateGuide.length() > 2000)
+                throw new WBBusinessException(ErrorCode.INVALID_TEXT_SIZE.getErrCode(), new String[]{"내용", "30", "2000"});
             return;
         }
 

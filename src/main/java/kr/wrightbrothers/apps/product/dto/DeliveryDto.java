@@ -117,6 +117,10 @@ public class DeliveryDto {
             if (ObjectUtils.isEmpty(this.chargeType))
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"배송비 설정"});
 
+            if (!ObjectUtils.isEmpty(this.returnAddressDetail) && this.returnAddressDetail.length() > 100)
+                throw new WBBusinessException(ErrorCode.INVALID_TEXT_SIZE.getErrCode(), new String[]{"반품지 상세주소", "0", "100"});
+            if (!ObjectUtils.isEmpty(this.unstoringAddressDetail) && this.unstoringAddressDetail.length() > 100)
+                throw new WBBusinessException(ErrorCode.INVALID_TEXT_SIZE.getErrCode(), new String[]{"출고지 상세주소", "0", "100"});
             if (this.exchangeCharge > 10000000)
                 throw new WBBusinessException(ErrorCode.INVALID_MONEY_MAX.getErrCode(), new String[]{"교환 배송비", "100000000"});
             if (this.returnCharge > 10000000)
