@@ -81,7 +81,7 @@ public class PartnerService {
         userService._insertUsersPartner(UserAuthInsertDto.ReqBody.builder()
                         .partnerCode(paramDto.getPartnerCode())
                         .authCode(paramDto.getAuthCode())
-                        .userId(paramDto.getUserId())
+                        .userId(paramDto.getInviteReceiver())
                         .build());
     }
 
