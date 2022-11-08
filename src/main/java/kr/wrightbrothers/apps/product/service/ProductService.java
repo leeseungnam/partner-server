@@ -78,7 +78,7 @@ public class ProductService {
         // 변경 이력 등록
         changeInfoService.insertChangeInfo(paramDto.toChangeInfo());
         // 임시저장 파일 AWS S3 업로드
-        //fileService.s3FileUpload(paramDto.getFileList(), WBKey.Aws.A3.Product_Img_Path + paramDto.getProduct().getProductCode(), true);
+        fileService.s3FileUpload(paramDto.getFileList(), WBKey.Aws.A3.Product_Img_Path + paramDto.getProduct().getProductCode(), true);
     }
 
     public ProductFindDto.ResBody findProduct(ProductFindDto.Param paramDto) {
@@ -140,7 +140,7 @@ public class ProductService {
         // 상품 변경 이력
         changeInfoService.insertChangeInfo(paramDto.toChangeInfo());
         // 임시저장 파일 AWS S3 업로드
-        //fileService.s3FileUpload(paramDto.getFileList(), WBKey.Aws.A3.Product_Img_Path + paramDto.getProduct().getProductCode(), true);
+        fileService.s3FileUpload(paramDto.getFileList(), WBKey.Aws.A3.Product_Img_Path + paramDto.getProduct().getProductCode(), true);
     }
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Default)
