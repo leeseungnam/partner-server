@@ -345,7 +345,7 @@ public class PartnerController extends WBController {
             });
         }
 
-        if(partnerService.checkPartnerOperatorCount(PartnerInviteDto.Param.builder()
+        if(!partnerService.checkPartnerOperatorCount(PartnerInviteDto.Param.builder()
                 .partnerCode(inviteInfo.getPartnerCode())
                 .authCode(inviteInfo.getAuthCode())
                 .inviteReceiver(user.getUsername())
