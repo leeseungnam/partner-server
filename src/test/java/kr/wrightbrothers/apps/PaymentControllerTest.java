@@ -35,7 +35,7 @@ public class PaymentControllerTest extends BaseControllerTests {
     @DisplayName("주문내역 상품 결제취소 요청")
     void updatePaymentCancel() throws Exception {
         PaymentCancelDto cancelDto = PaymentCancelDto.builder()
-                .orderNo("202210271302094424")
+                .orderNo("202102270559490412")
                 .orderProductSeq(new Integer[]{1})
                 .cancelReasonCode("C01")
                 .cancelReasonName("구매 의사 취소")
@@ -79,7 +79,7 @@ public class PaymentControllerTest extends BaseControllerTests {
         // 결제취소 체크를 위한 조회
         OrderFindDto.Response nowDto = orderService.findOrder(OrderFindDto.Param.builder()
                 .partnerCode("PT0000001")
-                .orderNo("202210271302094424")
+                .orderNo("202102270559490412")
                 .build());
 
         // 검증

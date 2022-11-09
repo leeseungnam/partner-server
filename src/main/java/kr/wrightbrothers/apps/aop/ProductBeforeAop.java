@@ -34,7 +34,7 @@ public class ProductBeforeAop {
      * 스토어 소유의 등록된 상품인지 유효성 체크
      */
     private void ownCheck(ProductAuthDto paramDto) {
-        if (dao.selectOne(namespace + "isProductAuth", paramDto)) {
+        if (dao.selectOne(namespace + "isProductAuth", paramDto, PartnerKey.WBDataBase.Alias.Admin)) {
             log.error("Product Auth Error.");
             log.error("PartnerCode::{}, ProductCode::{}", paramDto.getPartnerCode(), paramDto.getProductCode());
             throw new WBBusinessException(ErrorCode.FORBIDDEN.getErrCode());
@@ -48,7 +48,7 @@ public class ProductBeforeAop {
      * @param changeDisplayFlag 변경 전시 여부
      */
     private void validDisplayChange(String productNo, String changeDisplayFlag) {
-        if (changeDisplayFlag.equals(dao.selectOne(namespace + "findProductDisplayFlag", productNo))) {
+        if (changeDisplayFlag.equals(dao.selectOne(namespace + "findProductDisplayFlag", productNo, PartnerKey.WBDataBase.Alias.Admin))) {
             log.error("Product Display Change Error.");
             log.error("ProductCode::{}, ChangeDisplayFlag::{}", productNo, changeDisplayFlag);
             throw new WBBusinessException(
@@ -73,7 +73,7 @@ public class ProductBeforeAop {
      */
     private void validStatusChange(String productNo, String changeStatusCode, String changeLog) {
         // 현재 상품 상태 코드
-        String currentStatusCode = dao.selectOne(namespace + "findProductStatus", productNo);
+        String currentStatusCode = dao.selectOne(namespace + "findProductStatus", productNo, PartnerKey.WBDataBase.Alias.Admin);
         log.debug("Product Current Status::{}", currentStatusCode);
         log.debug("Product Change Status::{}", changeStatusCode);
         log.debug("Product Change Log::{}", changeLog);
@@ -160,7 +160,7 @@ public class ProductBeforeAop {
                     )
                     .forEach(productCode -> {
                         // 검수단계 예외처리
-                        if (dao.selectOne(namespace + "isProductInspection", productCode))
+                        if (dao.selectOne(namespace + "isProductInspection", productCode, PartnerKey.WBDataBase.Alias.Admin))
                             throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"검수단계의 상품은 검수 승인 후 판매중/예약중/판매완료/판매종료"});
 
                         // 노출 상태 변경

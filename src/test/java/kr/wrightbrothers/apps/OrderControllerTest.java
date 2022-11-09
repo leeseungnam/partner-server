@@ -235,7 +235,7 @@ public class OrderControllerTest extends BaseControllerTests {
     @Test
     @DisplayName("주문내역 조회")
     void findOrder() throws Exception {
-        String orderNo = "202210271306217301";
+        String orderNo = "202103020122044681";
 
         // 주문내역 상세 API 조회
         mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/orders/{orderNo}", orderNo)
@@ -312,7 +312,7 @@ public class OrderControllerTest extends BaseControllerTests {
     @DisplayName("주문내역 수정")
     void updateOrder() throws Exception {
         OrderMemoUpdateDto updateParam = OrderMemoUpdateDto.builder()
-                .orderNo("202210271306217301")
+                .orderNo("202103020122044681")
                 .recipientName("홍길동")
                 .recipientPhone("01012341234")
                 .recipientAddressZipCode("12345")
@@ -356,7 +356,7 @@ public class OrderControllerTest extends BaseControllerTests {
         // 변경 체크를 위한 조회
         OrderFindDto.Response nowDto = orderService.findOrder(OrderFindDto.Param.builder()
                 .partnerCode("PT0000001")
-                .orderNo("202210271306217301")
+                .orderNo("202103020122044681")
                 .build());
 
         // 검증

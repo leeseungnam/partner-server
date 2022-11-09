@@ -49,7 +49,7 @@ public class ProductUtil {
         String generateProductCode;
         do {
             generateProductCode = productCode + RandomStringUtils.randomAlphanumeric(6).toUpperCase();
-        } while (dao.selectOne(namespace + "isProductCode", generateProductCode));
+        } while (dao.selectOne(namespace + "isProductCode", generateProductCode, PartnerKey.WBDataBase.Alias.Admin));
 
         return generateProductCode;
     }
@@ -101,7 +101,7 @@ public class ProductUtil {
     public void updateProductSellDate(String productCode,
                                       String changeStatusCode) {
         // 현재 상품 상태 코드
-        String currentStatusCode = dao.selectOne(namespace + "findProductStatus", productCode);
+        String currentStatusCode = dao.selectOne(namespace + "findProductStatus", productCode, PartnerKey.WBDataBase.Alias.Admin);
         String nowDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date());
 
         // 상태 변경 아닐 시 종료
@@ -120,7 +120,7 @@ public class ProductUtil {
                             SellInfoDto.ReqBody.builder()
                                     .productCode(productCode)
                                     .productSellStartDate(nowDate)
-                                    .build());
+                                    .build(), PartnerKey.WBDataBase.Alias.Admin);
 
                 log.info("Product Sale Start Date. Product Code::{}, Date::{}", productCode, nowDate);
                 break;
@@ -129,7 +129,7 @@ public class ProductUtil {
                         SellInfoDto.ReqBody.builder()
                                 .productCode(productCode)
                                 .productSellEndDate(nowDate)
-                                .build());
+                                .build(), PartnerKey.WBDataBase.Alias.Admin);
 
                 log.info("Product Sale End Date. Product Code::{}, Date::{}", productCode, nowDate);
                 break;

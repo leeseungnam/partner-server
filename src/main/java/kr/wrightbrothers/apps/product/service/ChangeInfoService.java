@@ -26,7 +26,7 @@ public class ChangeInfoService {
     }
 
     public ChangeInfoListDto.Response findProductChangeHistory(ChangeInfoListDto.Param paramDto) {
-        ProductDto.ResBody product = dao.selectOne("kr.wrightbrothers.apps.product.query.Product.findProduct", paramDto.getProductCode());
+        ProductDto.ResBody product = dao.selectOne("kr.wrightbrothers.apps.product.query.Product.findProduct", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin);
 
         return ChangeInfoListDto.Response.builder()
                 .productCode(product.getProductCode())

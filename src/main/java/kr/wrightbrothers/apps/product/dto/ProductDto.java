@@ -78,10 +78,6 @@ public class ProductDto {
         @ApiModelProperty(value = "상품 이미지 파일 번호", required = true)
         @NotBlank(message = "상품 이미지")
         private String productFileNo;       // 상품 파일 번호
-
-        @ApiModelProperty(value = "상품 상세 설명", required = true)
-        @NotBlank(message = "상품 상세설명")
-        private String productDescription;  // 상품 상세 설명
     }
 
     @Data
@@ -98,31 +94,6 @@ public class ProductDto {
         private String productType;         // 상품 유형
         @JsonIgnore
         private String userId;              // 작성자 아이디
-
-        // JSON -> ProductDto
-        public static ProductDto.ReqBody jsonToProductDto(JSONObject object) {
-            if (ObjectUtils.isEmpty(object.getJSONObject("ProductMain"))) return null;
-
-            return ProductDto.ReqBody.builder()
-                    .partnerCode(object.getJSONObject("ProductMain").optString("PurchaseRequestNumber"))
-                    .productCode(object.getJSONObject("ProductMain").optString("ProductCode"))
-                    .productType(object.getJSONObject("ProductMain").optString("ProductType"))
-                    .userId(object.getJSONObject("ProductMain").optString("CreateUserId"))
-                    .categoryOneCode(object.getJSONObject("ProductMain").optString("CategoryDepthOne"))
-                    .categoryTwoCode(object.getJSONObject("ProductMain").optString("CategoryDepthTwo"))
-                    .categoryThrCode(object.getJSONObject("ProductMain").optString("CategoryDepthThree"))
-                    .productName(object.getJSONObject("ProductMain").optString("ProductName"))
-                    .brandNo(object.getJSONObject("ProductMain").optString("BrandNumber"))
-                    .brandName(object.getJSONObject("ProductMain").optString("BrandName"))
-                    .modelCode(object.getJSONObject("ProductMain").optString("ModelNumber"))
-                    .modelName(object.getJSONObject("ProductMain").optString("ModelName"))
-                    .modelYear(object.getJSONObject("ProductMain").optString("ModelYear"))
-                    .youtubeUrl(object.getJSONObject("ProductMain").optString("YoutubeUrl"))
-                    .productBarcode(object.getJSONObject("ProductMain").optString("ProductBarcode"))
-                    .productFileNo(object.getJSONObject("ProductMain").optString("ProductFileNo"))
-                    .productDescription(object.getJSONObject("ProductGuideanceComment").optString("ProductGuideanceCommentOne"))
-                    .build();
-        }
     }
 
     @Getter

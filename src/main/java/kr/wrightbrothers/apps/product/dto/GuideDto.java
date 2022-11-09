@@ -22,6 +22,10 @@ public class GuideDto {
     @NoArgsConstructor
     @EqualsAndHashCode
     public static class Guide {
+        @ApiModelProperty(value = "상품 상세 설명", required = true)
+        @NotBlank(message = "상품 상세설명")
+        private String productDescription;
+
         @ApiModelProperty(value = "안내 사항", required = true)
         @NotBlank(message = "안내 사항")
         @Size(min = 30, max = 2000, message = "안내 사항")

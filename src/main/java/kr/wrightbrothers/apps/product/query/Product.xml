@@ -5,32 +5,32 @@
 	
 	<select id="isProductInspection" parameterType="java.lang.String" resultType="boolean">
 		select
-		    if(count(product_code) = 0, false, true) as isProductInspection
-		  from product_sell_info
-		 where product_code = #{productCode}
-		   and product_status_code in ('S06', 'S09', 'S10')
+		    if(count(prdt_cd) = 0, false, true) as isProductInspection
+		  from prdt_sell_info
+		 where prdt_cd = #{productCode}
+		   and prdt_stus_cd in ('S06', 'S09', 'S10')
 	</select>
 	
 	<select id="isProductCode" parameterType="java.lang.String" resultType="boolean">
 		select
-		    if(count(product_code) = 0, false, true) as isProductCode
-		  from product
-		 where product_code = #{productCode}
+		    if(count(prdt_cd) = 0, false, true) as isProductCode
+		  from prdt_main
+		 where prdt_cd = #{productCode}
 	</select>
 	
 	<select id="isProductAuth" parameterType="kr.wrightbrothers.apps.product.dto.ProductAuthDto" resultType="boolean">
 		select
-			if(count(product_code) = 0, true, false) as isProductAuth
-		  from product
-		 where partner_code = #{partnerCode}
-		   and product_code = #{productCode}
+			if(count(prdt_cd) = 0, true, false) as isProductAuth
+		  from prdt_main
+		 where pur_rq_no = #{partnerCode}
+		   and prdt_cd = #{productCode}
 	</select>
 
 	<select id="findProductCountByPartnerCode" parameterType="java.lang.String" resultType="Integer">
 		select
-			count(product_code) as productCount
-		from product
-		where partner_code = #{partnerCode}
+			count(prdt_cd) as productCount
+		from prdt_main
+		where pur_rq_no = #{partnerCode}
 	</select>
 
 	<select id="findProductGroupCode" parameterType="java.lang.String" resultType="java.lang.String">
@@ -42,54 +42,58 @@
 
 	<select id="findProductStatus" parameterType="java.lang.String" resultType="java.lang.String">
 		select
-		    product_status_code
-		  from product_sell_info
-		 where product_code = #{productCode}
+		    prdt_stus_cd as product_status_code
+		  from prdt_sell_info
+		 where prdt_cd = #{productCode}
 	</select>
 
 	<select id="findProductDisplayFlag" parameterType="java.lang.String" resultType="java.lang.String">
 		select
-		    display_flag
-		  from product_sell_info
-		 where product_code = #{productCode}
+		    dp_flg as display_flag
+		  from prdt_sell_info
+		 where prdt_cd = #{productCode}
 	</select>
 
 	<select id="findProductList" parameterType="kr.wrightbrothers.apps.product.dto.ProductListDto$Param" resultType="kr.wrightbrothers.apps.product.dto.ProductListDto$Response">
 		select
-		    p.product_code,
-		    p.brand_name,
-		    p.category_one_name,
-		    p.category_two_name,
-		    p.category_thr_name,
-		    p.product_name,
-		    ps.product_status_code,
-		    ps.product_status_code as product_status_name,
-			ps.display_flag,
-		    if(ps.display_flag = 'Y', '노출', '미노출') as display_name,
-		    ps.product_stock_qty,
-		    ps.final_sell_amount,
-			ps.product_option_flag,
-			p.create_date,
-			p.update_date,
-			p.create_user_id,
-			u.user_name as create_user_name
-		  from product p
-		 inner join product_sell_info ps
-			on p.product_code = ps.product_code
-		  left join users u
-			on p.create_user_id = u.user_id
-		 where p.partner_code = #{partnerCode}
+		    p.prdt_cd product_code,
+		    p.brd_nm brand_name,
+		    co.cagy_nm category_one_name,
+		    ct.cagy_nm category_two_name,
+		    cr.cagy_nm category_thr_name,
+		    p.prdt_nm product_name,
+		    ps.prdt_stus_cd product_status_code,
+		    ps.prdt_stus_cd product_status_name,
+			ps.dp_flg display_flag,
+		    if(ps.dp_flg = 'Y', '노출', '미노출') display_name,
+		    ps.invty_qty product_stock_qty,
+		    ps.fnl_sell_amt final_sell_amount,
+			ps.prdt_optn_flg product_option_flag,
+			p.cre_dt create_date,
+			p.upd_dt update_date,
+			p.cre_usr_id create_user_id,
+			'' as create_user_name
+		  from prdt_main p
+		 inner join prdt_sell_info ps
+			on p.prdt_cd = ps.prdt_cd
+		  left join com_cagy co
+		    on p.cagy_dpth_one = co.cagy_cd
+		  left join com_cagy ct
+			on p.cagy_dpth_one = ct.cagy_cd
+		  left join com_cagy cr
+			on p.cagy_dpth_one = cr.cagy_cd
+		 where p.pur_rq_no = #{partnerCode}
 		<choose>
 		   <when test="keywordValueList != null and keywordValueList.length != 0">
 			   <choose>
 				   <when test="keywordType == 'NAME'.toString()">
 					   <foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-						   p.product_name like #{item} '%'
+						   p.prdt_nm like #{item} '%'
 					   </foreach>
 				   </when>
 				   <when test="keywordType == 'CODE'.toString()">
 					   <foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-						   p.product_code like #{item} '%'
+						   p.prdt_cd like #{item} '%'
 					   </foreach>
 				   </when>
 			   </choose>
@@ -97,69 +101,62 @@
 		   <otherwise>
 			   <choose>
 				   <when test="rangeType == 'PRODUCT'.toString()">
-					   and p.create_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+					   and p.cre_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
 				   </when>
 				   <when test="rangeType == 'SALE'.toString()">
-					   and ps.product_sell_start_date between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+					   and ps.prdt_sell_st_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
 				   </when>
 			   </choose>
 			   -- 전시상태
-			   <foreach collection="displayFlag" item="item" index="index" open="and ps.display_flag in (" separator="," close=")">
+			   <foreach collection="displayFlag" item="item" index="index" open="and ps.dp_flg in (" separator="," close=")">
 				   #{item}
 			   </foreach>
 			   -- 상품상태
-			   <foreach collection="status" item="item" index="index" open="and ps.product_status_code in (" separator="," close=")">
+			   <foreach collection="status" item="item" index="index" open="and ps.prdt_stus_cd in (" separator="," close=")">
 				   #{item}
 			   </foreach>
 		   </otherwise>
 		</choose>
 		<choose>
 			<when test="sortType == 'CRE'.toString()">
-		order by p.create_date desc
+		order by p.cre_dt desc
 			</when>
 			<when test="sortType == 'UPD'.toString()">
-		order by p.update_date desc
+		order by p.upd_dt desc
 			</when>
 			<when test="sortType == 'LSAMT'.toString()">
-		order by ps.final_sell_amount
+		order by ps.fnl_sell_amt
 			</when>
 			<when test="sortType == 'HSAMT'.toString()">
-		order by ps.final_sell_amount desc
+		order by ps.fnl_sell_amt desc
 			</when>
 		</choose>
 	</select>
 
 	<insert id="insertProduct" parameterType="kr.wrightbrothers.apps.product.dto.ProductDto$ReqBody">
-		insert into product(product_code,
-							partner_code,
-							product_type,
-							category_one_code,
-							category_one_name,
-							category_two_code,
-							category_two_name,
-							category_thr_code,
-							category_thr_name,
-							product_name,
-							brand_no,
-							brand_name,
-							model_code,
-							model_name,
-							model_year,
-							youtube_url,
-							product_barcode,
-							product_file_no,
-							product_description,
-							create_user_id,
-							update_user_id)
+		insert into prdt_main(prdt_cd,
+		                      pur_rq_no,
+		                      prdt_tp,
+		                      cagy_dpth_one,
+		                      cagy_dpth_two,
+		                      cagy_dpth_thr,
+		                      prdt_nm,
+		                      brd_no,
+		                      brd_nm,
+		                      mdl_no,
+		                      mdl_nm,
+		                      mdl_year,
+		                      ytb_url,
+		                      prdt_barcd,
+		                      prdt_file_no,
+		                      cre_usr_id,
+		                      upd_usr_id)
 		values(#{productCode},
 			   #{partnerCode},
 			   #{productType},
 			   #{categoryOneCode},
-			   #{categoryOneName},
 			   #{categoryTwoCode},
-			   #{categoryTwoName},
 			   #{categoryThrCode},
-			   #{categoryThrName},
 			   #{productName},
 			   #{brandNo},
 			   #{brandName},
@@ -169,49 +166,44 @@
 			   #{youtubeUrl},
 			   #{productBarcode},
 			   #{productFileNo},
-			   #{productDescription},
 			   #{userId},
 			   #{userId})
 	</insert>
 
 	<update id="updateProduct" parameterType="kr.wrightbrothers.apps.product.dto.ProductDto$ReqBody">
-		update product
-		   set category_one_code = #{categoryOneCode},
-			   category_one_name = #{categoryOneName},
-			   category_two_code = #{categoryTwoCode},
-			   category_two_name = #{categoryTwoName},
-			   category_thr_code = #{categoryThrCode},
-			   category_thr_name = #{categoryThrName},
-			   product_name = #{productName},
-			   brand_no = #{brandNo},
-			   brand_name = #{brandName},
-			   model_code = #{modelCode},
-			   model_name = #{modelName},
-			   model_year = #{modelYear},
-			   youtube_url = #{youtubeUrl},
-			   product_barcode = #{productBarcode},
-			   product_file_no = #{productFileNo},
-			   product_description = #{productDescription},
-			   update_user_id = #{userId},
-			   update_date = now()
-	     where product_code = #{productCode}
+		update prdt_main
+		   set cagy_dpth_one = #{categoryOneCode},
+			   cagy_dpth_two = #{categoryTwoCode},
+			   cagy_dpth_thr = #{categoryThrCode},
+			   prdt_nm = #{productName},
+			   brd_no = #{brandNo},
+			   brd_nm = #{brandName},
+			   mdl_no = #{modelCode},
+			   mdl_nm = #{modelName},
+			   mdl_year = #{modelYear},
+			   ytb_url = #{youtubeUrl},
+			   prdt_barcd = #{productBarcode},
+			   prdt_file_no = #{productFileNo},
+			   upd_usr_id = #{userId},
+			   upd_dt = now()
+	     where prdt_cd = #{productCode}
 	</update>
 
 	<insert id="mergeBasicSpec" parameterType="kr.wrightbrothers.apps.product.dto.BasicSpecDto$ReqBody">
-		insert into product_basic_spec(product_code,
-		                               sales_category_code,
-		                               drivetrain_type_code,
-		                               frame_material_code,
-		                               frame_size_code,
-		                               brake_type_code,
-		                               purpose_theme_code,
-		                               wheel_size_code,
-		                               suspension_type_code,
-		                               min_height_person,
-		                               max_height_person,
-		                               bike_weight,
-		                               create_user_id,
-		                               update_user_id)
+		insert into prdt_bsc_spec(prdt_cd,
+		                          sles_cagy_cd,
+		                          dti_tp_cd,
+		                          fram_mtrl_cd,
+		                          fram_sz_cd,
+		                          brk_tp_cd,
+		                          ppse_thm_cd,
+		                          we_sz_cd,
+		                          ssps_tp_cd,
+		                          minim_hgt_pn,
+		                          maxum_hgt_pn,
+		                          bike_tare,
+		                          cre_usr_id,
+		                          upd_usr_id)
 		values(#{productCode},
 			   #{salesCategoryCode},
 			   #{drivetrainTypeCode},
@@ -228,52 +220,53 @@
 			   #{userId})
 		on duplicate key
 		update
-			sales_category_code = #{salesCategoryCode},
-			drivetrain_type_code = #{drivetrainTypeCode},
-			frame_material_code = #{frameMaterialCode},
-			frame_size_code = #{frameSizeCode},
-			brake_type_code = #{brakeTypeCode},
-			purpose_theme_code = #{purposeThemeCode},
-			wheel_size_code = #{wheelSizeCode},
-			suspension_type_code = #{suspensionTypeCode},
-			min_height_person = #{minHeightPerson},
-			max_height_person = #{maxHeightPerson},
-			bike_weight = #{bikeWeight},
-		    update_user_id = #{userId},
-		    update_date = now()
+			sles_cagy_cd = #{salesCategoryCode},
+			dti_tp_cd = #{drivetrainTypeCode},
+			fram_mtrl_cd = #{frameMaterialCode},
+			fram_sz_cd = #{frameSizeCode},
+			brk_tp_cd = #{brakeTypeCode},
+			ppse_thm_cd = #{purposeThemeCode},
+			we_sz_cd = #{wheelSizeCode},
+			ssps_tp_cd = #{suspensionTypeCode},
+			minim_hgt_pn = #{minHeightPerson},
+			maxum_hgt_pn = #{maxHeightPerson},
+			bike_tare = #{bikeWeight},
+		    upd_usr_id = #{userId},
+		    upd_dt = now()
 	</insert>
 
 	<insert id="insertBasicSpecAge" parameterType="kr.wrightbrothers.apps.product.dto.BasicSpecDto$ReqBody">
-		insert into product_embark_age(product_code,
-		                               embark_age,
-		                               create_user_id)
+		insert into prdt_emrk_age(prdt_cd,
+		                          emrk_age,
+		                          cre_usr_id,
+		                          upd_usr_id)
 		values
 		<foreach collection="ageList" item="item" index="index" separator=",">
-			(#{productCode}, #{item}, #{userId})
+			(#{productCode}, #{item}, #{userId}, #{userId})
 		</foreach>
 	</insert>
 
 	<delete id="deleteBasicSpecAge" parameterType="java.lang.String">
 		delete
-		  from product_embark_age
-		 where product_code = #{productCode}
+		  from prdt_emrk_age
+		 where prdt_cd = #{productCode}
 	</delete>
 
 	<insert id="mergeSellInfo" parameterType="kr.wrightbrothers.apps.product.dto.SellInfoDto$ReqBody">
-		insert into product_sell_info(product_code,
-		                              product_amount,
-		                              discount_flag,
-		                              discount_type,
-		                              discount_amount,
-		                              supply_amount,
-		                              final_sell_amount,
-									  display_flag,
-		                              product_option_flag,
-									  product_status_code,
-		                              product_stock_qty,
-		                              product_sell_start_date,
-		                              create_user_id,
-		                              update_user_id)
+		insert into prdt_sell_info(prdt_cd,
+		                           prdt_amt,
+		                           dscnt_flg,
+		                           dscnt_tp,
+		                           dscnt_amt,
+		                           pur_amt,
+		                           fnl_sell_amt,
+		                           dp_flg,
+		                           prdt_optn_flg,
+		                           prdt_stus_cd,
+		                           invty_qty,
+		                           prdt_sell_st_dt,
+		                           cre_usr_id,
+		                           upd_usr_id)
 		values(#{productCode},
 			   #{productAmount},
 			   #{discountFlag},
@@ -290,36 +283,36 @@
 			   #{userId})
 		on duplicate key
 		update
-			product_amount		= #{productAmount},
-			discount_flag		= #{discountFlag},
-			discount_type		= #{discountType},
-			discount_amount		= #{discountAmount},
-		    supply_amount		= #{supplyAmount},
-			final_sell_amount	= #{finalSellAmount},
-			display_flag		= #{displayFlag},
-		    product_option_flag	= #{productOptionFlag},
-			product_status_code	= #{productStatusCode},
-			product_stock_qty	= #{productStockQty},
-		    update_user_id		= #{userId},
-		    update_date			= now()
+			prdt_amt		= #{productAmount},
+			dscnt_flg		= #{discountFlag},
+			dscnt_tp		= #{discountType},
+			dscnt_amt		= #{discountAmount},
+			pur_amt			= #{supplyAmount},
+			fnl_sell_amt	= #{finalSellAmount},
+			dp_flg			= #{displayFlag},
+			prdt_optn_flg	= #{productOptionFlag},
+			prdt_stus_cd	= #{productStatusCode},
+			invty_qty		= #{productStockQty},
+			upd_usr_id		= #{userId},
+		    upd_dt			= now()
 	</insert>
 
 	<update id="updateProductSellDate" parameterType="kr.wrightbrothers.apps.product.dto.SellInfoDto$ReqBody">
-		update product_sell_info
-		   set product_sell_start_date = ifnull(#{productSellStartDate}, product_sell_start_date),
-		       product_sell_end_date   = ifnull(#{productSellEndDate}, product_sell_end_date)
-		where product_code = #{productCode}
+		update prdt_sell_info
+		   set prdt_sell_st_dt = ifnull(#{productSellStartDate}, prdt_sell_st_dt),
+		       prdt_sell_ed_dt = ifnull(#{productSellEndDate}, prdt_sell_ed_dt)
+		where prdt_cd = #{productCode}
 	</update>
 
 	<insert id="insertOption" parameterType="kr.wrightbrothers.apps.product.dto.OptionDto$ReqBody">
-		insert into product_option(product_code,
-		                           option_seq,
-		                           option_name,
-		                           option_value,
-		                           option_surcharge,
-		                           option_stock_qty,
-		                           create_user_id,
-		                           update_user_id)
+		insert into prdt_optn(prdt_cd,
+		                      optn_seq,
+		                      optn_nm,
+		                      optn_val,
+		                      optn_schg,
+		                      invty_qty,
+		                      cre_usr_id,
+		                      upd_usr_id)
 		values(#{productCode},
 			   #{optionSeq},
 			   #{optionName},
@@ -332,33 +325,32 @@
 
 	<delete id="deleteOption" parameterType="java.lang.String">
 		delete
-		  from product_option
-		 where product_code = #{productCode}
+		  from prdt_optn
+		 where prdt_cd = #{productCode}
 	</delete>
 
 	<insert id="mergeDelivery" parameterType="kr.wrightbrothers.apps.product.dto.DeliveryDto$ReqBody">
-		insert into product_delivery(product_code,
-		                             delivery_type,
-		                             delivery_bundle_flag,
-		                             charge_type,
-		                             charge_base,
-		                             terms_free_charge,
-		                             payment_type,
-		                             surcharge_flag,
-		                             area_code,
-		                             surcharge_jejudo,
-		                             surcharge_isolated,
-		                             unstoring_zip_code,
-		                             unstoring_address,
-		                             unstoring_address_detail,
-		                             return_zip_code,
-		                             return_address,
-		                             return_address_detail,
-		                             exchange_charge,
-		                             return_charge,
-		                             return_delivery_company_code,
-		                             create_user_id,
-		                             update_user_id)
+		insert into prdt_dlvr_dtl(prdt_cd,
+		                          prdt_dlvr_cd,
+		                          dlvr_bun_flg,
+		                          chg_tp,
+		                          chg_base,
+		                          tms_free_chg,
+		                          pay_tp,
+		                          surchg_flg,
+		                          area_cd,
+		                          schg_jeju,
+		                          schg_iso,
+		                          unstr_zip_cd,
+		                          unstr_addr,
+		                          unstr_addr_dtl,
+		                          rtn_zip_cd,
+		                          rtn_addr,
+		                          rtn_addr_dtl,
+		                          excng_chg,
+		                          rtn_chg,
+		                          rtn_dlvr_cmpny_cd,
+		                          cre_usr_id)
 		values(#{productCode},
 			   #{deliveryType},
 		       #{deliveryBundleFlag},
@@ -379,49 +371,46 @@
 		       #{exchangeCharge},
 			   #{returnCharge},
 			   #{returnDeliveryCompanyCode},
-			   #{userId},
 			   #{userId})
 		on duplicate key
 		update
-			delivery_type					= #{deliveryType},
-			delivery_bundle_flag			= #{deliveryBundleFlag},
-			charge_type						= #{chargeType},
-			charge_base						= #{chargeBase},
-			terms_free_charge				= #{termsFreeCharge},
-			payment_type					= #{paymentType},
-			surcharge_flag					= #{surchargeFlag},
-			area_code						= #{areaCode},
-			surcharge_jejudo				= #{surchargeJejudo},
-			surcharge_isolated				= #{surchargeIsolated},
-			unstoring_zip_code				= #{unstoringZipCode},
-			unstoring_address				= #{unstoringAddress},
-			unstoring_address_detail		= #{unstoringAddressDetail},
-			return_zip_code					= #{returnZipCode},
-			return_address					= #{returnAddress},
-			return_address_detail			= #{returnAddressDetail},
-		    exchange_charge					= #{exchangeCharge},
-			return_charge					= #{returnCharge},
-			return_delivery_company_code	= #{returnDeliveryCompanyCode},
-		    update_user_id					= #{userId},
-		    update_date						= now()
+			prdt_dlvr_cd		= #{deliveryType},
+			dlvr_bun_flg		= #{deliveryBundleFlag},
+			chg_tp				= #{chargeType},
+			chg_base			= #{chargeBase},
+			tms_free_chg		= #{termsFreeCharge},
+			pay_tp				= #{paymentType},
+			surchg_flg			= #{surchargeFlag},
+			area_cd				= #{areaCode},
+			schg_jeju			= #{surchargeJejudo},
+			schg_iso			= #{surchargeIsolated},
+			unstr_zip_cd		= #{unstoringZipCode},
+			unstr_addr			= #{unstoringAddress},
+			unstr_addr_dtl		= #{unstoringAddressDetail},
+			rtn_zip_cd			= #{returnZipCode},
+			rtn_addr			= #{returnAddress},
+			rtn_addr_dtl		= #{returnAddressDetail},
+		    excng_chg			= #{exchangeCharge},
+			rtn_chg				= #{returnCharge},
+			rtn_dlvr_cmpny_cd	= #{returnDeliveryCompanyCode}
 	</insert>
 
 	<insert id="mergeInfoNotice" parameterType="kr.wrightbrothers.apps.product.dto.InfoNoticeDto$ReqBody">
-		insert into product_info_notice(product_code,
-										category_code,
-										model_name,
-										product_size,
-										product_weight,
-										product_material,
-										product_component,
-										model_year,
-										model_month,
-										product_mfr,
-										detail_spec,
-										qa_standard,
-										as_phone,
-										create_user_id,
-										update_user_id)
+		insert into prdt_info_bltn(prdt_cd,
+		                           cagy_cd,
+		                           prdt_atte1,
+								   prdt_atte2,
+								   prdt_atte3,
+								   prdt_atte4,
+								   prdt_atte5,
+								   prdt_atte6,
+								   prdt_atte7,
+								   prdt_atte8,
+								   prdt_atte9,
+								   prdt_atte10,
+								   prdt_atte11,
+		                           cre_usr_id,
+		                           upd_usr_id)
 		values(#{productCode},
 			   #{categoryCode},
 			   #{modelName},
@@ -439,33 +428,35 @@
 			   #{userId})
 		on duplicate key
 		update
-			category_code		= #{categoryCode},
-			model_name			= #{modelName},
-			product_size		= #{productSize},
-			product_weight		= #{productWeight},
-			product_material	= #{productMaterial},
-			product_component	= #{productComponent},
-			model_year			= #{modelYear},
-			model_month			= #{modelMonth},
-			product_mfr			= #{productMfr},
-			detail_spec			= #{detailSpec},
-			qa_standard			= #{qaStandard},
-			as_phone			= #{asPhone},
-		    update_user_id		= #{userId},
-		    update_date			= now()
+			cagy_cd			= #{categoryCode},
+			prdt_atte1		= #{modelName},
+			prdt_atte2		= #{productSize},
+			prdt_atte3		= #{productWeight},
+			prdt_atte4		= #{productMaterial},
+			prdt_atte5		= #{productComponent},
+			prdt_atte6		= #{modelYear},
+			prdt_atte7		= #{modelMonth},
+			prdt_atte8		= #{productMfr},
+			prdt_atte9		= #{detailSpec},
+			prdt_atte10		= #{qaStandard},
+			prdt_atte11		= #{asPhone},
+		    upd_usr_id		= #{userId},
+		    upd_dt			= now()
 	</insert>
 
 	<insert id="mergeGuide" parameterType="kr.wrightbrothers.apps.product.dto.GuideDto$ReqBody">
-		insert into product_guide(product_code,
-		                          product_guide,
-		                          delivery_guide,
-		                          exchange_return_guide,
-		                          as_guide,
-		                          qna_guide,
-		                          create_user_id,
-		                          update_user_id)
+		insert into prdt_gud_ctnt(prdt_cd,
+		                          md_cmt,
+		                          prdt_gud_cmt_one,
+		                          prdt_gud_cmt_four,
+		                          excng_chg_gud,
+		                          as_gud,
+		                          prdt_gud_cmt_thr,
+		                          cre_usr_id,
+		                          upd_usr_id)
 		values(#{productCode},
 			   #{productGuide},
+		       #{productDescription},
 			   #{deliveryGuide},
 			   #{exchangeReturnGuide},
 			   #{asGuide},
@@ -474,57 +465,65 @@
 			   #{userId})
 		on duplicate key
 		update
-			product_guide			= #{productGuide},
-			delivery_guide			= #{deliveryGuide},
-			exchange_return_guide	= #{exchangeReturnGuide},
-			as_guide				= #{asGuide},
-			qna_guide				= #{qnaGuide},
-		    update_user_id			= #{userId},
-		    update_date				= now()
+			md_cmt				= #{productGuide},
+			prdt_gud_cmt_one	= #{productDescription},
+			prdt_gud_cmt_four	= #{deliveryGuide},
+			excng_chg_gud		= #{exchangeReturnGuide},
+			as_gud				= #{asGuide},
+			prdt_gud_cmt_thr	= #{qnaGuide},
+		    upd_usr_id			= #{userId},
+		    upd_dt				= now()
 	</insert>
 
 	<select id="findProduct" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.product.dto.ProductDto$ResBody">
 		select
-		    product_code,
-			product_type,
-			category_one_code,
-			category_one_name,
-            category_two_code,
-            category_two_name,
-            category_thr_code,
-            category_thr_name,
-            product_name,
-            brand_no,
-            brand_name,
-            model_code,
-            model_name,
-            model_year,
-            youtube_url,
-            product_barcode,
-            product_file_no,
-            product_description
-		  from product
-		 where product_code = #{productCode}
+		    p.prdt_cd product_code,
+			p.prdt_tp product_type,
+			p.cagy_dpth_one category_one_code,
+			co.cagy_nm category_one_name,
+            p.cagy_dpth_two category_two_code,
+            ct.cagy_nm category_two_name,
+            p.cagy_dpth_thr category_thr_code,
+            cr.cagy_nm category_thr_name,
+            p.prdt_nm product_name,
+            p.brd_no brand_no,
+            p.brd_nm brand_name,
+            p.mdl_no model_code,
+            p.mdl_nm model_name,
+            p.mdl_year model_year,
+            p.ytb_url youtube_url,
+            p.prdt_barcd product_barcode,
+            p.prdt_file_no product_file_no
+		  from prdt_main p
+		  left join prdt_gud_ctnt g
+		    on p.prdt_cd = g.prdt_cd
+		  left join com_cagy co
+		  	on p.cagy_dpth_one = co.cagy_cd
+		  left join com_cagy ct
+			on p.cagy_dpth_one = ct.cagy_cd
+		  left join com_cagy cr
+			on p.cagy_dpth_one = cr.cagy_cd
+		 where p.prdt_cd = #{productCode}
 	</select>
 
 	<select id="findBasicSpec" parameterType="java.lang.String" resultMap="findBasicSpecMap">
 		select
-			bs.sales_category_code,
-			bs.drivetrain_type_code,
-			bs.frame_material_code,
-            bs.frame_size_code,
-            bs.brake_type_code,
-            bs.purpose_theme_code,
-            bs.wheel_size_code,
-            bs.suspension_type_code,
-            bs.min_height_person,
-            bs.max_height_person,
-            bs.bike_weight,
-            ea.embark_age
-		  from product_basic_spec bs
-		  left join product_embark_age ea
-			on bs.product_code = ea.product_code
-		 where bs.product_code = #{productCode}
+			bs.sles_cagy_cd sales_category_code,
+			bs.dti_tp_cd drivetrain_type_code,
+			bs.fram_mtrl_cd frame_material_code,
+            bs.fram_sz_cd frame_size_code,
+            bs.brk_tp_cd brake_type_code,
+            bs.ppse_thm_cd purpose_theme_code,
+            bs.we_sz_cd wheel_size_code,
+            bs.ssps_tp_cd suspension_type_code,
+            bs.minim_hgt_pn min_height_person,
+            bs.maxum_hgt_pn max_height_person,
+            bs.bike_tare bike_weight,
+            ea.emrk_age embark_age
+		  from prdt_bsc_spec bs
+		  left join prdt_emrk_age ea
+			on bs.prdt_cd = ea.prdt_cd
+		 where bs.prdt_cd = #{productCode}
 	</select>
 	
 	<resultMap id="findBasicSpecMap" type="kr.wrightbrothers.apps.product.dto.BasicSpecDto$ResBody">
@@ -546,95 +545,96 @@
 
 	<select id="findSellInfo" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.product.dto.SellInfoDto$ResBody">
 		select
-			product_amount,
-			discount_flag,
-			discount_type,
-            discount_amount,
-            display_flag,
-            product_option_flag,
-            supply_amount,
-            final_sell_amount,
-            product_status_code,
-            product_stock_qty,
-            product_sell_start_date,
-            product_sell_end_date
-		  from product_sell_info
-		 where product_code = #{productCode}
+			prdt_amt product_amount,
+			dscnt_flg discount_flag,
+			dscnt_tp discount_type,
+            dscnt_amt discount_amount,
+            dp_flg display_flag,
+            prdt_optn_flg product_option_flag,
+            pur_amt supply_amount,
+            fnl_sell_amt final_sell_amount,
+            prdt_stus_cd product_status_code,
+            invty_qty product_stock_qty,
+            prdt_sell_st_dt product_sell_start_date,
+            prdt_sell_ed_dt product_sell_end_date
+		  from prdt_sell_info
+		 where prdt_cd = #{productCode}
 	</select>
 
 	<select id="findOptionList" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.product.dto.OptionDto$ResBody">
 		select
-			option_seq,
-			option_name,
-			option_value,
-            option_surcharge,
-            option_stock_qty
-		  from product_option
-		 where product_code = #{productCode}
+			optn_seq option_seq,
+			optn_nm option_name,
+			optn_val option_value,
+            optn_schg option_surcharge,
+            invty_qty option_stock_qty
+		  from prdt_optn
+		 where prdt_cd = #{productCode}
 	</select>
 
 	<select id="findDelivery" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.product.dto.DeliveryDto$ResBody">
 		select
-			delivery_type,
-            delivery_bundle_flag,
-            charge_type,
-            charge_base,
-            terms_free_charge,
-            payment_type,
-            surcharge_flag,
-            area_code,
-            surcharge_jejudo,
-            surcharge_isolated,
-            unstoring_zip_code,
-            unstoring_address,
-            unstoring_address_detail,
-            return_zip_code,
-            return_address,
-            return_address_detail,
-            exchange_charge,
-            return_charge,
-            return_delivery_company_code
-		  from product_delivery
-		 where product_code = #{productCode}
+			prdt_dlvr_cd delivery_type,
+            dlvr_bun_flg delivery_bundle_flag,
+            chg_tp charge_type,
+            chg_base charge_base,
+            tms_free_chg terms_free_charge,
+            pay_tp payment_type,
+            surchg_flg surcharge_flag,
+            area_cd area_code,
+            schg_jeju surcharge_jejudo,
+            schg_iso surcharge_isolated,
+            unstr_zip_cd unstoring_zip_code,
+            unstr_addr unstoring_address,
+            unstr_addr_dtl unstoring_address_detail,
+            rtn_zip_cd return_zip_code,
+            rtn_addr return_address,
+            rtn_addr_dtl return_address_detail,
+            excng_chg exchange_charge,
+            rtn_chg return_charge,
+            rtn_dlvr_cmpny_cd return_delivery_company_code
+		  from prdt_dlvr_dtl
+		 where prdt_cd = #{productCode}
 	</select>
 
 	<select id="findInfoNotice" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.product.dto.InfoNoticeDto$ResBody">
 		select
-			category_code,
-			model_name,
-			product_size,
-            product_weight,
-            product_material,
-            product_component,
-            model_year,
-            model_month,
-            product_mfr,
-            detail_spec,
-            qa_standard,
-            as_phone
-		  from product_info_notice
-		 where product_code = #{productCode}
+			cagy_cd category_code,
+			prdt_atte1 model_name,
+			prdt_atte2 product_size,
+            prdt_atte3 product_weight,
+            prdt_atte4 product_material,
+            prdt_atte5 product_component,
+            prdt_atte6 model_year,
+            prdt_atte7 model_month,
+            prdt_atte8 product_mfr,
+            prdt_atte9 detail_spec,
+            prdt_atte10 qa_standard,
+            prdt_atte11 as_phone
+		  from prdt_info_bltn
+		 where prdt_cd = #{productCode}
 	</select>
 
 	<select id="findGuide" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.product.dto.GuideDto$ResBody">
 		select
-			product_guide,
-			delivery_guide,
-			exchange_return_guide,
-            as_guide,
-            qna_guide
-		  from product_guide
-		 where product_code = #{productCode}
+		    prdt_gud_cmt_one productDescription,
+			md_cmt product_guide,
+			prdt_gud_cmt_four delivery_guide,
+			excng_chg_gud exchange_return_guide,
+            as_gud as_guide,
+            prdt_gud_cmt_thr qna_guide
+		  from prdt_gud_ctnt
+		 where prdt_cd = #{productCode}
 	</select>
 
 	<update id="bulkUpdateProductDisplay" parameterType="kr.wrightbrothers.apps.product.dto.StatusUpdateDto">
 		<if test="productCodeList.length != 0">
-		update product_sell_info
-		   set display_flag	  = #{statusValue},
-		       update_user_id = #{userId},
-		       update_date	  = now()
+		update prdt_sell_info
+		   set dp_flg	  = #{statusValue},
+		       upd_usr_id = #{userId},
+		       upd_dt	  = now()
 		 where 1 = 1
-			<foreach collection="productCodeList" item="item" index="index" open="and product_code in (" separator="," close=")">
+			<foreach collection="productCodeList" item="item" index="index" open="and prdt_cd in (" separator="," close=")">
 				#{item}
 			</foreach>
 		</if>
@@ -642,12 +642,12 @@
 
 	<update id="bulkUpdateProductStatus" parameterType="kr.wrightbrothers.apps.product.dto.StatusUpdateDto">
 		<if test="productCodeList.length != 0">
-		update product_sell_info
-		   set product_status_code = #{statusValue},
-		       update_user_id	   = #{userId},
-		       update_date		   = now()
+		update prdt_sell_info
+		   set prdt_stus_cd = #{statusValue},
+		       upd_usr_id	= #{userId},
+		       upd_dt		= now()
 		 where 1 = 1
-			<foreach collection="productCodeList" item="item" index="index" open="and product_code in (" separator="," close=")">
+			<foreach collection="productCodeList" item="item" index="index" open="and prdt_cd in (" separator="," close=")">
 				#{item}
 			</foreach>
 		</if>
@@ -665,46 +665,50 @@
 
 	<select id="isZeroStock" parameterType="java.lang.String" resultType="int">
 		select
-			if(count(product_code) = 0, true, false) as isZeroStock
-		  from product_sell_info
-		 where product_code = #{productCode}
+			if(count(prdt_cd) = 0, true, false) as isZeroStock
+		  from prdt_sell_info
+		 where prdt_cd = #{productCode}
 	</select>
 	
 	<select id="findExcelProductList" parameterType="java.util.List" resultType="kr.wrightbrothers.apps.product.dto.ProductExcelDto">
 		select
-		    count(*) over (partition by p.product_code) as optionCount,
-		    p.product_code,
-		    p.brand_name,
-		    p.category_one_name,
-		    p.category_two_name,
-			p.category_thr_name,
-			p.product_name,
-			if(s.product_option_flag = 'Y', concat(o.option_name, '-', o.option_value), '') as product_option,
-			if(s.product_option_flag = 'Y', o.option_stock_qty, s.product_stock_qty) as product_stock_qty,
-			if(s.product_option_flag = 'Y', s.final_sell_amount + o.option_surcharge, s.final_sell_amount) as final_sell_amount,
-			s.product_status_code,
-			if(s.display_flag = 'Y', '노출', '미노출') as display_flag,
-			d.delivery_type,
-			d.delivery_bundle_flag,
-			ifnull(date_format(s.product_sell_start_date, '%Y-%m-%d'), '') as product_sell_start_day,
-			ifnull(date_format(s.product_sell_end_date, '%Y-%m-%d'), '') as product_sell_end_day,
-			ifnull(date_format(p.create_date, '%Y-%m-%d'), '') as create_day,
-			ifnull(date_format(p.update_date, '%Y-%m-%d'), '') as update_day,
-			if(u.user_id is null, '라이트브라더스', concat(u.user_name, '(', u.user_id, ')')) as create_user_name
-		  from product p
-		 inner join product_sell_info s
-			on p.product_code = s.product_code
-		  left join users u
-		    on p.create_user_id = u.user_id
-		  left join product_option o
-			on p.product_code = o.product_code
-		  left join product_delivery d
-			on p.product_code = d.product_code
-		 where p.product_code in
+		    count(*) over (partition by p.prdt_cd) as optionCount,
+		    p.prdt_cd product_code,
+		    p.brd_nm brand_name,
+		    co.cagy_nm category_one_name,
+		    ct.cagy_nm category_two_name,
+			cr.cagy_nm category_thr_name,
+			p.prdt_nm product_name,
+			if(s.prdt_optn_flg = 'Y', concat(o.optn_nm, '-', o.optn_val), '') as product_option,
+			if(s.prdt_optn_flg = 'Y', o.invty_qty, s.invty_qty) as product_stock_qty,
+			if(s.prdt_optn_flg = 'Y', s.fnl_sell_amt + o.optn_schg, s.fnl_sell_amt) as final_sell_amount,
+			s.prdt_stus_cd product_status_code,
+			if(s.dp_flg = 'Y', '노출', '미노출') as display_flag,
+			d.prdt_dlvr_cd delivery_type,
+			d.dlvr_bun_flg delivery_bundle_flag,
+			ifnull(date_format(s.prdt_sell_st_dt, '%Y-%m-%d'), '') as product_sell_start_day,
+			ifnull(date_format(s.prdt_sell_ed_dt, '%Y-%m-%d'), '') as product_sell_end_day,
+			ifnull(date_format(p.cre_dt, '%Y-%m-%d'), '') as create_day,
+			ifnull(date_format(p.upd_dt, '%Y-%m-%d'), '') as update_day,
+			p.cre_usr_id create_user_name
+		  from prdt_main p
+		 inner join prdt_sell_info s
+			on p.prdt_cd = s.prdt_cd
+		  left join prdt_optn o
+			on p.prdt_cd = o.prdt_cd
+		  left join prdt_dlvr_dtl d
+			on p.prdt_cd = d.prdt_cd
+		  left join com_cagy co
+		  	on p.cagy_dpth_one = co.cagy_cd
+		  left join com_cagy ct
+			on p.cagy_dpth_one = ct.cagy_cd
+		  left join com_cagy cr
+			on p.cagy_dpth_one = cr.cagy_cd
+		 where p.prdt_cd in
 		<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
 			#{item}
 		</foreach>
-		 order by p.create_date desc
+		 order by p.cre_dt desc
 	</select>
 	
 </mapper>

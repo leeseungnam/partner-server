@@ -100,7 +100,6 @@ class ProductControllerTest extends BaseControllerTests {
                         .modelName("Propel Advanced Disc 2")
                         .modelYear("2022")
                         .productFileNo(fileNo)
-                        .productDescription("상품 상세 설명")
                         .build())
                 .basicSpec(BasicSpecDto.ReqBody.builder()
                         .salesCategoryCode("S01")
@@ -171,6 +170,7 @@ class ProductControllerTest extends BaseControllerTests {
                         .asPhone("02-000-0000")
                         .build())
                 .guide(GuideDto.ReqBody.builder()
+                        .productDescription("상품 상세 설명")
                         .productGuide("상품 안내 사항 ..............................")
                         .deliveryGuide("배송 안내 사항 ..............................")
                         .exchangeReturnGuide("교환/반품 안내 사항 ..............................")
@@ -316,7 +316,6 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("product.productBarcode").type(JsonFieldType.STRING).description("상품 바코드").optional().attributes(key("etc").value("")),
                                         fieldWithPath("product.modelName").type(JsonFieldType.STRING).description("모델 명").attributes(key("etc").value("")),
                                         fieldWithPath("product.productFileNo").type(JsonFieldType.STRING).description("상품 이미지 파일 대표 번호").attributes(key("etc").value("")),
-                                        fieldWithPath("product.productDescription").type(JsonFieldType.STRING).description("상품 상세 설명").attributes(key("etc").value("")),
                                         fieldWithPath("basicSpec").type(JsonFieldType.OBJECT).description("기본 스펙").optional().attributes(key("etc").value("")),
                                         fieldWithPath("basicSpec.salesCategoryCode").type(JsonFieldType.STRING).description("완차구분").attributes(key("etc").value("공통코드 000009")),
                                         fieldWithPath("basicSpec.drivetrainTypeCode").type(JsonFieldType.STRING).description("구동계").attributes(key("etc").value("공통코드 000010")),
@@ -381,6 +380,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("infoNotice.qaStandard").type(JsonFieldType.STRING).description("품질보증기준").optional().attributes(key("etc").value("")),
                                         fieldWithPath("infoNotice.asPhone").type(JsonFieldType.STRING).description("AS 연락처").attributes(key("etc").value("")),
                                         fieldWithPath("guide").type(JsonFieldType.OBJECT).description("안내 정보").attributes(key("etc").value("")),
+                                        fieldWithPath("guide.productDescription").type(JsonFieldType.STRING).description("상품 상세 설명").attributes(key("etc").value("")),
                                         fieldWithPath("guide.productGuide").type(JsonFieldType.STRING).description("상품 안내 사항").attributes(key("etc").value("")),
                                         fieldWithPath("guide.deliveryGuide").type(JsonFieldType.STRING).description("배송 안내 사항").attributes(key("etc").value("")),
                                         fieldWithPath("guide.exchangeReturnGuide").type(JsonFieldType.STRING).description("교환/반품 안내 사항").optional().attributes(key("etc").value("")),
@@ -447,7 +447,6 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.product.modelYear").type(JsonFieldType.STRING).description("연식"),
                                         fieldWithPath("data.product.youtubeUrl").type(JsonFieldType.STRING).description("유튜브 URL").optional(),
                                         fieldWithPath("data.product.productBarcode").type(JsonFieldType.STRING).description("상품 바코드").optional(),
-                                        fieldWithPath("data.product.productDescription").type(JsonFieldType.STRING).description("상품 상세 설명"),
                                         fieldWithPath("data.product.productFileNo").type(JsonFieldType.STRING).description("상품 이미지 파일 대표 번호"),
                                         fieldWithPath("data.basicSpec").type(JsonFieldType.OBJECT).description("기본 스펙").optional(),
                                         fieldWithPath("data.basicSpec.salesCategoryCode").type(JsonFieldType.STRING).description("완차구분"),
@@ -515,6 +514,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.infoNotice.qaStandard").type(JsonFieldType.STRING).description("품질보증기준").optional(),
                                         fieldWithPath("data.infoNotice.asPhone").type(JsonFieldType.STRING).description("AS 연락처"),
                                         fieldWithPath("data.guide").type(JsonFieldType.OBJECT).description("안내 정보"),
+                                        fieldWithPath("data.guide.productDescription").type(JsonFieldType.STRING).description("상품 상세 설명"),
                                         fieldWithPath("data.guide.productGuide").type(JsonFieldType.STRING).description("상품 안내 사항"),
                                         fieldWithPath("data.guide.deliveryGuide").type(JsonFieldType.STRING).description("배송 안내 사항"),
                                         fieldWithPath("data.guide.exchangeReturnGuide").type(JsonFieldType.STRING).description("교환/반품 안내 사항").optional(),
@@ -573,7 +573,6 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("product.productBarcode").type(JsonFieldType.STRING).description("상품 바코드").optional().attributes(key("etc").value("")),
                                         fieldWithPath("product.modelName").type(JsonFieldType.STRING).description("모델 명").attributes(key("etc").value("")),
                                         fieldWithPath("product.productFileNo").type(JsonFieldType.STRING).description("상품 이미지 파일 대표 번호").attributes(key("etc").value("")),
-                                        fieldWithPath("product.productDescription").type(JsonFieldType.STRING).description("상품 상세 설명").attributes(key("etc").value("")),
                                         fieldWithPath("basicSpec").type(JsonFieldType.OBJECT).description("기본 스펙").optional().attributes(key("etc").value("")),
                                         fieldWithPath("basicSpec.salesCategoryCode").type(JsonFieldType.STRING).description("완차구분").attributes(key("etc").value("공통코드 000009")),
                                         fieldWithPath("basicSpec.drivetrainTypeCode").type(JsonFieldType.STRING).description("구동계").attributes(key("etc").value("공통코드 000010")),
@@ -638,6 +637,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("infoNotice.qaStandard").type(JsonFieldType.STRING).description("품질보증기준").optional().attributes(key("etc").value("")),
                                         fieldWithPath("infoNotice.asPhone").type(JsonFieldType.STRING).description("AS 연락처").attributes(key("etc").value("")),
                                         fieldWithPath("guide").type(JsonFieldType.OBJECT).description("안내 정보").attributes(key("etc").value("")),
+                                        fieldWithPath("guide.productDescription").type(JsonFieldType.STRING).description("상품 상세 설명").attributes(key("etc").value("")),
                                         fieldWithPath("guide.productGuide").type(JsonFieldType.STRING).description("상품 안내 사항").attributes(key("etc").value("")),
                                         fieldWithPath("guide.deliveryGuide").type(JsonFieldType.STRING).description("배송 안내 사항").attributes(key("etc").value("")),
                                         fieldWithPath("guide.exchangeReturnGuide").type(JsonFieldType.STRING).description("교환/반품 안내 사항").optional().attributes(key("etc").value("")),
@@ -682,7 +682,6 @@ class ProductControllerTest extends BaseControllerTests {
                         .modelName("Propel Advanced Disc 2")
                         .modelYear("2022")
                         .productFileNo(fileNo)
-                        .productDescription("상품 상세 설명")
                         .build())
                 .basicSpec(BasicSpecDto.ReqBody.builder()
                         .salesCategoryCode("S01")
@@ -746,6 +745,7 @@ class ProductControllerTest extends BaseControllerTests {
                         .asPhone("02-000-0000")
                         .build())
                 .guide(GuideDto.ReqBody.builder()
+                        .productDescription("상품 상세 설명")
                         .productGuide("상품 안내 사항 ..............................")
                         .deliveryGuide("배송 안내 사항 ..............................")
                         .exchangeReturnGuide("교환/반품 안내 사항 ..............................")

@@ -243,7 +243,7 @@ public class ProductQueueService {
         );
 
         // 상품 상세 설명 셋팅
-        updateDto.getProduct().setProductDescription(receiveDto.getGuide().getProductDescription());
+        updateDto.getGuide().setProductDescription(receiveDto.getGuide().getProductDescription());
 
         // 사용자 아이디 셋팅
         updateDto.setAopUserId(receiveDto.getProduct().getUpdateUserId());
