@@ -113,6 +113,7 @@
 		  ,	bank_code = #{bankCode}
 		  ,	tax_bill_email = #{taxBillEmail}
 		  ,	contract_status = #{contractStatus}
+		  ,	contract_file_no = #{contractFileNo}
 		where partner_code = #{partnerCode}
 		  and contract_code = #{contractCode}
 	</update>
@@ -207,8 +208,6 @@
 			 , p.business_address_sub
 			 , p.business_address_zip_code
 		from partner p
-		inner join partner_contract pc
-		on p.partner_code = pc.partner_code
 		where p.partner_code = #{partnerCode}
 	</select>
 

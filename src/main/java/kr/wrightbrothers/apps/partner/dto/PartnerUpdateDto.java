@@ -72,6 +72,7 @@ public class PartnerUpdateDto {
             private String taxBillEmail;
             private String userId;
             private String contractStatus;
+            private String contractFileNo;
 
             public void changeContractStatus(String contractStatus) {
                 this.contractStatus = contractStatus;
