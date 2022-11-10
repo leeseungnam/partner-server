@@ -21,6 +21,7 @@ public class UserDto extends UserAuthDto {
     private String userPwd;
     private String userName;
     private String userPhone;
+    private boolean changePwdFlag;
 
     public void changePwd(String userPwd) {
         this.userPwd = userPwd;

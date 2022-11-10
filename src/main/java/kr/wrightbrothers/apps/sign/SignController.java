@@ -5,8 +5,10 @@ import kr.wrightbrothers.apps.common.config.security.jwt.JwtTokenProvider;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.TokenUtil;
 import kr.wrightbrothers.apps.sign.dto.SignInDto;
+import kr.wrightbrothers.apps.user.dto.UserDto;
 import kr.wrightbrothers.apps.user.service.UserService;
 import kr.wrightbrothers.framework.support.WBController;
+import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +39,7 @@ public class SignController extends WBController {
     public WBModel signIn(@ApiParam @Valid @RequestBody SignInDto paramDto
             , HttpServletRequest request
             , HttpServletResponse response) {
+        WBModel wbResponse = new WBModel();
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(paramDto.getUserId(), paramDto.getUserPwd());
@@ -44,15 +47,14 @@ public class SignController extends WBController {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        WBModel wbResponse = new WBModel();
-
         String accessToken = jwtTokenProvider.generateAccessToken(authentication);
         String refreshToken = jwtTokenProvider.issueRefreshToken(authentication);
 
         log.debug("access token={}",accessToken);
         log.debug("refresh token={}",refreshToken);
 
-        wbResponse.addObject("UserAuth", userService.findAuthById(authentication.getName()));
+        wbResponse.addObject(WBKey.WBModel.DefaultDataKey, userService.findAuthById(authentication.getName()));
+        wbResponse.addObject(WBKey.WBModel.UserKey, userService.findUserByDynamic(UserDto.builder().userId(authentication.getName()).build()));
 
         response.setHeader(PartnerKey.Jwt.Header.AUTHORIZATION, PartnerKey.Jwt.Type.BEARER + accessToken);
         response.addCookie(TokenUtil.createCookie(PartnerKey.Jwt.Alias.REFRESH_TOKEN, refreshToken, REFRESH_TOKEN_VALIDATION_SECOND));

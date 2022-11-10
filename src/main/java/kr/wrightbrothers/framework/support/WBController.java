@@ -11,7 +11,8 @@ import org.springframework.context.support.MessageSourceAccessor;
 public class WBController {
 
 	private final ObjectMapper mapper = new ObjectMapper();
-	private final String MSG_PRE_FIX = "api.message.common.";
+	private final String MSG_PRE_FIX = "api.message.";
+	private final String MSG_PRE_FIX_COM = "api.message.common.";
 
 	/**
 	 * 오류 로그 설정
@@ -35,7 +36,7 @@ public class WBController {
 	 */
 	public WBModel noneMgsResponse(MessageSourceAccessor messageSourceAccessor) {
 		WBModel response = new WBModel();
-		response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(MSG_PRE_FIX + "complete"));
+		response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(MSG_PRE_FIX_COM + "complete"));
 		return response;
 	}
 
@@ -44,7 +45,35 @@ public class WBController {
 	 */
 	public WBModel insertMsgResponse(MessageSourceAccessor messageSourceAccessor) {
 		WBModel response = new WBModel();
-		response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(MSG_PRE_FIX + "save.success"));
+		response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(MSG_PRE_FIX_COM + "save.success"));
+		return response;
+	}
+
+	/**
+	 * 기본 Message Response
+	 *
+	 * @param messageSourceAccessor
+	 * @param messageId
+	 * @return WBModel
+	 */
+	public WBModel defaultMsgResponse(MessageSourceAccessor messageSourceAccessor, String messageId) {
+		WBModel response = new WBModel();
+		response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(MSG_PRE_FIX + messageId));
+
+		return response;
+	}
+	/**
+	 * 기본 Message Response
+	 *
+	 * @param messageSourceAccessor
+	 * @param messageId
+	 * @param messageArgs
+	 * @return WBModel
+	 */
+	public WBModel defaultMsgResponse(MessageSourceAccessor messageSourceAccessor, String messageId, String [] messageArgs) {
+		WBModel response = new WBModel();
+		response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(MSG_PRE_FIX + messageId, messageArgs));
+
 		return response;
 	}
 
@@ -71,7 +100,7 @@ public class WBController {
 	public WBModel defaultInsertResponse(Object obj, MessageSourceAccessor messageSourceAccessor) {
 		WBModel response = new WBModel();
 		response.addObject(WBKey.WBModel.DefaultDataKey, obj);
-		response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(MSG_PRE_FIX + "save.success"));
+		response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(MSG_PRE_FIX_COM + "save.success"));
 
 		return response;
 	}

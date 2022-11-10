@@ -24,6 +24,7 @@
 		    user_id
 		,	user_pwd
 		,	user_name
+		,	change_pwd_flag
 		  from users
 		 where 1=1
 	    <if test="userId != null and userId != ''">

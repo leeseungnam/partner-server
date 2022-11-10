@@ -2,6 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="kr.wrightbrothers.apps.partner.query.Partner">
+	<delete id="deletePartnerOperator" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerInviteDto$Param">
+		delete from users_partner where partner_code = #{partnerCode} and user_id = #{inviteReceiver} and auth_code = #{authCode}
+	</delete>
+
 	<update id="updateInviteStatus" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerInviteDto$Param">
 		update partner_invite set
 		    invite_status = #{inviteStatus}
@@ -109,6 +113,7 @@
 		  ,	bank_code = #{bankCode}
 		  ,	tax_bill_email = #{taxBillEmail}
 		  ,	contract_status = #{contractStatus}
+		  ,	contract_file_no = #{contractFileNo}
 		where partner_code = #{partnerCode}
 		  and contract_code = #{contractCode}
 	</update>
@@ -203,8 +208,6 @@
 			 , p.business_address_sub
 			 , p.business_address_zip_code
 		from partner p
-		inner join partner_contract pc
-		on p.partner_code = pc.partner_code
 		where p.partner_code = #{partnerCode}
 	</select>
 

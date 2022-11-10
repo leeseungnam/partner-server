@@ -70,7 +70,10 @@ public class PartnerService {
             fileService.s3FileUpload(fileList, null, false);
         }
     }
-
+    @Transactional(value = PartnerKey.WBDataBase.TransactionManager.Default)
+    public void deletePartnerOperator(PartnerInviteDto.Param paramDto) {
+        dao.delete(namespace+"deletePartnerOperator", paramDto);
+    }
     @Transactional(value = PartnerKey.WBDataBase.TransactionManager.Default)
     public void acceptInvite(PartnerInviteDto.Param paramDto) {
         log.info("[acceptInvite]::authCode={}",paramDto.getAuthCode());
@@ -102,6 +105,7 @@ public class PartnerService {
                         .bankCode(paramDto.getPartnerContract().getBankCode())
                         .taxBillEmail(paramDto.getPartnerContract().getTaxBillEmail())
                         .contractStatus(Partner.Contract.Status.REQUEST.getCode())
+                        .contractFileNo(paramDto.getPartnerContract().getContractFileNo())
                         .build()
         );
 
