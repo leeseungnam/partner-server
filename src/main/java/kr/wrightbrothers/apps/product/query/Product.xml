@@ -167,7 +167,15 @@
 			   #{productBarcode},
 			   #{productFileNo},
 			   #{userId},
-			   #{userId})
+			   #{userId});
+		insert into prdt_sell_chnl(prdt_cd,
+		                           prdt_sell_chnl_cd,
+		                           cre_usr_id,
+		                           upd_usr_id)
+		values(#{productCode},
+		       '1',
+		       #{userId},
+		       #{userId});
 	</insert>
 
 	<update id="updateProduct" parameterType="kr.wrightbrothers.apps.product.dto.ProductDto$ReqBody">
