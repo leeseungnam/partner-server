@@ -44,7 +44,7 @@ public class ReturnControllerTest extends BaseControllerTests {
                         }
                 )
                 .rangeType("PAYMENT")
-                .startDay("2022-01-01")
+                .startDay("2020-01-01")
                 .endDay("2022-10-30")
                 .keywordType("NO")
                 .keywordValue("")
@@ -113,7 +113,7 @@ public class ReturnControllerTest extends BaseControllerTests {
     @Test
     @DisplayName("반품내역 조회")
     void findReturn() throws Exception {
-        String orderNo = "202210271306217301";
+        String orderNo = "202103031126444476";
 
         // 반품내역 상세 API 조회
         mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/returns/{orderNo}", orderNo)
@@ -202,7 +202,7 @@ public class ReturnControllerTest extends BaseControllerTests {
     @DisplayName("반품관리 정보 수정")
     void updateReturn() throws Exception {
         ReturnMemoUpdateDto updateParam = ReturnMemoUpdateDto.builder()
-                .orderNo("202210271306217301")
+                .orderNo("202103031126444476")
                 .recipientName("홍길동")
                 .recipientPhone("01012341234")
                 .recipientAddressZipCode("12345")
@@ -249,7 +249,7 @@ public class ReturnControllerTest extends BaseControllerTests {
     @DisplayName("반품 요청 상품 처리")
     void updateRequestReturn() throws Exception {
         RequestReturnUpdateDto updateParam = RequestReturnUpdateDto.builder()
-                .orderNo("202210271306217301")
+                .orderNo("202103031126444476")
                 .orderProductSeqArray(new Integer[]{1})
                 .returnProcessCode(OrderStatusCode.START_RETURN.getCode())
                 .requestCode("cgkwe")

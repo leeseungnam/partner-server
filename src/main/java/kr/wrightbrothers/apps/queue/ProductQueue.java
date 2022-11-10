@@ -48,15 +48,15 @@ public class ProductQueue extends WBSQS {
                             String transactionType) {
         try {
             // AWS SNS 전송
-//            sender.send(
-//                    topic,
-//                    Header.builder()
-//                            .docuNm(documentSNS.getName())
-//                            .trsctnTp(transactionType)
-//                            .build(),
-//                    // 상품 SNS 전송 데이터
-//                    productQueueService.findProductSnsData(partnerCode, productCode)
-//            );
+            sender.send(
+                    topic,
+                    Header.builder()
+                            .docuNm(documentSNS.getName())
+                            .trsctnTp(transactionType)
+                            .build(),
+                    // 상품 SNS 전송 데이터
+                    productQueueService.findProductSnsData(partnerCode, productCode)
+            );
         } catch (Exception e) {
             log.error("Product SNS Sender Error. {}", e.getMessage());
         }
@@ -74,43 +74,43 @@ public class ProductQueue extends WBSQS {
 
         try {
             // 초기화
-//            initMessage(message, queueName);
-//            snsDto = getSqsMessage(WBSnsDTO.class);
-//            Header header = snsDto.getHeader();
-//            JSONParser parser = new JSONParser();
-//            JSONObject body = (JSONObject) parser.parse(new ObjectMapper().writeValueAsString(snsDto.getBody()));
-//
-//            // SQS 수신 된 Admin 2.0 입력 상품 입점몰 신규 등록
-//            if (PartnerKey.TransactionType.Insert.equals(snsDto.getHeader().getTrsctnTp())) {
-//                productQueueService.insertProductSqsData(body);
-//                ackMessage(snsDto);
-//                return;
-//            }
-//
-//            // SQS 수신 된 Admin 2.0 입력 파트너 검수  결과 등록
-//            if (DocumentSNS.RESULT_INSPECTION.getName().equals(header.getDocuNm())) {
-//                ProductUpdateDto productUpdateDto =
-//                        new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-//                                .convertValue(snsDto.getBody(), ProductUpdateDto.class);
-//
-//                // 기본 데이터 초기화 설정
-//                productUpdateDto.setSqsLog(new String[]{"검수 완료"});
-//                productUpdateDto.setAopUserId(body.get("confirmUserId").toString());
-//                productUpdateDto.setAopPartnerCode(body.get("partnerCode").toString());
-//                productUpdateDto.setSqsProductCode(productUpdateDto.getProduct().getProductCode());
-//
-//                // 검수반려 처리
-//                if (ProductStatusCode.REJECT_INSPECTION.getCode().equals(productUpdateDto.getSellInfo().getProductStatusCode())) {
-//                    String log = "검수 반려\n(" + body.get("rejectReason") + ")";
-//                    productUpdateDto.setSqsLog(new String[]{log});
-//                }
-//
-//                // 검수 결과 처리
-//                productQueueService.updateInspectionSqsData(productUpdateDto);
-//            } else {
-//                // 상품 수정 처리
-//                productQueueService.updateProductSqsData(body);
-//            }
+            initMessage(message, queueName);
+            snsDto = getSqsMessage(WBSnsDTO.class);
+            Header header = snsDto.getHeader();
+            JSONParser parser = new JSONParser();
+            JSONObject body = (JSONObject) parser.parse(new ObjectMapper().writeValueAsString(snsDto.getBody()));
+
+            // SQS 수신 된 Admin 2.0 입력 상품 입점몰 신규 등록
+            if (PartnerKey.TransactionType.Insert.equals(snsDto.getHeader().getTrsctnTp())) {
+                productQueueService.insertProductSqsData(body);
+                ackMessage(snsDto);
+                return;
+            }
+
+            // SQS 수신 된 Admin 2.0 입력 파트너 검수  결과 등록
+            if (DocumentSNS.RESULT_INSPECTION.getName().equals(header.getDocuNm())) {
+                ProductUpdateDto productUpdateDto =
+                        new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                                .convertValue(snsDto.getBody(), ProductUpdateDto.class);
+
+                // 기본 데이터 초기화 설정
+                productUpdateDto.setSqsLog(new String[]{"검수 완료"});
+                productUpdateDto.setAopUserId(body.get("confirmUserId").toString());
+                productUpdateDto.setAopPartnerCode(body.get("partnerCode").toString());
+                productUpdateDto.setSqsProductCode(productUpdateDto.getProduct().getProductCode());
+
+                // 검수반려 처리
+                if (ProductStatusCode.REJECT_INSPECTION.getCode().equals(productUpdateDto.getSellInfo().getProductStatusCode())) {
+                    String log = "검수 반려\n(" + body.get("rejectReason") + ")";
+                    productUpdateDto.setSqsLog(new String[]{log});
+                }
+
+                // 검수 결과 처리
+                productQueueService.updateInspectionSqsData(productUpdateDto);
+            } else {
+                // 상품 수정 처리
+                productQueueService.updateProductSqsData(body);
+            }
 
             ackMessage(snsDto);
         } catch (Exception e) {

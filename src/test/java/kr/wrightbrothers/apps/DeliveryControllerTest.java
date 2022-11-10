@@ -120,7 +120,7 @@ class DeliveryControllerTest extends BaseControllerTests {
     @Test
     @DisplayName("배송내역 조회")
     void findDelivery() throws Exception {
-        String orderNo = "202210271306217301";
+        String orderNo = "202103031126444476";
 
         // 주문내역 상세 API 조회
         mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/deliveries/{orderNo}", orderNo)
@@ -208,7 +208,7 @@ class DeliveryControllerTest extends BaseControllerTests {
     @DisplayName("배송내역 수정")
     void updateDelivery() throws Exception {
         DeliveryMemoUpdateDto updateParam = DeliveryMemoUpdateDto.builder()
-                .orderNo("202210271306217301")
+                .orderNo("202103031126444476")
                 .recipientName("홍길동")
                 .recipientPhone("01012341234")
                 .recipientAddressZipCode("12345")
@@ -252,7 +252,7 @@ class DeliveryControllerTest extends BaseControllerTests {
         // 변경 체크를 위한 조회
         OrderFindDto.Response nowDto = orderService.findOrder(OrderFindDto.Param.builder()
                 .partnerCode("PT0000001")
-                .orderNo("202210271306217301")
+                .orderNo("202103031126444476")
                 .build());
 
         // 검증
@@ -269,7 +269,7 @@ class DeliveryControllerTest extends BaseControllerTests {
     @DisplayName("송장번호 입력")
     void updateDeliveryInvoice() throws Exception {
         DeliveryInvoiceUpdateDto updateDto = DeliveryInvoiceUpdateDto.builder()
-                .orderNo("202210271306217301")
+                .orderNo("202103031126444476")
                 .orderProductSeqArray(new Integer[]{1})
                 .deliveryCompanyCode("cjgls")
                 .deliveryCompanyName("CJ대한통운")

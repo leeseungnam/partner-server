@@ -51,11 +51,11 @@ public class ProductQueueService {
         return ProductSendDto.builder()
                 .reqUserId(((UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername())
                 .partnerCode(partnerCode)
-                .product(dao.selectOne(productNamespace + "findProduct", productCode))
-                .basicSpec(dao.selectOne(productNamespace + "findBasicSpec", productCode))
-                .sellInfo(dao.selectOne(productNamespace + "findSellInfo", productCode))
+                .product(dao.selectOne(productNamespace + "findProduct", productCode, PartnerKey.WBDataBase.Alias.Admin))
+                .basicSpec(dao.selectOne(productNamespace + "findBasicSpec", productCode, PartnerKey.WBDataBase.Alias.Admin))
+                .sellInfo(dao.selectOne(productNamespace + "findSellInfo", productCode, PartnerKey.WBDataBase.Alias.Admin))
                 .optionList(
-                        dao.selectList(productNamespace + "findOptionList", productCode)
+                        dao.selectList(productNamespace + "findOptionList", productCode, PartnerKey.WBDataBase.Alias.Admin)
                                 .stream()
                                 .map(option -> {
                                     if (option instanceof OptionDto.ResBody)
@@ -72,9 +72,9 @@ public class ProductQueueService {
                                 })
                                 .collect(Collectors.toList())
                 )
-                .delivery(dao.selectOne(productNamespace + "findDelivery", productCode))
-                .infoNotice(dao.selectOne(productNamespace + "findInfoNotice", productCode))
-                .guide(dao.selectOne(productNamespace + "findGuide", productCode))
+                .delivery(dao.selectOne(productNamespace + "findDelivery", productCode, PartnerKey.WBDataBase.Alias.Admin))
+                .infoNotice(dao.selectOne(productNamespace + "findInfoNotice", productCode, PartnerKey.WBDataBase.Alias.Admin))
+                .guide(dao.selectOne(productNamespace + "findGuide", productCode, PartnerKey.WBDataBase.Alias.Admin))
                 .build();
     }
 
@@ -94,8 +94,6 @@ public class ProductQueueService {
 
         log.info("Product Insert From Admin. Partner Code::{}, Product Code::{}",
                 paramDto.getProduct().getPartnerCode(), paramDto.getProduct().getProductCode());
-
-        productService.insertProduct(paramDto);
     }
 
     /**
