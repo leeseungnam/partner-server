@@ -21,7 +21,7 @@ cloud:
     sns:
       arn: 'arn:aws:sns:ap-northeast-2:094301229591:'
       auto: false
-      ack: DEV-ACKMSG2.fifo
+      ack: DEV-ACKMSG.fifo
       product: DEV-PARTNER-ADMIN-PRODUCT.fifo
       order: DEV-PARTNER-PLATFORM-ORDER.fifo
       partner: DEV-PARTNER-ADMIN-STORE.fifo
