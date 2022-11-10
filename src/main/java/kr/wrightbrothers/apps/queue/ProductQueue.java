@@ -6,6 +6,7 @@ import kr.wrightbrothers.apps.common.type.DocumentSNS;
 import kr.wrightbrothers.apps.common.type.ProductStatusCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.product.dto.ProductUpdateDto;
+import kr.wrightbrothers.apps.queue.dto.ProductDefaultSendDto;
 import kr.wrightbrothers.apps.queue.service.ProductQueueService;
 import kr.wrightbrothers.framework.support.WBSQS;
 import kr.wrightbrothers.framework.support.dto.WBSnsDTO;
@@ -55,7 +56,8 @@ public class ProductQueue extends WBSQS {
                             .trsctnTp(transactionType)
                             .build(),
                     // 상품 SNS 전송 데이터
-                    productQueueService.findProductSnsData(partnerCode, productCode)
+                    DocumentSNS.UPDATE_PRODUCT.equals(documentSNS) ?
+                            new ProductDefaultSendDto(partnerCode, productCode) : productQueueService.findProductSnsData(partnerCode, productCode)
             );
         } catch (Exception e) {
             log.error("Product SNS Sender Error. {}", e.getMessage());
