@@ -36,8 +36,20 @@
 
     <update id="updateProductStatus" parameterType="kr.wrightbrothers.apps.product.dto.ProductUpdateDto">
         update prdt_sell_info
-           set prdt_stus_cd = #{sellInfo.productStatusCode}
-         where prdt_cd = #{productCode}
+           set prdt_stus_cd = #{sellInfo.productStatusCode},
+               upd_usr_id   = #{sellInfo.userId},
+               upd_dt       = now()
+         where prdt_cd      = #{productCode};
+
+        update prdt_main
+           set brd_no       = #{product.brandNo},
+               brd_nm       = #{product.brandName},
+               mdl_no       = #{product.modelCode},
+               mdl_nm       = #{product.modelName},
+               mdl_year     = #{product.modelYear},
+               upd_usr_id   = #{product.userId},
+               upd_dt       = now()
+         where prdt_cd      = #{productCode};
     </update>
 
 </mapper>
