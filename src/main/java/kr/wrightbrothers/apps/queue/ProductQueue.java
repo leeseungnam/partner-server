@@ -109,9 +109,6 @@ public class ProductQueue extends WBSQS {
 
                 // 검수 결과 처리
                 productQueueService.updateInspectionSqsData(productUpdateDto);
-            } else {
-                // 상품 수정 처리
-                productQueueService.updateProductSqsData(body);
             }
 
             ackMessage(snsDto);
