@@ -62,7 +62,7 @@ public class WBKey {
 	 */
 	public static class WBModel {
 		public static final String DefaultDataKey 				= "data";
-		public static final String UserKey 						= "User";
+		public static final String UserKey 						= "user";
 		public static final String DefaultDataTotalCountKey 	= "totalItems";
 	}
 	
