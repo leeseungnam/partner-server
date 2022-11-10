@@ -144,6 +144,7 @@ public class PartnerController extends WBController {
         return defaultResponse(partnerService.findPartnerByPartnerCode(PartnerViewDto.Param.builder()
                         .partnerCode(partnerCode)
                         .contractCode(contractCode)
+                        .authCode(User.Auth.MANAGER.getType())  // 조회 대상 권한
                         .build()));
     }
 
