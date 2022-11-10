@@ -4,7 +4,6 @@ import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.product.dto.ChangeInfoDto;
 import kr.wrightbrothers.apps.product.dto.ChangeInfoListDto;
 import kr.wrightbrothers.apps.product.dto.ProductDto;
-import kr.wrightbrothers.apps.product.dto.StatusUpdateDto;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

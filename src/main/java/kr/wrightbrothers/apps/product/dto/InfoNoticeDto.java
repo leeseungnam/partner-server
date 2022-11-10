@@ -6,7 +6,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
-import org.json.JSONObject;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;

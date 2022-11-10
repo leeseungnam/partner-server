@@ -6,7 +6,6 @@ import kr.wrightbrothers.apps.common.type.PaymentStatusCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import software.amazon.awssdk.services.licensemanager.model.LicenseStatus;
 
 import java.util.List;
 

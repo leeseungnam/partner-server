@@ -9,7 +9,6 @@ import kr.wrightbrothers.framework.lang.WBBusinessException;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
-import org.json.JSONObject;
 import org.springframework.util.ObjectUtils;
 
 import javax.validation.constraints.Max;
