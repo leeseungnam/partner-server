@@ -2,6 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="kr.wrightbrothers.apps.partner.query.Partner">
+	<delete id="deletePartnerOperator" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerInviteDto$Param">
+		delete from users_partner where partner_code = #{partnerCode} and user_id = #{inviteReceiver} and auth_code = #{authCode}
+	</delete>
+
 	<update id="updateInviteStatus" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerInviteDto$Param">
 		update partner_invite set
 		    invite_status = #{inviteStatus}
