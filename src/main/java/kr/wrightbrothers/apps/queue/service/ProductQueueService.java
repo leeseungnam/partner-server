@@ -9,6 +9,7 @@ import kr.wrightbrothers.apps.common.util.AwsSesUtil;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.ProductUtil;
 import kr.wrightbrothers.apps.product.dto.*;
+import kr.wrightbrothers.apps.product.service.ChangeInfoService;
 import kr.wrightbrothers.apps.product.service.ProductService;
 import kr.wrightbrothers.apps.queue.dto.FindAddressDto;
 import kr.wrightbrothers.apps.queue.dto.ProductReceiveDto;
@@ -19,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.springframework.beans.BeanUtils;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +36,7 @@ public class ProductQueueService {
 
     private final WBCommonDao dao;
     private final ProductService productService;
+    private final ChangeInfoService changeInfoService;
     private final ProductUtil productUtil;
     private final AwsSesUtil awsSesUtil;
     private final String namespace = "kr.wrightbrothers.apps.queue.query.Queue.";
@@ -152,7 +153,9 @@ public class ProductQueueService {
                 productUpdateDto.getProduct().getPartnerCode(), productUpdateDto.getProduct().getProductCode(), Arrays.toString(productUpdateDto.getChangeLogList()));
 
         // SQS 입점몰 검수 결과 처리
-        productService.updateProduct(productUpdateDto);
+        dao.update(namespace + "updateProductStatus", productUpdateDto, PartnerKey.WBDataBase.Alias.Admin);
+        changeInfoService.insertChangeInfo(productUpdateDto.toChangeInfo());
+
         // 상품 검수 요청 결과에 따른 메일 발송 처리
         Email email = Arrays.toString(productUpdateDto.getChangeLogList()).contains("검수 완료")
                 ? Email.COMPLETE_PRODUCT : Email.REJECT_PRODUCT;

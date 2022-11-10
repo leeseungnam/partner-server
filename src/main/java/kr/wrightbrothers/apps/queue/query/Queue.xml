@@ -33,5 +33,11 @@
             <result column="user_id"/>
         </collection>
     </resultMap>
-    
+
+    <update id="updateProductStatus" parameterType="kr.wrightbrothers.apps.product.dto.ProductUpdateDto">
+        update prdt_sell_info
+           set prdt_stus_cd = #{sellInfo.productStatusCode}
+         where prdt_cd = #{productCode}
+    </update>
+
 </mapper>
