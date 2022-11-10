@@ -54,8 +54,6 @@ public class PartnerController extends WBController {
     @PostMapping("")
     public WBModel insertPartner(@ApiParam @Valid @RequestBody PartnerInsertDto paramDto) {
 
-        WBModel wbResponse = new WBModel();
-
         // findBy사업자번호
         // 단위과세 사업자 번호만 중복 허용
         String businessNo = paramDto.getPartner().getBusinessNo();
@@ -80,10 +78,8 @@ public class PartnerController extends WBController {
         // insertPartner
         partnerService.insertPartner(paramDto);
 
-        Object [] messageArgs = {messageSourceAccessor.getMessage(messagePrefix+"word.audit")+messageSourceAccessor.getMessage(messagePrefix+"word.request")};
-        wbResponse.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.complete.custom", messageArgs));
-
-        return  wbResponse;
+        String [] messageArgs = {messageSourceAccessor.getMessage(messagePrefix+"word.audit")+messageSourceAccessor.getMessage(messagePrefix+"word.request")};
+        return  defaultMsgResponse(messageSourceAccessor, "common.complete.custom", messageArgs);
     }
 
     @ApiImplicitParams({
@@ -92,7 +88,6 @@ public class PartnerController extends WBController {
     @ApiOperation(value = "파트너 권한 리스트 조회", notes = "파트너 권한 리스트 조회 요청 API 입니다.")
     @GetMapping("")
     public WBModel findPartnerList(@ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
-        WBModel wbResponse = new WBModel();
 
         // findUserAuth
         List<PartnerAndAuthFindDto.ResBody> partnerList = partnerService.findUserAuthAndPartnerListByUserId(PartnerAndAuthFindDto.Param.builder().userId(user.getUsername()).build());
@@ -134,8 +129,7 @@ public class PartnerController extends WBController {
             entry.setAuthCodeName(UserAuth.getName());
         });
 
-        wbResponse.addObject(WBKey.WBModel.DefaultDataKey, partnerList);
-        return  wbResponse;
+        return  defaultResponse(partnerList);
     }
 
     @ApiImplicitParams({
@@ -163,8 +157,6 @@ public class PartnerController extends WBController {
             ,@ApiParam(value = "계약 코드") @PathVariable String contractCode
             ,@ApiParam @Valid @RequestBody PartnerInsertDto paramDto) {
 
-        WBModel wbResponse = new WBModel();
-
         paramDto.getPartner().changePartnerCode(partnerCode);
         paramDto.getPartnerContract().changePartnerCode(partnerCode);
         paramDto.getPartnerContract().changeContractCode(contractCode);
@@ -172,10 +164,8 @@ public class PartnerController extends WBController {
         // create user set
         partnerService.updatePartnerAll(paramDto);
 
-        Object [] messageArgs = {messageSourceAccessor.getMessage(messagePrefix+"word.audit")+messageSourceAccessor.getMessage(messagePrefix+"word.request")};
-        wbResponse.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.complete.custom", messageArgs));
-
-        return wbResponse;
+        String [] messageArgs = {messageSourceAccessor.getMessage(messagePrefix+"word.audit")+messageSourceAccessor.getMessage(messagePrefix+"word.request")};
+        return defaultMsgResponse(messageSourceAccessor, "common.complete.custom", messageArgs);
     }
 
     @ApiImplicitParams({
@@ -187,13 +177,10 @@ public class PartnerController extends WBController {
                                           , @ApiParam(value = "섬네일 이미지 파일") @RequestParam MultipartFile multipartFile
                                           ,@ApiIgnore @AuthenticationPrincipal UserPrincipal user
     ) {
-        WBModel wbResponse = new WBModel();
-
         log.info("[updatePartnerThumbnail]::partnerCode={}, file={}", partnerCode, multipartFile.getSize());
         partnerService.savePartnerThumbnail(user.getUsername(), partnerCode, multipartFile);
 
-        wbResponse.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.save.success"));
-        return wbResponse;
+        return defaultMsgResponse(messageSourceAccessor, "common.save.success");
     }
 
     @ApiImplicitParams({
@@ -204,13 +191,10 @@ public class PartnerController extends WBController {
     public WBModel deletePartnerThumbnail(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode
             ,@ApiIgnore @AuthenticationPrincipal UserPrincipal user
     ) {
-        WBModel wbResponse = new WBModel();
-
         log.info("[deletePartnerThumbnail]::partnerCode={}", partnerCode);
         partnerService.deletePartnerThumbnail(user.getUsername(), partnerCode);
 
-        wbResponse.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.complete"));
-        return wbResponse;
+        return defaultMsgResponse(messageSourceAccessor, "common.complete");
     }
 
     @ApiImplicitParams({
@@ -223,8 +207,6 @@ public class PartnerController extends WBController {
             ,@ApiParam @Valid @RequestBody PartnerUpdateDto.ReqBody paramDto
             ,@ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
 
-        WBModel wbResponse = new WBModel();
-
         // create user set
         paramDto.changeUserId(user.getUsername());
         paramDto.changePartnerCode(partnerCode);
@@ -232,8 +214,7 @@ public class PartnerController extends WBController {
 
         partnerService.updatePartner(paramDto);
 
-        wbResponse.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.save.success"));
-        return wbResponse;
+        return defaultMsgResponse(messageSourceAccessor, "common.save.success");
     }
 
     @UserPrincipalScope
@@ -245,8 +226,6 @@ public class PartnerController extends WBController {
     public WBModel invitePartnerOperator(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode
             ,@ApiParam @Valid @RequestBody PartnerInviteInsertDto paramDto
     ) {
-        WBModel wbResponse = new WBModel();
-
         //  초대 가능 인원 확인
         if(!partnerService.checkPartnerOperatorAuthCount(PartnerInviteDto.PartnerOperator.builder()
                 .partnerCode(paramDto.getPartnerOperator().getPartnerCode())
@@ -254,7 +233,7 @@ public class PartnerController extends WBController {
                 .build())
         ) {
             throw new WBCustomException(messagePrefix+"partner.invite.fail.max.sender"
-                    , new Object[] {
+                    , new String [] {
                             messageSourceAccessor.getMessage(messagePrefix+"word.user.status."+paramDto.getPartnerOperator().getAuthCode())
                                     ,messageSourceAccessor.getMessage(messagePrefix+"partner.invite.max.count")
                     });
@@ -269,7 +248,7 @@ public class PartnerController extends WBController {
             )
         ){
             throw new WBCustomException(messagePrefix+"common.already.insert.custom"
-                    , new Object[] {
+                    , new String[] {
                     messageSourceAccessor.getMessage(messagePrefix+"word.user.status."+paramDto.getPartnerOperator().getAuthCode())
             });
         }
@@ -278,7 +257,7 @@ public class PartnerController extends WBController {
         if(!partnerService.checkNotAcceptInviteCount(paramDto.getPartnerOperator())
         ){
             throw new WBCustomException(messagePrefix+"common.already.invite.custom"
-                    , new Object[] {
+                    , new String[] {
                     messageSourceAccessor.getMessage(messagePrefix+"word.user.status."+paramDto.getPartnerOperator().getAuthCode())
             });
         }
@@ -303,9 +282,7 @@ public class PartnerController extends WBController {
                         .userName(paramDto.getPartnerOperator().getInviteReceiverName())
                         .build());
 
-        wbResponse.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"partner.invite.send"));
-
-        return wbResponse;
+        return defaultMsgResponse(messageSourceAccessor, "partner.invite.send");
     }
 
     @ApiImplicitParams({
@@ -316,8 +293,6 @@ public class PartnerController extends WBController {
     public WBModel invitePartnerOperator(@ApiParam(value = "운영자 초대 코드") @PathVariable String inviteCode
                                         ,@ApiIgnore @AuthenticationPrincipal UserPrincipal user
     ) {
-        WBModel wbResponse = new WBModel();
-
         log.debug("[invitePartnerOperator]::inviteCode={}", inviteCode);
 
         //  set paramDto
@@ -339,7 +314,7 @@ public class PartnerController extends WBController {
                 .build())
         ) {
             throw new WBCustomException(messagePrefix+"partner.invite.fail.max.sender"
-                    , new Object[] {
+                    , new String[] {
                     messageSourceAccessor.getMessage(messagePrefix+"word.user.status."+inviteInfo.getAuthCode())
                     ,messageSourceAccessor.getMessage(messagePrefix+"partner.invite.max.count")
             });
@@ -351,20 +326,36 @@ public class PartnerController extends WBController {
                 .inviteReceiver(user.getUsername())
                 .build())) {
             throw new WBCustomException(messagePrefix+"common.already.insert.custom"
-                    , new Object[] {
+                    , new String[] {
                     messageSourceAccessor.getMessage(messagePrefix+"word.user.status."+inviteInfo.getAuthCode())
             });
         }
         //  전 exception 중복처리?
         if(inviteInfo.getInviteStatus().equals(PartnerKey.INTSTRING_TRUE)) throw new WBCustomException(messagePrefix+"common.already.process.custom"
-                , new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.accept")});
+                , new String [] {messageSourceAccessor.getMessage(messagePrefix+"word.accept")});
 
         //  update invite and insert users_partner
         paramDto.changeAuthCode(inviteInfo.getAuthCode()); // 초대 받은 권한 set
         paramDto.changePartnerCode(inviteInfo.getPartnerCode()); // 초대 받은 파트너코드 set
         partnerService.acceptInvite(paramDto);
 
-        wbResponse.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.complete"));
-        return wbResponse;
+        return noneMgsResponse(messageSourceAccessor);
+    }
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
+    })
+    @ApiOperation(value = "파트너 운영자 삭제", notes = "파트너 운영자 삭제 요청 API 입니다.")
+    @DeleteMapping("/{partnerCode}/operator/{userId}")
+    public WBModel deletePartnerOperator(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode
+                                         ,@ApiParam(value = "운영자 아이디") @PathVariable String userId
+            ,@ApiIgnore @AuthenticationPrincipal UserPrincipal user
+    ) {
+        partnerService.deletePartnerOperator(PartnerInviteDto.Param.builder()
+                        .partnerCode(partnerCode)
+                        .authCode(User.Auth.MANAGER.getType())
+                        .inviteReceiver(userId)
+                .build());
+
+        return noneMgsResponse(messageSourceAccessor);
     }
 }
