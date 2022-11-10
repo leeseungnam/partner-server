@@ -79,9 +79,9 @@
 		  left join com_cagy co
 		    on p.cagy_dpth_one = co.cagy_cd
 		  left join com_cagy ct
-			on p.cagy_dpth_one = ct.cagy_cd
+			on p.cagy_dpth_two = ct.cagy_cd
 		  left join com_cagy cr
-			on p.cagy_dpth_one = cr.cagy_cd
+			on p.cagy_dpth_thr = cr.cagy_cd
 		 where p.pur_rq_no = #{partnerCode}
 		<choose>
 		   <when test="keywordValueList != null and keywordValueList.length != 0">
@@ -500,9 +500,9 @@
 		  left join com_cagy co
 		  	on p.cagy_dpth_one = co.cagy_cd
 		  left join com_cagy ct
-			on p.cagy_dpth_one = ct.cagy_cd
+			on p.cagy_dpth_two = ct.cagy_cd
 		  left join com_cagy cr
-			on p.cagy_dpth_one = cr.cagy_cd
+			on p.cagy_dpth_thr = cr.cagy_cd
 		 where p.prdt_cd = #{productCode}
 	</select>
 
@@ -701,9 +701,9 @@
 		  left join com_cagy co
 		  	on p.cagy_dpth_one = co.cagy_cd
 		  left join com_cagy ct
-			on p.cagy_dpth_one = ct.cagy_cd
+			on p.cagy_dpth_two = ct.cagy_cd
 		  left join com_cagy cr
-			on p.cagy_dpth_one = cr.cagy_cd
+			on p.cagy_dpth_thr = cr.cagy_cd
 		 where p.prdt_cd in
 		<foreach collection="list" item="item" index="index" open="(" separator="," close=")">
 			#{item}
