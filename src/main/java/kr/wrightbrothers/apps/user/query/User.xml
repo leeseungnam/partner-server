@@ -42,7 +42,7 @@
 		update users
 			set
 			user_pwd = #{userPwd}
-		,	change_pwd_flag = 1
+		,	change_pwd_flag = #{changePwdFlag}
 		where user_id = #{userId}
 	</update>
 

@@ -30,7 +30,13 @@ public class UserPwdUpdateDto {
     @Pattern(regexp = "^[A-Za-z0-9]{10,20}$", message = "비밀번호는 숫자,영문 조합 10~20자리만 입력 가능 합니다.")
     private String userPwd;
 
+    @JsonIgnore
+    private boolean changePwdFlag;
+
     public void changePwd(String userPwd){
         this.userPwd = userPwd;
+    }
+    public void setChangePwdFlag(boolean changePwdFlag){
+        this.changePwdFlag = changePwdFlag;
     }
 }

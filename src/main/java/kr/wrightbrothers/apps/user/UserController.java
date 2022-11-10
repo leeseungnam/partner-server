@@ -84,10 +84,9 @@ public class UserController extends WBController {
 
         // encoding password
         paramDto.changePwd(passwordEncoder.encode(paramDto.getUserPwd()));
+        paramDto.setChangePwdFlag(false);
 
         userService.updateUserPwd(paramDto);
-
-
 
         Object [] messageArgs = {messageSourceAccessor.getMessage(messagePrefix+"word.password")
                 + " " + messageSourceAccessor.getMessage(messagePrefix+"action.change")};
