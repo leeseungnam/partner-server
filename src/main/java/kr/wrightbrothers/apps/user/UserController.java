@@ -58,8 +58,6 @@ public class UserController extends WBController {
     @ApiOperation(value = "회원가입", notes = "회원가입 요청 API 입니다.")
     @PostMapping()
     public WBModel insertUser(@ApiParam @Valid @RequestBody UserInsertDto paramDto) {
-        WBModel response = new WBModel();
-
         // encoding password
         paramDto.changePwd(passwordEncoder.encode(paramDto.getUserPwd()));
 
@@ -68,10 +66,8 @@ public class UserController extends WBController {
 
         userService.insertUser(paramDto);
 
-        Object [] messageArgs = {"회원가입"};
-        response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.complete.custom", messageArgs));
-
-        return  response;
+        String [] messageArgs = {messageSourceAccessor.getMessage(messagePrefix+"word.signup")};
+        return  defaultMsgResponse(messageSourceAccessor, "common.complete.custom", messageArgs);
     }
 
     @ApiImplicitParams({
@@ -80,20 +76,16 @@ public class UserController extends WBController {
     @ApiOperation(value = "비밀번호 변경", notes = "비밀번호 변경 API 입니다.")
     @PutMapping("/password")
     public WBModel updateUserPwd(@ApiParam @Valid @RequestBody UserPwdUpdateDto paramDto) {
-        WBModel response = new WBModel();
 
         // encoding password
         paramDto.changePwd(passwordEncoder.encode(paramDto.getUserPwd()));
+        paramDto.setChangePwdFlag(false);
 
         userService.updateUserPwd(paramDto);
 
-
-
-        Object [] messageArgs = {messageSourceAccessor.getMessage(messagePrefix+"word.password")
+        String [] messageArgs = {messageSourceAccessor.getMessage(messagePrefix+"word.password")
                 + " " + messageSourceAccessor.getMessage(messagePrefix+"action.change")};
-        response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix+"common.complete.custom", messageArgs));
-
-        return response;
+        return  defaultMsgResponse(messageSourceAccessor, "common.complete.custom", messageArgs);
     }
 
     @ApiImplicitParams({

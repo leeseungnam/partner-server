@@ -58,6 +58,7 @@ public class UserService {
         this.updateUserPwd(UserPwdUpdateDto.builder()
                 .userId(userParamDto.getUserId())
                 .userPwd(userParamDto.getUserPwd())
+                .changePwdFlag(true)
                 .build());
 
         //  send email

@@ -45,5 +45,12 @@ public class PartnerOperatorDto {
 
         @ApiModelProperty(value = "운영자명")
         private String userName;
+
+        @ApiModelProperty(value = "권한 코드 명")
+        private String authCodeName;
+
+        public void changeAuthCodeName(String authCodeName){
+            this.authCodeName = authCodeName;
+        }
     }
 }

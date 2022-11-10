@@ -59,7 +59,6 @@ public class PartnerContractDto {
         private String contractEndDay;
 
         @ApiModelProperty(value = "계약서 파일 번호")
-        @JsonIgnore
         private String contractFileNo;
     }
 

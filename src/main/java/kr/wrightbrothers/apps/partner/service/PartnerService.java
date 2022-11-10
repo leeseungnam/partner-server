@@ -22,6 +22,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -158,11 +159,17 @@ public class PartnerService {
     }
 
     public PartnerViewDto.ResBody findPartnerByPartnerCode(PartnerViewDto.Param paramDto) {
+
+        List<PartnerOperatorDto.ResBody> operatorList = userService.findUserByPartnerCodeAndAuthCode(paramDto);
+        operatorList.forEach(entity -> {
+            entity.changeAuthCodeName(User.Auth.valueOfCode(entity.getAuthCode()).getName());
+        });
+
         PartnerViewDto.ResBody result = PartnerViewDto.ResBody
                 .builder()
                 .partner(Optional.of((PartnerDto.ResBody) dao.selectOne(namespace + "findPartnerByPartnerCode", paramDto.getPartnerCode())).orElse(new PartnerDto.ResBody()))
                 .partnerContract(Optional.of((PartnerContractDto.ResBody) dao.selectOne(namespace + "findPartnerContractByPartnerCode", paramDto)).orElse(new PartnerContractDto.ResBody()))
-                .partnerOperator(userService.findUserByPartnerCodeAndAuthCode(paramDto))
+                .partnerOperator(operatorList)
                 .partnerNotification(dao.selectList(namespace + "findPartnerNotificationByPartnerCode", paramDto.getPartnerCode()))
                 .partnerReject(dao.selectList(namespace + "findPartnerRejectByPartnerCode", paramDto))
                 .build();
