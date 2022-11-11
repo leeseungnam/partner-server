@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration packagingData="true" scan="true" scanPeriod="30">
-
 	<appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
 		<layout class="ch.qos.logback.classic.PatternLayout">
-			<pattern>%d [%thread] %level [%c] %m%n</pattern>
+			<pattern>%d [%X{thread-id}] %level [%c] %m%n</pattern>
 		</layout>
 	</appender>
 
@@ -22,7 +21,9 @@
 	<logger name="jdbc.sqltiming" level="error">
 		<appender-ref ref="Console" />
 	</logger>
+	<logger name="jdbc.connection" level="warn" />
 	<logger name="org.springframework.web.filter.CommonsRequestLoggingFilter" level="debug"/>
+	<logger name="kr.wrightbrothers" level="debug" />
 	<root level="info">
 		<appender-ref ref="Console" />
 	</root>
