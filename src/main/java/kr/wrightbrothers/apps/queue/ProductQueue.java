@@ -6,11 +6,11 @@ import kr.wrightbrothers.apps.common.type.DocumentSNS;
 import kr.wrightbrothers.apps.common.type.ProductStatusCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.product.dto.ProductUpdateDto;
-import kr.wrightbrothers.apps.queue.dto.ProductDefaultSendDto;
 import kr.wrightbrothers.apps.queue.service.ProductQueueService;
 import kr.wrightbrothers.framework.support.WBSQS;
 import kr.wrightbrothers.framework.support.dto.WBSnsDTO;
 import kr.wrightbrothers.framework.util.WBAwsSns;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
@@ -57,7 +57,7 @@ public class ProductQueue extends WBSQS {
                             .build(),
                     // 상품 SNS 전송 데이터
                     DocumentSNS.UPDATE_PRODUCT.equals(documentSNS) ?
-                            new ProductDefaultSendDto(partnerCode, productCode) : productQueueService.findProductSnsData(partnerCode, productCode)
+                            new UpdateSendDto(partnerCode, productCode) : productQueueService.findProductSnsData(partnerCode, productCode)
             );
         } catch (Exception e) {
             log.error("Product SNS Sender Error. {}", e.getMessage());
@@ -115,6 +115,17 @@ public class ProductQueue extends WBSQS {
         } catch (Exception e) {
             log.error("Product SQS Receive Error. {}", e.getMessage());
             ackMessage(snsDto, e);
+        }
+    }
+
+    @Getter
+    static class UpdateSendDto {
+        private final String partnerCode; // 파트너 코드
+        private final String productCode; // 상품 코드
+
+        public UpdateSendDto(String partnerCode, String productCode) {
+            this.partnerCode = partnerCode;
+            this.productCode = productCode;
         }
     }
 }
