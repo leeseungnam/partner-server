@@ -10,6 +10,7 @@ import kr.wrightbrothers.framework.support.dto.WBSnsDTO;
 import kr.wrightbrothers.framework.support.dto.WBSnsDTO.Header;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -47,7 +48,7 @@ public class WBAwsSns {
 					.withTopicArn(arn + snsNm)
 					.withMessage(new ObjectMapper().writeValueAsString(snsDto))
 					.withMessageGroupId(WBKey.Aws.Sns.GroupId)
-					.withMessageDeduplicationId(UUID.randomUUID().toString());
+					.withMessageDeduplicationId(MDC.get("thread-id"));
 
 			log.info("===================================================");
 			log.info("WB ADMIN SNS Send Publish.");
