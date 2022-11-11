@@ -280,7 +280,7 @@
 			   #{discountFlag},
 			   #{discountType},
 			   #{discountAmount},
-		       #{supplyAmount},
+		       ifnull(#{supplyAmount}, 0),	-- 판매정보 공금금액 없을경우 0원 입력 협의(운영 유기민)
 			   #{finalSellAmount},
 		       #{displayFlag},
 		       #{productOptionFlag},
