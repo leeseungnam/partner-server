@@ -43,6 +43,7 @@
 			set
 			user_pwd = #{userPwd}
 		,	change_pwd_flag = #{changePwdFlag}
+		,	update_date = current_timestamp
 		where user_id = #{userId}
 	</update>
 

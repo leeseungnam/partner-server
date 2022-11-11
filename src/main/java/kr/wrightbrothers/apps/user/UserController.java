@@ -58,9 +58,11 @@ public class UserController extends WBController {
     @ApiOperation(value = "회원가입", notes = "회원가입 요청 API 입니다.")
     @PostMapping()
     public WBModel insertUser(@ApiParam @Valid @RequestBody UserInsertDto paramDto) {
+        if(!ObjectUtils.isEmpty(userService.findUserByDynamic(UserDto.builder().userId(paramDto.getUserId()).build()))) throw new WBCustomException(messagePrefix+"common.already.insert.custom"
+                , new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.user.status.ROLE_USER")});
+
         // encoding password
         paramDto.changePwd(passwordEncoder.encode(paramDto.getUserPwd()));
-
         //setUserStatusCode
         paramDto.changeUserStatusCode(User.Status.JOIN.getCode());
 
