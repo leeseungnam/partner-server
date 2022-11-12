@@ -13,6 +13,7 @@ import kr.wrightbrothers.framework.util.WBAwsSns;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,7 +61,7 @@ public class ProductQueue extends WBSQS {
                             new UpdateSendDto(partnerCode, productCode) : productQueueService.findProductSnsData(partnerCode, productCode)
             );
         } catch (Exception e) {
-            log.error("Product SNS Sender Error. {}", e.getMessage());
+            log.error("Product SNS Sender Error. {}", ExceptionUtils.getStackTrace(e));
         }
     }
 
@@ -113,7 +114,7 @@ public class ProductQueue extends WBSQS {
 
             ackMessage(snsDto);
         } catch (Exception e) {
-            log.error("Product SQS Receive Error. {}", e.getMessage());
+            log.error("Product SQS Receive Error. {}", ExceptionUtils.getStackTrace(e));
             ackMessage(snsDto, e);
         }
     }

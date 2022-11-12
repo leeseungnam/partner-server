@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.common.util;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
@@ -16,6 +17,7 @@ import software.amazon.awssdk.services.ses.model.SendEmailRequest.Builder;
 import java.util.Collection;
 import java.util.List;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AwsSesUtil {
@@ -88,5 +90,12 @@ public class AwsSesUtil {
         ).source(sender).build();
 
         sesAsyncClient.sendEmail(sendEmailRequestBuilder.build());
+
+        log.info("===================================================");
+        log.info("WB Email Send Complete.");
+        log.info("Subject, {}", subject);
+        log.info("Template, {}", template);
+        log.info("ToAddresses, {}", to.toString());
+        log.info("===================================================");
     }
 }

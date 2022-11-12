@@ -149,6 +149,7 @@ public class ProductController extends WBController {
 
         // 상품정보 등록
         productService.insertProduct(paramDto);
+        log.info("Product Registration Complete. Product Code::{}", paramDto.getProduct().getProductCode());
 
         return insertMsgResponse(messageSourceAccessor);
     }
@@ -182,6 +183,7 @@ public class ProductController extends WBController {
         paramDto.validProduct();
         // 상품정보 수정
         productService.updateProduct(paramDto);
+        log.info("Product Edit Complete. Product Code::{}", paramDto.getProductCode());
 
         return noneMgsResponse(messageSourceAccessor);
     }
@@ -195,6 +197,7 @@ public class ProductController extends WBController {
     public WBModel updateProductStatus(@ApiParam(value = "상품 상태 일괄 변경 데이터") @Valid @RequestBody StatusUpdateDto paramDto) {
         // 상품 일괄 상태 변경
         productService.updateProductStatus(paramDto);
+        log.info("Product Status Edit Complete. Status Type::{}, Status Value::{}", paramDto.getStatusType(), paramDto.getStatusValue());
 
         return noneMgsResponse(messageSourceAccessor);
     }
