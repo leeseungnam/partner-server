@@ -38,7 +38,7 @@
 		</layout>
 	</appender>
 
-	<logger name="jdbc" level="warn" />
+	<logger name="jdbc" level="debug" />
 	<logger name="org.springframework.web.filter.CommonsRequestLoggingFilter" level="debug">
 		<springProfile name="dev,stag,prod">
 			<appender-ref ref="app" />
