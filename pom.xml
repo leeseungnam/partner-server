@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>kr.wrightbrothers</groupId>
 	<artifactId>wb-partner-server</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>v1.0</version>
 	<name>wb-partner-server</name>
 	<description>Wrightbrothers Partner Server System</description>
 	<properties>

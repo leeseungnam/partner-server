@@ -16,7 +16,17 @@ spring:
       enabled: true
   freemarker:
     cache: false
-
+logging:
+  config: classpath:logback-spring-local.xml
+  level:
+    org:
+      springframework:
+        boot:
+          autoconfigure: INFO
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: ERROR
 cloud:
   aws:
     sqs:

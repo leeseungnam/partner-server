@@ -1,18 +1,6 @@
-logging:
-  config: classpath:logback-spring.xml
-  level:
-    org:
-      springframework:
-        boot:
-          autoconfigure: INFO
-    com:
-      amazonaws:
-        util:
-          EC2MetadataUtils: ERROR
-
+server:
+  port: 8090
 spring:
-  profiles:
-    active: local
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher

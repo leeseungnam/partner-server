@@ -11,7 +11,17 @@ spring:
     username: admin
     password: rBEdceIdPrQMaHrQVcZj
     maximumPoolSize: 5
-
+logging:
+  config: classpath:logback-spring-dev.xml
+  level:
+    org:
+      springframework:
+        boot:
+          autoconfigure: INFO
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: ERROR
 cloud:
   aws:
     sqs:
@@ -29,4 +39,4 @@ system:
   file:
     temp:
       # 임시 파일 저장 위치
-      path: /Users/chals/partner_project/file_temp
+      path: /app/partner/file_temp
