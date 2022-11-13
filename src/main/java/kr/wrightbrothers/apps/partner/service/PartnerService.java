@@ -140,7 +140,9 @@ public class PartnerService {
                     .build());
         }
     }
-
+    public boolean checkPartnerNameCount(String partnerName) {
+        return dao.selectOne(namespace + "checkPartnerNameCount", partnerName);
+    }
     public boolean checkPartnerOperatorCount(PartnerInviteDto.Param paramDto) {
         return dao.selectOne(namespace + "checkPartnerOperatorCount", paramDto);
     }

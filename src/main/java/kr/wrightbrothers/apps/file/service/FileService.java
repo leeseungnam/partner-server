@@ -50,7 +50,7 @@ public class FileService {
             }
             log.info("[uploadProfileThumbnail] transfer to filesize={}",file.length());
 
-            String fileSource = s3Service.uploadFile(file, PartnerKey.Aws.A3.Product_Img_Path);
+            String fileSource = s3Service.uploadFile(file, PartnerKey.Aws.A3.Partner_Img_Path);
 
             // 파일정보 저장
             FileUploadDto fileDto = FileUploadDto.builder()

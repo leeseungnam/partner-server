@@ -59,21 +59,22 @@ public class PartnerController extends WBController {
         String businessNo = paramDto.getPartner().getBusinessNo();
         String businessClassificationCode = paramDto.getPartner().getBusinessClassificationCode();
 
+        // 스토어명 중복체크.
+        if(!partnerService.checkPartnerNameCount(paramDto.getPartner().getPartnerName())) throw new WBCustomException(messagePrefix+"common.duplication.custom", new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.partner.name")});
+
         List<PartnerDto.ResBody> partnerList = partnerService.findPartnerListByBusinessNo(PartnerFindDto.Param.builder()
                         .businessNo(businessNo)
                         .build());
 
-        // 단위과세 등록이 아닌 경우 복수 체크
-        if(!Partner.Classification.UNIT_TAXPATER.getCode().equals(businessClassificationCode)) {
-            if(partnerList.size() > 0) throw new WBBusinessException(ErrorCode.DUPLICATION_OBJECT.getErrCode(), new String[]{messageSourceAccessor.getMessage(messagePrefix+"word.business.no")});
-
-            // 단위과세 인 경우 단위과세 아닌 타 사업유형의 경우 체크
+        // 단위과세 등록 인 경우 단위과세 아닌 타 사업유형의 경우 체크 사업자 번호 중복 체크
+        if(Partner.Classification.UNIT_TAXPATER.getCode().equals(businessClassificationCode)) {
+            partnerList.forEach(entity -> {
+                if(!Partner.Classification.UNIT_TAXPATER.getCode().equals(entity.getBusinessClassificationCode()))
+                    throw new WBCustomException(messagePrefix+"common.duplication.custom", new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.business.no")});
+            });
         }else{
-            if(partnerList.size() > 0) {
-                if(!ObjectUtils.isEmpty(partnerList.get(0)) && !Partner.Classification.UNIT_TAXPATER.getCode().equals(partnerList.get(0).getBusinessClassificationCode())) {
-                    throw new WBBusinessException(ErrorCode.DUPLICATION_OBJECT.getErrCode(), new String[]{messageSourceAccessor.getMessage(messagePrefix+"word.business.no")});
-                }
-            }
+            // 단위과세 등록이 아닌 경우 복수 체크
+            if(partnerList.size() > 0) throw new WBCustomException(messagePrefix+"common.duplication.custom", new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.business.no")});
         }
         // insertPartner
         partnerService.insertPartner(paramDto);
@@ -161,6 +162,7 @@ public class PartnerController extends WBController {
         paramDto.getPartner().changePartnerCode(partnerCode);
         paramDto.getPartnerContract().changePartnerCode(partnerCode);
         paramDto.getPartnerContract().changeContractCode(contractCode);
+
         if(partnerService.findPartnerContract(partnerCode, contractCode).getContractStatus().equals(Partner.Contract.Status.REQUEST.getCode())) throw new WBCustomException(messagePrefix+"partner.comment."+Partner.Status.STOP.getCode()+"."+Partner.Contract.Status.REQUEST.getCode());
         // create user set
         partnerService.updatePartnerAll(paramDto);
@@ -239,7 +241,6 @@ public class PartnerController extends WBController {
                                     ,messageSourceAccessor.getMessage(messagePrefix+"partner.invite.max.count")
                     });
         }
-
         //  이미 등록 된 운영자 확인
         if(!partnerService.checkPartnerOperatorCount(PartnerInviteDto.Param.builder()
                 .partnerCode(paramDto.getPartnerOperator().getPartnerCode())
@@ -253,7 +254,6 @@ public class PartnerController extends WBController {
                     messageSourceAccessor.getMessage(messagePrefix+"word.user.status."+paramDto.getPartnerOperator().getAuthCode())
             });
         }
-
         // 수락 안 한 초대 확인
         if(!partnerService.checkNotAcceptInviteCount(paramDto.getPartnerOperator())
         ){

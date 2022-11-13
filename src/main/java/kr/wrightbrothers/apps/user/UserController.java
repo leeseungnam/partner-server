@@ -46,6 +46,7 @@ import java.util.List;
 public class UserController extends WBController {
     private final static long REFRESH_TOKEN_VALIDATION_SECOND = 60 * 60 * 2;
     private final UserService userService;
+    private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -59,7 +60,7 @@ public class UserController extends WBController {
     @PostMapping()
     public WBModel insertUser(@ApiParam @Valid @RequestBody UserInsertDto paramDto) {
         if(!ObjectUtils.isEmpty(userService.findUserByDynamic(UserDto.builder().userId(paramDto.getUserId()).build()))) throw new WBCustomException(messagePrefix+"common.already.insert.custom"
-                , new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.user.status.ROLE_USER")});
+                , new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.email.address")});
 
         // encoding password
         paramDto.changePwd(passwordEncoder.encode(paramDto.getUserPwd()));
@@ -70,6 +71,23 @@ public class UserController extends WBController {
 
         String [] messageArgs = {messageSourceAccessor.getMessage(messagePrefix+"word.signup")};
         return  defaultMsgResponse(messageSourceAccessor, "common.complete.custom", messageArgs);
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = PartnerKey.Jwt.Alias.ACCESS_TOKEN, required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
+    })
+    @ApiOperation(value = "회원가입 이메일 인증", notes = "회원가입 이메일 인증 요청 API 입니다.")
+    @PostMapping("/auth/email")
+    public WBModel authEmail(@ApiParam(value = "메일 인증 요청 데이터") @Valid @RequestBody SingleEmailDto.ReqBody paramDto) {
+
+        UserDto user = userService.findUserByDynamic(UserDto.builder().userId(paramDto.getUserId()).build());
+
+        if(!ObjectUtils.isEmpty(user)) throw new WBCustomException(messagePrefix+"common.already.insert.user.custom", new String[] {paramDto.getUserId()});
+
+        String authCode = RandomStringUtils.randomAlphanumeric(6).toUpperCase();
+        paramDto.changeAuthCode(authCode);
+
+        return  defaultResponse(emailService.singleSendEmail(paramDto));
     }
 
     @ApiImplicitParams({

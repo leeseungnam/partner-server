@@ -64,6 +64,12 @@
 		  and invite_status = 0
 	</select>
 
+	<select id="checkPartnerNameCount" parameterType="java.lang.String" resultType="boolean">
+		select if(count(partner_code) = 0, true, false) as isPartnerName
+		from partner
+		where partner_name = #{partnerName}
+	</select>
+
 	<delete id="deletePartnerNotification" parameterType="java.lang.String">
 		delete from partner_notification where partner_code = #{partnerCode}
 	</delete>
