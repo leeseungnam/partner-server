@@ -79,32 +79,12 @@ public class OrderService {
 
         // 엑셀 생성
         orderList.forEach(order -> {
-            int colIndex = 0;
+            int colIndex = 20;
             // 병합 사용 처리에 대한 카운트 처리
             ++excel.mergeCount;
 
             excel.row = excel.sheet.createRow(excel.rowNumber++);
-
-            excel.setCellValue(colIndex++, order.getOrderDay());
-            excel.setCellValue(colIndex++, order.getOrderNo());
-            excel.setCellValue(colIndex++, order.getOrderUserName());
-            excel.setCellValue(colIndex++, order.getOrderStatus());
-            excel.setCellValue(colIndex++, order.getOrderName(), true);
-            excel.setCellValue(colIndex++, order.getProductName(), true);
-            excel.setCellValue(colIndex++, order.getProductOption(), true);
-            excel.setCellValue(colIndex++, order.getProductQty());
-            excel.setCellValue(colIndex++, order.getProductSellAmount());
-            excel.setCellValue(colIndex++, order.getProductAmount());
-            excel.setCellValue(colIndex++, order.getPaymentAmount());
-            excel.setCellValue(colIndex++, order.getProductDeliveryChargeAmount());
-            excel.setCellValue(colIndex++, order.getPaymentMethod());
-            excel.setCellValue(colIndex++, order.getPaymentDay());
-            excel.setCellValue(colIndex++, order.getPaymentStatus());
-            excel.setCellValue(colIndex++, order.getCancelDay());
-            excel.setCellValue(colIndex++, order.getCancelReason(), true);
-            excel.setCellValue(colIndex++, order.getAddress(), true);
-            excel.setCellValue(colIndex++, order.getRequestDetail(), true);
-            excel.setCellValue(colIndex, order.getOrderMemo(), true);
+            excel.setCellValue(order);
 
             // 셀 병합처리
             if (excel.mergeCount == order.getProductCount()) {

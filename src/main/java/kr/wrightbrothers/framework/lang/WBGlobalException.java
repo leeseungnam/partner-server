@@ -9,7 +9,9 @@ import kr.wrightbrothers.framework.util.StaticContextAccessor;
 import kr.wrightbrothers.framework.util.WBMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.json.simple.JSONObject;
+import org.slf4j.MDC;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +48,7 @@ public class WBGlobalException {
         if (ObjectUtils.isEmpty(ex)) ex.getCause();
 
         log.error("= WBBusiness ERROR. ===============================");
-        log.error("UUID, {}", RandomUtil.getUUID());
+        log.error("UUID, {}", MDC.get("thread-id"));
         log.error("ERROR CODE, {}", ex.getErrorCode());
         log.error("ERROR TYPE, {}", ex.getType());
         log.error("ERROR MESSAGE, {}", StaticContextAccessor.getBean(WBMessage.class)
@@ -121,7 +123,7 @@ public class WBGlobalException {
     private ResponseEntity<JSONObject> AuthenticationException(AuthenticationException ex) {
         if (ObjectUtils.isEmpty(ex)) ex.getCause();
 
-        log.error("[AuthenticationException]::{}",ex.getMessage());
+        log.error("[AuthenticationException]::{}", ex.getMessage());
         return new ResponseEntity<>(
                 exceptionResponse(ErrorCode.FORBIDDEN, ex.getMessage()),
                 HttpStatus.OK
@@ -135,12 +137,9 @@ public class WBGlobalException {
             Exception.class
     })
     private ResponseEntity<JSONObject> exception(Exception ex) {
-        StringWriter writer = new StringWriter();
-        ex.printStackTrace(new PrintWriter(writer));
-
         log.error("= INTERNAL SERVER ERROR. ==========================");
-        log.error("UUID, {}", RandomUtil.getUUID());
-        log.error("EXCEPTION, {}", writer);
+        log.error("UUID, {}", MDC.get("thread-id"));
+        log.error("EXCEPTION, {}", ExceptionUtils.getStackTrace(ex));
         log.error("===================================================");
 
         int errorCode = ErrorCode.INTERNAL_SERVER.getErrCode();

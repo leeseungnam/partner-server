@@ -171,36 +171,13 @@ public class ReturnService {
 
         // 엑셀 생성
         returnList.forEach(returns -> {
-            int colIndex = 0;
+            int colIndex = 23;
             // 병합 사용 처리에 대한 카운트 처리
             ++excel.mergeCount;
             ++excel.subMergeCount;
 
             excel.row = excel.sheet.createRow(excel.rowNumber++);
-
-            excel.setCellValue(colIndex++, returns.getRequestReturnDay());
-            excel.setCellValue(colIndex++, returns.getOrderNo());
-            excel.setCellValue(colIndex++, returns.getOrderDay());
-            excel.setCellValue(colIndex++, returns.getOrderName());
-            excel.setCellValue(colIndex++, returns.getProductCode());
-            excel.setCellValue(colIndex++, returns.getProductName());
-            excel.setCellValue(colIndex++, returns.getProductOption());
-            excel.setCellValue(colIndex++, returns.getProductQty());
-            excel.setCellValue(colIndex++, returns.getProductSellAmount());
-            excel.setCellValue(colIndex++, returns.getProductAmount());
-            excel.setCellValue(colIndex++, returns.getProductDeliveryChargeAmount());
-            excel.setCellValue(colIndex++, returns.getPaymentAmount());
-            excel.setCellValue(colIndex++, returns.getOrderUserName());
-            excel.setCellValue(colIndex++, returns.getDeliveryType());
-            excel.setCellValue(colIndex++, returns.getCompleteReturnDay());
-            excel.setCellValue(colIndex++, returns.getReturnStatus());
-            excel.setCellValue(colIndex++, returns.getDeliveryCompany());
-            excel.setCellValue(colIndex++, returns.getInvoiceNo());
-            excel.setCellValue(colIndex++, returns.getRecipientName());
-            excel.setCellValue(colIndex++, returns.getRecipientUserPhone());
-            excel.setCellValue(colIndex++, returns.getRecipientAddress());
-            excel.setCellValue(colIndex++, returns.getRecipientAddressDetail());
-            excel.setCellValue(colIndex, returns.getReason());
+            excel.setCellValue(returns);
 
             // 주문번호 기준 셀 병합처리
             if (excel.mergeCount == returns.getOrderProductCount()) {

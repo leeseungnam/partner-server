@@ -107,36 +107,14 @@ public class DeliveryService {
 
         // 엑셀 생성
         deliveryList.forEach(delivery -> {
-            int colIndex = 0;
+            int colIndex = 23;
             // 병합 사용 처리에 대한 카운트 처리
             ++excel.mergeCount;
             ++excel.subMergeCount;
 
             excel.row = excel.sheet.createRow(excel.rowNumber++);
 
-            excel.setCellValue(colIndex++, delivery.getPaymentDay());
-            excel.setCellValue(colIndex++, delivery.getOrderNo());
-            excel.setCellValue(colIndex++, delivery.getOrderDay());
-            excel.setCellValue(colIndex++, delivery.getOrderName(), true);
-            excel.setCellValue(colIndex++, delivery.getProductCode());
-            excel.setCellValue(colIndex++, delivery.getProductName(), true);
-            excel.setCellValue(colIndex++, delivery.getProductOption(), true);
-            excel.setCellValue(colIndex++, delivery.getProductQty());
-            excel.setCellValue(colIndex++, delivery.getProductSellAmount());
-            excel.setCellValue(colIndex++, delivery.getProductAmount());
-            excel.setCellValue(colIndex++, delivery.getProductDeliveryChargeAmount());
-            excel.setCellValue(colIndex++, delivery.getPaymentAmount());
-            excel.setCellValue(colIndex++, delivery.getOrderUserName());
-            excel.setCellValue(colIndex++, delivery.getDeliveryType());
-            excel.setCellValue(colIndex++, delivery.getDeliveryStatus());
-            excel.setCellValue(colIndex++, delivery.getDeliveryCompany());
-            excel.setCellValue(colIndex++, delivery.getInvoiceNo());
-            excel.setCellValue(colIndex++, delivery.getRecipientName());
-            excel.setCellValue(colIndex++, delivery.getRecipientUserPhone());
-            excel.setCellValue(colIndex++, delivery.getRecipientAddress(), true);
-            excel.setCellValue(colIndex++, delivery.getRecipientAddressDetail(), true);
-            excel.setCellValue(colIndex++, delivery.getRequestDetail(), true);
-            excel.setCellValue(colIndex, delivery.getDeliveryMemo(), true);
+            excel.setCellValue(delivery);
 
             // 주문번호 기준 셀 병합처리
             if (excel.mergeCount == delivery.getOrderProductCount()) {

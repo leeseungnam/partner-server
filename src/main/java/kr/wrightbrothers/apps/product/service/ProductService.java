@@ -195,30 +195,13 @@ public class ProductService {
 
         // 엑셀 생성
         productList.forEach(product -> {
-            int colIndex = 0;
+            int colIndex = 18;
             // 병합 사용 처리에 대한 카운트 처리
             ++excel.mergeCount;
 
             excel.row = excel.sheet.createRow(excel.rowNumber++);
-
-            excel.setCellValue(colIndex++, product.getProductCode());
-            excel.setCellValue(colIndex++, product.getBrandName());
-            excel.setCellValue(colIndex++, product.getCategoryOneName());
-            excel.setCellValue(colIndex++, product.getCategoryTwoName());
-            excel.setCellValue(colIndex++, product.getCategoryThrName());
-            excel.setCellValue(colIndex++, product.getProductName(), true);
-            excel.setCellValue(colIndex++, product.getProductOption(), true);
-            excel.setCellValue(colIndex++, product.getProductStockQty());
-            excel.setCellValue(colIndex++, product.getFinalSellAmount());
-            excel.setCellValue(colIndex++, product.getProductStatusCode());
-            excel.setCellValue(colIndex++, product.getDisplayFlag());
-            excel.setCellValue(colIndex++, product.getDeliveryType());
-            excel.setCellValue(colIndex++, product.getDeliveryBundleFlag());
-            excel.setCellValue(colIndex++, product.getProductSellStartDay());
-            excel.setCellValue(colIndex++, product.getProductSellEndDay());
-            excel.setCellValue(colIndex++, product.getCreateDay());
-            excel.setCellValue(colIndex++, product.getUpdateDay());
-            excel.setCellValue(colIndex, product.getCreateUserName(), true);
+            // 엑셀 생성 처리
+            excel.setCellValue(product);
 
             // 셀 병합처리
             if (excel.mergeCount == product.getOptionCount()) {

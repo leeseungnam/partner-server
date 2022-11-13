@@ -1,10 +1,12 @@
 package kr.wrightbrothers.apps.common.util;
 
+import kr.wrightbrothers.apps.common.annotation.ExcelBody;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 public class ExcelUtil {
 
@@ -116,31 +118,38 @@ public class ExcelUtil {
         return convert;
     }
 
-    public void setCellValue(int index,
-                             Object value) {
-        setCellValue(index, value, false);
-    }
+    public void setCellValue(Object object) {
+        Arrays.stream(object.getClass().getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(ExcelBody.class))
+                .forEach(field -> {
+                    // 어노테이션 정보 조회
+                    try {
+                        ExcelBody excelBody = field.getDeclaredAnnotation(ExcelBody.class);
+                        field.setAccessible(true);
+                        Object value = field.get(object);
 
-    public void setCellValue(int index,
-                             Object value,
-                             boolean isTextAlign) {
-        cell = row.createCell(index);
+                        cell = row.createCell(excelBody.colIndex() - 1);
+                        cell.setCellValue(String.valueOf(value));
 
-        if (value instanceof Integer) {
-            cell.setCellValue((Integer) value);
-            cell.setCellStyle(bodyNumber);
-        }
-        else if (value instanceof Long) {
-            cell.setCellValue((Long) value);
-            cell.setCellStyle(bodyNumber);
-        }
-        else if (value instanceof String) {
-            cell.setCellValue(String.valueOf(value));
-            cell.setCellStyle(isTextAlign ? bodyText : body);
-        }
-        else {
-            cell.setCellValue(value + "");
-            cell.setCellStyle(body);
-        }
+                        switch (excelBody.bodyType()) {
+                            case LONG_TEXT:
+                                cell.setCellStyle(bodyText);
+                                break;
+                            case NUMBER:
+                                if (value instanceof Integer) {
+                                    cell.setCellValue((Integer) value);
+                                }
+                                else if (value instanceof Long) {
+                                    cell.setCellValue((Long) value);
+                                }
+                                cell.setCellStyle(bodyNumber);
+                                break;
+                            default:
+                                cell.setCellStyle(body);
+                        }
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
     }
 }
