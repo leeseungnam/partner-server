@@ -50,7 +50,7 @@
 		</springProfile>
 	</logger>
 
-	<root level="info">
+	<root level="debug">
 		<springProfile name="dev,stag,prod">
 			<appender-ref ref="server" />
 		</springProfile>
