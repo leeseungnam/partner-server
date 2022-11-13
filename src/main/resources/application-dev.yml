@@ -11,17 +11,6 @@ spring:
     username: admin
     password: rBEdceIdPrQMaHrQVcZj
     maximumPoolSize: 5
-logging:
-  config: classpath:logback-spring-dev.xml
-  level:
-    org:
-      springframework:
-        boot:
-          autoconfigure: INFO
-    com:
-      amazonaws:
-        util:
-          EC2MetadataUtils: ERROR
 cloud:
   aws:
     sqs:

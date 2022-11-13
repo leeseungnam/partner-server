@@ -9,7 +9,17 @@ spring:
     suffix: .html
     encoding: utf-8
     mode: html
-
+logging:
+  config: classpath:logback-spring.xml
+  level:
+    org:
+      springframework:
+        boot:
+          autoconfigure: DEBUG
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: ERROR
 cloud:
   aws:
     s3:
