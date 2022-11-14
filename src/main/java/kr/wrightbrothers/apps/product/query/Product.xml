@@ -133,6 +133,13 @@
 		</choose>
 	</select>
 
+	<select id="findProductCreateUser" parameterType="java.lang.String" resultType="java.lang.String">
+		select
+		    user_name
+		  from users
+		 where user_id = #{createUserId}
+	</select>
+
 	<insert id="insertProduct" parameterType="kr.wrightbrothers.apps.product.dto.ProductDto$ReqBody">
 		insert into prdt_main(prdt_cd,
 		                      pur_rq_no,

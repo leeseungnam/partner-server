@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <pre>
@@ -46,7 +47,14 @@ public class ProductService {
 
     public List<ProductListDto.Response> findProductList(ProductListDto.Param paramDto) {
         // 상품목록 조회
-        return dao.selectList(namespace + "findProductList" ,paramDto, paramDto.getRowBounds(), PartnerKey.WBDataBase.Alias.Admin);
+        return dao.selectList(namespace + "findProductList" ,paramDto, paramDto.getRowBounds(), PartnerKey.WBDataBase.Alias.Admin)
+                .stream()
+                .map(product -> (ProductListDto.Response) product)
+                // 회원 정보는 RDS 나눠진 관계로 따로 회원명 처리
+                .peek(product -> product.setCreateUserName(
+                        dao.selectOne(namespace + "findProductCreateUser", product.getCreateUserId())
+                ))
+                .collect(Collectors.toList());
     }
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)

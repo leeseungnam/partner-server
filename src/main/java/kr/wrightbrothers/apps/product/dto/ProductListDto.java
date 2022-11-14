@@ -62,6 +62,12 @@ public class ProductListDto {
         public void setProductStatusName(String productStatusName) {
             this.productStatusName = ProductStatusCode.of(productStatusName).getName();
         }
+
+        public void setCreateUserName(String createUserName) {
+            if (ObjectUtils.isEmpty(createUserName))
+                createUserName = "라이트브라더스";
+            this.createUserName = createUserName;
+        }
     }
 
 }
