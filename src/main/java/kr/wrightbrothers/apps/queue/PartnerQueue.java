@@ -91,8 +91,11 @@ public class PartnerQueue extends WBSQS {
                     }
                     break;
                 case UPDATE_PARTNER:
-                    if(true){
+                    if(PartnerKey.TransactionType.Update.equals(snsDto.getHeader().getTrsctnTp())) {
+                        log.info("[receiveFromAdmin]::UPDATE_PARTNER={}",snsDto.getBody());
 
+                        partnerQueueService.updatePartnerSnsData(body);
+                        ackMessage(snsDto);
                     }
                     break;
             }
