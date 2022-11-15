@@ -30,12 +30,12 @@ public class PaymentService {
         return dao.selectOne(namespace + "findPaymentToOrder", paramDto, PartnerKey.WBDataBase.Alias.Admin);
     }
 
-    // 취소 사유 조회
+    // 취소 환불정보 조회
     public PaymentRefundDto.ResBody findPaymentRefundAccount(PaymentRefundDto.Param paramDto) {
         return dao.selectOne(namespace + "findPaymentRefundAccount", paramDto, PartnerKey.WBDataBase.Alias.Admin);
     }
 
-    // 취소 사유 수정
+    // 취소 환불정보 수정
     public void updatePaymentRefundAccount(PaymentRefundDto.ReqBody paramDto) {
         dao.update(namespace + "updatePaymentRefundAccount", paramDto, PartnerKey.WBDataBase.Alias.Admin);
     }

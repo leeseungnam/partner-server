@@ -53,7 +53,7 @@ public class PaymentController extends WBController {
 
     @UserPrincipalScope
     @PutMapping("/payments/{orderNo}/refund-account")
-    public WBModel updatePaymentCancelReason(@Valid @RequestBody PaymentRefundDto.ReqBody paramDto, @PathVariable String orderNo) {
+    public WBModel updatePaymentRefundAccount(@Valid @RequestBody PaymentRefundDto.ReqBody paramDto, @PathVariable String orderNo) {
         // 환불 계좌정보 수정
         paymentService.updatePaymentRefundAccount(paramDto);
 

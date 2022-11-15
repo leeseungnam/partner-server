@@ -163,6 +163,7 @@
 
 	<sql id="findDeliveryProductSql">
 		select
+		    p.ord_no as order_no,
 			p.ord_prdt_idx as order_product_seq,
 			p.prdt_cd as product_code,
 			p.prdt_nm as product_name,
@@ -173,13 +174,11 @@
 			d.invc_no as invoice_no,
 			d.rcpnt_nm as recipient_name,
 			d.rcpnt_usr_phn as recipient_phone,
-			d.rcpnt_adrs_zip_cd as recipient_address_zip_code,
-			d.rcpnt_adrs as recipient_address,
-			d.rcpnt_adrs_sub as recipient_address_detail,
-			d.ord_dlvr_stus as delivery_status_code,
-			d.ord_dlvr_stus as delivery_status_name,
+			concat('(', d.rcpnt_adrs_zip_cd, ') ', d.rcpnt_adrs, if(d.rcpnt_adrs_sub is not null and d.rcpnt_adrs_sub != '', concat(', ', d.rcpnt_adrs_sub), '')) as recipient_address,
 			date_format(d.dlvry_st_dt, '%Y-%m-%d') as delivery_start_day,
-			date_format(d.dlvry_end_dt, '%Y-%m-%d') as delivery_end_day
+			date_format(d.dlvry_end_dt, '%Y-%m-%d') as delivery_end_day,
+			d.ord_dlvr_stus as delivery_status_code,
+			d.ord_dlvr_stus as delivery_status_name
 		  from ord_prdt_info p
 		  left join ord_shpn_info d
 		    on p.ord_no = d.ord_no
@@ -191,17 +190,10 @@
 	</sql>
 	<select id="findDeliveryProductList" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryFindDto$Param" resultType="kr.wrightbrothers.apps.order.dto.DeliveryProductDto">
 		<include refid="findDeliveryProductSql"/>
-	    -- 상품 준비 중, 배송중 목록
+	    -- 상품 준비 중, 배송중, 배송완료 목록
 		 where p.ord_no = #{orderNo}
 	       and p.prnr_cd = #{partnerCode}
-	       and d.ord_dlvr_stus in ('D01', 'D02')
-	</select>
-	<select id="findDeliveryCompleteProductList" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryFindDto$Param" resultType="kr.wrightbrothers.apps.order.dto.DeliveryProductDto">
-		<include refid="findDeliveryProductSql"/>
-		-- 배송완료 주문 목록
-		 where p.ord_no = #{orderNo}
-		   and p.prnr_cd = #{partnerCode}
-		   and d.ord_dlvr_stus = 'D05'
+	       and d.ord_dlvr_stus in ('D01', 'D02', 'D05')
 	</select>
 	
 	<select id="findExcelDeliveryList" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryExcelDto$Param" resultType="kr.wrightbrothers.apps.order.dto.DeliveryExcelDto$Response">

@@ -26,6 +26,7 @@ public class DeliveryService {
     private final PaymentService paymentService;
     private final ResourceLoader resourceLoader;
     private final String namespace = "kr.wrightbrothers.apps.order.query.Delivery.";
+    private final String namespaceOrder = "kr.wrightbrothers.apps.order.query.Order.";
 
     public List<DeliveryListDto.Response> findDeliveryList(DeliveryListDto.Param paramDto) {
         // 배송관리 목록 조회
@@ -35,19 +36,22 @@ public class DeliveryService {
     public DeliveryFindDto.Response findDelivery(DeliveryFindDto.Param paramDto) {
         return DeliveryFindDto.Response.builder()
                 // 주문 기본 정보
-                .order(dao.selectOne("kr.wrightbrothers.apps.order.query.Order.findOrder", OrderFindDto.Param.builder()
-                                .partnerCode(paramDto.getPartnerCode())
-                                .orderNo(paramDto.getOrderNo())
+                .order(dao.selectOne(namespaceOrder + "findOrder", OrderFindDto.Param.builder()
+                        .partnerCode(paramDto.getPartnerCode())
+                        .orderNo(paramDto.getOrderNo())
                         .build(), PartnerKey.WBDataBase.Alias.Admin))
                 // 결제 정보
                 .payment(paymentService.findPaymentToOrder(OrderFindDto.Param.builder()
-                                .partnerCode(paramDto.getPartnerCode())
-                                .orderNo(paramDto.getOrderNo())
+                        .partnerCode(paramDto.getPartnerCode())
+                        .orderNo(paramDto.getOrderNo())
                         .build()))
                 // 배송 주문 상품 리스트
                 .deliveryList(dao.selectList(namespace + "findDeliveryProductList", paramDto, PartnerKey.WBDataBase.Alias.Admin))
-                // 배송 완료 주문 상품 리스트
-                .deliveryCompleteList(dao.selectList(namespace + "findDeliveryCompleteProductList", paramDto, PartnerKey.WBDataBase.Alias.Admin))
+                // 주문 상품 리스트
+                .productList(dao.selectList(namespaceOrder + "findOrderProduct",OrderFindDto.Param.builder()
+                        .partnerCode(paramDto.getPartnerCode())
+                        .orderNo(paramDto.getOrderNo())
+                        .build(), PartnerKey.WBDataBase.Alias.Admin))
                 .build();
     }
 
@@ -68,7 +72,7 @@ public class DeliveryService {
                 });
 
         // 대표 상태코드 최신화 프로시져 호출
-        dao.update("kr.wrightbrothers.apps.order.query.Order.updateOrderStatusRefresh", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin);
+        dao.update(namespaceOrder + "updateOrderStatusRefresh", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin);
     }
 
     public void updateDeliveryMemo(DeliveryMemoUpdateDto paramDto) {

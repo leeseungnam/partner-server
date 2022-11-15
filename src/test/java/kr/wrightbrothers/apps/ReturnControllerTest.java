@@ -29,7 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class ReturnControllerTest extends BaseControllerTests {
 
-    @Test
     @DisplayName("반품 목록 조회")
     void findReturnList() throws Exception {
         // 조회 파라미터 필드
@@ -110,7 +109,6 @@ public class ReturnControllerTest extends BaseControllerTests {
                 ;
     }
 
-    @Test
     @DisplayName("반품내역 조회")
     void findReturn() throws Exception {
         String orderNo = "202103031126444476";
@@ -197,7 +195,6 @@ public class ReturnControllerTest extends BaseControllerTests {
                 ;
     }
 
-    @Test
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     @DisplayName("반품관리 정보 수정")
     void updateReturn() throws Exception {
@@ -244,7 +241,6 @@ public class ReturnControllerTest extends BaseControllerTests {
                 ;
     }
 
-    @Test
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     @DisplayName("반품 요청 상품 처리")
     void updateRequestReturn() throws Exception {

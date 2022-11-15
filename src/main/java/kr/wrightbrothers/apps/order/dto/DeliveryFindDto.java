@@ -24,10 +24,10 @@ public class DeliveryFindDto {
     @Getter
     @Builder
     public static class Response {
-        private OrderDto order;                                 // 주문 정보
-        private PaymentDto payment;                             // 결제 정보
-        private List<DeliveryProductDto> deliveryList;          // 배송 상품 목록
-        private List<DeliveryProductDto> deliveryCompleteList;  // 배송 완료 상품 목록
+        private OrderDto order;                             // 주문 정보
+        private PaymentDto payment;                         // 결제 정보
+        private List<DeliveryProductDto> deliveryList;      // 배송 상품 목록
+        private List<ProductDto> productList;               // 주문 상품 목록
     }
 
 }

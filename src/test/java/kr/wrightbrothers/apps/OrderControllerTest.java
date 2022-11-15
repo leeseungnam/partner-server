@@ -293,11 +293,11 @@ public class OrderControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.productList[].optionName").type(JsonFieldType.STRING).description("옵션 명"),
                                         fieldWithPath("data.productList[].optionSurcharge").type(JsonFieldType.NUMBER).description("옵션 변동 금액"),
                                         fieldWithPath("data.productList[].productQty").type(JsonFieldType.NUMBER).description("구매 수량"),
-                                        fieldWithPath("data.productList[].deliveryType").type(JsonFieldType.STRING).description("배송 구분 타입"),
-                                        fieldWithPath("data.productList[].deliveryName").type(JsonFieldType.STRING).description("배송 구분 명"),
-                                        fieldWithPath("data.productList[].deliveryChargeAmount").type(JsonFieldType.NUMBER).description("배송료"),
-                                        fieldWithPath("data.productList[].cancelDay").type(JsonFieldType.STRING).description("취소일자").optional(),
-                                        fieldWithPath("data.productList[].cancelReason").type(JsonFieldType.STRING).description("취소사유").optional(),
+                                        fieldWithPath("data.productList[].deliveryType").type(JsonFieldType.STRING).description("* 배송 구분 타입"),
+                                        fieldWithPath("data.productList[].deliveryName").type(JsonFieldType.STRING).description("* 배송 구분 명"),
+                                        fieldWithPath("data.productList[].deliveryChargeAmount").type(JsonFieldType.NUMBER).description("* 배송료"),
+                                        fieldWithPath("data.productList[].cancelDay").type(JsonFieldType.STRING).description("* 취소일자").optional(),
+                                        fieldWithPath("data.productList[].cancelReason").type(JsonFieldType.STRING).description("* 취소사유").optional(),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
                                 )
                 ))

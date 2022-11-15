@@ -347,7 +347,7 @@ include::{snippets}/order-find/path-parameters.adoc[]
 include::{snippets}/order-find/http-response.adoc[]
 include::{snippets}/order-find/response-fields.adoc[]
 
-==== 주문내역 수정
+==== 주문메모 수정
 
 .HTTP request
 include::{snippets}/order-update/http-request.adoc[]
@@ -367,6 +367,26 @@ include::{snippets}/payment-cancel-update/request-fields.adoc[]
 include::{snippets}/payment-cancel-update/http-response.adoc[]
 include::{snippets}/payment-cancel-update/response-fields.adoc[]
 
+==== 환불 계좌 정보 조회(추가)
+
+.HTTP request
+include::{snippets}/payment-refundAccount-find/http-request.adoc[]
+include::{snippets}/payment-refundAccount-find/request-headers.adoc[]
+include::{snippets}/payment-refundAccount-find/path-parameters.adoc[]
+.HTTP response
+include::{snippets}/payment-refundAccount-find/http-response.adoc[]
+include::{snippets}/payment-refundAccount-find/response-fields.adoc[]
+
+==== 환불 계좌 정보 수정(추가)
+
+.HTTP request
+include::{snippets}/payment-refundAccount-update/http-request.adoc[]
+include::{snippets}/payment-refundAccount-update/request-headers.adoc[]
+include::{snippets}/payment-refundAccount-update/path-parameters.adoc[]
+include::{snippets}/payment-refundAccount-update/request-fields.adoc[]
+.HTTP response
+include::{snippets}/payment-refundAccount-update/http-response.adoc[]
+include::{snippets}/payment-refundAccount-update/response-fields.adoc[]
 
 === 배송내역 API 관리
 
@@ -390,15 +410,15 @@ include::{snippets}/delivery-find/path-parameters.adoc[]
 include::{snippets}/delivery-find/http-response.adoc[]
 include::{snippets}/delivery-find/response-fields.adoc[]
 
-==== 배송내역 수정
+==== 배송메모 수정
 
 .HTTP request
-include::{snippets}/delivery-update/http-request.adoc[]
-include::{snippets}/delivery-update/request-headers.adoc[]
-include::{snippets}/delivery-update/request-fields.adoc[]
+include::{snippets}/delivery-memo-update/http-request.adoc[]
+include::{snippets}/delivery-memo-update/request-headers.adoc[]
+include::{snippets}/delivery-memo-update/request-fields.adoc[]
 .HTTP response
-include::{snippets}/delivery-update/http-response.adoc[]
-include::{snippets}/delivery-update/response-fields.adoc[]
+include::{snippets}/delivery-memo-update/http-response.adoc[]
+include::{snippets}/delivery-memo-update/response-fields.adoc[]
 
 ==== 송장번호 등록/수정
 
@@ -410,6 +430,16 @@ include::{snippets}/delivery-invoice-update/request-fields.adoc[]
 .HTTP response
 include::{snippets}/delivery-invoice-update/http-response.adoc[]
 include::{snippets}/delivery-invoice-update/response-fields.adoc[]
+
+==== 배송지 변경(추가)
+
+.HTTP request
+include::{snippets}/delivery-update/http-request.adoc[]
+include::{snippets}/delivery-update/request-headers.adoc[]
+include::{snippets}/delivery-update/request-fields.adoc[]
+.HTTP response
+include::{snippets}/delivery-update/http-response.adoc[]
+include::{snippets}/delivery-update/response-fields.adoc[]
 
 === 반품내역 API 관리
 
