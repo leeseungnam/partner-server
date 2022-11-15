@@ -27,8 +27,12 @@ public class RequestReturnUpdateDto {
         private String returnProcessCode;       // 반품 요청 구분
 
         private String requestCode;             // 요청 처리 코드
-        private String requestName;             // 요청 처리 이름
         private String requestValue;            // 요청 처리 데이터
+        private String recipientName;           // 수령자 이름
+        private String recipientPhone;          // 수령자 연락처
+        private String recipientAddressZipCode; // 수령자 우편번호
+        private String recipientAddress;        // 수령자 주소
+        private String recipientAddressDetail;  // 수령자 상세주소
 
         private String partnerCode;             // 파트너 코드
         @JsonIgnore
@@ -59,7 +63,7 @@ public class RequestReturnUpdateDto {
                 return PaymentCancelDto.Queue.builder()
                         .ordNo(this.orderNo)
                         .prnrCd(this.partnerCode)
-                        .ordPrdtIdxList(Arrays.stream(this.orderProductSeqArray).map(orderProductSeq -> PaymentCancelDto.Queue_Int.builder().ordPrdtIdx(orderProductSeq).build()).collect(Collectors.toList()))
+                        .ordPrdtIdx(Arrays.stream(this.orderProductSeqArray).map(orderProductSeq -> PaymentCancelDto.Queue_Int.builder().ordPrdtIdx(orderProductSeq).build()).collect(Collectors.toList()))
                         .bankCd(bankInfo.getBankCd())
                         .bankAcntNo(bankInfo.getBankAcntNo())
                         .dpstrNm(bankInfo.getDpstrNm())

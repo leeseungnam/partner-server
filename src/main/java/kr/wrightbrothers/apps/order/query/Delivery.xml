@@ -6,19 +6,19 @@
 	<select id="findDeliveryList" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryListDto$Param" resultType="kr.wrightbrothers.apps.order.dto.DeliveryListDto$Response">
 		-- 배송 관리 목록 조회
 		select
-			date_format(p.pym_dt, '%Y-%m-%d') as payment_day,
+			date_format(o.pym_dt, '%Y-%m-%d') as payment_day,
 			o.ord_no as order_no,
 			m.usr_nm as order_user_name,
-			s.ord_stus as order_status_code,
-			s.ord_stus as order_status_name,
-			p.pay_meth as payment_method_code,
-			p.pay_meth as payment_method_name,
+			if(s.ord_stus in ('D05', 'R01', 'R02', 'R03', 'R04', 'R05', 'R06', 'C05'), 'D05', s.ord_stus) as delivery_status_code,
+			if(s.ord_stus in ('D05', 'R01', 'R02', 'R03', 'R04', 'R05', 'R06', 'C05'), 'D05', s.ord_stus) as delivery_status_name,
+			o.pay_meth as payment_method_code,
+			o.pay_meth as payment_method_name,
 			s.ord_nm as order_name,
 			g.delivery_name,
-			s.rcpnt_nm as recipient_name,
-			s.rcpnt_usr_phn as recipient_phone,
-			s.rcpnt_adrs as recipient_address,
-			s.rcpnt_adrs_sub as recipient_address_detail
+			o.rcpnt_nm as recipient_name,
+			o.rcpnt_usr_phn as recipient_phone,
+			o.rcpnt_adrs as recipient_address,
+			o.rcpnt_adrs_sub as recipient_address_detail
 		  from ord_info o
 		 inner join ord_prnr_info s
 		    on o.ord_no = s.ord_no
@@ -48,8 +48,6 @@
 			</foreach>
 		      group by _p.ord_no
 		) g on o.ord_no = g.ord_no
-		 inner join ord_pay_info p
-			on o.ord_no = p.ord_no
 		 where s.prnr_cd = #{partnerCode}
 		<choose>
 			<when test="keywordValue != null and keywordValue != ''">
@@ -72,10 +70,10 @@
 				</choose>
 			</when>
 			<otherwise>
-				and	p.pym_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+				and	o.pym_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
 			</otherwise>
 		</choose>
-		order by p.pym_dt desc
+		order by o.pym_dt desc
 	</select>
 
 	<select id="isDeliveryInvoiceCheck" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto" resultType="boolean">
@@ -87,78 +85,80 @@
 		   and prnr_cd = #{partnerCode}
 	</select>
 
-	<update id="updateDeliveryInvoice" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto">
+	<update id="updateDeliveryStart" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto">
 		insert into ord_shpn_info(ord_no,
-		                          ord_prdt_idx,
-		                          prdt_cd,
-		                          ord_dlvr_stus,
-		                          dlvry_cmpny,
-		                          invc_no,
-		                          invc_inp_dt,
-		                          asis_item_idx,
-		                          cre_usr_id,
-		                          cre_dt,
-		                          upd_usr_id,
-		                          upd_dt)
+								  ord_prdt_idx,
+								  prdt_cd,
+								  ord_dlvr_stus,
+								  rcpnt_nm,
+								  rcpnt_usr_phn,
+								  rcpnt_adrs_zip_cd,
+								  rcpnt_adrs,
+								  rcpnt_adrs_sub,
+								  dlvry_cmpny,
+								  invc_no,
+								  invc_inp_dt,
+								  cre_usr_id,
+								  cre_dt,
+								  upd_usr_id,
+								  upd_dt)
 		values(#{orderNo},
-		       #{orderProductSeq},
-		       (select prdt_cd from ord_prdt_info where ord_no = #{orderNo} and ord_prdt_idx = #{orderProductSeq}),
-		       'D02',
-		       #{deliveryCompanyCode},
-		       #{invoiceNo},
-		       now(),
-		       0,
-		       #{userId},
-		       now(),
-		       #{userId},
-		       now()
-		       )
+			   #{orderProductSeq},
+			   (select prdt_cd from ord_prdt_info where ord_no = #{orderNo} and ord_prdt_idx = #{orderProductSeq}),
+			   'D02',
+		       (select rcpnt_nm from ord_info where ord_no = #{orderNo}),
+			   (select rcpnt_usr_phn from ord_info where ord_no = #{orderNo}),
+			   (select rcpnt_adrs_zip_cd from ord_info where ord_no = #{orderNo}),
+			   (select rcpnt_adrs from ord_info where ord_no = #{orderNo}),
+			   (select rcpnt_adrs_sub from ord_info where ord_no = #{orderNo}),
+			   #{deliveryCompanyCode},
+			   #{invoiceNo},
+			   now(),
+			   #{userId},
+			   now(),
+			   #{userId},
+			   now()
+			  )
 		on duplicate key
 		update
-		    dlvry_cmpny 	= #{deliveryCompanyCode},
-		    ord_dlvr_stus	= 'D02',
-		    invc_no			= #{invoiceNo},
-		    invc_inp_dt 	= now(),
-		    upd_usr_id		= #{userId},
-		    upd_dt			= now()
-	</update>
+		    dlvry_cmpny = #{deliveryCompanyCode},
+		    invc_no = #{invoiceNo},
+		    ord_dlvr_stus = 'D02',
+		    invc_inp_dt = now(),
+		    upd_usr_id = #{userId},
+		    upd_dt = now();
 
-	<update id="updateProductDeliveryStartStatus" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto">
 		update ord_prdt_info
-		   set ord_prdt_stus = 'D02',	-- 배송중
-			   upd_usr_id 	 = #{userId},
-			   upd_dt		 = now()
-		 where ord_no 		 = #{orderNo}
-		   and ord_prdt_idx  = #{orderProductSeq}
+		   set ord_prdt_stus = 'D02',
+		       upd_usr_id = #{userId},
+		       upd_dt = now()
+		 where ord_no = #{orderNo}
+		   and ord_prdt_idx = #{orderProductSeq};
 	</update>
-
-	<update id="updateDelivery" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryMemoUpdateDto">
-		-- 송장번호 입력 유무에 대한 체크
-		<selectKey resultType="boolean" keyProperty="isInvoiceNo" order="BEFORE">
-			select
-			    if(count(s.ord_no) = 0, true, false) as isInvoice
-			  from ord_prdt_info p
-		   	 inner join ord_shpn_info s
-			    on p.ord_no = s.ord_no
-			   and p.ord_prdt_idx = s.ord_prdt_idx
-			   and p.prdt_cd = s.prdt_cd
-			 where p.ord_no = #{orderNo}
-			   and p.prnr_cd = #{partnerCode}
-			   and s.invc_no is not null
-		</selectKey>
+	
+	<update id="updateDelivery" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryUpdateDto">
+		update ord_shpn_info
+		   set rcpnt_nm = #{recipientName},
+		       rcpnt_usr_phn = #{recipientPhone},
+		       rcpnt_adrs_zip_cd = #{recipientAddressZipCode},
+		       rcpnt_adrs = #{recipientAddress},
+		       rcpnt_adrs_sub = #{recipientAddressDetail},
+		       upd_usr_id = #{userId},
+		       upd_dt = now()
+		 where ord_no = #{orderNo}
+		   and ord_dlvr_stus in ('D01', 'D02')
+		<foreach collection="orderProductSeqArray" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+	
+	<update id="updateDeliveryMemo" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryMemoUpdateDto">
 		update ord_prnr_info
 		   set dlvry_memo = #{deliveryMemo},
-		       -- 송장번호 미입력 시 수령자 정보 변경 가능
-		       <if test="isInvoiceNo">
-		       		rcpnt_nm = #{recipientName},
-					rcpnt_usr_phn = #{recipientPhone},
-					rcpnt_adrs_zip_cd = #{recipientAddressZipCode},
-					rcpnt_adrs = #{recipientAddress},
-					rcpnt_adrs_sub = #{recipientAddressDetail},
-			   </if>
 			   upd_usr_id = #{userId},
 			   upd_dt = now()
 		 where ord_no = #{orderNo}
+		   and prnr_cd = #{partnerCode}
 	</update>
 
 	<sql id="findDeliveryProductSql">
@@ -171,6 +171,11 @@
 			d.dlvry_cmpny as delivery_company_code,
 			cd.intg_cd_val_nm as delivery_company_name,
 			d.invc_no as invoice_no,
+			d.rcpnt_nm as recipient_name,
+			d.rcpnt_usr_phn as recipient_phone,
+			d.rcpnt_adrs_zip_cd as recipient_address_zip_code,
+			d.rcpnt_adrs as recipient_address,
+			d.rcpnt_adrs_sub as recipient_address_detail,
 			d.ord_dlvr_stus as delivery_status_code,
 			d.ord_dlvr_stus as delivery_status_name,
 			date_format(d.dlvry_st_dt, '%Y-%m-%d') as delivery_start_day,
@@ -203,7 +208,7 @@
 		select
 		    count(*) over (partition by o.ord_no) as order_product_count,
 		    count(*) over (partition by o.ord_no, p.prdt_cd) as product_count,
-		    date_format(pi.pym_dt, '%Y-%m-%d') as payment_day,
+		    date_format(o.pym_dt, '%Y-%m-%d') as payment_day,
 		    o.ord_no as order_no,
 		    date_format(o.ord_dt, '%Y-%m-%d') as order_day,
 		    s.ord_nm as order_name,
@@ -220,10 +225,10 @@
 			ifnull(d.ord_dlvr_stus, '') as delivery_status,
 			ifnull(c.intg_cd_val_nm, '') as delivery_company,
 			ifnull(d.invc_no, '') as invoice_no,
-			s.rcpnt_nm as recipient_name,
-			s.rcpnt_usr_phn as recipient_user_phone,
-			ifnull(concat('(', s.rcpnt_adrs_zip_cd, ') ', s.rcpnt_adrs), '') as recipient_address,
-			s.rcpnt_adrs_sub as recipient_address_detail,
+			d.rcpnt_nm as recipient_name,
+			d.rcpnt_usr_phn as recipient_user_phone,
+			ifnull(concat('(', d.rcpnt_adrs_zip_cd, ') ', d.rcpnt_adrs), '') as recipient_address,
+			d.rcpnt_adrs_sub as recipient_address_detail,
 			ifnull(o.rqst_dtls, '') as request_detail,
 			ifnull(s.dlvry_memo, '') as delivery_memo
 		  from ord_info o
@@ -232,8 +237,6 @@
 		   and s.prnr_cd = #{partnerCode}
 		 inner join ord_prdt_info p
 			on o.ord_no = p.ord_no
-		 inner join ord_pay_info pi
-		    on o.ord_no = pi.ord_no
 		  left join ord_shpn_info d
 			on p.ord_no = d.ord_no
 		   and p.ord_prdt_idx = d.ord_prdt_idx

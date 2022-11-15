@@ -135,10 +135,10 @@ public class DeliveryController extends WBController {
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "배송 정보 수정", notes = "배송지 정보, 배송 메모에 대한 정보 수정")
-    @PutMapping("/deliveries")
-    public WBModel updateDelivery(@ApiParam(value = "배송 수정 데이터") @Valid @RequestBody DeliveryMemoUpdateDto paramDto) {
+    @PatchMapping("/deliveries")
+    public WBModel updateDeliveryMemo(@ApiParam(value = "배송 수정 데이터") @Valid @RequestBody DeliveryMemoUpdateDto paramDto) {
         // 배송관리 정보 수정
-        deliveryService.updateDelivery(paramDto);
+        deliveryService.updateDeliveryMemo(paramDto);
 
         return noneMgsResponse(messageSourceAccessor);
     }
@@ -150,8 +150,21 @@ public class DeliveryController extends WBController {
     @ApiOperation(value = "송장번호 저장", notes = "택배 발송되는 주문 상품의 택배사 / 송장번호 등록 및 수정")
     @PutMapping("/deliveries/{orderNo}/invoice")
     public WBModel updateDeliveryInvoice(@ApiParam(value = "송장번호 입력 데이터") @Valid @RequestBody DeliveryInvoiceUpdateDto paramDto) {
-        // 배송정보 수정
+        // 송장번호 수정
         deliveryService.updateDeliveryInvoice(paramDto);
+
+        return noneMgsResponse(messageSourceAccessor);
+    }
+
+    @UserPrincipalScope
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
+    })
+    @ApiOperation(value = "배송정보 저장", notes = "주문 상품의 배송정보를 등록 및 수정")
+    @PutMapping("/deliveries")
+    public WBModel updateDelivery(@ApiParam(value = "배송정보 입력 데이터") @Valid @RequestBody DeliveryUpdateDto paramDto) {
+        // 배송정보 수정
+        deliveryService.updateDelivery(paramDto);
 
         return noneMgsResponse(messageSourceAccessor);
     }

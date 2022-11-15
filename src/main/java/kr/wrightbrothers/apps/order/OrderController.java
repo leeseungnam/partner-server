@@ -158,7 +158,7 @@ public class OrderController extends WBController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
-    @ApiOperation(value = "주문내역 수정", notes = "주문내역의 배송지 정보, 주문 메모의 내용을 수정")
+    @ApiOperation(value = "주문내역 수정", notes = "주문내역의 메모의 내용을 수정")
     @PutMapping("/orders")
     public WBModel updateOrder(@ApiParam(value = "주문내역 수정 데이터") @Valid @RequestBody OrderMemoUpdateDto paramDto) {
         // 주문 정보 수정

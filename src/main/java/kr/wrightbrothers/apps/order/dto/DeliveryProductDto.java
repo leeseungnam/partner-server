@@ -15,6 +15,11 @@ public class DeliveryProductDto {
     private String deliveryCompanyCode;     // 택배사 코드
     private String deliveryCompanyName;     // 택배사 이름
     private String invoiceNo;               // 송장번호
+    private String recipientName;           // 수령자 명
+    private String recipientPhone;          // 수령자 연락처
+    private String recipientAddressZipCode; // 수령자 우편번호
+    private String recipientAddress;        // 수령자 주소
+    private String recipientAddressDetail;  // 수령자 상세주소
     private String deliveryStatusCode;      // 택배 진행 상태 코드
     private String deliveryStatusName;      // 택배 진행 상태 이름
     private String deliveryStartDay;        // 배송 시작일

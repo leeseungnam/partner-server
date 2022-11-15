@@ -61,7 +61,6 @@ public class OrderListDto {
         private Long orderAmount;           // 주문금액
         private Long paymentAmount;         // 결제금액
         private String paymentDay;          // 결제일자
-        private String cancelDay;           // 취소일자
         private String paymentStatusCode;   // 결제상태 코드
         private String paymentStatusName;   // 결제상테 명
 

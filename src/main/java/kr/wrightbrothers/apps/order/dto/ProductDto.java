@@ -1,5 +1,6 @@
 package kr.wrightbrothers.apps.order.dto;
 
+import kr.wrightbrothers.apps.common.type.DeliveryType;
 import kr.wrightbrothers.apps.common.type.OrderProductStatusCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,8 +17,17 @@ public class ProductDto {
     private String optionName;                  // 옵션 이름
     private Long optionSurcharge;               // 변동 금액
     private Integer productQty;                 // 구매 수량
+    private String deliveryType;                // 배송 구분 타입
+    private String deliveryName;                // 배송 구분 명
+    private Long deliveryChargeAmount;          // 배송료
+    private String cancelDay;                   // 취소 일시
+    private String cancelReason;                // 취소 사유
 
     public void setOrderProductStatusName(String productStatusCode) {
         this.orderProductStatusName = OrderProductStatusCode.of(productStatusCode).getName();
+    }
+
+    public void setDeliveryName(String deliveryName) {
+        this.deliveryName = DeliveryType.of(deliveryName).getName();
     }
 }

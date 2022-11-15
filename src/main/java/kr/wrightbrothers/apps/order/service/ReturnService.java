@@ -76,7 +76,7 @@ public class ReturnService {
     public void updateRequestReturn(RequestReturnUpdateDto paramDto) {
         // 반품불가 처리 시 유효성 확인
         if (OrderProductStatusCode.NON_RETURN.getCode().equals(paramDto.getReturnProcessCode())) {
-            if (ObjectUtils.isEmpty(paramDto.getRequestCode()) || ObjectUtils.isEmpty(paramDto.getRequestName()))
+            if (ObjectUtils.isEmpty(paramDto.getRequestCode()))
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"불가 사유"});
         }
 
@@ -154,6 +154,16 @@ public class ReturnService {
         if (!OrderStatusCode.REQUEST_COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()))
             // 반품완료 요청 제외한 나머지 프로시저 호출로 주문정보 상태값 변경
             dao.update("kr.wrightbrothers.apps.order.query.Order.updateOrderStatusRefresh", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin);
+    }
+
+    public ReturnDeliveryDto.Response findReturnDelivery(ReturnDeliveryDto.Param paramDto) {
+        // 반품지 배송정보 조회
+        return dao.selectOne(namespace + "findReturnDelivery", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+    }
+
+    public void updateReturnDelivery(ReturnDeliveryDto.ReqBody paramDto) {
+        // 반품지 배송정보 수정
+        dao.update(namespace + "updateReturnDelivery", paramDto, PartnerKey.WBDataBase.Alias.Admin);
     }
 
     public void makeExcelFile(ReturnExcelDto.Param paramDto,

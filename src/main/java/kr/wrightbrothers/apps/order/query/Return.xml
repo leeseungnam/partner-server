@@ -134,6 +134,7 @@
 		   set rtrn_memo = #{returnMemo},
 		       -- 송장번호 미입력 시 반송자 정보 변경 가능
 		       <if test="isInvoiceNo">
+		       	   rtrn_rcpnt_nm = #{recipientName},
 				   rtrn_rcpnt_usr_phn = #{recipientPhone},
 				   rtrn_rcpnt_adrs_zip_cd = #{recipientAddressZipCode},
 				   rtrn_rcpnt_adrs = #{recipientAddress},
@@ -236,15 +237,20 @@
 		   and p.ord_prdt_stus not in ('O06', 'O07')
 	</select>
 
-	<update id="updateOrderDeliveryReturn" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto">
+	<update id="updateOrderDeliveryReturn" parameterType="kr.wrightbrothers.apps.order.dto.ApprovalReturnDto">
 		update ord_shpn_info
-		   set rtrn_dlvry_cmpny = #{requestCode},
-		       rtrn_invc_no		= #{requestValue},
-		       rtrn_invc_inp_dt = ifnull(rtrn_invc_inp_dt, now()),
-		       upd_usr_id		= #{userId},
-		       upd_dt			= now()
-		 where ord_no = #{orderNo}
-		   and ord_prdt_idx = #{orderProductSeq}
+		   set rtrn_dlvry_cmpny 		= #{requestCode},
+		       rtrn_invc_no				= #{requestValue},
+		       rtrn_invc_inp_dt 		= ifnull(rtrn_invc_inp_dt, now()),
+		       rtrn_rcpnt_nm			= #{recipientName},
+		       rtrn_rcpnt_usr_phn 		= #{recipientPhone},
+		       rtrn_rcpnt_adrs_zip_cd 	= #{recipientAddressZipCode},
+		       rtrn_rcpnt_adrs 			= #{recipientAddress},
+		       rtrn_rcpnt_adrs_sub 		= #{recipientAddressDetail},
+		       upd_usr_id				= #{userId},
+		       upd_dt					= now()
+		 where ord_no 					= #{orderNo}
+		   and ord_prdt_idx 			= #{orderProductSeq}
 	</update>
 
 	<update id="updateRequestReturnOrderPartner" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto">
@@ -310,5 +316,38 @@
 		</foreach>
 		 order by o.ord_no desc, p.prdt_cd
 	</select>
+
+	<select id="findReturnDelivery" parameterType="kr.wrightbrothers.apps.order.dto.ReturnDeliveryDto$Param" resultType="kr.wrightbrothers.apps.order.dto.ReturnDeliveryDto$Response">
+		select
+		    s.rtrn_dlvry_cmpny as deliveryCompanyCode,
+		    s.rtrn_invc_no as invoiceNo,
+		    s.rtrn_rcpnt_nm as recipientName,
+		    s.rtrn_rcpnt_usr_phn as recipientPhone,
+		    s.rtrn_rcpnt_adrs_zip_cd as recipientAddressZipCode,
+		    s.rtrn_rcpnt_adrs as recipientAddress,
+		    s.rtrn_rcpnt_adrs_sub as recipientAddressDetail
+		  from ord_prdt_info p
+		  left join ord_shpn_info s
+			on p.ord_no = s.ord_no
+		   and p.ord_prdt_idx = s.ord_prdt_idx
+		 where p.ord_no = #{orderNo}
+		   and p.ord_prdt_idx = #{orderProductSeq}
+		   and p.prnr_cd = #{partnerCode}
+	</select>
+
+	<update id="updateReturnDelivery" parameterType="kr.wrightbrothers.apps.order.dto.ReturnDeliveryDto$ReqBody">
+		update ord_shpn_info
+		   set rtrn_dlvry_cmpny = #{deliveryCompanyCode},
+			   rtrn_invc_no = #{invoiceNo},
+			   rtrn_rcpnt_nm = #{recipientName},
+			   rtrn_rcpnt_usr_phn = #{recipientPhone},
+			   rtrn_rcpnt_adrs_zip_cd = #{recipientAddressZipCode},
+			   rtrn_rcpnt_adrs = #{recipientAddress},
+			   rtrn_rcpnt_adrs_sub = #{recipientAddressDetail},
+			   upd_usr_id = #{userId},
+			   upd_dt = now()
+		 where ord_no = #{orderNo}
+		   and ord_prdt_idx = #{orderProductSeq}
+	</update>
 
 </mapper>

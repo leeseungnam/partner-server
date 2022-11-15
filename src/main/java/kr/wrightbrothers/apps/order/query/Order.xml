@@ -29,13 +29,12 @@
 			m.usr_nm as order_user_name,
 			s.ord_stus as order_status_code,
 			s.ord_stus as order_status_name,
-			p.pay_meth as payment_method_code,
-			p.pay_meth as payment_method_name,
+			o.pay_meth as payment_method_code,
+			o.pay_meth as payment_method_name,
 			s.ord_nm as order_name,
 			s.ord_amt as order_amount,
 			s.pay_amt as payment_amount,
-			date_format(p.pym_dt, '%Y-%m-%d') as payment_day,
-			date_format(s.cnc_dt, '%Y-%m-%d') as cancel_day,
+			date_format(o.pym_dt, '%Y-%m-%d') as payment_day,
 			s.pay_stus as payment_status_code,
 			s.pay_stus as payment_status_name
 		  from ord_info o
@@ -44,8 +43,6 @@
 		 inner join ord_prnr_info s
 			on o.ord_no = s.ord_no
 		   and s.prnr_cd = #{partnerCode}
-		 inner join ord_pay_info p
-			on o.ord_no = p.ord_no
 		<where>
 			<choose>
 				<when test="keywordValue != null and keywordValue != ''">
@@ -70,10 +67,16 @@
 				<otherwise>
 					<choose>
 						<when test="rangeType == 'PAYMENT'.toString()">
-							and p.pym_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+							and o.pym_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
 						</when>
 						<when test="rangeType == 'CANCEL'.toString()">
-							and s.cnc_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+		   and exists (
+		   		select
+		   			ord_no
+		   		  from ord_prdt_info
+		   		 where ord_no = o.ord_no
+		   		   and cnc_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+			)
 						</when>
 					</choose>
 					-- 주문 상태
@@ -85,7 +88,7 @@
 						#{item}
 					</foreach>
 					-- 결제 방법
-					<foreach collection="paymentMethod" item="item" index="index" open="and p.pay_meth in (" separator="," close=")">
+					<foreach collection="paymentMethod" item="item" index="index" open="and o.pay_meth in (" separator="," close=")">
 						#{item}
 					</foreach>
 				</otherwise>
@@ -95,7 +98,7 @@
 					order by o.ord_dt desc
 				</when>
 				<when test="sortType == 'PYT'.toString()">
-					order by p.pym_dt desc
+					order by o.pym_dt desc
 				</when>
 				<when test="sortType == 'LSAMT'.toString()">
 					order by s.pay_amt
@@ -120,8 +123,6 @@
 		 inner join ord_prnr_info s
 		    on o.ord_no = s.ord_no
 		   and s.prnr_cd = #{partnerCode}
-		 inner join ord_pay_info p
-		    on o.ord_no = p.ord_no
 		<where>
 			<choose>
 				<when test="keywordValue != null and keywordValue != ''">
@@ -146,10 +147,16 @@
 				<otherwise>
 					<choose>
 						<when test="rangeType == 'PAYMENT'.toString()">
-							and p.pym_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+							and o.pym_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
 						</when>
 						<when test="rangeType == 'CANCEL'.toString()">
-							and s.cnc_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+				and exists (
+					select
+						ord_no
+					from ord_prdt_info
+					where ord_no = o.ord_no
+					and cnc_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+				)
 						</when>
 					</choose>
 					-- 주문 상태
@@ -161,7 +168,7 @@
 						#{item}
 					</foreach>
 					-- 결제 방법
-					<foreach collection="paymentMethod" item="item" index="index" open="and p.pay_meth in (" separator="," close=")">
+					<foreach collection="paymentMethod" item="item" index="index" open="and o.pay_meth in (" separator="," close=")">
 						#{item}
 					</foreach>
 				</otherwise>
@@ -176,16 +183,16 @@
 		    o.ord_dt as order_date,
 		    s.ord_stus as order_status_code,
 		    s.ord_stus as order_status_name,
-		    o.ord_qty as order_qty,
+		    (select count(ord_prdt_idx) order_qty from ord_prdt_info where ord_no = #{orderNo} and prnr_cd = #{partnerCode}) as order_qty,
 		    m.usr_cd as order_user_code,
 		    m.usr_id as order_user_id,
 		    m.usr_nm as order_user_name,
 		    m.usr_phn as order_user_phone,
-		    s.rcpnt_nm as recipient_name,
-		    s.rcpnt_usr_phn as recipient_phone,
-		    s.rcpnt_adrs_zip_cd as recipient_address_zip_code,
-		    s.rcpnt_adrs as recipient_address,
-		    s.rcpnt_adrs_sub as recipient_address_detail,
+		    o.rcpnt_nm as recipient_name,
+		    o.rcpnt_usr_phn as recipient_phone,
+		    o.rcpnt_adrs_zip_cd as recipient_address_zip_code,
+		    o.rcpnt_adrs as recipient_address,
+		    o.rcpnt_adrs_sub as recipient_address_detail,
 		    o.rqst_dtls as request_detail,
 		    s.ord_memo as order_memo,
 		    s.rtrn_memo as return_memo,
@@ -202,63 +209,36 @@
 	<select id="findOrderProduct" parameterType="kr.wrightbrothers.apps.order.dto.OrderFindDto$Param" resultType="kr.wrightbrothers.apps.order.dto.ProductDto">
 		-- 주문내역 상품 리스트
 		select
-		    ord_prdt_idx as order_product_seq,
-		    prdt_cd as product_code,
-		    prdt_nm as product_name,
-		    ord_prdt_stus as order_product_status_code,
-		    ord_prdt_stus as order_product_status_name,
-		    fnl_sell_amt as final_sell_amount,
-		    optn_nm as option_name,
-		    optn_schg as option_surcharge,
-		    prdt_qty as product_qty
-		  from ord_prdt_info
-		 where ord_no = #{orderNo}
-		   and prnr_cd = #{partnerCode}
+		    p.ord_prdt_idx as order_product_seq,
+		    p.prdt_cd as product_code,
+		    p.prdt_nm as product_name,
+		    p.ord_prdt_stus as order_product_status_code,
+		    p.ord_prdt_stus as order_product_status_name,
+		    p.fnl_sell_amt as final_sell_amount,
+		    p.optn_nm as option_name,
+		    p.optn_schg as option_surcharge,
+		    p.prdt_qty as product_qty,
+		    p.dlvr_tp as delivery_type,
+		    p.dlvr_tp as delivery_name,
+		    p.dlvr_chrg_amt as delivery_charge_amount,
+			date_format(p.cnc_cplt_dt, '%Y-%m-%d') as cancel_day,
+		    if(p.cnc_rsn_cd = 'C99', p.cnc_rsn, c.intg_cd_val_nm) as cancel_reason
+		  from ord_prdt_info p
+		  left join com_intg_cd_dtl c
+			on p.cnc_rsn_cd = c.intg_cd_val
+		   and c.intg_cd_id = '000074'
+		 where p.ord_no = #{orderNo}
+		   and p.prnr_cd = #{partnerCode}
 	</select>
 
 	<update id="updateOrder" parameterType="kr.wrightbrothers.apps.order.dto.OrderMemoUpdateDto">
-		-- 송장번호 입력 유무에 대한 체크
-		<selectKey resultType="boolean" keyProperty="isInvoiceNo" order="BEFORE">
-			select
-			    if(count(d.ord_prdt_idx) = 0, true, false) as isInvoice
-			  from  ord_prdt_info p
-			 inner join ord_shpn_info d
-			    on d.ord_no = p.ord_no
-			   and d.ord_prdt_idx = p.ord_prdt_idx
-			   and d.prdt_cd = p.prnr_cd
-			 where p.ord_no = #{orderNo}
-			   and p.prnr_cd = #{partnerCode}
-			   and d.invc_no is not null
-		</selectKey>
 		update ord_prnr_info
 		   set ord_memo = #{orderMemo},
-		       -- 송장번호 미입력 시 수령자 정보 변경 가능
-		       <if test="isInvoiceNo">
-				   rcpnt_nm = #{recipientName},
-				   rcpnt_usr_phn = #{recipientPhone},
-				   rcpnt_adrs_zip_cd = #{recipientAddressZipCode},
-				   rcpnt_adrs = #{recipientAddress},
-				   rcpnt_adrs_sub = #{recipientAddressDetail},
-			   </if>
 		       upd_usr_id = #{userId},
 		       upd_dt = now()
 		 where ord_no = #{orderNo}
 		   and prnr_cd = #{partnerCode}
 	</update>
-
-
-	<select id="findRefundBankInfo" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.order.dto.RefundDto">
-		select
-			cnc_bank_cd as refundBankCode,
-			c.intg_cd_val_nm as refundBankName,
-			cnc_bank_acnt_no as refundBankAccountNo,
-			cnc_rmtr_nm as refundDepositorName
-		from ord_pay_info p
-				 left join com_intg_cd_dtl c
-						   on p.cnc_bank_cd = c.intg_cd_val
-							   and c.intg_cd_id = '000046'
-		where ord_no = #{orderNo}
-	</select>
 
 	<update id="updateOrderStatusRefresh" parameterType="java.lang.String" statementType="CALLABLE">
 		CALL SP_updateOrderStatus(#{orderNo})
@@ -279,12 +259,12 @@
 		    p.fnl_sell_amt as product_amount,
 		    s.pay_amt as payment_amount,
 		    p.dlvr_chrg_amt as product_delivery_charge_amount,
-		    pi.pay_meth as payment_method,
-		    date_format(pi.pym_dt, '%Y-%m-%d') as payment_day,
+		    o.pay_meth as payment_method,
+		    date_format(o.pym_dt, '%Y-%m-%d') as payment_day,
 		    s.pay_stus as payment_status,
-		    ifnull(date_format(s.cnc_dt, '%Y-%m-%d'), '') as cancel_day,
-			ifnull(if(c.intg_cd_val_nm is null or c.intg_cd_val = 'C99', s.cnc_rsn, c.intg_cd_val_nm), '') as cancel_reason,
-		    ifnull(concat('(', s.rcpnt_adrs_zip_cd, ') ', s.rcpnt_adrs, ', ', s.rcpnt_adrs_sub), '') as address,
+		    ifnull(date_format(p.cnc_cplt_dt, '%Y-%m-%d'), '') as cancel_day,
+			ifnull(if(c.intg_cd_val_nm is null or c.intg_cd_val = 'C99', p.cnc_rsn, c.intg_cd_val_nm), '') as cancel_reason,
+		    ifnull(concat('(', d.rcpnt_adrs_zip_cd, ') ', d.rcpnt_adrs, ', ', d.rcpnt_adrs_sub), '') as address,
 		    ifnull(o.rqst_dtls, '') as request_detail,
 		    ifnull(s.ord_memo, '') as order_memo
 		  from ord_info o
@@ -293,11 +273,12 @@
 		   and s.prnr_cd = #{partnerCode}
 		 inner join ord_prdt_info p
 			on o.ord_no = p.ord_no
+		 inner join ord_shpn_info d
+		    on p.ord_no = d.ord_no
+		   and p.ord_prdt_idx = d.ord_prdt_idx
 		  left join com_intg_cd_dtl c
-		    on s.cnc_rsn_cd = c.intg_cd_val
+		    on p.cnc_rsn_cd = c.intg_cd_val
 		   and c.intg_cd_id = '000074'
-		 inner join ord_pay_info pi
-		    on o.ord_no = pi.ord_no
 		  left join com_mbr_info m
 			on o.ord_usr_id = m.usr_id
 		 where o.ord_no in

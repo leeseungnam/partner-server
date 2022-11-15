@@ -2,6 +2,7 @@ package kr.wrightbrothers.apps.order;
 
 import io.swagger.annotations.*;
 import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
+import kr.wrightbrothers.apps.common.type.OrderProductStatusCode;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.*;
@@ -11,6 +12,7 @@ import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.WBModel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -148,11 +150,74 @@ public class ReturnController extends WBController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
-    @ApiOperation(value = "반품요청 처리", notes = "고객 반품 요청에 대한 처리 수행")
-    @PutMapping("/returns/{orderNo}/request-return")
-    public WBModel updateRequestReturn(@ApiParam(value = "반품요청 처리 데이터") @Valid @RequestBody RequestReturnUpdateDto paramDto) {
-        // 반품 요청에 대한 처리 수행
-        returnService.updateRequestReturn(paramDto);
+    @ApiOperation(value = "반품승인 처리", notes = "고객 반품 요청에 대한 승인 처리")
+    @PutMapping("/returns/{orderNo}/approval-return")
+    public WBModel updateApprovalReturn(@Valid @RequestBody ApprovalReturnDto paramDto) {
+        // 반품 요청에 대한 승인
+        returnService.updateRequestReturn(paramDto.toRequestReturnUpdateDto());
+
+        return noneMgsResponse(messageSourceAccessor);
+    }
+
+    @UserPrincipalScope
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
+    })
+    @ApiOperation(value = "반품취소 처리", notes = "고객 반품 요청에 대한 취소 처리")
+    @PutMapping("/returns/{orderNo}/cancel-return")
+    public WBModel updateCancelReturn(@Valid @RequestBody RequestReturnDto paramDto) {
+        // 반품 취소에 대한 처리
+        returnService.updateRequestReturn(paramDto.toRequestReturnUpdateDto(OrderProductStatusCode.WITHDRAWAL_RETURN.getCode()));
+
+        return noneMgsResponse(messageSourceAccessor);
+    }
+
+    @UserPrincipalScope
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
+    })
+    @ApiOperation(value = "반품완료 처리", notes = "고객 반품 요청에 대한 완료 처리")
+    @PutMapping("/returns/{orderNo}/complete-return")
+    public WBModel updateCompleteReturn(@Valid @RequestBody RequestReturnDto paramDto) {
+        // 반품 완료에 대한 처리
+        returnService.updateRequestReturn(paramDto.toRequestReturnUpdateDto(OrderProductStatusCode.COMPLETE_RETURN.getName()));
+
+        return noneMgsResponse(messageSourceAccessor);
+    }
+
+    @UserPrincipalScope
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
+    })
+    @ApiOperation(value = "반품불가 처리", notes = "고객 반품 요청에 대한 불가 처리")
+    @PutMapping("/returns/{orderNo}/non-return")
+    public WBModel updateNonReturn(@Valid @RequestBody NonReturnDto paramDto) {
+        // 반품 불가 처리
+        returnService.updateRequestReturn(paramDto.toRequestReturnUpdateDto());
+
+        return noneMgsResponse(messageSourceAccessor);
+    }
+
+    @GetMapping("/returns/{orderNo}/deliveries/{orderProductSeq}")
+    public WBModel findReturnDelivery(@PathVariable String orderNo,
+                                      @PathVariable Integer orderProductSeq,
+                                      @ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
+        // 반품 배송정보 조회
+        return defaultResponse(returnService.findReturnDelivery(
+                ReturnDeliveryDto.Param.builder()
+                        .partnerCode(user.getUserAuth().getPartnerCode())
+                        .orderNo(orderNo)
+                        .orderProductSeq(orderProductSeq)
+                        .userId(user.getUsername())
+                        .build()
+        ));
+    }
+
+    @UserPrincipalScope
+    @PutMapping("/returns/{orderNo}/deliveries")
+    public WBModel updateReturnDelivery(@Valid @RequestBody ReturnDeliveryDto.ReqBody paramDto) {
+        // 반품 배송정보 수정
+        returnService.updateReturnDelivery(paramDto);
 
         return noneMgsResponse(messageSourceAccessor);
     }

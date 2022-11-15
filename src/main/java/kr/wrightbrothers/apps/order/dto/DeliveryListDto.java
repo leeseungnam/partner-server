@@ -1,6 +1,8 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import kr.wrightbrothers.apps.common.AbstractPageDto;
+import kr.wrightbrothers.apps.common.type.DeliveryStatusCode;
+import kr.wrightbrothers.apps.common.type.DeliveryType;
 import kr.wrightbrothers.apps.common.type.OrderStatusCode;
 import kr.wrightbrothers.apps.common.type.PaymentMethodCode;
 import lombok.AllArgsConstructor;
@@ -41,8 +43,8 @@ public class DeliveryListDto {
         private String paymentDay;                  // 결제일자
         private String orderNo;                     // 주문번호
         private String orderUserName;               // 주문자
-        private String orderStatusCode;             // 주문상태 코드
-        private String orderStatusName;             // 주문상태 이름
+        private String deliveryStatusCode;          // 배송상태 코드
+        private String deliveryStatusName;          // 배송상태 이름
         private String paymentMethodCode;           // 결제수단 코드
         private String paymentMethodName;           // 결제수단 이름
         private String orderName;                   // 주문명
@@ -53,8 +55,8 @@ public class DeliveryListDto {
         private String recipientAddressDetail;      // 상세주소
 
         // 주문 상태 ENUM 처리
-        public void setOrderStatusName(String orderStatusCode) {
-            this.orderStatusName = OrderStatusCode.of(orderStatusCode).getName();
+        public void setDeliveryStatusName(String deliveryStatusName) {
+            this.deliveryStatusName = DeliveryStatusCode.of(deliveryStatusName).getName();
         }
         // 결제 수단 ENUM 처리
         public void setPaymentMethodName(String paymentMethodCode) {

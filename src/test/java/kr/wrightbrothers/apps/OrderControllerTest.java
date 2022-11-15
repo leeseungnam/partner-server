@@ -56,8 +56,7 @@ public class OrderControllerTest extends BaseControllerTests {
                         new String[]{
                                 PaymentStatusCode.WAIT_DEPOSIT.getCode(),
                                 PaymentStatusCode.COMPLETE_PAYMENT.getCode(),
-                                PaymentStatusCode.CANCEL_PAYMENT.getCode(),
-                                PaymentStatusCode.PARTIAL_CANCEL_PAYMENT.getCode()
+                                PaymentStatusCode.CANCEL_PAYMENT.getCode()
                         }
                 )
                 .paymentMethod(
@@ -151,8 +150,7 @@ public class OrderControllerTest extends BaseControllerTests {
                         new String[]{
                                 PaymentStatusCode.WAIT_DEPOSIT.getCode(),
                                 PaymentStatusCode.COMPLETE_PAYMENT.getCode(),
-                                PaymentStatusCode.CANCEL_PAYMENT.getCode(),
-                                PaymentStatusCode.PARTIAL_CANCEL_PAYMENT.getCode()
+                                PaymentStatusCode.CANCEL_PAYMENT.getCode()
                         }
                 )
                 .paymentMethod(
@@ -222,7 +220,6 @@ public class OrderControllerTest extends BaseControllerTests {
                                         fieldWithPath("data[].orderAmount").type(JsonFieldType.NUMBER).description("주문 금액"),
                                         fieldWithPath("data[].paymentAmount").type(JsonFieldType.NUMBER).optional().description("결제 금액"),
                                         fieldWithPath("data[].paymentDay").type(JsonFieldType.STRING).optional().description("결제 일자"),
-                                        fieldWithPath("data[].cancelDay").type(JsonFieldType.STRING).optional().description("취소 일자"),
                                         fieldWithPath("data[].paymentStatusCode").type(JsonFieldType.STRING).description("결제 상태 코드"),
                                         fieldWithPath("data[].paymentStatusName").type(JsonFieldType.STRING).description("결제 상태 명"),
                                         fieldWithPath("totalItems").type(JsonFieldType.NUMBER).description("전체 조회 건수"),
@@ -235,7 +232,7 @@ public class OrderControllerTest extends BaseControllerTests {
     @Test
     @DisplayName("주문내역 조회")
     void findOrder() throws Exception {
-        String orderNo = "202103020122044681";
+        String orderNo = "202211141716561223";
 
         // 주문내역 상세 API 조회
         mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/orders/{orderNo}", orderNo)
@@ -286,11 +283,6 @@ public class OrderControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.payment.paymentStatusName").type(JsonFieldType.STRING).description("결제 상태 이름"),
                                         fieldWithPath("data.payment.cancelDate").type(JsonFieldType.STRING).description("취소 일시").optional(),
                                         fieldWithPath("data.payment.cancelReason").type(JsonFieldType.STRING).description("취소 사유").optional(),
-                                        fieldWithPath("data.refundBank").type(JsonFieldType.OBJECT).optional().description("환불 입금 정보"),
-                                        fieldWithPath("data.refundBank.refundBankCode").type(JsonFieldType.STRING).description("은행 코드"),
-                                        fieldWithPath("data.refundBank.refundBankName").type(JsonFieldType.STRING).description("은행 이름"),
-                                        fieldWithPath("data.refundBank.refundBankAccountNo").type(JsonFieldType.STRING).description("계좌번호"),
-                                        fieldWithPath("data.refundBank.refundDepositorName").type(JsonFieldType.STRING).description("예금주"),
                                         fieldWithPath("data.productList[]").optional().type(JsonFieldType.ARRAY).description("주문 상품 목록"),
                                         fieldWithPath("data.productList[].orderProductSeq").type(JsonFieldType.NUMBER).description("주문 상품 SEQ"),
                                         fieldWithPath("data.productList[].productCode").type(JsonFieldType.STRING).description("상품 코드"),
@@ -301,6 +293,11 @@ public class OrderControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.productList[].optionName").type(JsonFieldType.STRING).description("옵션 명"),
                                         fieldWithPath("data.productList[].optionSurcharge").type(JsonFieldType.NUMBER).description("옵션 변동 금액"),
                                         fieldWithPath("data.productList[].productQty").type(JsonFieldType.NUMBER).description("구매 수량"),
+                                        fieldWithPath("data.productList[].deliveryType").type(JsonFieldType.STRING).description("배송 구분 타입"),
+                                        fieldWithPath("data.productList[].deliveryName").type(JsonFieldType.STRING).description("배송 구분 명"),
+                                        fieldWithPath("data.productList[].deliveryChargeAmount").type(JsonFieldType.NUMBER).description("배송료"),
+                                        fieldWithPath("data.productList[].cancelDay").type(JsonFieldType.STRING).description("취소일자").optional(),
+                                        fieldWithPath("data.productList[].cancelReason").type(JsonFieldType.STRING).description("취소사유").optional(),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
                                 )
                 ))
@@ -312,12 +309,7 @@ public class OrderControllerTest extends BaseControllerTests {
     @DisplayName("주문내역 수정")
     void updateOrder() throws Exception {
         OrderMemoUpdateDto updateParam = OrderMemoUpdateDto.builder()
-                .orderNo("202103020122044681")
-                .recipientName("홍길동")
-                .recipientPhone("01012341234")
-                .recipientAddressZipCode("12345")
-                .recipientAddress("서울특별시 강남구 강남대로 154길 37")
-                .recipientAddressDetail("주경빌딩 2층")
+                .orderNo("202211141716561223")
                 .orderMemo("주문메모")
                 .build();
 
@@ -339,11 +331,6 @@ public class OrderControllerTest extends BaseControllerTests {
                                 ),
                                 relaxedRequestFields(
                                         fieldWithPath("orderNo").type(JsonFieldType.STRING).description("주문 번호").attributes(key("etc").value("")),
-                                        fieldWithPath("recipientName").type(JsonFieldType.STRING).description("수령자 이름").attributes(key("etc").value("")),
-                                        fieldWithPath("recipientPhone").type(JsonFieldType.STRING).description("수령자 휴대전화").attributes(key("etc").value("")),
-                                        fieldWithPath("recipientAddressZipCode").type(JsonFieldType.STRING).description("배송지 우편번호").attributes(key("etc").value("")),
-                                        fieldWithPath("recipientAddress").type(JsonFieldType.STRING).description("배송지 주소").attributes(key("etc").value("")),
-                                        fieldWithPath("recipientAddressDetail").type(JsonFieldType.STRING).description("배송지 상세주소").attributes(key("etc").value("")),
                                         fieldWithPath("orderMemo").type(JsonFieldType.STRING).description("주문 메모").optional().attributes(key("etc").value(""))
                                 ),
                                 responseFields(
@@ -356,15 +343,10 @@ public class OrderControllerTest extends BaseControllerTests {
         // 변경 체크를 위한 조회
         OrderFindDto.Response nowDto = orderService.findOrder(OrderFindDto.Param.builder()
                 .partnerCode("PT0000001")
-                .orderNo("202103020122044681")
+                .orderNo("202211141716561223")
                 .build());
 
         // 검증
-        assertEquals(updateParam.getRecipientName(), nowDto.getOrder().getRecipientName());
-        assertEquals(updateParam.getRecipientPhone(), nowDto.getOrder().getRecipientPhone());
-        assertEquals(updateParam.getRecipientAddressZipCode(), nowDto.getOrder().getRecipientAddressZipCode());
-        assertEquals(updateParam.getRecipientAddress(), nowDto.getOrder().getRecipientAddress());
-        assertEquals(updateParam.getRecipientAddressDetail(), nowDto.getOrder().getRecipientAddressDetail());
         assertEquals(updateParam.getOrderMemo(), nowDto.getOrder().getOrderMemo());
     }
 

@@ -9,7 +9,7 @@
 		    if(count(ord_prdt_idx) = ${orderProductSeq.length}, true, false) as isCancelPayment
 		  from ord_prdt_info
 		 where ord_no = #{orderNo}
-		   and ord_prdt_stus in ('O06', 'O07')
+		   and ord_prdt_pay_stus in ('S08', 'S09')
 		<foreach collection="orderProductSeq" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
 			#{item}
 		</foreach>
@@ -24,66 +24,87 @@
 		   and prnr_cd = #{partnerCode}
 	</select>
 
+	<update id="updatePaymentRefundAccount" parameterType="kr.wrightbrothers.apps.order.dto.PaymentRefundDto$ReqBody">
+		update ord_prdt_info
+		   set cnc_bank_cd = #{refundBankCode},
+			   cnc_bank_acnt_no = #{refundBankAccountNo},
+			   cnc_rmtr_nm = #{refundDepositorName},
+			   upd_usr_id = #{userId},
+			   upd_dt = now()
+		 where ord_no = #{orderNo}
+		   and prnr_cd = #{partnerCode}
+		   and ord_prdt_idx = #{orderProductSeq}
+	</update>
+
+	<select id="findPaymentRefundAccount" parameterType="kr.wrightbrothers.apps.order.dto.PaymentRefundDto$Param" resultType="kr.wrightbrothers.apps.order.dto.PaymentRefundDto$ResBody">
+		select
+		    p.ord_no as order_no,
+		    p.ord_prdt_idx as order_product_seq,
+		    p.cnc_bank_cd as refund_bank_code,
+			p.cnc_bank_acnt_no as refund_bank_account_no,
+			p.cnc_rmtr_nm as refund_depositor_name
+		  from ord_prdt_info p
+		 inner join ord_info o
+		    on p.ord_no = o.ord_no
+		 where p.ord_no = #{orderNo}
+		   and p.prnr_cd = #{partnerCode}
+		   and p.ord_prdt_idx = #{orderProductSeq}
+	</select>
+
 	<select id="findPaymentToOrder" parameterType="kr.wrightbrothers.apps.order.dto.OrderFindDto$Param" resultType="kr.wrightbrothers.apps.order.dto.PaymentDto">
 		-- 주문내역 상세정보 시 결제정보 조회
 		select
 		    s.ord_amt as order_amount,
 		    s.dlvr_chrg_amt as delivery_charge_amount,
 		    s.pay_amt as payment_amount,
-		    p.pym_dt as payment_date,
-		    p.pay_meth as payment_method_code,
-		    p.pay_meth as payment_method_name,
+		    o.pym_dt as payment_date,
+		    o.pay_meth as payment_method_code,
+		    o.pay_meth as payment_method_name,
 		    s.pay_stus as payment_status_code,
-		    s.pay_stus as payment_status_name,
-		    s.cnc_dt as cancel_date,
-		    if(s.cnc_rsn_cd = 'C99', s.cnc_rsn, cd.intg_cd_val_nm) as cancel_reason
-		  from ord_pay_info p
-		 inner join ord_prnr_info s
-		    on p.ord_no = s.ord_no
+		    s.pay_stus as payment_status_name
+		  from ord_prnr_info s
+		 inner join ord_info o
+		    on s.ord_no = o.ord_no
+		 where s.ord_no = #{orderNo}
 		   and s.prnr_cd = #{partnerCode}
-		  left join com_intg_cd_dtl cd
-		    on s.cnc_rsn_cd = cd.intg_cd_val
-		   and cd.intg_cd_id = '000074'
-		 where p.ord_no = #{orderNo}
 	</select>
-
-	<update id="updateRequestCancelOrderPartner" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto">
-		-- 파트너 결제 취소요청
+	
+	<update id="updateRequestCancelPayment" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto">
+		-- 파트너 상품 통합 상태코드 취소요청 처리
 		update ord_prnr_info
-		   set pay_stus = 'S09',	-- 취소요청 코드
-		       ord_stus = 'O06',	-- 취소요청 코드
-		       cnc_dt = now(),
-		       <if test="cancelReasonCode != null and cancelReasonCode != ''.toString()">
-				   cnc_rsn_cd = #{cancelReasonCode},
-			   </if>
+		   set ord_stus = 'O06',
+		       pay_stus = 'S09',
 		       upd_usr_id = #{userId},
 		       upd_dt = now()
 		 where ord_no = #{orderNo}
-		   and prnr_cd = #{partnerCode}
-	</update>
-
-	<update id="updateRequestCancelOrderProduct" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto">
-		-- 주문 상품 취소 요청 처리
+		   and prnr_cd = #{partnerCode};
+		-- 주문 상품 상태값 상태코드 취소요청 처리
 		update ord_prdt_info
-		   set ord_prdt_stus= 'O06',	-- 취소요청 코드
-		       cnc_rsn_cd	= #{cancelReasonCode},
-		       cnc_rq_dt	= now(),
-			   upd_usr_id	= #{userId},
-			   upd_dt		= now()
-		 where ord_no 		= #{orderNo}
+		   set ord_prdt_stus = 'O06',
+		       ord_prdt_pay_stus = 'S09',
+		       cnc_rq_dt = now(),
+		       <if test="cancelReasonCode != null and cancelReasonCode != ''.toString()">
+					cnc_rsn_cd = #{cancelReasonCode},
+			   </if>
+			   upd_usr_id = #{userId},
+			   upd_dt = now()
+		 where ord_no = #{orderNo}
+		   and prnr_cd = #{partnerCode}
 		<foreach collection="orderProductSeq" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
 			#{item}
 		</foreach>
 	</update>
 
 	<update id="updatePaymentDetailRefundInfo" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto">
-		-- 취소 요청 후 환불 정보에 대한 수정으로
-		-- 불필요 한 수정자, 수정일시는 제외(로직 변경 시 해당부분 추가할 것)
-		update ord_pay_info
-		   set cnc_bank_cd		= ifnull(cnc_bank_cd, #{refundBankCode}),
-			   cnc_bank_acnt_no = ifnull(cnc_bank_acnt_no, #{refundBankAccountNo}),
-			   cnc_rmtr_nm		= ifnull(cnc_rmtr_nm, #{refundDepositorName})
+		update ord_prdt_info
+		   set cnc_bank_cd		= #{refundBankCode},
+			   cnc_bank_acnt_no = #{refundBankAccountNo},
+			   cnc_rmtr_nm		= #{refundDepositorName}
 		 where ord_no = #{orderNo}
+		   and prnr_cd = #{partner}
+		<foreach collection="orderProductSeq" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
+			#{item}
+		</foreach>
 	</update>
 
 	<select id="isCancelPartialPayment" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto" resultType="boolean">
@@ -100,8 +121,9 @@
 			cnc_bank_cd as bank_cd,
 			cnc_bank_acnt_no as bank_acnt_no,
 			cnc_rmtr_nm as dpstr_nm
-		  from ord_pay_info
+		  from ord_prdt_info
 		 where ord_no = #{orderNo}
+		   and prnr_cd = #{partnerCode}
 	</select>
 
 </mapper>

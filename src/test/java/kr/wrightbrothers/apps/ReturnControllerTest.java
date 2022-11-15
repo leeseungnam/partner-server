@@ -253,7 +253,6 @@ public class ReturnControllerTest extends BaseControllerTests {
                 .orderProductSeqArray(new Integer[]{1})
                 .returnProcessCode(OrderStatusCode.START_RETURN.getCode())
                 .requestCode("cgkwe")
-                .requestName("대한통운")
                 .requestValue("102849583785")
                 .build();
 

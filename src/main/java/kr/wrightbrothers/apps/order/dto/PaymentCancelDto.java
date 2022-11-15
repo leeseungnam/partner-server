@@ -80,8 +80,8 @@ public class PaymentCancelDto {
         return Queue.builder()
                 .ordNo(this.orderNo)
                 .prnrCd(this.partnerCode)
-                .ordPrdtIdxList(Arrays.stream(this.orderProductSeq).map(orderProductSeq -> Queue_Int.builder().ordPrdtIdx(orderProductSeq).build()).collect(Collectors.toList()))
-                .cncRsnCd(this.cancelReasonCode)
+                .ordPrdtIdx(Arrays.stream(this.orderProductSeq).map(orderProductSeq -> Queue_Int.builder().ordPrdtIdx(orderProductSeq).build()).collect(Collectors.toList()))
+                .cncRsn(this.cancelReasonCode)
                 .build();
     }
 
@@ -92,11 +92,12 @@ public class PaymentCancelDto {
         return Queue.builder()
                 .ordNo(this.orderNo)
                 .prnrCd(this.partnerCode)
-                .ordPrdtIdxList(Arrays.stream(this.orderProductSeq).map(orderProductSeq -> Queue_Int.builder().ordPrdtIdx(orderProductSeq).build()).collect(Collectors.toList()))
-                .cncRsnCd(this.cancelReasonCode)
+                .ordPrdtIdx(Arrays.stream(this.orderProductSeq).map(orderProductSeq -> Queue_Int.builder().ordPrdtIdx(orderProductSeq).build()).collect(Collectors.toList()))
+                .cncRsn(this.cancelReasonCode)
                 .bankCd(bankInfo.getBankCd())
                 .bankAcntNo(bankInfo.getBankAcntNo())
                 .dpstrNm(bankInfo.getDpstrNm())
+                .usrId(this.userId)
                 .build();
     }
 
@@ -112,11 +113,12 @@ public class PaymentCancelDto {
     public static class Queue {
         private String ordNo;                   // 주문번호
         private String prnrCd;                  // 파트너코드
-        private List<Queue_Int> ordPrdtIdxList; // 주문상품 IDX 배열
-        private String cncRsnCd;                // 취소 사유 코드
+        private List<Queue_Int> ordPrdtIdx;     // 주문상품 IDX 배열
+        private String cncRsn;                  // 취소 사유 코드
         private String bankCd;                  // 은행코드
         private String bankAcntNo;              // 계좌번호
         private String dpstrNm;                 // 예금주
+        private String usrId;                   // 로그인아이디
     }
 
     @Getter
@@ -126,6 +128,7 @@ public class PaymentCancelDto {
     }
 
     @Getter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class BankInfo {
