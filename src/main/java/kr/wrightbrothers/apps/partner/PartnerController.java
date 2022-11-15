@@ -121,8 +121,8 @@ public class PartnerController extends WBController {
 //            entry.setPartnerStatusName(PartnerStatus.getName());
 //            entry.setContractStatusName(PartnerContractStatus.getName());
             String displayName = PartnerStatus.getName();
-            if(PartnerContractStatus.getCode().equals(Partner.Contract.Status.VIOLATE.getCode())
-                    || PartnerContractStatus.getCode().equals(Partner.Contract.Status.WITHDRAWAL.getCode()))
+            if(!(PartnerContractStatus.getCode().equals(Partner.Contract.Status.VIOLATE.getCode())
+                    || PartnerContractStatus.getCode().equals(Partner.Contract.Status.WITHDRAWAL.getCode())))
             {
                 displayName = PartnerContractStatus.getName();
             }
