@@ -1,5 +1,7 @@
 package kr.wrightbrothers.apps.file.service;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -12,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
@@ -72,6 +75,13 @@ public class S3Service {
 
         return s3Client.getUrl(bucket, fileName).toString();
     }
+    public PutObjectResult uploadS3MultipartFile(String bucketName, String fileName, MultipartFile multipartFile) throws SdkClientException, IOException {
+        ObjectMetadata data = new ObjectMetadata();
+
+        data.setContentType(multipartFile.getContentType());
+        data.setContentLength(multipartFile.getSize());
+        return s3Client.putObject(new PutObjectRequest(bucketName, fileName, multipartFile.getInputStream(), data).withCannedAcl(CannedAccessControlList.PublicRead));
+    }
 
     public void uploadS3File(File file, String bucketName, String fileName) throws IOException {
         ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -103,6 +113,22 @@ public class S3Service {
         String fileName = baseDir + "/" + UUID.randomUUID();
         // 파일 업로드
         uploadS3File(file, bucket, fileName);
+
+        return s3Client.getUrl(bucket, fileName).toString();
+    }
+
+    /**
+     * 일반 파일 업로드
+     *
+     * @param multipartFile 파일
+     * @param baseDir 업로드 경로
+     * @return 파일 URL
+     */
+    public String uploadMultipartFile(MultipartFile multipartFile, String baseDir) throws IOException {
+        String fileName = baseDir + "/" + UUID.randomUUID();
+        // 파일 업로드
+        PutObjectResult putObjectResult = uploadS3MultipartFile(bucket, fileName, multipartFile);
+        log.info("[uploadMultipartFile::putObjectResult={}",putObjectResult.toString());
 
         return s3Client.getUrl(bucket, fileName).toString();
     }

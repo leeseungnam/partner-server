@@ -41,16 +41,9 @@ public class FileService {
     public FileUploadDto uploadProfileThumbnail(final MultipartFile multipartFile,
                                        final String fileNo) {
         try {
-            File file = new File(multipartFile.getOriginalFilename());
-            file.createNewFile();
+            log.info("[uploadProfileThumbnail] orgfileName={}",multipartFile.getOriginalFilename());
 
-            // resource auto close
-            try (FileOutputStream fos = new FileOutputStream(file)) {
-                fos.write(multipartFile.getBytes());
-            }
-            log.info("[uploadProfileThumbnail] transfer to filesize={}",file.length());
-
-            String fileSource = s3Service.uploadFile(file, PartnerKey.Aws.A3.Partner_Img_Path);
+            String fileSource = s3Service.uploadMultipartFile(multipartFile, PartnerKey.Aws.A3.Partner_Img_Path);
 
             // 파일정보 저장
             FileUploadDto fileDto = FileUploadDto.builder()
