@@ -5,6 +5,7 @@ import kr.wrightbrothers.apps.common.constants.User;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.RandomUtil;
 import kr.wrightbrothers.apps.file.dto.FileListDto;
+import kr.wrightbrothers.apps.file.dto.FileParamDto;
 import kr.wrightbrothers.apps.file.dto.FileUpdateDto;
 import kr.wrightbrothers.apps.file.dto.FileUploadDto;
 import kr.wrightbrothers.apps.file.service.FileService;
@@ -179,6 +180,7 @@ public class PartnerService {
         // set code name
         result.getPartner().changePartnerStatusName(Partner.Status.valueOfCode(result.getPartner().getPartnerStatus()).getName());
         result.getPartner().changeBusinessClassificationCodeName(Partner.Classification.valueOfCode(result.getPartner().getBusinessClassificationCode()).getName());
+        result.getPartner().changeThumbmailUrl(fileService.findFile(FileParamDto.builder().fileNo(result.getPartner().getThumbnail()).fileSeq(Long.valueOf(1)).build()).getFileSource());
 
         result.getPartnerContract().changeContractStatusName(Partner.Contract.Status.valueOfCode(result.getPartnerContract().getContractStatus()).getName());
         result.getPartnerContract().changeBankCodeName(Partner.Contract.Bank.valueOfCode(result.getPartnerContract().getBankCode()).getName());

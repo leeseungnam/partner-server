@@ -132,11 +132,17 @@ public class PartnerDto {
         @ApiModelProperty(value = "사업자 유형명 공통코드 : 000048(1: 일반과세자, 2:간이과세자, 3:단위과세자, 4:법인사업자, 5:면세사업자, 6:기타사업자)")
         private String businessClassificationCodeName;
 
+        @ApiModelProperty(value = "thumbnail url")
+        private String thumbnailUrl;
+
         public void changePartnerStatusName(String partnerStatusName){
             this.partnerStatusName = partnerStatusName;
         }
         public void changeBusinessClassificationCodeName(String businessClassificationCodeName){
             this.businessClassificationCodeName = businessClassificationCodeName;
+        }
+        public void changeThumbmailUrl(String thumbnailUrl){
+            this.thumbnailUrl = thumbnailUrl;
         }
     }
 }

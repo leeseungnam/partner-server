@@ -5,7 +5,6 @@ import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
 import kr.wrightbrothers.apps.common.constants.Email;
 import kr.wrightbrothers.apps.common.constants.Partner;
 import kr.wrightbrothers.apps.common.constants.User;
-import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.email.dto.SingleEmailDto;
 import kr.wrightbrothers.apps.email.service.EmailService;
@@ -15,7 +14,6 @@ import kr.wrightbrothers.apps.product.service.ProductService;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import kr.wrightbrothers.apps.user.dto.UserDto;
 import kr.wrightbrothers.apps.user.service.UserService;
-import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.lang.WBCustomException;
 import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBKey;
@@ -179,10 +177,14 @@ public class PartnerController extends WBController {
                                           , @ApiParam(value = "섬네일 이미지 파일") @RequestParam MultipartFile multipartFile
                                           ,@ApiIgnore @AuthenticationPrincipal UserPrincipal user
     ) {
-        log.info("[updatePartnerThumbnail]::partnerCode={}, file={}", partnerCode, multipartFile.getSize());
-        partnerService.savePartnerThumbnail(user.getUsername(), partnerCode, multipartFile);
+        WBModel response = new WBModel();
 
-        return defaultMsgResponse(messageSourceAccessor, "common.save.success");
+        log.info("[updatePartnerThumbnail]::partnerCode={}, file={}", partnerCode, multipartFile.getSize());
+
+        response.addObject(WBKey.WBModel.DefaultDataKey, partnerService.savePartnerThumbnail(user.getUsername(), partnerCode, multipartFile).getFileSource());
+        response.addObject(PartnerKey.WBConfig.Message.Alias, messageSourceAccessor.getMessage(messagePrefix + "common.save.success"));
+
+        return response;
     }
 
     @ApiImplicitParams({
