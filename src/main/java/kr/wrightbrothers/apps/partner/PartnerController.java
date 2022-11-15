@@ -21,6 +21,7 @@ import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.ObjectUtils;
@@ -37,6 +38,8 @@ import java.util.List;
 @RequestMapping(value = "/v1/partner")
 @RequiredArgsConstructor
 public class PartnerController extends WBController {
+    @Value("${app.client.host}")
+    private String clientHost;
     private final String messagePrefix = "api.message.";
     private final MessageSourceAccessor messageSourceAccessor;
     private final PartnerService partnerService;
@@ -271,15 +274,11 @@ public class PartnerController extends WBController {
         partnerService.insetPartnerOperator(paramDto);
 
         //  send invite email
-        String redirectUrl = "";
-//        redirectUrl = "http://localhost:8080/partner/"+partnerCode+"/operator/"+inviteCode;
-        redirectUrl = "http://localhost:3300/partner/login?invite="+inviteCode;
-
         UserDto user = userService.findUserByDynamic(UserDto.builder().userId(paramDto.getPartnerOperator().getInviteReceiver()).build());
         //  send email
         SingleEmailDto.ResBody resBody = emailService.singleSendEmail(SingleEmailDto.ReqBody.builder()
                         .emailType(Email.INVITE_OPERATOR.getCode())
-                        .authCode(redirectUrl)
+                        .authCode(clientHost + "/partner/login?invite="+inviteCode)
                         .userId(paramDto.getPartnerOperator().getInviteReceiver())
                         .userName(paramDto.getPartnerOperator().getInviteReceiverName())
                         .build());
