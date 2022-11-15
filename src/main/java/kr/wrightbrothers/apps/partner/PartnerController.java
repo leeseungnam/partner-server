@@ -118,11 +118,10 @@ public class PartnerController extends WBController {
             Partner.Contract.Status PartnerContractStatus = Partner.Contract.Status.valueOfCode(entry.getContractStatus());
             User.Auth UserAuth = User.Auth.valueOfCode(entry.getAuthCode());
 
-//            entry.setPartnerStatusName(PartnerStatus.getName());
-//            entry.setContractStatusName(PartnerContractStatus.getName());
             String displayName = PartnerStatus.getName();
-            if(!(PartnerContractStatus.getCode().equals(Partner.Contract.Status.VIOLATE.getCode())
-                    || PartnerContractStatus.getCode().equals(Partner.Contract.Status.WITHDRAWAL.getCode())))
+            if((PartnerContractStatus.getCode().equals(Partner.Contract.Status.REQUEST.getCode())
+                    || PartnerContractStatus.getCode().equals(Partner.Contract.Status.REJECT.getCode())
+            ))
             {
                 displayName = PartnerContractStatus.getName();
             }
