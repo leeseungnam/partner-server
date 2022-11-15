@@ -66,6 +66,7 @@ public class PartnerService {
                     .fileNo(obj.getFileNo())
                     .fileSeq(obj.getFileSeq())
                     .fileStatus(WBKey.TransactionType.Delete)
+                    .fileSource(obj.getFileSource())
                     .userId(userId)
                     .build()).collect(Collectors.toList());
 
