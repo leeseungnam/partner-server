@@ -199,7 +199,7 @@ public class PartnerController extends WBController {
             ,@ApiIgnore @AuthenticationPrincipal UserPrincipal user
     ) {
         log.info("[deletePartnerThumbnail]::partnerCode={}", partnerCode);
-        partnerService.deletePartnerThumbnail(user.getUsername(), partnerCode);
+        partnerService.deletePartnerThumbnail(user.getUsername(), partnerCode, null);
 
         return defaultMsgResponse(messageSourceAccessor, "common.complete");
     }

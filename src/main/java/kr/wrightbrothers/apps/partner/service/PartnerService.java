@@ -38,20 +38,16 @@ public class PartnerService {
     @Transactional(value = PartnerKey.WBDataBase.TransactionManager.Global)
     public FileUploadDto savePartnerThumbnail(String userId, String partnerCode, MultipartFile multipartFile) {
 
-        // 기존 thumbnail 존재하는 경우 삭제
-        deletePartnerThumbnail(userId, partnerCode);
-
         String fileNo = RandomUtil.generateNo();
-        dao.update(namespace+"updatePartnerThumbnail", PartnerDto.ReqBody.builder()
-                        .partnerCode(partnerCode)
-                        .thumbnail(fileNo)
-                        .build());
+
+        // 기존 thumbnail 존재하는 경우 삭제
+        deletePartnerThumbnail(userId, partnerCode, fileNo);
 
         return fileService.uploadProfileThumbnail(multipartFile, fileNo);
     }
 
     @Transactional(value = PartnerKey.WBDataBase.TransactionManager.Global)
-    public void deletePartnerThumbnail(String userId, String partnerCode) {
+    public void deletePartnerThumbnail(String userId, String partnerCode, String fileNo) {
 
         PartnerDto.ResBody partnerDto = dao.selectOne(namespace + "findPartnerByPartnerCode", partnerCode);
 
@@ -68,6 +64,11 @@ public class PartnerService {
                     .build()).collect(Collectors.toList());
 
             fileService.s3FileUpload(fileList, null, false);
+
+            dao.update(namespace+"updatePartnerThumbnail", PartnerDto.ReqBody.builder()
+                    .partnerCode(partnerCode)
+                    .thumbnail(fileNo)
+                    .build());
         }
     }
     @Transactional(value = PartnerKey.WBDataBase.TransactionManager.Default)
