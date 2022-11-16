@@ -40,7 +40,7 @@
 	<!-- Default Console Log -->
 	<appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
 		<layout class="ch.qos.logback.classic.PatternLayout">
-			<pattern>${LOG_PATTERN}</pattern>
+			<pattern>%d [%X{thread-id}] %level [%c] %m%n</pattern>
 		</layout>
 	</appender>
 
