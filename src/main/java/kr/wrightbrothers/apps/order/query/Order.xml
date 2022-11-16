@@ -288,4 +288,62 @@
 		  order by o.ord_no desc
 	</select>
 
+	<update id="updatePreparingDelivery" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryPreparingDto">
+		-- 주문상품
+		update ord_prdt_info
+		   set ord_prdt_stus = 'D01',
+		       upd_usr_id = #{userId},
+		       upd_dt = now()
+		 where ord_no = #{orderNo}
+		   and prnr_cd = #{partnerCode}
+		   and ord_prdt_stus = 'O05';
+
+		insert into ord_shpn_info(ord_no,
+		                          ord_prdt_idx,
+		                          prdt_cd,
+		                          ord_dlvr_stus,
+		                          rcpnt_nm,
+		                          rcpnt_usr_phn,
+		                          rcpnt_adrs,
+		                          rcpnt_adrs_sub,
+		                          rcpnt_adrs_zip_cd,
+		                          cre_usr_id,
+		                          upd_usr_id)
+		select
+		    p.ord_no,
+		    p.ord_prdt_idx,
+		    p.prdt_cd,
+		    'D01',
+		    o.rcpnt_nm,
+		    o.rcpnt_usr_phn,
+		    o.rcpnt_adrs,
+		    o.rcpnt_adrs_sub,
+		    o.rcpnt_adrs_zip_cd,
+		    #{userId},
+		    #{userId}
+		  from ord_prdt_info p
+		 inner join ord_info o
+			on p.ord_no = o.ord_no
+		 where p.ord_no = #{orderNo}
+		   and p.prnr_cd = #{partnerCode};
+	</update>
+	
+	<select id="isNonOrderComplete" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryPreparingDto" resultType="boolean">
+		select
+			if(count(ord_no) = 0, true, false) as isNonOrderComplete
+		  from ord_prnr_info
+		 where ord_no = #{orderNo}
+		   and prnr_cd = #{partnerCode}
+		   and ord_stus = 'O05'
+		   and pay_stus = 'S10'
+	</select>
+	
+	<select id="findOrderProductSeq" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryPreparingDto" resultType="java.lang.Integer">
+		select
+		    ord_prdt_idx
+		  from ord_prdt_info
+		 where ord_no = #{orderNo}
+		   and prnr_cd = #{partnerCode}
+	</select>
+	
 </mapper>

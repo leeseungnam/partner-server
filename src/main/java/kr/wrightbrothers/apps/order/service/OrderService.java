@@ -1,16 +1,18 @@
 package kr.wrightbrothers.apps.order.service;
 
+import kr.wrightbrothers.apps.common.type.DocumentSNS;
+import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.ExcelUtil;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
-import kr.wrightbrothers.apps.order.dto.OrderExcelDto;
-import kr.wrightbrothers.apps.order.dto.OrderFindDto;
-import kr.wrightbrothers.apps.order.dto.OrderListDto;
-import kr.wrightbrothers.apps.order.dto.OrderMemoUpdateDto;
+import kr.wrightbrothers.apps.order.dto.*;
+import kr.wrightbrothers.apps.queue.OrderQueue;
+import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
@@ -24,6 +26,7 @@ import java.util.List;
 public class OrderService {
 
     private final WBCommonDao dao;
+    private final OrderQueue orderQueue;
     private final PaymentService paymentService;
     private final ResourceLoader resourceLoader;
     private final String namespace = "kr.wrightbrothers.apps.order.query.Order.";
@@ -100,5 +103,26 @@ public class OrderService {
         response.setHeader("Content-Disposition", "attachment;filename=\"" + URLEncoder.encode("주문목록리스트.xlsx", StandardCharsets.UTF_8) + "\";");
         excel.workbook.write(response.getOutputStream());
         excel.workbook.close();
+    }
+
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    public void updatePreparingDelivery(DeliveryPreparingDto paramDto) {
+        // 싱테 준비중 변경 가능여부 체크
+        if (dao.selectOne(namespace + "isNonOrderComplete", paramDto, PartnerKey.WBDataBase.Alias.Admin))
+            throw new WBBusinessException(ErrorCode.INVALID_DELIVERY_PREPARING.getErrCode(), new String[]{"주문완료(결제완료)"});
+
+        // 상품 준비중 변경(배송테이블 데이터 생성)
+        dao.update(namespace + "updatePreparingDelivery", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+
+        // 대표 상태코드 갱신
+        dao.update(namespace + "updateOrderStatusRefresh", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin);
+
+        // SNS 주문상태 변경처리 전송
+        orderQueue.sendToAdmin(
+                DocumentSNS.UPDATE_DELIVERY_PREPARING,
+                // Queue 전송 데이터 객체 변환
+                paramDto.toQueueDto(dao.selectList(namespace + "findOrderProductSeq", paramDto, PartnerKey.WBDataBase.Alias.Admin)),
+                PartnerKey.TransactionType.Update
+        );
     }
 }

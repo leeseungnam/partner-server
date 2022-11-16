@@ -64,15 +64,4 @@ public class DeliveryListDto {
         }
     }
 
-    @Getter
-    @AllArgsConstructor
-    public static class Statistics {
-        private long totalDeliveryCount;       // 전체배송 건수
-        private long readyProductCount;        // 상품준비중 건수
-        private long startDeliveryCount;       // 배송중 건수
-        private long partialDeliveryCount;     // 부분배송 건수
-        private long exchangeDeliveryCount;    // 교환배송 건수
-        private long finishDeliveryCount;      // 배송완료 건수
-    }
-
 }

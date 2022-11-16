@@ -147,7 +147,7 @@ public class ProductService {
         fileService.s3FileUpload(paramDto.getFileList(), WBKey.Aws.A3.Product_Img_Path + paramDto.getProduct().getProductCode(), true);
     }
 
-    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Default)
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void updateProductStatus(StatusUpdateDto paramDto) {
         // 이력정보 등록
         Arrays.stream(paramDto.getProductCodeList())

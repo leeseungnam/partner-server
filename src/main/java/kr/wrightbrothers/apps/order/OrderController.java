@@ -4,10 +4,7 @@ import io.swagger.annotations.*;
 import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
-import kr.wrightbrothers.apps.order.dto.OrderExcelDto;
-import kr.wrightbrothers.apps.order.dto.OrderFindDto;
-import kr.wrightbrothers.apps.order.dto.OrderListDto;
-import kr.wrightbrothers.apps.order.dto.OrderMemoUpdateDto;
+import kr.wrightbrothers.apps.order.dto.*;
 import kr.wrightbrothers.apps.order.service.OrderService;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
@@ -163,6 +160,19 @@ public class OrderController extends WBController {
     public WBModel updateOrder(@ApiParam(value = "주문내역 수정 데이터") @Valid @RequestBody OrderMemoUpdateDto paramDto) {
         // 주문 정보 수정
         orderService.updateOrder(paramDto);
+
+        return noneMgsResponse(messageSourceAccessor);
+    }
+
+    @UserPrincipalScope
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
+    })
+    @ApiOperation(value = "주문정보의 상태를 상품 준비중 단계로 변경", notes = "주문정보의 상태를 상품 준비중 단계로 변경 처리")
+    @PatchMapping("/orders/preparing-deliveries")
+    public WBModel updatePreparingDelivery(@ApiParam(value = "상품 준비중 변경 데이터") @Valid @RequestBody DeliveryPreparingDto paramDto) {
+        // 상품 준비중 상태 변경
+        orderService.updatePreparingDelivery(paramDto);
 
         return noneMgsResponse(messageSourceAccessor);
     }

@@ -388,6 +388,16 @@ include::{snippets}/payment-refundAccount-update/request-fields.adoc[]
 include::{snippets}/payment-refundAccount-update/http-response.adoc[]
 include::{snippets}/payment-refundAccount-update/response-fields.adoc[]
 
+==== 상품 준비중(추가)
+
+.HTTP request
+include::{snippets}/order-preparing-delivery-update/http-request.adoc[]
+include::{snippets}/order-preparing-delivery-update/request-headers.adoc[]
+include::{snippets}/order-preparing-delivery-update/request-fields.adoc[]
+.HTTP response
+include::{snippets}/order-preparing-delivery-update/http-response.adoc[]
+include::{snippets}/order-preparing-delivery-update/response-fields.adoc[]
+
 === 배송내역 API 관리
 
 ==== 배송내역 목록 조회

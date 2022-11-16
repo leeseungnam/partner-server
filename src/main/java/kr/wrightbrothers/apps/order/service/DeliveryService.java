@@ -1,8 +1,10 @@
 package kr.wrightbrothers.apps.order.service;
 
+import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.ExcelUtil;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.*;
+import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -15,7 +17,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -57,20 +58,11 @@ public class DeliveryService {
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void updateDeliveryInvoice(DeliveryInvoiceUpdateDto paramDto) {
-        Arrays.stream(paramDto.getOrderProductSeqArray())
-                .forEach(orderProductSeq -> {
-                    // 주문 상품 SEQ 설정
-                    paramDto.setOrderProductSeq(orderProductSeq);
+        // 요청 주문 상품 목록에 배송 진행된 상품 유무 확인
+        if (dao.selectOne(namespace + "isDeliveryStart", paramDto, PartnerKey.WBDataBase.Alias.Admin))
+            throw new WBBusinessException(ErrorCode.ALREADY_DELIVERY_START.getErrCode(), new String[]{"송장번호"});
 
-                    // 배송정보 입력 가능 상태 체크
-                    // 시스템 에러가 아닌 이상 다른 상태 코드는 패스
-                    if (dao.selectOne(namespace + "isDeliveryInvoiceCheck", paramDto, PartnerKey.WBDataBase.Alias.Admin))
-                        return;
-
-                    // 배송정보 입력 시 배송 중 상태로 진행 처리(배송, 주문상품 배송중)
-                    dao.update(namespace + "updateDeliveryStart", paramDto, PartnerKey.WBDataBase.Alias.Admin);
-                });
-
+        dao.update(namespace + "updateDeliveryStart", paramDto, PartnerKey.WBDataBase.Alias.Admin);
         // 대표 상태코드 최신화 프로시져 호출
         dao.update(namespaceOrder + "updateOrderStatusRefresh", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin);
     }
@@ -81,7 +73,11 @@ public class DeliveryService {
     }
 
     public void updateDelivery(DeliveryUpdateDto paramDto) {
-        // 상품준비중, 배송중 주문 상품의 배송지 정보 변경 처리
+        // 요청 주문 상품 목록에 배송 진행된 상품 유무 확인
+        if (dao.selectOne(namespace + "isDeliveryStart", paramDto, PartnerKey.WBDataBase.Alias.Admin))
+            throw new WBBusinessException(ErrorCode.ALREADY_DELIVERY_START.getErrCode(), new String[]{"배송정보"});
+
+        // 상품준비중 상품의 배송지 정보 변경 처리
         dao.update(namespace + "updateDelivery", paramDto, PartnerKey.WBDataBase.Alias.Admin);
     }
 

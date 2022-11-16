@@ -69,7 +69,9 @@ system:
     temp:
       # 임시 파일 저장 위치
       path: /Users/chals/partner_project/file_temp
-
+app:
+  client:
+    host: http://localhost:3300
 jwt:
   secret-key: aYEFtKMCn0xCg5caH1nnFuHfdAB0lBOvdonxq80VqOGNnG6QcyagXWOLrUdqJnzexUXYceMhGNFNYsA6rblSibUEh0yRsJ3XO1um1iMdoekOPzj4zKlokcu9TxTbz5DHYVLkqX3q9JrLgbLZFXD8ynOHfRHRL5Ge64iFZBVm9X517fwZrNornOmK2L7hUz10SgZpxAz6
   validation-time:

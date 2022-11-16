@@ -6,6 +6,7 @@ import kr.wrightbrothers.apps.common.type.OrderStatusCode;
 import kr.wrightbrothers.apps.common.type.PaymentMethodCode;
 import kr.wrightbrothers.apps.common.type.PaymentStatusCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.order.dto.DeliveryPreparingDto;
 import kr.wrightbrothers.apps.order.dto.OrderFindDto;
 import kr.wrightbrothers.apps.order.dto.OrderListDto;
 import kr.wrightbrothers.apps.order.dto.OrderMemoUpdateDto;
@@ -277,6 +278,8 @@ public class OrderControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.payment.deliveryChargeAmount").type(JsonFieldType.NUMBER).description("배송 금액"),
                                         fieldWithPath("data.payment.paymentAmount").type(JsonFieldType.NUMBER).description("결제 금액"),
                                         fieldWithPath("data.payment.paymentDate").type(JsonFieldType.STRING).optional().description("결제 일시"),
+                                        fieldWithPath("data.payment.approvalNo").type(JsonFieldType.STRING).optional().description("* PG 승인번호"),
+                                        fieldWithPath("data.payment.rentalAmount").type(JsonFieldType.NUMBER).optional().description("* 월 렌탈료"),
                                         fieldWithPath("data.payment.paymentMethodCode").type(JsonFieldType.STRING).description("결제 수단 코드"),
                                         fieldWithPath("data.payment.paymentMethodName").type(JsonFieldType.STRING).description("결제 수단 이름"),
                                         fieldWithPath("data.payment.paymentStatusCode").type(JsonFieldType.STRING).description("결제 상태 코드"),
@@ -348,6 +351,54 @@ public class OrderControllerTest extends BaseControllerTests {
 
         // 검증
         assertEquals(updateParam.getOrderMemo(), nowDto.getOrder().getOrderMemo());
+    }
+
+    @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @DisplayName("주문상품 상품준비중 상태변경")
+    void updatePreparingDelivery() throws Exception {
+        DeliveryPreparingDto deliveryPreparingDto = DeliveryPreparingDto.builder()
+                .orderNo("202211141716561223")
+                .build();
+
+        // 주문상품 상품준비중 상태변경 API 테스트
+        mockMvc.perform(patch("/v1/orders/preparing-deliveries")
+                    .header(AUTH_HEADER, JWT_TOKEN)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content((new ObjectMapper().writeValueAsString(deliveryPreparingDto)))
+                    .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.WBCommon.state").value("S"))
+                .andDo(
+                        document("order-preparing-delivery-update",
+                                requestDocument(),
+                                responseDocument(),
+                                requestHeaders(
+                                        headerWithName(AUTH_HEADER).description("JWT 토큰")
+                                ),
+                                relaxedRequestFields(
+                                        fieldWithPath("orderNo").type(JsonFieldType.STRING).description("주문 번호").attributes(key("etc").value(""))
+                                ),
+                                responseFields(
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
+                                        fieldWithPath("WBCommon.message").type(JsonFieldType.STRING).description("메시지")
+                                )
+                ))
+                ;
+
+        // 검증
+        OrderFindDto.Response nowDto =  orderService.findOrder(
+                OrderFindDto.Param.builder()
+                        .partnerCode("PT0000001")
+                        .orderNo("202211141716561223")
+                        .build()
+        );
+
+        assertEquals(nowDto.getOrder().getOrderStatusCode(), OrderStatusCode.READY_PRODUCT.getCode());
+        nowDto.getProductList().forEach(productDto -> {
+            assertEquals(productDto.getOrderProductStatusCode(), OrderStatusCode.READY_PRODUCT.getCode());
+        });
     }
 
 }

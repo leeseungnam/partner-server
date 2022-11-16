@@ -9,6 +9,7 @@
 		    if(count(ord_prdt_idx) = ${orderProductSeq.length}, true, false) as isCancelPayment
 		  from ord_prdt_info
 		 where ord_no = #{orderNo}
+		   and prnr_cd = #{partnerCode}
 		   and ord_prdt_pay_stus in ('S08', 'S09')
 		<foreach collection="orderProductSeq" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
 			#{item}
@@ -58,6 +59,8 @@
 		    s.dlvr_chrg_amt as delivery_charge_amount,
 		    s.pay_amt as payment_amount,
 		    o.pym_dt as payment_date,
+		    (select max(trsctn_id) from ord_trsctn_info where ord_no = o.ord_no) as approval_no,
+		    null as rental_amount,
 		    o.pay_meth as payment_method_code,
 		    o.pay_meth as payment_method_name,
 		    s.pay_stus as payment_status_code,

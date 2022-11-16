@@ -9,8 +9,8 @@
 			date_format(o.pym_dt, '%Y-%m-%d') as payment_day,
 			o.ord_no as order_no,
 			m.usr_nm as order_user_name,
-			if(s.ord_stus in ('D05', 'R01', 'R02', 'R03', 'R04', 'R05', 'R06', 'C05'), 'D05', s.ord_stus) as delivery_status_code,
-			if(s.ord_stus in ('D05', 'R01', 'R02', 'R03', 'R04', 'R05', 'R06', 'C05'), 'D05', s.ord_stus) as delivery_status_name,
+			s.ord_stus as delivery_status_code,
+			s.ord_stus as delivery_status_name,
 			o.pay_meth as payment_method_code,
 			o.pay_meth as payment_method_name,
 			s.ord_nm as order_name,
@@ -38,14 +38,12 @@
 				and _p.ord_prdt_idx = _d.ord_prdt_idx
 				and _p.prdt_cd = _d.prdt_cd
 			  where _p.prnr_cd = #{partnerCode}
-			-- 배송 상태
-			<foreach collection="deliveryStatus" item="item" index="index" open="and _d.ord_dlvr_stus in (" separator="," close=")">
-				#{item}
-			</foreach>
-			-- 배송 방법
-			<foreach collection="deliveryType" item="item" index="index" open="and _p.dlvr_tp in (" separator="," close=")">
-				#{item}
-			</foreach>
+			<if test="keywordValue == null or keywordValue == ''">
+				-- 배송 방법
+				<foreach collection="deliveryType" item="item" index="index" open="and _p.dlvr_tp in (" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
 		      group by _p.ord_no
 		) g on o.ord_no = g.ord_no
 		 where s.prnr_cd = #{partnerCode}
@@ -71,69 +69,53 @@
 			</when>
 			<otherwise>
 				and	o.pym_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+				-- 배송 상태
+				<foreach collection="deliveryStatus" item="item" index="index" open="and s.ord_stus in (" separator="," close=")">
+					#{item}
+				</foreach>
 			</otherwise>
 		</choose>
 		order by o.pym_dt desc
 	</select>
 
-	<select id="isDeliveryInvoiceCheck" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto" resultType="boolean">
+	<select id="isDeliveryStart" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto" resultType="boolean">
 		select
-		    if(ord_prdt_stus in ('D01', 'D02'), false, true) as isDeliveryInvoiceCheck		-- D01 상품준비중, D02 배송중
+		    if(count(ord_prdt_idx) != ${orderProductSeqArray.length}, true, false) as isDeliveryStart
 		  from ord_prdt_info
 		 where ord_no = #{orderNo}
-		   and ord_prdt_idx = #{orderProductSeq}
 		   and prnr_cd = #{partnerCode}
+		   and ord_prdt_stus = 'D01'	-- 상품준비중
+		-- 주문상품 SEQ
+		<foreach collection="orderProductSeqArray" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
+			#{item}
+		</foreach>
 	</select>
 
 	<update id="updateDeliveryStart" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto">
-		insert into ord_shpn_info(ord_no,
-								  ord_prdt_idx,
-								  prdt_cd,
-								  ord_dlvr_stus,
-								  rcpnt_nm,
-								  rcpnt_usr_phn,
-								  rcpnt_adrs_zip_cd,
-								  rcpnt_adrs,
-								  rcpnt_adrs_sub,
-								  dlvry_cmpny,
-								  invc_no,
-								  invc_inp_dt,
-								  cre_usr_id,
-								  cre_dt,
-								  upd_usr_id,
-								  upd_dt)
-		values(#{orderNo},
-			   #{orderProductSeq},
-			   (select prdt_cd from ord_prdt_info where ord_no = #{orderNo} and ord_prdt_idx = #{orderProductSeq}),
-			   'D02',
-		       (select rcpnt_nm from ord_info where ord_no = #{orderNo}),
-			   (select rcpnt_usr_phn from ord_info where ord_no = #{orderNo}),
-			   (select rcpnt_adrs_zip_cd from ord_info where ord_no = #{orderNo}),
-			   (select rcpnt_adrs from ord_info where ord_no = #{orderNo}),
-			   (select rcpnt_adrs_sub from ord_info where ord_no = #{orderNo}),
-			   #{deliveryCompanyCode},
-			   #{invoiceNo},
-			   now(),
-			   #{userId},
-			   now(),
-			   #{userId},
-			   now()
-			  )
-		on duplicate key
-		update
-		    dlvry_cmpny = #{deliveryCompanyCode},
-		    invc_no = #{invoiceNo},
-		    ord_dlvr_stus = 'D02',
-		    invc_inp_dt = now(),
-		    upd_usr_id = #{userId},
-		    upd_dt = now();
+		update ord_shpn_info
+		   set dlvry_cmpny = #{deliveryCompanyCode},
+		       invc_no = #{invoiceNo},
+		       ord_dlvr_stus = 'D02',
+		       invc_inp_dt = now(),
+		       upd_usr_id = #{userId},
+		       upd_dt = now()
+		 where ord_no = #{orderNo}
+		-- 주문상품 SEQ
+		<foreach collection="orderProductSeqArray" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
+			#{item}
+		</foreach>
+		   and ord_dlvr_stus = 'D01';
 
 		update ord_prdt_info
 		   set ord_prdt_stus = 'D02',
 		       upd_usr_id = #{userId},
 		       upd_dt = now()
 		 where ord_no = #{orderNo}
-		   and ord_prdt_idx = #{orderProductSeq};
+		-- 주문상품 SEQ
+		<foreach collection="orderProductSeqArray" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
+			#{item}
+		</foreach>
+		   and prnr_cd = #{partnerCode};
 	</update>
 	
 	<update id="updateDelivery" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryUpdateDto">
@@ -146,7 +128,7 @@
 		       upd_usr_id = #{userId},
 		       upd_dt = now()
 		 where ord_no = #{orderNo}
-		   and ord_dlvr_stus in ('D01', 'D02')
+		   and ord_dlvr_stus = 'D01'
 		<foreach collection="orderProductSeqArray" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
 			#{item}
 		</foreach>

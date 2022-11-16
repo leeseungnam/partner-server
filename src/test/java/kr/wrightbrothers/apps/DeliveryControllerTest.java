@@ -161,6 +161,8 @@ class DeliveryControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.payment.deliveryChargeAmount").type(JsonFieldType.NUMBER).description("배송 금액"),
                                         fieldWithPath("data.payment.paymentAmount").type(JsonFieldType.NUMBER).description("결제 금액"),
                                         fieldWithPath("data.payment.paymentDate").type(JsonFieldType.STRING).optional().description("결제 일시"),
+                                        fieldWithPath("data.payment.approvalNo").type(JsonFieldType.STRING).optional().description("* PG 승인번호"),
+                                        fieldWithPath("data.payment.rentalAmount").type(JsonFieldType.NUMBER).optional().description("* 월 렌탈료"),
                                         fieldWithPath("data.payment.paymentMethodCode").type(JsonFieldType.STRING).description("결제 수단 코드"),
                                         fieldWithPath("data.payment.paymentMethodName").type(JsonFieldType.STRING).description("결제 수단 이름"),
                                         fieldWithPath("data.payment.paymentStatusCode").type(JsonFieldType.STRING).description("결제 상태 코드"),
@@ -256,7 +258,7 @@ class DeliveryControllerTest extends BaseControllerTests {
     @DisplayName("배송지 저장")
     void updateDelivery() throws Exception {
         DeliveryUpdateDto updateDto = DeliveryUpdateDto.builder()
-                .orderNo("202211141716561223")
+                .orderNo("202211141819299533")
                 .orderProductSeqArray(new Integer[]{1})
                 .recipientName("수령자명")
                 .recipientPhone("01047183922")
@@ -303,7 +305,7 @@ class DeliveryControllerTest extends BaseControllerTests {
     @DisplayName("송장번호 저장")
     void updateDeliveryInvoice() throws Exception {
         DeliveryInvoiceUpdateDto updateDto = DeliveryInvoiceUpdateDto.builder()
-                .orderNo("202211141716561223")
+                .orderNo("202211141819299533")
                 .orderProductSeqArray(new Integer[]{1})
                 .deliveryCompanyCode("cjgls")
                 .deliveryCompanyName("CJ대한통운")
