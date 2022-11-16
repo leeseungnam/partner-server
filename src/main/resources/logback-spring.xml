@@ -1,32 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration packagingData="true" scan="true" scanPeriod="30">
 	<springProfile name="dev,stag,prod">
+		<property name="ROOT_LOG_PATH" value="/app/partner/logs"/>
+		<property name="ROOT_PACKAGE_NAME" value="kr.wrightbrothers"/>
+		<property name="LOG_PATTERN" value="%d [%X{thread-id}] %level [%c] %m%n"/>
+		<property name="LOG_DAYS" value="30"/>
+		<property name="LOG_FILE_SIZE" value="50MB"/>
+
 		<!-- System Logs(Total) -->
 		<appender name="server" class="ch.qos.logback.core.rolling.RollingFileAppender">
-			<file>/app/partner/server/logs/partner-server.log</file>
+			<file>${ROOT_LOG_PATH}/server/partner-server.log</file>
 			<encoder>
-				<pattern>%d [%X{thread-id}] %level [%c] %m%n</pattern>
+				<pattern>${LOG_PATTERN}</pattern>
 			</encoder>
 			<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-				<fileNamePattern>/app/partner/server/logs/partner-server_%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+				<fileNamePattern>${ROOT_LOG_PATH}/server/partner-server_%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
 				<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-					<maxFileSize>50MB</maxFileSize>
+					<maxFileSize>${LOG_FILE_SIZE}</maxFileSize>
 				</timeBasedFileNamingAndTriggeringPolicy>
-				<maxHistory>30</maxHistory>
+				<maxHistory>${LOG_DAYS}</maxHistory>
 			</rollingPolicy>
 		</appender>
 		<!-- Partner Package Logs -->
 		<appender name="app" class="ch.qos.logback.core.rolling.RollingFileAppender">
-			<file>/app/partner/server/logs/partner-app.log</file>
+			<file>${ROOT_LOG_PATH}/server/partner-app.log</file>
 			<encoder>
-				<pattern>%d [%X{thread-id}] %level [%c] %m%n</pattern>
+				<pattern>${LOG_PATTERN}</pattern>
 			</encoder>
 			<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-				<fileNamePattern>/app/partner/server/logs/partner-app_%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+				<fileNamePattern>${ROOT_LOG_PATH}/server/partner-app_%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
 				<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-					<maxFileSize>50MB</maxFileSize>
+					<maxFileSize>${LOG_FILE_SIZE}</maxFileSize>
 				</timeBasedFileNamingAndTriggeringPolicy>
-				<maxHistory>30</maxHistory>
+				<maxHistory>${LOG_DAYS}</maxHistory>
 			</rollingPolicy>
 		</appender>
 	</springProfile>
@@ -34,7 +40,7 @@
 	<!-- Default Console Log -->
 	<appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
 		<layout class="ch.qos.logback.classic.PatternLayout">
-			<pattern>%d [%X{thread-id}] %level [%c] %m%n</pattern>
+			<pattern>${LOG_PATTERN}</pattern>
 		</layout>
 	</appender>
 
@@ -44,7 +50,7 @@
 			<appender-ref ref="app" />
 		</springProfile>
 	</logger>
-	<logger name="kr.wrightbrothers" level="debug">
+	<logger name="${ROOT_PACKAGE_NAME}" level="debug">
 		<springProfile name="dev,stag,prod">
 			<appender-ref ref="app" />
 		</springProfile>
