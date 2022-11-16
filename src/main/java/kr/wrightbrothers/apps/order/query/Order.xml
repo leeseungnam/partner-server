@@ -224,6 +224,7 @@
 			date_format(p.cnc_cplt_dt, '%Y-%m-%d') as cancel_day,
 		    if(p.cnc_rsn_cd = 'C99', p.cnc_rsn, c.intg_cd_val_nm) as cancel_reason,
 			date_format(s.rtrn_dlvry_end_dt, '%Y-%m-%d') as return_delivery_endDay,
+			s.rtrn_dlvry_cmpny as returnDeliveryCompany,
 			s.rtrn_invc_no as returnInvoiceNo
 		  from ord_prdt_info p
 		  left join ord_shpn_info s
