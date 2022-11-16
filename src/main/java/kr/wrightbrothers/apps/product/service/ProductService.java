@@ -71,8 +71,9 @@ public class ProductService {
         // 판매 정보
         dao.insert(namespace + "mergeSellInfo", paramDto.getSellInfo(), PartnerKey.WBDataBase.Alias.Admin);
         // 옵션 정보
-        Optional.ofNullable(paramDto.getOptionList()).orElseGet(Collections::emptyList)
-                .forEach(option -> dao.insert(namespace + "insertOption", option, PartnerKey.WBDataBase.Alias.Admin));
+        if ("Y".equals(paramDto.getSellInfo().getProductOptionFlag()))
+            Optional.ofNullable(paramDto.getOptionList()).orElseGet(Collections::emptyList)
+                    .forEach(option -> dao.insert(namespace + "insertOption", option, PartnerKey.WBDataBase.Alias.Admin));
         // 배송 정보
         dao.insert(namespace + "mergeDelivery", paramDto.getDelivery(), PartnerKey.WBDataBase.Alias.Admin);
         // 정보 고시
@@ -131,8 +132,9 @@ public class ProductService {
         dao.update(namespace + "mergeSellInfo", paramDto.getSellInfo(), PartnerKey.WBDataBase.Alias.Admin);
         // 옵션 정보 수정
         dao.delete(namespace + "deleteOption", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin);
-        Optional.ofNullable(paramDto.getOptionList()).orElseGet(Collections::emptyList)
-                .forEach(option -> dao.insert(namespace + "insertOption", option, PartnerKey.WBDataBase.Alias.Admin));
+        if ("N".equals(paramDto.getSellInfo().getProductOptionFlag()))
+            Optional.ofNullable(paramDto.getOptionList()).orElseGet(Collections::emptyList)
+                    .forEach(option -> dao.insert(namespace + "insertOption", option, PartnerKey.WBDataBase.Alias.Admin));
         // 배송 정보
         dao.update(namespace + "mergeDelivery", paramDto.getDelivery(), PartnerKey.WBDataBase.Alias.Admin);
         // 정보 고시

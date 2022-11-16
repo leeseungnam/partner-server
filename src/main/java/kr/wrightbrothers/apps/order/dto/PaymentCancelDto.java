@@ -76,15 +76,6 @@ public class PaymentCancelDto {
             throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"환불 예금주"});
     }
 
-    public Queue toCancelQueueDto() {
-        return Queue.builder()
-                .ordNo(this.orderNo)
-                .prnrCd(this.partnerCode)
-                .ordPrdtIdx(Arrays.stream(this.orderProductSeq).map(orderProductSeq -> Queue_Int.builder().ordPrdtIdx(orderProductSeq).build()).collect(Collectors.toList()))
-                .cncRsn(this.cancelReasonCode)
-                .build();
-    }
-
     public Queue toCancelQueueDto(BankInfo bankInfo) {
         // Null Safe
         bankInfo = Optional.ofNullable(bankInfo).orElseGet(PaymentCancelDto.BankInfo::new);
@@ -92,7 +83,7 @@ public class PaymentCancelDto {
         return Queue.builder()
                 .ordNo(this.orderNo)
                 .prnrCd(this.partnerCode)
-                .ordPrdtIdx(Arrays.stream(this.orderProductSeq).map(orderProductSeq -> Queue_Int.builder().ordPrdtIdx(orderProductSeq).build()).collect(Collectors.toList()))
+                .ordPrdtIdx(Arrays.stream(this.orderProductSeq).map(String::valueOf).collect(Collectors.toList()))
                 .cncRsn(this.cancelReasonCode)
                 .bankCd(bankInfo.getBankCd())
                 .bankAcntNo(bankInfo.getBankAcntNo())
@@ -113,18 +104,12 @@ public class PaymentCancelDto {
     public static class Queue {
         private String ordNo;                   // 주문번호
         private String prnrCd;                  // 파트너코드
-        private List<Queue_Int> ordPrdtIdx;     // 주문상품 IDX 배열
+        private List<String> ordPrdtIdx;     // 주문상품 IDX 배열
         private String cncRsn;                  // 취소 사유 코드
         private String bankCd;                  // 은행코드
         private String bankAcntNo;              // 계좌번호
         private String dpstrNm;                 // 예금주
         private String usrId;                   // 로그인아이디
-    }
-
-    @Getter
-    @Builder
-    public static class Queue_Int {
-        private Integer ordPrdtIdx;
     }
 
     @Getter

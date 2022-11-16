@@ -63,7 +63,7 @@ public class RequestReturnUpdateDto {
                 return PaymentCancelDto.Queue.builder()
                         .ordNo(this.orderNo)
                         .prnrCd(this.partnerCode)
-                        .ordPrdtIdx(Arrays.stream(this.orderProductSeqArray).map(orderProductSeq -> PaymentCancelDto.Queue_Int.builder().ordPrdtIdx(orderProductSeq).build()).collect(Collectors.toList()))
+                        .ordPrdtIdx(Arrays.stream(this.orderProductSeqArray).map(String::valueOf).collect(Collectors.toList()))
                         .bankCd(bankInfo.getBankCd())
                         .bankAcntNo(bankInfo.getBankAcntNo())
                         .dpstrNm(bankInfo.getDpstrNm())
