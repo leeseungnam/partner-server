@@ -22,6 +22,8 @@ public class ProductDto {
     private Long deliveryChargeAmount;          // 배송료
     private String cancelDay;                   // 취소 일시
     private String cancelReason;                // 취소 사유
+    private String returnDeliveryEndDay;        // 반품 완료 일자
+    private String returnInvoiceNo;             // 반품 배송 번호
 
     public void setOrderProductStatusName(String productStatusCode) {
         this.orderProductStatusName = OrderProductStatusCode.of(productStatusCode).getName();
