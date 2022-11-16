@@ -103,9 +103,7 @@ public class UserController extends WBController {
 
         userService.updateUserPwd(paramDto);
 
-        String [] messageArgs = {messageSourceAccessor.getMessage(messagePrefix+"word.password")
-                + " " + messageSourceAccessor.getMessage(messagePrefix+"action.change")};
-        return  defaultMsgResponse(messageSourceAccessor, "common.complete.custom", messageArgs);
+        return  defaultMsgResponse(messageSourceAccessor, "user.update.password.success", null);
     }
 
     @ApiImplicitParams({
