@@ -59,19 +59,8 @@ public class ReturnService {
                 .build();
     }
 
-    /**
-     * <pre>
-     * 반품 관련해서 해당 부분의 송장번호가 입력 되어있으면, 배송지 정보 수정을 하지 않음.
-     * 반품 배송지의 필드명은 수령 배송지의 필드명과 동일하게 하였으며, 해당부분은 DTO 재활용을 위한 처리.
-     * 해당부분 인지하고 개발 필요 함.
-     *
-     * 반품에 관련된 사항이라 예외를 하여도 되지만,
-     * 위 사항은 혹시 모를 사항을 생각하여 해당 부분 로직을 추가 처리.
-     * </pre>
-     */
-    public void updateReturn(ReturnMemoUpdateDto paramDto) {
-        // 송장번호 입력 시 배송지 정보 수정 제외
-        dao.update(namespace + "updateReturn", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+    public void updateReturnMemo(ReturnMemoUpdateDto paramDto) {
+        dao.update(namespace + "updateReturnMemo", paramDto, PartnerKey.WBDataBase.Alias.Admin);
     }
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)

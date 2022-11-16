@@ -29,6 +29,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class ReturnControllerTest extends BaseControllerTests {
 
+    @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     @DisplayName("반품 목록 조회")
     void findReturnList() throws Exception {
         // 조회 파라미터 필드
@@ -36,15 +38,12 @@ public class ReturnControllerTest extends BaseControllerTests {
                 .returnStatus(
                         new String[]{
                                 OrderProductStatusCode.REQUEST_RETURN.getCode(),
-                                OrderProductStatusCode.WITHDRAWAL_RETURN.getCode(),
-                                OrderProductStatusCode.START_RETURN.getCode(),
-                                OrderProductStatusCode.COMPLETE_RETURN.getCode(),
-                                OrderProductStatusCode.NON_RETURN.getCode()
+                                OrderProductStatusCode.START_RETURN.getCode()
                         }
                 )
                 .rangeType("PAYMENT")
                 .startDay("2020-01-01")
-                .endDay("2022-10-30")
+                .endDay("2022-11-17")
                 .keywordType("NO")
                 .keywordValue("")
                 .build();
@@ -88,10 +87,8 @@ public class ReturnControllerTest extends BaseControllerTests {
                                         fieldWithPath("data[].orderNo").type(JsonFieldType.STRING).description("주문번호"),
                                         fieldWithPath("data[].orderDay").type(JsonFieldType.STRING).description("주문일자"),
                                         fieldWithPath("data[].orderUserName").type(JsonFieldType.STRING).description("주문자"),
-                                        fieldWithPath("data[].orderProductStatusCode").type(JsonFieldType.STRING).description("반품상태 코드"),
-                                        fieldWithPath("data[].orderProductStatusName").type(JsonFieldType.STRING).description("반품상태 이름"),
-                                        fieldWithPath("data[].orderStatusCode").type(JsonFieldType.STRING).description("주문상태 코드"),
-                                        fieldWithPath("data[].orderStatusName").type(JsonFieldType.STRING).description("주문상태 이름"),
+                                        fieldWithPath("data[].returnStatusCode").type(JsonFieldType.STRING).description("반품상태 코드"),
+                                        fieldWithPath("data[].returnStatusName").type(JsonFieldType.STRING).description("반품상태 이름"),
                                         fieldWithPath("data[].paymentMethodCode").type(JsonFieldType.STRING).description("결제수단 코드"),
                                         fieldWithPath("data[].paymentMethodName").type(JsonFieldType.STRING).description("결제수단 이름"),
                                         fieldWithPath("data[].orderName").type(JsonFieldType.STRING).description("주문명"),
@@ -99,9 +96,7 @@ public class ReturnControllerTest extends BaseControllerTests {
                                         fieldWithPath("data[].returnReason").type(JsonFieldType.STRING).optional().description("반품 사유"),
                                         fieldWithPath("data[].orderAmount").type(JsonFieldType.NUMBER).description("주문 금액"),
                                         fieldWithPath("data[].finalSellAmount").type(JsonFieldType.NUMBER).description("반품 금액"),
-                                        fieldWithPath("data[].cancelDay").type(JsonFieldType.STRING).description("취소일자"),
-                                        fieldWithPath("data[].paymentStatusCode").type(JsonFieldType.STRING).description("결제상태 코드"),
-                                        fieldWithPath("data[].paymentStatusName").type(JsonFieldType.STRING).description("결제상태 이름"),
+                                        fieldWithPath("data[].returnDeliveryChargeAmount").type(JsonFieldType.NUMBER).description("반품 배송 금액"),
                                         fieldWithPath("totalItems").type(JsonFieldType.NUMBER).description("전체 조회 건수"),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
                                 )
@@ -109,9 +104,11 @@ public class ReturnControllerTest extends BaseControllerTests {
                 ;
     }
 
+    @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     @DisplayName("반품내역 조회")
     void findReturn() throws Exception {
-        String orderNo = "202103031126444476";
+        String orderNo = "202211151341424533";
 
         // 반품내역 상세 API 조회
         mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/returns/{orderNo}", orderNo)
@@ -156,25 +153,14 @@ public class ReturnControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.payment.deliveryChargeAmount").type(JsonFieldType.NUMBER).description("배송 금액"),
                                         fieldWithPath("data.payment.paymentAmount").type(JsonFieldType.NUMBER).description("결제 금액"),
                                         fieldWithPath("data.payment.paymentDate").type(JsonFieldType.STRING).optional().description("결제 일시"),
-                                        fieldWithPath("data.payment.paymentMethodCode").type(JsonFieldType.STRING).description("* 결제 수단 코드"),
+                                        fieldWithPath("data.payment.approvalNo").type(JsonFieldType.STRING).optional().description("* PG 승인번호"),
+                                        fieldWithPath("data.payment.rentalAmount").type(JsonFieldType.NUMBER).optional().description("* 월 렌탈료"),
+                                        fieldWithPath("data.payment.paymentMethodCode").type(JsonFieldType.STRING).description("결제 수단 코드"),
                                         fieldWithPath("data.payment.paymentMethodName").type(JsonFieldType.STRING).description("결제 수단 이름"),
-                                        fieldWithPath("data.payment.paymentStatusCode").type(JsonFieldType.STRING).description("* 결제 상태 코드"),
+                                        fieldWithPath("data.payment.paymentStatusCode").type(JsonFieldType.STRING).description("결제 상태 코드"),
                                         fieldWithPath("data.payment.paymentStatusName").type(JsonFieldType.STRING).description("결제 상태 이름"),
                                         fieldWithPath("data.payment.cancelDate").type(JsonFieldType.STRING).description("취소 일시").optional(),
                                         fieldWithPath("data.payment.cancelReason").type(JsonFieldType.STRING).description("취소 사유").optional(),
-                                        fieldWithPath("data.orderProductList[]").type(JsonFieldType.ARRAY).description("주문 상품 목록"),
-                                        fieldWithPath("data.orderProductList[].orderProductSeq").type(JsonFieldType.NUMBER).description("주문 상품 SEQ"),
-                                        fieldWithPath("data.orderProductList[].productCode").type(JsonFieldType.STRING).description("상품 코드"),
-                                        fieldWithPath("data.orderProductList[].productName").type(JsonFieldType.STRING).description("상품 명"),
-                                        fieldWithPath("data.orderProductList[].optionName").type(JsonFieldType.STRING).description("옵션 명"),
-                                        fieldWithPath("data.orderProductList[].productQty").type(JsonFieldType.NUMBER).description("구매 수량"),
-                                        fieldWithPath("data.orderProductList[].deliveryCompanyCode").type(JsonFieldType.STRING).optional().description("택배 업체 코드"),
-                                        fieldWithPath("data.orderProductList[].deliveryCompanyName").type(JsonFieldType.STRING).optional().description("택배 업체 이름"),
-                                        fieldWithPath("data.orderProductList[].invoiceNo").type(JsonFieldType.STRING).optional().description("송장 번호"),
-                                        fieldWithPath("data.orderProductList[].deliveryStatusCode").type(JsonFieldType.STRING).optional().description("배송 상태 코드"),
-                                        fieldWithPath("data.orderProductList[].deliveryStatusName").type(JsonFieldType.STRING).optional().description("배송 상태 이름"),
-                                        fieldWithPath("data.orderProductList[].deliveryStartDay").type(JsonFieldType.STRING).optional().description("배송 시작 일자"),
-                                        fieldWithPath("data.orderProductList[].deliveryEndDay").type(JsonFieldType.STRING).optional().description("배송 종료 일자"),
                                         fieldWithPath("data.returnProductList[]").type(JsonFieldType.ARRAY).optional().description("반품 요청 상품 목록"),
                                         fieldWithPath("data.returnProductList[].orderProductSeq").type(JsonFieldType.NUMBER).description("주문 상품 SEQ"),
                                         fieldWithPath("data.returnProductList[].productCode").type(JsonFieldType.STRING).description("상품 코드"),
@@ -188,23 +174,20 @@ public class ReturnControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.returnProductList[].returnDeliveryCompanyCode").type(JsonFieldType.STRING).optional().description("반품 택배사 코드"),
                                         fieldWithPath("data.returnProductList[].returnDeliveryCompanyName").type(JsonFieldType.STRING).optional().description("반품 택배사 이름"),
                                         fieldWithPath("data.returnProductList[].returnInvoiceNo").type(JsonFieldType.STRING).optional().description("반품 송장 번호"),
-                                        fieldWithPath("data.returnProductList[].reason").type(JsonFieldType.STRING).optional().description("사유"),
+                                        fieldWithPath("data.returnProductList[].returnReason").type(JsonFieldType.STRING).optional().description("* 반품 사유"),
+                                        fieldWithPath("data.returnProductList[].nonReturnReason").type(JsonFieldType.STRING).optional().description("* 반품 불가 사유"),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
                                 )
                 ))
                 ;
     }
 
+    @Test
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     @DisplayName("반품관리 정보 수정")
     void updateReturn() throws Exception {
         ReturnMemoUpdateDto updateParam = ReturnMemoUpdateDto.builder()
-                .orderNo("202103031126444476")
-                .recipientName("홍길동")
-                .recipientPhone("01012341234")
-                .recipientAddressZipCode("12345")
-                .recipientAddress("서울특별시 강남구 강남대로 154길 37")
-                .recipientAddressDetail("주경빌딩 2층")
+                .orderNo("202211151341424533")
                 .returnMemo("반품메모")
                 .build();
 
@@ -226,11 +209,6 @@ public class ReturnControllerTest extends BaseControllerTests {
                                 ),
                                 relaxedRequestFields(
                                         fieldWithPath("orderNo").type(JsonFieldType.STRING).description("주문 번호").attributes(key("etc").value("")),
-                                        fieldWithPath("recipientName").type(JsonFieldType.STRING).description("수령자 이름").attributes(key("etc").value("")),
-                                        fieldWithPath("recipientPhone").type(JsonFieldType.STRING).description("수령자 휴대전화").attributes(key("etc").value("")),
-                                        fieldWithPath("recipientAddressZipCode").type(JsonFieldType.STRING).description("배송지 우편번호").attributes(key("etc").value("")),
-                                        fieldWithPath("recipientAddress").type(JsonFieldType.STRING).description("배송지 주소").attributes(key("etc").value("")),
-                                        fieldWithPath("recipientAddressDetail").type(JsonFieldType.STRING).description("배송지 상세주소").attributes(key("etc").value("")),
                                         fieldWithPath("returnMemo").type(JsonFieldType.STRING).description("반품 메모").optional().attributes(key("etc").value(""))
                                 ),
                                 responseFields(
@@ -245,7 +223,7 @@ public class ReturnControllerTest extends BaseControllerTests {
     @DisplayName("반품 요청 상품 처리")
     void updateRequestReturn() throws Exception {
         RequestReturnUpdateDto updateParam = RequestReturnUpdateDto.builder()
-                .orderNo("202103031126444476")
+                .orderNo("202211151341424533")
                 .orderProductSeqArray(new Integer[]{1})
                 .returnProcessCode(OrderStatusCode.START_RETURN.getCode())
                 .requestCode("cgkwe")

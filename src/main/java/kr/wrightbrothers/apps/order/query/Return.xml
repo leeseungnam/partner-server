@@ -12,39 +12,9 @@
 		   and ord_stus = #{returnProcessCode}
 	</select>
 
-	<select id="findReturn" parameterType="kr.wrightbrothers.apps.order.dto.ReturnFindDto$Param" resultType="kr.wrightbrothers.apps.order.dto.OrderDto">
-		-- 주문내역 기본 정보
-		select
-			o.ord_no as order_no,
-			o.ord_dt as order_date,
-			s.ord_stus as order_status_code,
-			s.ord_stus as order_status_name,
-			o.ord_qty as order_qty,
-			m.usr_cd as order_user_code,
-			m.usr_id as order_user_id,
-			m.usr_nm as order_user_name,
-			m.usr_phn as order_user_phone,
-			s.rtrn_rcpnt_nm as recipient_name,
-			s.rtrn_rcpnt_usr_phn as recipient_phone,
-			s.rtrn_rcpnt_adrs_zip_cd as recipient_address_zip_code,
-			s.rtrn_rcpnt_adrs as recipient_address,
-			s.rtrn_rcpnt_adrs_sub as recipient_address_detail,
-			o.rqst_dtls as request_detail,
-			s.ord_memo as order_memo,
-			s.rtrn_memo as return_memo,
-			s.dlvry_memo as delivery_memo
-		from ord_info o
-	   inner join ord_prnr_info s
-		  on o.ord_no = s.ord_no
-		 and s.prnr_cd = #{partnerCode}
-		left join com_mbr_info m
-		  on o.ord_usr_id = m.usr_id
-	   where o.ord_no = #{orderNo}
-	</select>
-
 	<select id="findReturnList" parameterType="kr.wrightbrothers.apps.order.dto.ReturnListDto$Param" resultType="kr.wrightbrothers.apps.order.dto.ReturnListDto$Response">
 		select
-		    date_format(g.cnc_rq_dt, '%Y-%m-%d') as return_request_day,
+		    date_format(p.cnc_rq_dt, '%Y-%m-%d') as return_request_day,
 		    o.ord_no as order_no,
 			date_format(o.ord_dt, '%Y-%m-%d') as order_day,
 			m.usr_nm as order_user_name,
@@ -53,33 +23,36 @@
 			o.pay_meth as payment_method_code,
 			o.pay_meth as payment_method_name,
 			s.ord_nm as order_name,
-			g.prdt_nm as product_name,
-			g.cnc_rsn_cd as return_reason,
+			p.prdt_nm as product_name,
+			if(p.cnc_rsn_cd = 'C99', p.cnc_rsn, c.intg_cd_val_nm) as return_reason,
 			s.ord_amt as order_amount,
-			g.fnl_sell_amt as final_sell_amount,
+			p.fnl_sell_amt as final_sell_amount,
 			d.rtn_chg as return_delivery_charge_amount
 		  from ord_prnr_info s
 		 inner join ord_info o
 		    on o.ord_no = s.ord_no
-		 inner join ord_prdt_info g
-			on s.ord_no = g.ord_no
-		   and s.prnr_cd = g.prnr_cd
-		 inner join prdt_dlvr_dtl d
-		    on g.prnr_cd = d.prdt_cd
+		 inner join ord_prdt_info p
+			on s.ord_no = p.ord_no
+		   and s.prnr_cd = p.prnr_cd
+		  left join prdt_dlvr_dtl d
+		    on p.prdt_cd = d.prdt_cd
 		  left join com_mbr_info m
 		    on o.ord_usr_id = m.usr_id
-		 where g.prnr_cd = #{partnerCode}
+		  left join com_intg_cd_dtl c
+			on p.cnc_rsn_cd = c.intg_cd_val
+		   and c.intg_cd_id = '000084'
+		 where s.prnr_cd = #{partnerCode}
 		<choose>
 			<when test="keywordValue != null and keywordValue != ''">
 				<choose>
 					<when test="keywordType == 'NO'">
 						<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-							o.ord_no like #{item} '%'
+							s.ord_no like #{item} '%'
 						</foreach>
 					</when>
 					<when test="keywordType == 'NAME'">
 						<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-							o.ord_nm like #{item} '%'
+							s.ord_nm like #{item} '%'
 						</foreach>
 					</when>
 					<when test="keywordType == 'USER'">
@@ -88,10 +61,10 @@
 						</foreach>
 					</when>
 				</choose>
-		 		order by g.cnc_rq_dt desc
+		 		order by p.cnc_rq_dt desc
 			</when>
 			<otherwise>
-				<foreach collection="returnStatus" item="item" index="index" open="and s.ord_prdt_stus in (" separator="," close=")">
+				<foreach collection="returnStatus" item="item" index="index" open="and p.ord_prdt_stus in (" separator="," close=")">
 					#{item}
 				</foreach>
 				<choose>
@@ -99,43 +72,18 @@
 						and o.pym_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
 						order by o.pym_dt desc
 		 			</when>
-					<when test="rangeType == 'CANCEL'.toString()">
-						and g.cnc_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
-						order by g.cnc_dt desc
-					</when>
 					<when test="rangeType == 'RETURN'.toString()">
-						and g.cnc_rq_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
-						order by g.cnc_rq_dt desc
+						and p.cnc_rq_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+						order by p.cnc_rq_dt desc
 					</when>
 				</choose>
 			</otherwise>
 		</choose>
 	</select>
 
-	<update id="updateReturn" parameterType="kr.wrightbrothers.apps.order.dto.ReturnMemoUpdateDto">
-		-- 송장번호 입력 유무에 대한 체크
-		<selectKey resultType="boolean" keyProperty="isInvoiceNo" order="BEFORE">
-			select
-			    if(count(d.ord_prdt_idx) = 0, true, false) as isInvoice
-			  from ord_prdt_info p
-			 inner join ord_shpn_info d
-			    on p.ord_no = d.ord_no
-			   and p.ord_prdt_idx = d.ord_prdt_idx
-			   and p.prdt_cd = d.prdt_cd
-			 where p.ord_no = #{orderNo}
-			   and p.prnr_cd = #{partnerCode}
-			   and d.rtrn_invc_no is not null
-		</selectKey>
+	<update id="updateReturnMemo" parameterType="kr.wrightbrothers.apps.order.dto.ReturnMemoUpdateDto">
 		update ord_prnr_info
 		   set rtrn_memo = #{returnMemo},
-		       -- 송장번호 미입력 시 반송자 정보 변경 가능
-		       <if test="isInvoiceNo">
-		       	   rtrn_rcpnt_nm = #{recipientName},
-				   rtrn_rcpnt_usr_phn = #{recipientPhone},
-				   rtrn_rcpnt_adrs_zip_cd = #{recipientAddressZipCode},
-				   rtrn_rcpnt_adrs = #{recipientAddress},
-				   rtrn_rcpnt_adrs_sub = #{recipientAddressDetail},
-			   </if>
 			   upd_usr_id = #{userId},
 			   upd_dt = now()
 		 where ord_no = #{orderNo}
@@ -156,7 +104,8 @@
 			d.rtrn_dlvry_cmpny as return_delivery_company_code,
 			cd.intg_cd_val_nm as return_delivery_company_name,
 			d.rtrn_invc_no as return_invoice_no,
-			if(p.ord_prdt_stus = 'R04', p.non_rtn_tp_cd, p.cnc_rsn) as reason
+			if(p.cnc_rsn_cd = 'C99', p.cnc_rsn, c.intg_cd_val_nm) as return_reason,
+			rcd.intg_cd_val_nm as non_return_reason
 		  from ord_prdt_info p
 		  left join ord_shpn_info d
 		  	on p.ord_no = d.ord_no
@@ -165,9 +114,12 @@
 		  left join com_intg_cd_dtl cd
 		    on d.rtrn_dlvry_cmpny = cd.intg_cd_val
 		   and cd.intg_cd_id = '000044'
+		  left join com_intg_cd_dtl c
+			on p.non_rtn_tp_cd = c.intg_cd_val
+		   and c.intg_cd_id = '000074'
 		  left join com_intg_cd_dtl rcd
 		    on p.non_rtn_tp_cd = rcd.intg_cd_val
-		   and cd.intg_cd_id = '000085'
+		   and rcd.intg_cd_id = '000085'
 		 where p.ord_no = #{orderNo}
 		   and p.prnr_cd = #{partnerCode}
 		   and p.ord_prdt_stus in ('R01', 'R03')	-- 반품요청, 반품취소, 반품진행, 반품불가, 반품완료
@@ -282,10 +234,10 @@
 			p.ord_prdt_stus as return_status,
 			ifnull(c.intg_cd_val_nm, '') as delivery_company,
 			ifnull(d.rtrn_invc_no, '') as invoice_no,
-			s.rcpnt_nm as recipient_name,
-			s.rcpnt_usr_phn as recipient_user_phone,
-			ifnull(concat('(', s.rcpnt_adrs_zip_cd, ') ', s.rcpnt_adrs), '') as recipient_address,
-			s.rcpnt_adrs_sub as recipient_address_detail,
+			d.rtrn_rcpnt_nm as recipient_name,
+			d.rtrn_rcpnt_usr_phn as recipient_user_phone,
+			ifnull(concat('(', d.rtrn_rcpnt_adrs_zip_cd, ') ', d.rtrn_rcpnt_adrs), '') as recipient_address,
+			d.rtrn_rcpnt_adrs_sub as recipient_address_detail,
 			ifnull(r.intg_cd_val_nm, '') as reason
 		  from ord_info o
 		 inner join ord_prnr_info s
@@ -293,8 +245,6 @@
 		   and s.prnr_cd = #{partnerCode}
 		 inner join ord_prdt_info p
 			on o.ord_no = p.ord_no
-		 inner join ord_pay_info pi
-			on o.ord_no = pi.ord_no
 		  left join ord_shpn_info d
 			on p.ord_no = d.ord_no
 		   and p.ord_prdt_idx = d.ord_prdt_idx

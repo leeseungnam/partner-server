@@ -183,7 +183,7 @@
 		    o.ord_dt as order_date,
 		    s.ord_stus as order_status_code,
 		    s.ord_stus as order_status_name,
-		    (select count(ord_prdt_idx) order_qty from ord_prdt_info where ord_no = #{orderNo} and prnr_cd = #{partnerCode}) as order_qty,
+		    (select count(ord_prdt_idx) order_qty from ord_prdt_info where ord_no = s.ord_no and prnr_cd = s.prnr_cd) as order_qty,
 		    m.usr_cd as order_user_code,
 		    m.usr_id as order_user_id,
 		    m.usr_nm as order_user_name,
@@ -197,13 +197,13 @@
 		    s.ord_memo as order_memo,
 		    s.rtrn_memo as return_memo,
 		    s.dlvry_memo as delivery_memo
-		  from ord_info o
-		 inner join ord_prnr_info s
-			on o.ord_no = s.ord_no
-		   and s.prnr_cd = #{partnerCode}
+		  from ord_prnr_info s
+		 inner join ord_info o
+			on s.ord_no = o.ord_no
 		  left join com_mbr_info m
 		    on o.ord_usr_id = m.usr_id
-		 where o.ord_no = #{orderNo}
+		 where s.ord_no = #{orderNo}
+		   and s.prnr_cd = #{partnerCode}
 	</select>
 
 	<select id="findOrderProduct" parameterType="kr.wrightbrothers.apps.order.dto.OrderFindDto$Param" resultType="kr.wrightbrothers.apps.order.dto.ProductDto">
