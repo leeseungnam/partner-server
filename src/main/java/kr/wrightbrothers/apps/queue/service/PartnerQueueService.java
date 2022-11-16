@@ -14,7 +14,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -55,15 +57,13 @@ public class PartnerQueueService {
 
     public void updatePartnerSnsData(JSONObject body) throws JsonProcessingException {
 
-        // system 로그인 처리
-/*
+        // system 로그인 처리 .. 나중에 빼야 됨..
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken("super@wrightbrothers.kr", "1q2w3e4r5t");
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         log.info("system id login");
-*/
 
         log.info("[updatePartnerSnsData]::RESULT_INSPECTION_PARTNER");
 
@@ -117,8 +117,8 @@ public class PartnerQueueService {
             }
         }
         log.info("[convertPartnerInsertDto]::심사 처리 완료");
-        log.info("[convertPartnerInsertDto]::registerId={}",receiveDto.getRegisterId());
         returnDto.setAopUserId(receiveDto.getRegisterId());
+        log.info("[convertPartnerInsertDto]::registerId={}",receiveDto.getRegisterId());
         log.info("[convertPartnerInsertDto]::returnDto={}",returnDto.toString());
         return returnDto;
 
