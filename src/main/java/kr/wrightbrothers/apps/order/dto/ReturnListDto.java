@@ -44,10 +44,8 @@ public class ReturnListDto {
         private String orderNo;                     // 주문번호
         private String orderDay;                    // 주문일자
         private String orderUserName;               // 주문자
-        private String orderProductStatusCode;      // 반품상태 코드
-        private String orderProductStatusName;      // 반품상태 이름
-        private String orderStatusCode;             // 주문상태 코드
-        private String orderStatusName;             // 주문상태 이름
+        private String returnStatusCode;            // 주문상태 코드
+        private String returnStatusName;            // 주문상태 이름
         private String paymentMethodCode;           // 결제수단 코드
         private String paymentMethodName;           // 결제수단 이름
         private String orderName;                   // 주문명
@@ -55,18 +53,11 @@ public class ReturnListDto {
         private String returnReason;                // 반품사유
         private Long orderAmount;                   // 주문금액
         private Long finalSellAmount;               // 판매금액
-        private String cancelDay;                   // 취소일자
-        private String paymentStatusCode;           // 결제상태 코드
-        private String paymentStatusName;           // 결제상태 이름
+        private Long returnDeliveryChargeAmount;    // 반품배송비
 
         // 반품 상태 ENUM 처리
-        public void setOrderProductStatusName(String orderProductStatusCode) {
-            this.orderProductStatusName = OrderProductStatusCode.of(orderProductStatusCode).getName();
-        }
-
-        // 주문 상태 ENUM 처리
-        public void setOrderStatusName(String orderStatusCode) {
-            this.orderStatusName = OrderStatusCode.of(orderStatusCode).getName();
+        public void setReturnStatusName(String returnStatusName) {
+            this.returnStatusName = OrderStatusCode.of(returnStatusName).getName();
         }
 
         // 결제 수단 ENUM 처리
@@ -74,10 +65,6 @@ public class ReturnListDto {
             this.paymentMethodName = PaymentMethodCode.of(paymentMethodCode).getName();
         }
 
-        // 결제 상태 ENUM 처리
-        public void setPaymentStatusName(String paymentStatusCode) {
-            this.paymentStatusName = PaymentStatusCode.of(paymentStatusCode).getName();
-        }
     }
 
 }

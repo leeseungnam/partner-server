@@ -19,7 +19,6 @@ public class ReturnFindDto {
     public static class Response {
         private OrderDto order;                     // 주문 정보
         private PaymentDto payment;                 // 결제 정보
-        List<DeliveryProductDto> orderProductList;  // 주문 상품 리스트
         List<ReturnProductDto> returnProductList;   // 반품 요청 상품 리스트
     }
 }

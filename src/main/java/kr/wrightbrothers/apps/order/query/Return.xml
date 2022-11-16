@@ -48,28 +48,24 @@
 		    o.ord_no as order_no,
 			date_format(o.ord_dt, '%Y-%m-%d') as order_day,
 			m.usr_nm as order_user_name,
-			g.ord_prdt_stus as order_product_status_code,
-			g.ord_prdt_stus as order_product_status_name,
-			s.ord_stus as order_status_code,
-			s.ord_stus as order_status_name,
-			p.pay_meth as payment_method_code,
-			p.pay_meth as payment_method_name,
+			s.ord_stus as return_status_code,
+			s.ord_stus as return_status_name,
+			o.pay_meth as payment_method_code,
+			o.pay_meth as payment_method_name,
 			s.ord_nm as order_name,
 			g.prdt_nm as product_name,
-			s.cnc_rsn_cd as return_reason,
+			g.cnc_rsn_cd as return_reason,
 			s.ord_amt as order_amount,
 			g.fnl_sell_amt as final_sell_amount,
-			date_format(s.cnc_dt, '%Y-%m-%d') as cancel_day,
-			s.pay_stus as payment_status_code,
-			s.pay_stus as payment_status_name
-		  from ord_info o
-		 inner join ord_prnr_info s
+			d.rtn_chg as return_delivery_charge_amount
+		  from ord_prnr_info s
+		 inner join ord_info o
 		    on o.ord_no = s.ord_no
-		   and s.prnr_cd = #{partnerCode}
-		 inner join ord_pay_info p
-			on o.ord_no = p.ord_no
 		 inner join ord_prdt_info g
-			on o.ord_no = g.ord_no
+			on s.ord_no = g.ord_no
+		   and s.prnr_cd = g.prnr_cd
+		 inner join prdt_dlvr_dtl d
+		    on g.prnr_cd = d.prdt_cd
 		  left join com_mbr_info m
 		    on o.ord_usr_id = m.usr_id
 		 where g.prnr_cd = #{partnerCode}
@@ -95,17 +91,17 @@
 		 		order by g.cnc_rq_dt desc
 			</when>
 			<otherwise>
-				<foreach collection="returnStatus" item="item" index="index" open="and g.ord_prdt_stus in (" separator="," close=")">
+				<foreach collection="returnStatus" item="item" index="index" open="and s.ord_prdt_stus in (" separator="," close=")">
 					#{item}
 				</foreach>
 				<choose>
 					<when test="rangeType == 'PAYMENT'.toString()">
-						and p.pym_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
-						order by p.pym_dt desc
+						and o.pym_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+						order by o.pym_dt desc
 		 			</when>
 					<when test="rangeType == 'CANCEL'.toString()">
-						and s.cnc_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
-						order by s.cnc_dt desc
+						and g.cnc_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+						order by g.cnc_dt desc
 					</when>
 					<when test="rangeType == 'RETURN'.toString()">
 						and g.cnc_rq_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
@@ -174,7 +170,7 @@
 		   and cd.intg_cd_id = '000085'
 		 where p.ord_no = #{orderNo}
 		   and p.prnr_cd = #{partnerCode}
-		   and p.ord_prdt_stus in ('R01', 'R02', 'R03', 'R04', 'R05')	-- 반품요청, 반품취소, 반품진행, 반품불가, 반품완료
+		   and p.ord_prdt_stus in ('R01', 'R03')	-- 반품요청, 반품취소, 반품진행, 반품불가, 반품완료
 		 order by p.ord_prdt_idx
 	</select>
 

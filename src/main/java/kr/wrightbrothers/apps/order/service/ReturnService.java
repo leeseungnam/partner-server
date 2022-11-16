@@ -35,6 +35,7 @@ public class ReturnService {
     private final ResourceLoader resourceLoader;
     private final OrderQueue orderQueue;
     private final String namespace = "kr.wrightbrothers.apps.order.query.Return.";
+    private final String namespaceOrder = "kr.wrightbrothers.apps.order.query.Order.";
 
     public List<ReturnListDto.Response> findReturnList(ReturnListDto.Param paramDto) {
         // 반품관리 목록 조회
@@ -43,15 +44,16 @@ public class ReturnService {
 
     public ReturnFindDto.Response findReturn(ReturnFindDto.Param paramDto) {
         return ReturnFindDto.Response.builder()
-                // 주문 기본 정보(반품 배송지 정보의 필드명은 수령 배송지 정보의 필드와 동일하게 처리, DTO 재활용을 위해)
-                .order(dao.selectOne(namespace + "findReturn", paramDto, PartnerKey.WBDataBase.Alias.Admin))
+                // 주문 기본 정보
+                .order(dao.selectOne(namespaceOrder + "findOrder", OrderFindDto.Param.builder()
+                        .partnerCode(paramDto.getPartnerCode())
+                        .orderNo(paramDto.getOrderNo())
+                        .build(), PartnerKey.WBDataBase.Alias.Admin))
                 // 결제 정보
                 .payment(paymentService.findPaymentToOrder(OrderFindDto.Param.builder()
-                                .partnerCode(paramDto.getPartnerCode())
-                                .orderNo(paramDto.getOrderNo())
+                        .partnerCode(paramDto.getPartnerCode())
+                        .orderNo(paramDto.getOrderNo())
                         .build()))
-                // 주문 상품 리스트(취소 상품 제외)
-                .orderProductList(dao.selectList(namespace + "findNonCancelOrderProduct", paramDto, PartnerKey.WBDataBase.Alias.Admin))
                 // 반품 요청 상품 리스트
                 .returnProductList(dao.selectList(namespace + "findReturnProductList", paramDto, PartnerKey.WBDataBase.Alias.Admin))
                 .build();
