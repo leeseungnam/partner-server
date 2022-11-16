@@ -253,11 +253,11 @@
 	</select>
 
 	<select id="findUserAuthAndPartnerListByUserId" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerAndAuthFindDto$Param" resultType="kr.wrightbrothers.apps.partner.dto.PartnerAndAuthFindDto$ResBody">
-		select up.partner_code
-			 ,  up.auth_code
-			 ,  p.partner_name
+		select p.partner_name
 			 ,  p.partner_kind
+			 ,  up.partner_code
 			 ,  p.partner_status
+			 ,  up.auth_code
 			 , (select contract_code from partner_contract where partner_code = up.partner_code order by create_date desc limit 1) as contract_code
      		 , (select contract_status from partner_contract where partner_code = up.partner_code order by create_date desc limit 1) as contract_status
 			 , '' as comment
