@@ -13,7 +13,14 @@
 		inner join partner p
 		   on up.partner_code = p.partner_code
 		   and p.partner_status = #{partnerStatus}
-		   and p.partner_kind = #{partnerKind}
+  <choose>
+	  <when test='partnerKind != "" and partnerKind != null'>
+		  and p.partner_kind = #{partnerKind}
+	  </when>
+	  <otherwise>
+		  and p.partner_kind is null
+	  </otherwise>
+  </choose>
 		inner join partner_contract pc
 		   on p.partner_code = pc.partner_code
 		   and pc.contract_status = #{contractStatus}
