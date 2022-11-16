@@ -105,7 +105,7 @@ public class PartnerService {
                         .accountHolder(paramDto.getPartnerContract().getAccountHolder())
                         .bankCode(paramDto.getPartnerContract().getBankCode())
                         .taxBillEmail(paramDto.getPartnerContract().getTaxBillEmail())
-                        .contractStatus(Partner.Contract.Status.REQUEST.getCode())
+                        .contractStatus(paramDto.getPartnerContract().getContractStatus())
                         .contractFileNo(paramDto.getPartnerContract().getContractFileNo())
                         .build()
         );

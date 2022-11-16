@@ -159,11 +159,16 @@ public class PartnerController extends WBController {
             ,@ApiParam(value = "계약 코드") @PathVariable String contractCode
             ,@ApiParam @Valid @RequestBody PartnerInsertDto paramDto) {
 
+        if(partnerService.findPartnerContract(partnerCode, contractCode).getContractStatus().equals(Partner.Contract.Status.REQUEST.getCode())) throw new WBCustomException(messagePrefix+"partner.comment."+Partner.Status.STOP.getCode()+"."+Partner.Contract.Status.REQUEST.getCode());
+
         paramDto.getPartner().changePartnerCode(partnerCode);
         paramDto.getPartnerContract().changePartnerCode(partnerCode);
         paramDto.getPartnerContract().changeContractCode(contractCode);
 
-        if(partnerService.findPartnerContract(partnerCode, contractCode).getContractStatus().equals(Partner.Contract.Status.REQUEST.getCode())) throw new WBCustomException(messagePrefix+"partner.comment."+Partner.Status.STOP.getCode()+"."+Partner.Contract.Status.REQUEST.getCode());
+        // front 확인 후 삭제.
+//        paramDto.getPartner().changePartnerStatus(Partner.Status.STOP.getCode());
+//        paramDto.getPartnerContract().changeContractStatus(Partner.Contract.Status.REQUEST.getCode());
+
         // create user set
         partnerService.updatePartnerAll(paramDto);
 
