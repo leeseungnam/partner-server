@@ -86,6 +86,7 @@ public class PartnerQueueService {
         PartnerInsertDto returnDto = PartnerInsertDto.builder()
                 .partner(PartnerDto.ReqBody.builder().build())
                 .partnerContract(PartnerContractDto.ReqBody.builder().build())
+                .partnerReject(PartnerRejectDto.Param.builder().build())
                 .build();
 
         log.info("[convertPartnerInsertDto]::receiveDto.getPartner()={}",receiveDto.getPartner().toString());
