@@ -17,6 +17,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.util.Optional;
 
@@ -93,21 +94,31 @@ public class PartnerQueueService {
         BeanUtils.copyProperties(receiveDto.getPartner(), returnDto.getPartner());
         BeanUtils.copyProperties(receiveDto.getPartnerContract(), returnDto.getPartnerContract());
 
-        if("S01".equals(receiveDto.getRequestStatus())) {
-            returnDto.getPartner().changePartnerStatus(Partner.Status.RUN.getCode());
-        } else {
-            returnDto.getPartner().changePartnerStatus(Partner.Status.STOP.getCode());
-            returnDto.getPartnerContract().changeContractStatus(Partner.Contract.Status.REJECT.getCode());
+        log.info("[convertPartnerInsertDto]::copyProperties done");
 
-            returnDto.setPartnerReject(PartnerRejectDto.Param.builder()
-                            .partnerCode(receiveDto.getPartnerCode())
-                            .contractCode(receiveDto.getContractCode())
-                            .contractStatus(Partner.Contract.Status.REJECT.getCode())
-                            .rejectComment(receiveDto.getRejectReason())
-                    .build());
+        // 심사 변경, 판매자 정보 변경 중 심사 변경 일 경우
+        // 파트너 상태, 계약 상태 모두 어드민에서 넘어온 값으로.
+        if(!ObjectUtils.isEmpty(receiveDto.getRequestStatus())) {
+            if("S01".equals(receiveDto.getRequestStatus())) {
+                log.info("[convertPartnerInsertDto]::심사 승인");
+//                returnDto.getPartner().changePartnerStatus(Partner.Status.RUN.getCode());
+            } else {
+                log.info("[convertPartnerInsertDto]::심사 반려");
+//                returnDto.getPartner().changePartnerStatus(Partner.Status.STOP.getCode());
+//                returnDto.getPartnerContract().changeContractStatus(Partner.Contract.Status.REJECT.getCode());
+
+                returnDto.setPartnerReject(PartnerRejectDto.Param.builder()
+                        .partnerCode(receiveDto.getPartnerCode())
+                        .contractCode(receiveDto.getContractCode())
+                        .contractStatus(Partner.Contract.Status.REJECT.getCode())
+                        .rejectComment(receiveDto.getRejectReason())
+                        .build());
+            }
         }
+        log.info("[convertPartnerInsertDto]::심사 처리 완료");
+        log.info("[convertPartnerInsertDto]::registerId={}",receiveDto.getRegisterId());
         returnDto.setAopUserId(receiveDto.getRegisterId());
-
+        log.info("[convertPartnerInsertDto]::returnDto={}",returnDto.toString());
         return returnDto;
 
     }
