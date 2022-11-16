@@ -98,15 +98,15 @@ public class PartnerQueueService {
         log.info("[convertPartnerInsertDto]::copyProperties done");
 
         // 심사 변경, 판매자 정보 변경 중 심사 변경 일 경우
-        // 파트너 상태, 계약 상태 모두 어드민에서 넘어온 값으로.
+        // 파트너 상태, 계약 상태 모두 어드민에서 넘어온 값으로. -> 계약 코드는 어드민에서 처리 안함. requestStatus로 contractStatus Set
         if(!ObjectUtils.isEmpty(receiveDto.getRequestStatus())) {
             if("S01".equals(receiveDto.getRequestStatus())) {
                 log.info("[convertPartnerInsertDto]::심사 승인");
 //                returnDto.getPartner().changePartnerStatus(Partner.Status.RUN.getCode());
-            } else {
+            } else if("S02".equals(receiveDto.getRequestStatus())) {
                 log.info("[convertPartnerInsertDto]::심사 반려");
 //                returnDto.getPartner().changePartnerStatus(Partner.Status.STOP.getCode());
-//                returnDto.getPartnerContract().changeContractStatus(Partner.Contract.Status.REJECT.getCode());
+                returnDto.getPartnerContract().changeContractStatus(Partner.Contract.Status.REJECT.getCode());
 
                 returnDto.setPartnerReject(PartnerRejectDto.Param.builder()
                         .partnerCode(receiveDto.getPartnerCode())
@@ -114,6 +114,8 @@ public class PartnerQueueService {
                         .contractStatus(Partner.Contract.Status.REJECT.getCode())
                         .rejectComment(receiveDto.getRejectReason())
                         .build());
+            } else {
+                log.info("[convertPartnerInsertDto]::Not Support RequestStatus");
             }
         }
         log.info("[convertPartnerInsertDto]::심사 처리 완료");
