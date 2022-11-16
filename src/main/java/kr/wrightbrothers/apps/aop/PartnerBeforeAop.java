@@ -75,8 +75,12 @@ public class PartnerBeforeAop {
     )
     public void checkOwnPartner(JoinPoint joinPoint) throws Exception {
         UserPrincipal user = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         log.info("[ownFindCheck]::userId={}, auth={}",user.getUsername(), user.getUserAuth().getAuthCode());
+
+        // system login pass - partner sqs 에서 강제 set authentic
+        if(user.getUsername().equals("super@wrightbrothers.kr")) {
+            return;
+        }
 
         Arrays.stream(joinPoint.getArgs()).forEach(entity -> log.info("[checkFindPartnerAuth]::{}",entity.toString()));
 
