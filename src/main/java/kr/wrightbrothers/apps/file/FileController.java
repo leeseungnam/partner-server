@@ -34,6 +34,13 @@ public class FileController extends WBController {
     private final FileService fileService;
     private final MessageSourceAccessor messageSourceAccessor;
 
+    @GetMapping("/files/generate-key")
+    public WBModel findFileKey() {
+        WBModel response = new WBModel();
+        response.addObject(WBKey.File.UploadFileNo, RandomUtil.generateNo());
+        return response;
+    }
+
     @ApiImplicitParams({
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "access token", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
