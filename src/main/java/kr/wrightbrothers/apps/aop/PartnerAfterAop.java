@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
@@ -43,6 +44,8 @@ public class PartnerAfterAop {
     public void sendPartnerSnsData(JoinPoint joinPoint) throws Exception {
         log.info("[sendPartnerSnsData]::Partner Send SNS.");
 
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+
         Arrays.stream(joinPoint.getArgs()).forEach(obj -> {
 
             if(obj instanceof PartnerInsertDto){
@@ -55,7 +58,8 @@ public class PartnerAfterAop {
                         DocumentSNS.REQUEST_INSPECTION_PARTNER
                         , partnerCode
                         , contractCode
-                        , PartnerKey.TransactionType.Insert
+                        , methodSignature.getMethod().getName().contains("update") ?
+                                PartnerKey.TransactionType.Update : PartnerKey.TransactionType.Insert
                 );
                 log.info("[sendPartnerSnsData]::partnerCode={}, contractCode={}", partnerCode, contractCode);
             }
