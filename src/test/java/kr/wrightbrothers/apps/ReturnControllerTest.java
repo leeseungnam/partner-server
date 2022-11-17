@@ -369,7 +369,7 @@ public class ReturnControllerTest extends BaseControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.WBCommon.state").value("S"))
                 .andDo(
-                        document("complete-return-update",
+                        document("non-return-update",
                                 requestDocument(),
                                 responseDocument(),
                                 requestHeaders(
@@ -428,5 +428,61 @@ public class ReturnControllerTest extends BaseControllerTests {
                                 )
                 ))
                 ;
+    }
+
+    @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @DisplayName("반품 배송정보 수정")
+    void updateReturnDelivery() throws Exception {
+
+        ReturnDeliveryDto.ReqBody updateParam = ReturnDeliveryDto.ReqBody.builder()
+                .orderNo("192211151341424534")
+                .orderProductSeq(1)
+                .deliveryCompanyCode("ckdhjf")
+                .invoiceNo("304958584")
+                .recipientName("수령자")
+                .recipientPhone("01011111111")
+                .recipientAddressZipCode("12345")
+                .recipientAddress("대한민국 그 어딘가...")
+                .recipientAddressDetail("라이트브라더스 1층")
+                .build();
+
+        // 반품 배송정보 수정 API 테스트
+        mockMvc.perform(RestDocumentationRequestBuilders.put("/v1/returns/{orderNo}/deliveries", updateParam.getOrderNo())
+                        .header(AUTH_HEADER, JWT_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(updateParam))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.WBCommon.state").value("S"))
+                .andDo(
+                        document("return-delivery-update",
+                                requestDocument(),
+                                responseDocument(),
+                                requestHeaders(
+                                        headerWithName(AUTH_HEADER).description("JWT 토큰")
+                                ),
+                                pathParameters(
+                                        parameterWithName("orderNo").description("주문 번호")
+                                ),
+                                relaxedRequestFields(
+                                        fieldWithPath("orderNo").type(JsonFieldType.STRING).description("주문 번호").attributes(key("etc").value("")),
+                                        fieldWithPath("orderProductSeq").type(JsonFieldType.NUMBER).description("주문 상품 SEQ").attributes(key("etc").value("")),
+                                        fieldWithPath("deliveryCompanyCode").type(JsonFieldType.STRING).description("택배사").attributes(key("etc").value("마스터코드 000044")),
+                                        fieldWithPath("invoiceNo").type(JsonFieldType.STRING).description("송장번호").attributes(key("etc").value("")),
+                                        fieldWithPath("recipientName").type(JsonFieldType.STRING).description("수령자").attributes(key("etc").value("")),
+                                        fieldWithPath("recipientPhone").type(JsonFieldType.STRING).description("연락처").attributes(key("etc").value("")),
+                                        fieldWithPath("recipientAddressZipCode").type(JsonFieldType.STRING).description("우편번호").attributes(key("etc").value("")),
+                                        fieldWithPath("recipientAddress").type(JsonFieldType.STRING).description("주소").attributes(key("etc").value("")),
+                                        fieldWithPath("recipientAddressDetail").type(JsonFieldType.STRING).description("상세주소").optional().attributes(key("etc").value(""))
+                                ),
+                                responseFields(
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
+                                        fieldWithPath("WBCommon.message").type(JsonFieldType.STRING).description("메시지")
+                                )
+                        ))
+        ;
+
     }
 }

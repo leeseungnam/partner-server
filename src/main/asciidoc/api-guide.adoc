@@ -473,7 +473,7 @@ include::{snippets}/return-find/path-parameters.adoc[]
 include::{snippets}/return-find/http-response.adoc[]
 include::{snippets}/return-find/response-fields.adoc[]
 
-==== 반품내역 수정
+==== 반품메모 수정
 
 .HTTP request
 include::{snippets}/return-update/http-request.adoc[]
@@ -483,12 +483,67 @@ include::{snippets}/return-update/request-fields.adoc[]
 include::{snippets}/return-update/http-response.adoc[]
 include::{snippets}/return-update/response-fields.adoc[]
 
-==== 반품 요청 처리
+==== 반품승인(추가)
 
 .HTTP request
-include::{snippets}/return-request-update/http-request.adoc[]
-include::{snippets}/return-request-update/request-headers.adoc[]
-include::{snippets}/return-request-update/request-fields.adoc[]
+include::{snippets}/approval-return-update/http-request.adoc[]
+include::{snippets}/approval-return-update/request-headers.adoc[]
+include::{snippets}/approval-return-update/path-parameters.adoc[]
+include::{snippets}/approval-return-update/request-fields.adoc[]
 .HTTP response
-include::{snippets}/return-request-update/http-response.adoc[]
-include::{snippets}/return-request-update/response-fields.adoc[]
+include::{snippets}/approval-return-update/http-response.adoc[]
+include::{snippets}/approval-return-update/response-fields.adoc[]
+
+==== 반품취소(추가)
+
+.HTTP request
+include::{snippets}/cancel-return-update/http-request.adoc[]
+include::{snippets}/cancel-return-update/request-headers.adoc[]
+include::{snippets}/cancel-return-update/path-parameters.adoc[]
+include::{snippets}/cancel-return-update/request-fields.adoc[]
+.HTTP response
+include::{snippets}/cancel-return-update/http-response.adoc[]
+include::{snippets}/cancel-return-update/response-fields.adoc[]
+
+==== 반품완료(추가)
+
+.HTTP request
+include::{snippets}/complete-return-update/http-request.adoc[]
+include::{snippets}/complete-return-update/request-headers.adoc[]
+include::{snippets}/complete-return-update/path-parameters.adoc[]
+include::{snippets}/complete-return-update/request-fields.adoc[]
+.HTTP response
+include::{snippets}/complete-return-update/http-response.adoc[]
+include::{snippets}/complete-return-update/response-fields.adoc[]
+
+==== 반품불가(추가)
+
+.HTTP request
+include::{snippets}/non-return-update/http-request.adoc[]
+include::{snippets}/non-return-update/request-headers.adoc[]
+include::{snippets}/non-return-update/path-parameters.adoc[]
+include::{snippets}/non-return-update/request-fields.adoc[]
+.HTTP response
+include::{snippets}/non-return-update/http-response.adoc[]
+include::{snippets}/non-return-update/response-fields.adoc[]
+
+==== 반품배송지 조회(추가)
+
+.HTTP request
+include::{snippets}/return-delivery-find/http-request.adoc[]
+include::{snippets}/return-delivery-find/request-headers.adoc[]
+include::{snippets}/return-delivery-find/path-parameters.adoc[]
+.HTTP response
+include::{snippets}/return-delivery-find/http-response.adoc[]
+include::{snippets}/return-delivery-find/response-fields.adoc[]
+
+==== 반품배송지 수정(추가)
+
+.HTTP request
+include::{snippets}/return-delivery-update/http-request.adoc[]
+include::{snippets}/return-delivery-update/request-headers.adoc[]
+include::{snippets}/return-delivery-update/path-parameters.adoc[]
+include::{snippets}/return-delivery-update/request-fields.adoc[]
+.HTTP response
+include::{snippets}/return-delivery-update/http-response.adoc[]
+include::{snippets}/return-delivery-update/response-fields.adoc[]
