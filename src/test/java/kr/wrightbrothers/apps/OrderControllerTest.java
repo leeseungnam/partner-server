@@ -205,7 +205,7 @@ public class OrderControllerTest extends BaseControllerTests {
                                         headerWithName(AUTH_HEADER).description("JWT 토큰")
                                 ),
                                 requestParameters(
-                                        parameterWithName("orderStatus").description("주문 상태").attributes(key("etc").value("O05 주문완료, D01 상품 준비중, C05 구매확정, O06 취소요청, O07 취소완료, D02 배송중, D03 부분배송, D05 배송완료, O10 반품상태")),
+                                        parameterWithName("orderStatus").description("주문 상태").attributes(key("etc").value("O05 주문완료, D01 상품 준비중, C05 구매확정, O06 취소요청, O07 취소완료, D02 배송중, D03 부분배송, D05 배송완료, R01 반품요청, R03 반품진행, R04 반품불가, R06 반품완료 요청, R05 빈픔완료")),
                                         parameterWithName("paymentStatus").description("결제 상태").attributes(key("etc").value("S01 입금대기, S10 결제완료, S08 결제취소, S02 부분취소")),
                                         parameterWithName("paymentMethod").description("결제 수단").attributes(key("etc").value("P01 신용카드, P02 계좌이체, P03 무통장, P06 페이코")),
                                         parameterWithName("rangeType").description("조회 기간 구분").attributes(key("etc").value("PAYMENT 결제일자, CANCEL 취소일자")),
@@ -294,8 +294,6 @@ public class OrderControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.payment.paymentMethodName").type(JsonFieldType.STRING).description("결제 수단 이름"),
                                         fieldWithPath("data.payment.paymentStatusCode").type(JsonFieldType.STRING).description("결제 상태 코드"),
                                         fieldWithPath("data.payment.paymentStatusName").type(JsonFieldType.STRING).description("결제 상태 이름"),
-                                        fieldWithPath("data.payment.cancelDate").type(JsonFieldType.STRING).description("취소 일시").optional(),
-                                        fieldWithPath("data.payment.cancelReason").type(JsonFieldType.STRING).description("취소 사유").optional(),
                                         fieldWithPath("data.productList[]").optional().type(JsonFieldType.ARRAY).description("주문 상품 목록"),
                                         fieldWithPath("data.productList[].orderProductSeq").type(JsonFieldType.NUMBER).description("주문 상품 SEQ"),
                                         fieldWithPath("data.productList[].productCode").type(JsonFieldType.STRING).description("상품 코드"),
@@ -311,9 +309,9 @@ public class OrderControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.productList[].deliveryChargeAmount").type(JsonFieldType.NUMBER).description("* 배송료"),
                                         fieldWithPath("data.productList[].cancelDay").type(JsonFieldType.STRING).description("* 취소일자").optional(),
                                         fieldWithPath("data.productList[].cancelReason").type(JsonFieldType.STRING).description("* 취소사유").optional(),
-                                        fieldWithPath("data.productList[].returnDeliveryCompany").type(JsonFieldType.STRING).description("* 반품 택배 회사").optional(),
-                                        fieldWithPath("data.productList[].returnDeliveryEndDay").type(JsonFieldType.STRING).description("반품완료일자").optional(),
-                                        fieldWithPath("data.productList[].returnInvoiceNo").type(JsonFieldType.STRING).description("반품배송번호").optional(),
+                                        fieldWithPath("data.productList[].returnDeliveryCompany").type(JsonFieldType.STRING).description("** 반품 택배 회사").optional(),
+                                        fieldWithPath("data.productList[].returnDeliveryEndDay").type(JsonFieldType.STRING).description("** 반품완료일자").optional(),
+                                        fieldWithPath("data.productList[].returnInvoiceNo").type(JsonFieldType.STRING).description("** 반품배송번호").optional(),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
                                 )
                 ))

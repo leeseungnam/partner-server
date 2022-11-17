@@ -176,8 +176,6 @@ class DeliveryControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.payment.paymentMethodName").type(JsonFieldType.STRING).description("결제 수단 이름"),
                                         fieldWithPath("data.payment.paymentStatusCode").type(JsonFieldType.STRING).description("결제 상태 코드"),
                                         fieldWithPath("data.payment.paymentStatusName").type(JsonFieldType.STRING).description("결제 상태 이름"),
-                                        fieldWithPath("data.payment.cancelDate").type(JsonFieldType.STRING).description("취소 일시").optional(),
-                                        fieldWithPath("data.payment.cancelReason").type(JsonFieldType.STRING).description("취소 사유").optional(),
                                         fieldWithPath("data.deliveryList[]").type(JsonFieldType.ARRAY).optional().description("배송진행 상품 목록"),
                                         fieldWithPath("data.deliveryList[].orderProductSeq").type(JsonFieldType.NUMBER).description("주문 상품 SEQ"),
                                         fieldWithPath("data.deliveryList[].productCode").type(JsonFieldType.STRING).description("상품 코드"),
