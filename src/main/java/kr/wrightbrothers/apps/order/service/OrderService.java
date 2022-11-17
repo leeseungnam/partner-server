@@ -52,17 +52,9 @@ public class OrderService {
                 .build();
     }
 
-    /**
-     * <pre>
-     * 배송 주문 상품 목록에서 송장번호가 입력 되어있으면, 해당 주문건에 대해서
-     * 배송 진행이 되어있다고 판단 합니다.
-     *
-     * 배송 진행 상태일 경우 해당 배송지 정보는 제외하고 주문 메모 데이터만 수정
-     * </pre>
-     */
-    public void updateOrder(OrderMemoUpdateDto paramDto) {
+    public void updateOrderMemo(OrderMemoUpdateDto paramDto) {
         // 송장번호 입력 시 배송지 정보 수정 제외
-        dao.update(namespace + "updateOrder", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+        dao.update(namespace + "updateOrderMemo", paramDto, PartnerKey.WBDataBase.Alias.Admin);
     }
 
     public void makeExcelFile(OrderExcelDto.Param paramDto,
@@ -119,7 +111,7 @@ public class OrderService {
 
         // SNS 주문상태 변경처리 전송
         orderQueue.sendToAdmin(
-                DocumentSNS.UPDATE_DELIVERY_PREPARING,
+                DocumentSNS.UPDATE_ORDER,
                 // Queue 전송 데이터 객체 변환
                 paramDto.toQueueDto(dao.selectList(namespace + "findOrderProductSeq", paramDto, PartnerKey.WBDataBase.Alias.Admin)),
                 PartnerKey.TransactionType.Update

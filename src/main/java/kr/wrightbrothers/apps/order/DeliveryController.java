@@ -169,4 +169,19 @@ public class DeliveryController extends WBController {
         return noneMgsResponse(messageSourceAccessor);
     }
 
+
+    @GetMapping("/deliveries/{orderNo}/addresses/{orderProductSeq}")
+    public WBModel findDeliveryAddresses(@PathVariable String orderNo,
+                                         @PathVariable Integer orderProductSeq,
+                                         @AuthenticationPrincipal UserPrincipal user) {
+        return defaultResponse(
+                deliveryService.findDeliveryAddresses(
+                        DeliveryAddressDto.Param.builder()
+                                .partnerCode(user.getUserAuth().getPartnerCode())
+                                .orderNo(orderNo)
+                                .orderProductSeq(orderProductSeq)
+                                .build())
+        );
+    }
+
 }

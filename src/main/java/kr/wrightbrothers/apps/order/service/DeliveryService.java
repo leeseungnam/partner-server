@@ -1,9 +1,11 @@
 package kr.wrightbrothers.apps.order.service;
 
+import kr.wrightbrothers.apps.common.type.DocumentSNS;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.ExcelUtil;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.*;
+import kr.wrightbrothers.apps.queue.OrderQueue;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ import java.util.List;
 public class DeliveryService {
 
     private final WBCommonDao dao;
+    private final OrderQueue orderQueue;
     private final PaymentService paymentService;
     private final ResourceLoader resourceLoader;
     private final String namespace = "kr.wrightbrothers.apps.order.query.Delivery.";
@@ -54,12 +57,22 @@ public class DeliveryService {
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void updateDeliveryInvoice(DeliveryInvoiceUpdateDto paramDto) {
         // 요청 주문 상품 목록에 배송 진행된 상품 유무 확인
-        if (dao.selectOne(namespace + "isDeliveryStart", paramDto, PartnerKey.WBDataBase.Alias.Admin))
-            throw new WBBusinessException(ErrorCode.ALREADY_DELIVERY_START.getErrCode(), new String[]{"송장번호"});
+        if (dao.selectOne(namespace + "isDeliveryComplete", paramDto, PartnerKey.WBDataBase.Alias.Admin))
+            throw new WBBusinessException(ErrorCode.COMPLETE_DELIVERY.getErrCode(), new String[]{"송장번호"});
 
+        // 택배사 정보(택배회사, 송장번호) 등록, 배송시작 상태 변경
+        // 주문 배송, 주문 상품 Multi Query
         dao.update(namespace + "updateDeliveryStart", paramDto, PartnerKey.WBDataBase.Alias.Admin);
         // 대표 상태코드 최신화 프로시져 호출
         dao.update(namespaceOrder + "updateOrderStatusRefresh", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin);
+
+        // 상태 변경에 따른 SNS 전송
+        orderQueue.sendToAdmin(
+                DocumentSNS.UPDATE_ORDER,
+                // Queue 전송 데이터 객체 변환
+                paramDto.toQueueDto(),
+                PartnerKey.TransactionType.Update
+        );
     }
 
     public void updateDeliveryMemo(DeliveryMemoUpdateDto paramDto) {
@@ -69,8 +82,8 @@ public class DeliveryService {
 
     public void updateDelivery(DeliveryUpdateDto paramDto) {
         // 요청 주문 상품 목록에 배송 진행된 상품 유무 확인
-        if (dao.selectOne(namespace + "isDeliveryStart", paramDto, PartnerKey.WBDataBase.Alias.Admin))
-            throw new WBBusinessException(ErrorCode.ALREADY_DELIVERY_START.getErrCode(), new String[]{"배송정보"});
+        if (dao.selectOne(namespace + "isDeliveryComplete", paramDto, PartnerKey.WBDataBase.Alias.Admin))
+            throw new WBBusinessException(ErrorCode.COMPLETE_DELIVERY.getErrCode(), new String[]{"배송정보"});
 
         // 상품준비중 상품의 배송지 정보 변경 처리
         dao.update(namespace + "updateDelivery", paramDto, PartnerKey.WBDataBase.Alias.Admin);
@@ -127,5 +140,9 @@ public class DeliveryService {
         response.setHeader("Content-Disposition", "attachment;filename=\"" + URLEncoder.encode("배송목록리스트.xlsx", StandardCharsets.UTF_8) + "\";");
         excel.workbook.write(response.getOutputStream());
         excel.workbook.close();
+    }
+
+    public DeliveryAddressDto.Response findDeliveryAddresses(DeliveryAddressDto.Param paramDto) {
+        return dao.selectOne(namespace + "findDeliveryAddresses", paramDto, PartnerKey.WBDataBase.Alias.Admin);
     }
 }

@@ -337,6 +337,43 @@ class DeliveryControllerTest extends BaseControllerTests {
         ;
     }
 
+    @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @DisplayName("배송지 정보 조회")
+    void findDeliveryAddresses() throws Exception {
+        String orderNo = "192211151341424534";
+
+        // 주문내역 상세 API 조회
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/deliveries/{orderNo}/addresses/{orderProductSeq}", orderNo, 1)
+                        .header(AUTH_HEADER, JWT_TOKEN)
+                        .contentType(MediaType.TEXT_HTML)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.WBCommon.state").value("S"))
+                .andDo(
+                        document("delivery-addresses-find",
+                                requestDocument(),
+                                responseDocument(),
+                                requestHeaders(
+                                        headerWithName(AUTH_HEADER).description("JWT 토큰")
+                                ),
+                                pathParameters(
+                                        parameterWithName("orderNo").description("주문 번호"),
+                                        parameterWithName("orderProductSeq").description("주문상품 SEQ")
+                                ),
+                                responseFields(
+                                        fieldWithPath("data.recipientName").type(JsonFieldType.STRING).description("수령자명"),
+                                        fieldWithPath("data.recipientPhone").type(JsonFieldType.STRING).description("휴대폰 번호"),
+                                        fieldWithPath("data.recipientAddressZipCode").type(JsonFieldType.STRING).description("우편번호"),
+                                        fieldWithPath("data.recipientAddress").type(JsonFieldType.STRING).description("주소"),
+                                        fieldWithPath("data.recipientAddressDetail").type(JsonFieldType.STRING).description("상세주소"),
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                )
+                        ))
+        ;
+    }
+
 
 
 }

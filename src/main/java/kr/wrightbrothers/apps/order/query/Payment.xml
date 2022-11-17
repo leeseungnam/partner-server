@@ -104,7 +104,7 @@
 			   cnc_bank_acnt_no = #{refundBankAccountNo},
 			   cnc_rmtr_nm		= #{refundDepositorName}
 		 where ord_no = #{orderNo}
-		   and prnr_cd = #{partner}
+		   and prnr_cd = #{partnerCode}
 		<foreach collection="orderProductSeq" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
 			#{item}
 		</foreach>

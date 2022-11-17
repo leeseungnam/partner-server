@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import kr.wrightbrothers.apps.common.type.OrderProductStatusCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -51,13 +52,25 @@ public class RequestReturnUpdateDto {
             this.returnProcessCode = returnProcessCode;
         }
 
-        public PaymentCancelDto.Queue toCancelQueueDto(String statusCode) {
-                return PaymentCancelDto.Queue.builder()
-                        .ordNo(this.orderNo)
-                        .prnrCd(this.partnerCode)
-                        .stusCd(statusCode)
-                        .ordPrdtIdx(Arrays.stream(this.orderProductSeqArray).map(String::valueOf).collect(Collectors.toList()))
-                        .build();
+        public Object toCancelQueueDto(String statusCode) {
+                return
+                OrderProductStatusCode.REQUEST_COMPLETE_RETURN.getCode().equals(statusCode) ?
+                        PaymentCancelDto.Queue.builder()
+                                .ordNo(this.orderNo)
+                                .prnrCd(this.partnerCode)
+                                .stusCd(statusCode)
+                                .ordPrdtIdx(Arrays.stream(this.orderProductSeqArray).map(String::valueOf).collect(Collectors.toList()))
+                                .usrId(this.userId)
+                                .build()
+                        :
+                        DeliveryPreparingDto.Queue.builder()
+                                .ordNo(this.orderNo)
+                                .prnrCd(this.partnerCode)
+                                .stusCd(statusCode)
+                                .ordPrdtIdx(Arrays.stream(this.orderProductSeqArray).map(String::valueOf).collect(Collectors.toList()))
+                                .usrId(this.userId)
+                                .build()
+                        ;
         }
 
 }

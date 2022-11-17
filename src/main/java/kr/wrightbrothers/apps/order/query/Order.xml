@@ -237,7 +237,7 @@
 		   and p.prnr_cd = #{partnerCode}
 	</select>
 
-	<update id="updateOrder" parameterType="kr.wrightbrothers.apps.order.dto.OrderMemoUpdateDto">
+	<update id="updateOrderMemo" parameterType="kr.wrightbrothers.apps.order.dto.OrderMemoUpdateDto">
 		update ord_prnr_info
 		   set ord_memo = #{orderMemo},
 		       upd_usr_id = #{userId},

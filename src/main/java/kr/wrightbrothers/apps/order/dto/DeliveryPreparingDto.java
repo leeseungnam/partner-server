@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import kr.wrightbrothers.apps.common.type.OrderStatusCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Builder
@@ -32,7 +34,8 @@ public class DeliveryPreparingDto {
         return Queue.builder()
                 .ordNo(this.orderNo)
                 .prnrCd(this.partnerCode)
-                .ordPrdtIdx(ordPrdtIdx)
+                .stusCd(OrderStatusCode.READY_PRODUCT.getCode())
+                .ordPrdtIdx(ordPrdtIdx.stream().map(String::valueOf).collect(Collectors.toList()))
                 .usrId(this.userId)
                 .build();
     }
@@ -43,7 +46,8 @@ public class DeliveryPreparingDto {
     public static class Queue {
         private String ordNo;               // 주문번호
         private String prnrCd;              // 파트너코드
-        private List<Integer> ordPrdtIdx; // 주문상품 IDX 배열
+        private String stusCd;              // 상태코드
+        private List<String> ordPrdtIdx; // 주문상품 IDX 배열
         private String usrId;               // 로그인 아이디
     }
 

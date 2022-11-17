@@ -3,6 +3,7 @@ package kr.wrightbrothers.apps.order.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import kr.wrightbrothers.apps.common.type.OrderStatusCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,6 +13,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @ApiModel(value = "송장번호 입력")
 @Getter
@@ -57,5 +61,26 @@ public class DeliveryInvoiceUpdateDto {
 
     public void setOrderProductSeq(Integer orderProductSeq) {
         this.orderProductSeq = orderProductSeq;
+    }
+
+    public Queue toQueueDto() {
+        return Queue.builder()
+                .ordNo(this.orderNo)
+                .prnrCd(this.partnerCode)
+                .stusCd(OrderStatusCode.START_DELIVERY.getCode())
+                .ordPrdtIdx(Arrays.stream(this.orderProductSeqArray).map(String::valueOf).collect(Collectors.toList()))
+                .usrId(this.userId)
+                .build();
+    }
+
+
+    @Getter
+    @Builder
+    public static class Queue {
+        private String ordNo;               // 주문번호
+        private String prnrCd;              // 파트너코드
+        private String stusCd;              // 상태코드
+        private List<String> ordPrdtIdx; // 주문상품 IDX 배열
+        private String usrId;               // 로그인 아이디
     }
 }
