@@ -12,6 +12,14 @@
 		   and ord_stus = #{returnProcessCode}
 	</select>
 
+	<select id="isPayMethodNotBank" parameterType="java.lang.String" resultType="boolean">
+		select
+		    if(count(ord_no) > 0, true, false) as isPayMethodNotBank
+		  from ord_info
+		 where ord_no = #{orderNo}
+		   and pay_meth != 'P03'
+	</select>
+
 	<select id="findReturnList" parameterType="kr.wrightbrothers.apps.order.dto.ReturnListDto$Param" resultType="kr.wrightbrothers.apps.order.dto.ReturnListDto$Response">
 		select
 		    date_format(p.cnc_rq_dt, '%Y-%m-%d') as return_request_day,
@@ -98,6 +106,7 @@
 		    p.optn_nm as option_name,
 		    p.fnl_sell_amt as final_sell_amount,
 			date_format(p.cnc_rq_dt, '%Y-%m-%d') as return_request_day,
+			date_format(p.cnc_cplt_dt, '%Y-%m-%d') as return_complete_day,
 			p.prdt_qty as product_qty,
 			p.ord_prdt_stus as order_product_status_code,
 			p.ord_prdt_stus as order_product_status_name,
@@ -122,7 +131,7 @@
 		   and rcd.intg_cd_id = '000085'
 		 where p.ord_no = #{orderNo}
 		   and p.prnr_cd = #{partnerCode}
-		   and p.ord_prdt_stus in ('R01', 'R03')	-- 반품요청, 반품취소, 반품진행, 반품불가, 반품완료
+		   and p.ord_prdt_stus in ('R01', 'R03', 'R04', 'R05', 'R06')	-- 반품요청, 반품진행, 반품불가, 반품완료, 반품완료 요청
 		 order by p.ord_prdt_idx
 	</select>
 
@@ -134,29 +143,6 @@
 		   and prnr_cd = #{partnerCode}
 		   and ord_prdt_idx = #{orderProductSeq}
 	</select>
-
-	<update id="updateOrderProductReturnCode" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto">
-		update ord_prdt_info
-		   set ord_prdt_stus = #{returnProcessCode},
-		       -- 반풀불가 처리 시 반품 사유 등록
-		       <if test="returnProcessCode == 'R04'.toString()">
-				   non_rtn_tp_cd = #{requestCode},
-				   non_rtn_dt = now(),
-			   </if>
-		       upd_usr_id = #{userId},
-		       upd_dt = now()
-		 where ord_no = #{orderNo}
-		   and ord_prdt_idx = #{orderProductSeq}
-	</update>
-
-	<update id="updateOrderReturnCode" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto">
-		update ord_prnr_info
-		   set ord_stus = #{returnProcessCode},
-		       upd_usr_id = #{userId},
-		       upd_dt = now()
-		 where ord_no = #{orderNo}
-		   and prnr_cd = #{partnerCode}
-	</update>
 
 	<select id="findNonCancelOrderProduct" parameterType="kr.wrightbrothers.apps.order.dto.ReturnFindDto$Param" resultType="kr.wrightbrothers.apps.order.dto.DeliveryProductDto">
 		select
@@ -185,31 +171,65 @@
 		   and p.ord_prdt_stus not in ('O06', 'O07')
 	</select>
 
-	<update id="updateOrderDeliveryReturn" parameterType="kr.wrightbrothers.apps.order.dto.ApprovalReturnDto">
+	<update id="updateApprovalReturn" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto">
+		-- 반품 배송택배 정보 등록
 		update ord_shpn_info
 		   set rtrn_dlvry_cmpny 		= #{requestCode},
 		       rtrn_invc_no				= #{requestValue},
 		       rtrn_invc_inp_dt 		= ifnull(rtrn_invc_inp_dt, now()),
-		       rtrn_rcpnt_nm			= #{recipientName},
-		       rtrn_rcpnt_usr_phn 		= #{recipientPhone},
-		       rtrn_rcpnt_adrs_zip_cd 	= #{recipientAddressZipCode},
-		       rtrn_rcpnt_adrs 			= #{recipientAddress},
-		       rtrn_rcpnt_adrs_sub 		= #{recipientAddressDetail},
 		       upd_usr_id				= #{userId},
 		       upd_dt					= now()
 		 where ord_no 					= #{orderNo}
-		   and ord_prdt_idx 			= #{orderProductSeq}
+		   and ord_prdt_idx 			= #{orderProductSeq};
+		-- 주문 상품 반품 진행 처리
+		update ord_prdt_info
+		   set ord_prdt_stus			= 'R03',
+			   upd_usr_id				= #{userId},
+			   upd_dt					= now()
+		 where ord_no					= #{orderNo}
+		   and ord_prdt_idx				= #{orderProductSeq}
+		   and prnr_cd					= #{partnerCode}
+		   and ord_prdt_stus			= 'R01';
+	</update>
+	
+	<update id="updateWithdrawalReturn" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto">
+		update ord_prdt_info
+		   set ord_prdt_stus			= 'D05',
+		       cnc_rq_dt				= null,
+		       cnc_rsn_cd				= null,
+		       cnc_rsn					= null,
+			   upd_usr_id				= #{userId},
+			   upd_dt					= now()
+		 where ord_no					= #{orderNo}
+		   and ord_prdt_idx				= #{orderProductSeq}
+		   and prnr_cd					= #{partnerCode}
+		   and ord_prdt_stus			= 'R01'
 	</update>
 
-	<update id="updateRequestReturnOrderPartner" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto">
-		-- 파트너 반품완료로 인한 취소요청
-		update ord_prnr_info
-		   set pay_stus = 'S06',	-- 취소요청 코드
-		       ord_stus = 'R06',	-- 취소요청 코드
-		       upd_usr_id = #{userId},
-		       upd_dt = now()
-		 where ord_no = #{orderNo}
-		   and prnr_cd = #{partnerCode}
+	<update id="updateRequestCompleteReturn" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto">
+		update ord_prdt_info
+		   set ord_prdt_stus			= 'R06',
+		       ord_prdt_pay_stus		= 'S06',
+		       cnc_cplt_dt				= now(),
+		       upd_usr_id				= #{userId},
+		       upd_dt					= now()
+		 where ord_no					= #{orderNo}
+		   and ord_prdt_idx				= #{orderProductSeq}
+		   and prnr_cd					= #{partnerCode}
+		   and ord_prdt_stus			= 'R03'
+	</update>
+
+	<update id="updateNonReturn" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto">
+		update ord_prdt_info
+		   set ord_prdt_stus			= 'R04',
+			   non_rtn_tp_cd 			= #{requestCode},
+			   non_rtn_dt 				= now(),
+		       upd_usr_id				= #{userId},
+		       upd_dt					= now()
+		 where ord_no					= #{orderNo}
+		   and ord_prdt_idx				= #{orderProductSeq}
+		   and prnr_cd					= #{partnerCode}
+		   and ord_prdt_stus			= 'R03'
 	</update>
 
 	<select id="findExcelReturnList" parameterType="kr.wrightbrothers.apps.order.dto.ReturnExcelDto$Param" resultType="kr.wrightbrothers.apps.order.dto.ReturnExcelDto$Response">
@@ -295,5 +315,34 @@
 		 where ord_no = #{orderNo}
 		   and ord_prdt_idx = #{orderProductSeq}
 	</update>
+
+	<insert id="mockReturnData" parameterType="java.lang.String">
+		insert into ord_info(ord_no, ord_nm, ord_stus, pay_stus, oine_ofl_tp, ord_qty, ord_usr_id, ord_dt, earn_pnt, rcpnt_nm, rcpnt_usr_phn, rcpnt_adrs, rcpnt_adrs_sub, rcpnt_adrs_zip_cd, rqst_dtls, ord_memo, ord_amt, dlvr_chrg_amt, ssp_pnt, sls_amt, pay_amt, pay_meth, mnt_rnt_amt, pym_dt, pay_gtwy_tp, pay_gtwy_site_cd, card_cd, card_no, card_instl, card_aprl_no, bank_cd, bank_acnt_no, dpstr_nm, remit_ddln_dt, rmtr_nm, remit_dt, csh_rcipt_flg, csh_rcipt_tp, csh_rcipt_no, csh_rcipt_ppse_cd, csh_rcipt_dt, csh_rcipt_aprl_flg, csh_rcipt_aprl_no, cre_usr_id, cre_dt, upd_usr_id, upd_dt, asis_idx)
+		values ('192211151341424534', '테스트 상품명', 'R01', 'S10', '0', 1, 'foot3go@naver.com', '2022-11-15 13:42:25', null, '심병철', '01047183922', '서울 강남구 테헤란로 21', '라이트브라더스', null, null, null, 100, 0, 0, 0, 100, 'P01', null, '2022-11-15 13:42:00', 'PG02', 'T0000', 'CCLG', '4658870000008424', '00', '27886734', null, null, null, '0000-00-00 00:00:00', null, '0000-00-00 00:00:00', 'N', null, null, null, '0000-00-00 00:00:00', null, null, 'foot3go@naver.com', '2022-11-15 13:42:25', 'foot3go@naver.com', '2022-11-15 17:44:30', 10426);
+
+		insert into ord_prnr_info(ord_no, prnr_cd, ord_nm, ord_stus, pay_stus, ord_amt, dlvr_chrg_amt, pay_amt, ord_memo, dlvry_memo, rtrn_memo, cre_usr_id, cre_dt, upd_usr_id, upd_dt)
+		values ('192211151341424534', 'PT0000001', '테스트 상품명', 'R01', 'S10', 100, 0, 100, null, null, null, 'foot3go@naver.com', '2022-11-15 13:42:25', 'foot3go@naver.com', '2022-11-15 17:43:41');
+
+		insert into ord_shpn_info(ord_no, ord_prdt_idx, prdt_cd, ord_dlvr_stus, rcpnt_nm, rcpnt_usr_phn, rcpnt_adrs, rcpnt_adrs_sub, rcpnt_adrs_zip_cd, dlvry_cmpny, invc_no, invc_inp_dt, dlvry_st_dt, dlvry_end_dt, dlvry_memo, rtrn_rcpnt_nm, rtrn_rcpnt_usr_phn, rtrn_rcpnt_adrs, rtrn_rcpnt_adrs_sub, rtrn_rcpnt_adrs_zip_cd, rtrn_memo, rtrn_dlvry_cmpny, rtrn_invc_no, rtrn_invc_inp_dt, rtrn_dlvry_st_dt, rtrn_dlvry_end_dt, rtrn_prhb_dlvry_cmpny, rtrn_prhb_invc_no, rtrn_prhb_invc_inp_dt, rtrn_prhb_dlvry_st_dt, rtrn_prhb_dlvry_end_dt, cre_usr_id, cre_dt, upd_usr_id, upd_dt)
+		values ('192211151341424534', 1, 'PARBF5EYKZ', 'D05', null, null, null, null, null, null, null, '0000-00-00 00:00:00', null, '2022-11-15 17:43:00', null, '심병철', '01047183922', '서울 그 어딘가', '라이트브라더스', '12345', null, 'cjeorl', '1234234234', null, null, null, null, null, null, null, null, 'foot3go@naver.com', '2022-11-15 17:43:41', 'foot3go@naver.com', '2022-11-15 17:44:30');
+
+		insert into ord_prdt_info(ord_no, ord_prdt_idx, ord_prdt_stus, ord_prdt_pay_stus, prnr_cd, prdt_cd, prdt_nm, optn_nm, fnl_sell_amt, optn_val, prdt_qty, optn_schg, dlvr_chrg_amt, dlvr_tp, dlvr_pck_dt, earn_pnt, tax, cnc_rq_dt, cnc_cplt_dt, cnc_rsn_cd, cnc_rsn, non_rtn_dt, non_rtn_tp_cd, cnc_rmtr_nm, cnc_bank_cd, cnc_bank_acnt_no, slr_usr_id, cre_usr_id, cre_dt, upd_usr_id, upd_dt, asis_item_idx)
+		values ('192211151341424534', 1, 'R01', 'S10', 'PT0000001', 'PARBF5EYKZ', '테스트 상품명', '색상', 100, '블랙', 1, '0', 0, 'D02', null, 0, 9, '2022-11-15 17:44:00', null, 'C01', '유성이가 도와줬음~~~', null, null, '', '', '', 'foot3go@naver.com', 'foot3go@naver.com', '2022-11-15 13:42:25', 'foot3go@naver.com', '2022-11-15 00:00:00', 10820);
+
+		insert into ord_trsctn_info (ord_no, trsctn_seq, pay_gtwy_tp, trsctn_id_tp, trsctn_proc_tp, trsctn_id, trsctn_rslt_cd, trsctn_rslt_msg, cre_usr_id, cre_dt, upd_usr_id, upd_dt)
+		values ('192211151341424534', 1, 'PG02', 'P01', 'T01', '22569980339961', null, '{order_no=10426, mall_taxno=1138521083, partcanc_yn=Y, noinf=N, res_msg=정상처리, coupon_mny=0, pg_txid=1115134225MP01980339960000000001000027886734, card_bin_type_01=0, trace_no=T0000BFDgPAB0B0C, card_mny=100, shop_user_id=happyin022002@gmail.com, res_vat_mny=10, ca_order_id=10426, res_tax_flag=TG03, acqu_name=신한카드, card_no=4658870000008424, quota=00, van_cd=VNKC, acqu_cd=CCLG, amount=100, cert_no=22569980339961, van_apptime=20221115134225, use_point=0, res_free_mny=0, pay_method=PACA, card_bin_bank_cd=0301, bizx_numb=0013425574, res_cd=0000, escw_yn=N, join_cd=0000, app_time=20221115134225, tno=22569980339961, card_bin_type_02=0, card_cd=CCLG, res_en_msg=processing completed, card_name=신한카드, mcht_taxno=1138521083, res_green_deposit_mny=0, res_tax_mny=90, app_no=27886734}', 'happyin022002@gmail.com', '2022-11-15 13:42:25', 'happyin022002@gmail.com', '2022-11-15 13:42:25');
+
+		insert into ord_trsctn_info (ord_no, trsctn_seq, pay_gtwy_tp, trsctn_id_tp, trsctn_proc_tp, trsctn_id, trsctn_rslt_cd, trsctn_rslt_msg, cre_usr_id, cre_dt, upd_usr_id, upd_dt)
+		values ('192211151341424534', 2, 'PG02', 'P01', 'T01', '22569980339961', null, '{order_no=10426, mall_taxno=1138521083, partcanc_yn=Y, noinf=N, res_msg=정상처리, coupon_mny=0, pg_txid=1115134225MP01980339960000000001000027886734, card_bin_type_01=0, trace_no=T0000BFDgPAB0B0C, card_mny=100, shop_user_id=happyin022002@gmail.com, res_vat_mny=10, ca_order_id=10426, res_tax_flag=TG03, acqu_name=신한카드, card_no=4658870000008424, quota=00, van_cd=VNKC, acqu_cd=CCLG, amount=100, cert_no=22569980339961, van_apptime=20221115134225, use_point=0, res_free_mny=0, pay_method=PACA, card_bin_bank_cd=0301, bizx_numb=0013425574, res_cd=0000, escw_yn=N, join_cd=0000, app_time=20221115134225, tno=22569980339961, card_bin_type_02=0, card_cd=CCLG, res_en_msg=processing completed, card_name=신한카드, mcht_taxno=1138521083, res_green_deposit_mny=0, res_tax_mny=90, app_no=27886734}', 'happyin022002@gmail.com', '2022-11-15 17:43:41', 'happyin022002@gmail.com', '2022-11-15 17:43:41');
+
+		insert into ord_trsctn_info (ord_no, trsctn_seq, pay_gtwy_tp, trsctn_id_tp, trsctn_proc_tp, trsctn_id, trsctn_rslt_cd, trsctn_rslt_msg, cre_usr_id, cre_dt, upd_usr_id, upd_dt)
+		values ('192211151341424534', 3, 'PG02', 'P01', 'T01', '22569980339961', null, '{order_no=10426, mall_taxno=1138521083, partcanc_yn=Y, noinf=N, res_msg=정상처리, coupon_mny=0, pg_txid=1115134225MP01980339960000000001000027886734, card_bin_type_01=0, trace_no=T0000BFDgPAB0B0C, card_mny=100, shop_user_id=happyin022002@gmail.com, res_vat_mny=10, ca_order_id=10426, res_tax_flag=TG03, acqu_name=신한카드, card_no=4658870000008424, quota=00, van_cd=VNKC, acqu_cd=CCLG, amount=100, cert_no=22569980339961, van_apptime=20221115134225, use_point=0, res_free_mny=0, pay_method=PACA, card_bin_bank_cd=0301, bizx_numb=0013425574, res_cd=0000, escw_yn=N, join_cd=0000, app_time=20221115134225, tno=22569980339961, card_bin_type_02=0, card_cd=CCLG, res_en_msg=processing completed, card_name=신한카드, mcht_taxno=1138521083, res_green_deposit_mny=0, res_tax_mny=90, app_no=27886734}', 'happyin022002@gmail.com', '2022-11-15 17:43:41', 'happyin022002@gmail.com', '2022-11-15 17:43:41');
+
+		insert into ord_trsctn_info (ord_no, trsctn_seq, pay_gtwy_tp, trsctn_id_tp, trsctn_proc_tp, trsctn_id, trsctn_rslt_cd, trsctn_rslt_msg, cre_usr_id, cre_dt, upd_usr_id, upd_dt)
+		values ('192211151341424534', 4, 'PG02', 'P01', 'T02', '22569980339961', null, '{order_no=10426, mall_taxno=1138521083, partcanc_yn=Y, noinf=N, res_msg=정상처리, coupon_mny=0, pg_txid=1115134225MP01980339960000000001000027886734, card_bin_type_01=0, trace_no=T0000BFDgPAB0B0C, card_mny=100, shop_user_id=happyin022002@gmail.com, res_vat_mny=10, ca_order_id=10426, res_tax_flag=TG03, acqu_name=신한카드, card_no=4658870000008424, quota=00, van_cd=VNKC, acqu_cd=CCLG, amount=100, cert_no=22569980339961, van_apptime=20221115134225, use_point=0, res_free_mny=0, pay_method=PACA, card_bin_bank_cd=0301, bizx_numb=0013425574, res_cd=0000, escw_yn=N, join_cd=0000, app_time=20221115134225, tno=22569980339961, card_bin_type_02=0, card_cd=CCLG, res_en_msg=processing completed, card_name=신한카드, mcht_taxno=1138521083, res_green_deposit_mny=0, res_tax_mny=90, app_no=27886734}', 'happyin022002@gmail.com', '2022-11-15 17:44:30', 'happyin022002@gmail.com', '2022-11-15 17:44:30');
+
+		insert into ord_trsctn_info (ord_no, trsctn_seq, pay_gtwy_tp, trsctn_id_tp, trsctn_proc_tp, trsctn_id, trsctn_rslt_cd, trsctn_rslt_msg, cre_usr_id, cre_dt, upd_usr_id, upd_dt)
+		values ('192211151341424534', 5, 'PG02', 'P01', 'T02', '22569980339961', null, '주문 취소 요청', 'happyin022002@gmail.com', '2022-11-15 17:44:30', 'happyin022002@gmail.com', '2022-11-15 17:44:30');
+	</insert>
 
 </mapper>

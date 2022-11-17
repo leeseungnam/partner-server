@@ -27,7 +27,6 @@ public class DeliveryFindDto {
         private OrderDto order;                             // 주문 정보
         private PaymentDto payment;                         // 결제 정보
         private List<DeliveryProductDto> deliveryList;      // 배송 상품 목록
-        private List<ProductDto> productList;               // 주문 상품 목록
     }
 
 }

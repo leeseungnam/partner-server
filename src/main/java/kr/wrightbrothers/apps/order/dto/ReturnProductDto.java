@@ -13,6 +13,7 @@ public class ReturnProductDto {
     private String optionName;                  // 옵션 이름
     private Long finalSellAmount;               // 판매 금액
     private String returnRequestDay;            // 반품 요청 일자
+    private String returnCompleteDay;           // 반품 완료 일자
     private Integer productQty;                 // 반품 요청 수량
     private String orderProductStatusCode;      // 상품 진행 상태 코드(반품 진행 상태 코드)
     private String orderProductStatusName;      // 상품 진행 상태 이름(반품 진행 상태 이름)

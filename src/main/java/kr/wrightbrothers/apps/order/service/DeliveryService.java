@@ -48,11 +48,6 @@ public class DeliveryService {
                         .build()))
                 // 배송 주문 상품 리스트
                 .deliveryList(dao.selectList(namespace + "findDeliveryProductList", paramDto, PartnerKey.WBDataBase.Alias.Admin))
-                // 주문 상품 리스트
-                .productList(dao.selectList(namespaceOrder + "findOrderProduct",OrderFindDto.Param.builder()
-                        .partnerCode(paramDto.getPartnerCode())
-                        .orderNo(paramDto.getOrderNo())
-                        .build(), PartnerKey.WBDataBase.Alias.Admin))
                 .build();
     }
 

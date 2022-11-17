@@ -3,11 +3,9 @@ package kr.wrightbrothers.apps;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.BaseControllerTests;
 import kr.wrightbrothers.apps.common.type.OrderProductStatusCode;
-import kr.wrightbrothers.apps.common.type.OrderStatusCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
-import kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto;
-import kr.wrightbrothers.apps.order.dto.ReturnListDto;
-import kr.wrightbrothers.apps.order.dto.ReturnMemoUpdateDto;
+import kr.wrightbrothers.apps.order.dto.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -15,11 +13,12 @@ import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.restdocs.snippet.Attributes.key;
@@ -28,6 +27,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class ReturnControllerTest extends BaseControllerTests {
+
+    @BeforeEach
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    void setUpTest() {
+        dao.insert("kr.wrightbrothers.apps.order.query.Return.mockReturnData", null, PartnerKey.WBDataBase.Alias.Admin);
+    }
 
     @Test
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
@@ -108,7 +113,7 @@ public class ReturnControllerTest extends BaseControllerTests {
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     @DisplayName("반품내역 조회")
     void findReturn() throws Exception {
-        String orderNo = "202211151341424533";
+        String orderNo = "192211151341424534";
 
         // 반품내역 상세 API 조회
         mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/returns/{orderNo}", orderNo)
@@ -135,10 +140,10 @@ public class ReturnControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.order.orderStatusCode").type(JsonFieldType.STRING).description("* 주문 상태 코드"),
                                         fieldWithPath("data.order.orderStatusName").type(JsonFieldType.STRING).description("주문 상태 이름"),
                                         fieldWithPath("data.order.orderQty").type(JsonFieldType.NUMBER).description("주문 수량"),
-                                        fieldWithPath("data.order.orderUserCode").type(JsonFieldType.STRING).description("회원 코드"),
-                                        fieldWithPath("data.order.orderUserId").type(JsonFieldType.STRING).description("아이디"),
-                                        fieldWithPath("data.order.orderUserName").type(JsonFieldType.STRING).description("회원명"),
-                                        fieldWithPath("data.order.orderUserPhone").type(JsonFieldType.STRING).description("휴대폰 번호"),
+                                        fieldWithPath("data.order.orderUserCode").type(JsonFieldType.STRING).description("회원 코드").optional(),
+                                        fieldWithPath("data.order.orderUserId").type(JsonFieldType.STRING).description("아이디").optional(),
+                                        fieldWithPath("data.order.orderUserName").type(JsonFieldType.STRING).description("회원명").optional(),
+                                        fieldWithPath("data.order.orderUserPhone").type(JsonFieldType.STRING).description("휴대폰 번호").optional(),
                                         fieldWithPath("data.order.recipientName").type(JsonFieldType.STRING).description("반품자 명").optional(),
                                         fieldWithPath("data.order.recipientPhone").type(JsonFieldType.STRING).description("반품자 휴대전화").optional(),
                                         fieldWithPath("data.order.recipientAddressZipCode").type(JsonFieldType.STRING).description("반품자 우편번호").optional(),
@@ -168,6 +173,7 @@ public class ReturnControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.returnProductList[].optionName").type(JsonFieldType.STRING).description("옵션 이름"),
                                         fieldWithPath("data.returnProductList[].finalSellAmount").type(JsonFieldType.NUMBER).description("판매 금액"),
                                         fieldWithPath("data.returnProductList[].returnRequestDay").type(JsonFieldType.STRING).optional().description("반품 요청 일자"),
+                                        fieldWithPath("data.returnProductList[].returnCompleteDay").type(JsonFieldType.STRING).optional().description("반품 완료 일자"),
                                         fieldWithPath("data.returnProductList[].productQty").type(JsonFieldType.NUMBER).description("반품 요청 수량"),
                                         fieldWithPath("data.returnProductList[].orderProductStatusCode").type(JsonFieldType.STRING).description("상품 진행 상태 코드"),
                                         fieldWithPath("data.returnProductList[].orderProductStatusName").type(JsonFieldType.STRING).description("상품 진행 상태 이름"),
@@ -184,15 +190,15 @@ public class ReturnControllerTest extends BaseControllerTests {
 
     @Test
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
-    @DisplayName("반품관리 정보 수정")
+    @DisplayName("반품메모 수정")
     void updateReturn() throws Exception {
         ReturnMemoUpdateDto updateParam = ReturnMemoUpdateDto.builder()
-                .orderNo("202211151341424533")
+                .orderNo("192211151341424534")
                 .returnMemo("반품메모")
                 .build();
 
         // 반품관리 수정 API 테스트
-        mockMvc.perform(put("/v1/returns")
+        mockMvc.perform(patch("/v1/returns")
                     .header(AUTH_HEADER, JWT_TOKEN)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content((new ObjectMapper().writeValueAsString(updateParam)))
@@ -219,19 +225,19 @@ public class ReturnControllerTest extends BaseControllerTests {
                 ;
     }
 
+    @Test
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
-    @DisplayName("반품 요청 상품 처리")
-    void updateRequestReturn() throws Exception {
-        RequestReturnUpdateDto updateParam = RequestReturnUpdateDto.builder()
-                .orderNo("202211151341424533")
+    @DisplayName("반품 승인 처리")
+    void updateApprovalReturn() throws Exception {
+        ApprovalReturnDto updateParam = ApprovalReturnDto.builder()
+                .orderNo("192211151341424534")
                 .orderProductSeqArray(new Integer[]{1})
-                .returnProcessCode(OrderStatusCode.START_RETURN.getCode())
-                .requestCode("cgkwe")
-                .requestValue("102849583785")
+                .deliveryCompanyCode("cjsnf")
+                .invoiceNo("123123123")
                 .build();
 
         // 반품 요청 상품 처리 API 테스트
-        mockMvc.perform(RestDocumentationRequestBuilders.put("/v1/returns/{orderNo}/request-return", updateParam.getOrderNo())
+        mockMvc.perform(RestDocumentationRequestBuilders.put("/v1/returns/{orderNo}/approval-return", updateParam.getOrderNo())
                     .header(AUTH_HEADER, JWT_TOKEN)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(new ObjectMapper().writeValueAsString(updateParam))
@@ -240,7 +246,7 @@ public class ReturnControllerTest extends BaseControllerTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.WBCommon.state").value("S"))
                 .andDo(
-                        document("return-request-update",
+                        document("approval-return-update",
                                 requestDocument(),
                                 responseDocument(),
                                 requestHeaders(
@@ -252,10 +258,8 @@ public class ReturnControllerTest extends BaseControllerTests {
                                 relaxedRequestFields(
                                         fieldWithPath("orderNo").type(JsonFieldType.STRING).description("주문 번호").attributes(key("etc").value("")),
                                         fieldWithPath("orderProductSeqArray").type(JsonFieldType.ARRAY).description("주문 상품 SEQ").attributes(key("etc").value("")),
-                                        fieldWithPath("returnProcessCode").type(JsonFieldType.STRING).description("반품 처리 코드").attributes(key("etc").value("R03 반품승인, R02 반품취소, R05 반품완료, R04 반품불가")),
-                                        fieldWithPath("requestCode").type(JsonFieldType.STRING).description("반품 요청 데이터 코드").optional().attributes(key("etc").value("000085 반품불가 사유, 000044 반품 진행 택배사")),
-                                        fieldWithPath("requestName").type(JsonFieldType.STRING).description("반품 요청 데이터 이름").optional().attributes(key("etc").value("")),
-                                        fieldWithPath("requestValue").type(JsonFieldType.STRING).description("반품 요청 데이터").optional().attributes(key("etc").value("반품 진행 송장번호"))
+                                        fieldWithPath("deliveryCompanyCode").type(JsonFieldType.STRING).description("택배사 코드").optional().attributes(key("etc").value("마스터코드 000044")),
+                                        fieldWithPath("invoiceNo").type(JsonFieldType.STRING).description("송장번호").optional().attributes(key("etc").value(""))
                                 ),
                                 responseFields(
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
@@ -265,4 +269,164 @@ public class ReturnControllerTest extends BaseControllerTests {
                 ;
     }
 
+    @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @DisplayName("반품 취소 처리")
+    void updateCancelReturn() throws Exception {
+        RequestReturnDto updateParam = RequestReturnDto.builder()
+                .orderNo("192211151341424534")
+                .orderProductSeqArray(new Integer[]{1})
+                .build();
+
+        // 반품 요청 상품 처리 API 테스트
+        mockMvc.perform(RestDocumentationRequestBuilders.put("/v1/returns/{orderNo}/cancel-return", updateParam.getOrderNo())
+                        .header(AUTH_HEADER, JWT_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(updateParam))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.WBCommon.state").value("S"))
+                .andDo(
+                        document("cancel-return-update",
+                                requestDocument(),
+                                responseDocument(),
+                                requestHeaders(
+                                        headerWithName(AUTH_HEADER).description("JWT 토큰")
+                                ),
+                                pathParameters(
+                                        parameterWithName("orderNo").description("주문 번호")
+                                ),
+                                relaxedRequestFields(
+                                        fieldWithPath("orderNo").type(JsonFieldType.STRING).description("주문 번호").attributes(key("etc").value("")),
+                                        fieldWithPath("orderProductSeqArray").type(JsonFieldType.ARRAY).description("주문 상품 SEQ").attributes(key("etc").value(""))
+                                ),
+                                responseFields(
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
+                                        fieldWithPath("WBCommon.message").type(JsonFieldType.STRING).description("메시지")
+                                )
+                        ))
+        ;
+    }
+
+    @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @DisplayName("반품 완료 처리")
+    void updateCompleteReturn() throws Exception {
+        RequestReturnDto updateParam = RequestReturnDto.builder()
+                .orderNo("192211151341424534")
+                .orderProductSeqArray(new Integer[]{1})
+                .build();
+
+        // 반품 요청 상품 처리 API 테스트
+        mockMvc.perform(RestDocumentationRequestBuilders.put("/v1/returns/{orderNo}/complete-return", updateParam.getOrderNo())
+                        .header(AUTH_HEADER, JWT_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(updateParam))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.WBCommon.state").value("S"))
+                .andDo(
+                        document("complete-return-update",
+                                requestDocument(),
+                                responseDocument(),
+                                requestHeaders(
+                                        headerWithName(AUTH_HEADER).description("JWT 토큰")
+                                ),
+                                pathParameters(
+                                        parameterWithName("orderNo").description("주문 번호")
+                                ),
+                                relaxedRequestFields(
+                                        fieldWithPath("orderNo").type(JsonFieldType.STRING).description("주문 번호").attributes(key("etc").value("")),
+                                        fieldWithPath("orderProductSeqArray").type(JsonFieldType.ARRAY).description("주문 상품 SEQ").attributes(key("etc").value(""))
+                                ),
+                                responseFields(
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
+                                        fieldWithPath("WBCommon.message").type(JsonFieldType.STRING).description("메시지")
+                                )
+                        ))
+        ;
+    }
+
+    @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @DisplayName("반품 불가 처리")
+    void updateNonReturn() throws Exception {
+        NonReturnDto updateParam = NonReturnDto.builder()
+                .orderNo("192211151341424534")
+                .orderProductSeqArray(new Integer[]{1})
+                .reasonCode("R03")
+                .build();
+
+        // 반품 요청 상품 처리 API 테스트
+        mockMvc.perform(RestDocumentationRequestBuilders.put("/v1/returns/{orderNo}/complete-return", updateParam.getOrderNo())
+                        .header(AUTH_HEADER, JWT_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(updateParam))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.WBCommon.state").value("S"))
+                .andDo(
+                        document("complete-return-update",
+                                requestDocument(),
+                                responseDocument(),
+                                requestHeaders(
+                                        headerWithName(AUTH_HEADER).description("JWT 토큰")
+                                ),
+                                pathParameters(
+                                        parameterWithName("orderNo").description("주문 번호")
+                                ),
+                                relaxedRequestFields(
+                                        fieldWithPath("orderNo").type(JsonFieldType.STRING).description("주문 번호").attributes(key("etc").value("")),
+                                        fieldWithPath("orderProductSeqArray").type(JsonFieldType.ARRAY).description("주문 상품 SEQ").attributes(key("etc").value("")),
+                                        fieldWithPath("reasonCode").type(JsonFieldType.STRING).description("불가 사유").attributes(key("etc").value("마스터코드 000085"))
+                                ),
+                                responseFields(
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
+                                        fieldWithPath("WBCommon.message").type(JsonFieldType.STRING).description("메시지")
+                                )
+                        ))
+        ;
+    }
+
+    @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @DisplayName("반품 배송정보 조회")
+    void findReturnDelivery() throws Exception {
+        String orderNo = "192211151341424534";
+
+        // 반품 배송정보 조회 API 테스트
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/returns/{orderNo}/deliveries/{orderProductSeq}", orderNo, 1)
+                    .header(AUTH_HEADER, JWT_TOKEN)
+                    .contentType(MediaType.TEXT_HTML)
+                    .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.WBCommon.state").value("S"))
+                .andDo(
+                        document("return-delivery-find",
+                                requestDocument(),
+                                responseDocument(),
+                                requestHeaders(
+                                        headerWithName(AUTH_HEADER).description("JWT 토큰")
+                                ),
+                                pathParameters(
+                                        parameterWithName("orderNo").description("주문 번호"),
+                                        parameterWithName("orderProductSeq").description("주문상품 SEQ")
+                                ),
+                                responseFields(
+                                        fieldWithPath("data.deliveryCompanyCode").type(JsonFieldType.STRING).description("택배사 코드"),
+                                        fieldWithPath("data.invoiceNo").type(JsonFieldType.STRING).description("송장번호"),
+                                        fieldWithPath("data.recipientName").type(JsonFieldType.STRING).description("수령자 이름"),
+                                        fieldWithPath("data.recipientPhone").type(JsonFieldType.STRING).description("수령자 핸드폰"),
+                                        fieldWithPath("data.recipientAddressZipCode").type(JsonFieldType.STRING).description("수령자 우편번"),
+                                        fieldWithPath("data.recipientAddress").type(JsonFieldType.STRING).description("수령자 주소"),
+                                        fieldWithPath("data.recipientAddressDetail").type(JsonFieldType.STRING).description("수령자 상세주소"),
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
+                                )
+                ))
+                ;
+    }
 }

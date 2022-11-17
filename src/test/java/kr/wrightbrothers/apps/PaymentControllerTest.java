@@ -9,6 +9,7 @@ import kr.wrightbrothers.apps.order.dto.OrderFindDto;
 import kr.wrightbrothers.apps.order.dto.PaymentCancelDto;
 import kr.wrightbrothers.apps.order.dto.PaymentRefundDto;
 import kr.wrightbrothers.apps.order.service.OrderService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +35,18 @@ public class PaymentControllerTest extends BaseControllerTests {
     @Autowired
     private OrderService orderService;
 
+    @BeforeEach
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    void setUpTest() {
+        dao.insert("kr.wrightbrothers.apps.order.query.Order.mockOrderData", null, PartnerKey.WBDataBase.Alias.Admin);
+    }
+
     @Test
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     @DisplayName("주문내역 상품 결제취소 요청")
     void updatePaymentCancel() throws Exception {
         PaymentCancelDto cancelDto = PaymentCancelDto.builder()
-                .orderNo("202211141716561223")
+                .orderNo("192211151341424534")
                 .orderProductSeq(new Integer[]{1})
                 .cancelReasonCode("C01")
                 .cancelReasonName("구매 의사 취소")
@@ -83,7 +90,7 @@ public class PaymentControllerTest extends BaseControllerTests {
         // 결제취소 체크를 위한 조회
         OrderFindDto.Response nowDto = orderService.findOrder(OrderFindDto.Param.builder()
                 .partnerCode("PT0000001")
-                .orderNo("202211141716561223")
+                .orderNo("192211151341424534")
                 .build());
 
         // 검증
@@ -92,9 +99,10 @@ public class PaymentControllerTest extends BaseControllerTests {
     }
 
     @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     @DisplayName("환불 계좌 조회")
     void findPaymentCancelReason() throws Exception {
-        String orderNo = "202211141722411349";
+        String orderNo = "192211151341424534";
         int orderProductSeq = 1;
 
         // 주문상품 취소 사유 API 조회
@@ -133,7 +141,7 @@ public class PaymentControllerTest extends BaseControllerTests {
     @DisplayName("환불 계좌 수정")
     void updatePaymentCancelReason() throws Exception {
         PaymentRefundDto.ReqBody reasonDto = PaymentRefundDto.ReqBody.builder()
-                .orderNo("202211141722411349")
+                .orderNo("192211151341424534")
                 .orderProductSeq(1)
                 .refundBankCode("90")
                 .refundBankAccountNo("333333333")

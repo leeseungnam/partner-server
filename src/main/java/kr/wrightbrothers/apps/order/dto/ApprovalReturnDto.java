@@ -21,13 +21,11 @@ public class ApprovalReturnDto {
     @NotNull(message = "주문 상품 SEQ")
     private Integer[] orderProductSeqArray; // 주문 상품 SEQ
 
+    @NotBlank(message = "택배사")
     private String deliveryCompanyCode;     // 택배 회사 코드
+
+    @NotBlank(message = "송장번호")
     private String invoiceNo;               // 운송장 번호
-    private String recipientName;           // 수령자 이름
-    private String recipientPhone;          // 수령자 연락처
-    private String recipientAddressZipCode; // 수령자 우편번호
-    private String recipientAddress;        // 수령자 주소
-    private String recipientAddressDetail;  // 수령자 상세주소
 
     private String partnerCode;             // 파트너 코드
     @JsonIgnore
@@ -47,11 +45,6 @@ public class ApprovalReturnDto {
                 .returnProcessCode(OrderProductStatusCode.START_RETURN.getCode())
                 .requestCode(this.deliveryCompanyCode)
                 .requestValue(this.invoiceNo)
-                .recipientName(this.recipientName)
-                .recipientPhone(this.recipientPhone)
-                .recipientAddressZipCode(this.recipientAddressZipCode)
-                .recipientAddress(this.recipientAddress)
-                .recipientAddressDetail(this.recipientAddressDetail)
                 .partnerCode(this.partnerCode)
                 .userId(this.userId)
                 .build();

@@ -28,11 +28,6 @@ public class RequestReturnUpdateDto {
 
         private String requestCode;             // 요청 처리 코드
         private String requestValue;            // 요청 처리 데이터
-        private String recipientName;           // 수령자 이름
-        private String recipientPhone;          // 수령자 연락처
-        private String recipientAddressZipCode; // 수령자 우편번호
-        private String recipientAddress;        // 수령자 주소
-        private String recipientAddressDetail;  // 수령자 상세주소
 
         private String partnerCode;             // 파트너 코드
         @JsonIgnore
@@ -56,17 +51,12 @@ public class RequestReturnUpdateDto {
             this.returnProcessCode = returnProcessCode;
         }
 
-        public PaymentCancelDto.Queue toCancelQueueDto(PaymentCancelDto.BankInfo bankInfo) {
-                // Null Safe
-                bankInfo = Optional.ofNullable(bankInfo).orElseGet(PaymentCancelDto.BankInfo::new);
-
+        public PaymentCancelDto.Queue toCancelQueueDto(String statusCode) {
                 return PaymentCancelDto.Queue.builder()
                         .ordNo(this.orderNo)
                         .prnrCd(this.partnerCode)
+                        .stusCd(statusCode)
                         .ordPrdtIdx(Arrays.stream(this.orderProductSeqArray).map(String::valueOf).collect(Collectors.toList()))
-                        .bankCd(bankInfo.getBankCd())
-                        .bankAcntNo(bankInfo.getBankAcntNo())
-                        .dpstrNm(bankInfo.getDpstrNm())
                         .build();
         }
 

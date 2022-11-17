@@ -11,6 +11,7 @@ import kr.wrightbrothers.apps.order.dto.OrderFindDto;
 import kr.wrightbrothers.apps.order.dto.OrderListDto;
 import kr.wrightbrothers.apps.order.dto.OrderMemoUpdateDto;
 import kr.wrightbrothers.apps.order.service.OrderService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,14 @@ public class OrderControllerTest extends BaseControllerTests {
     @Autowired
     private OrderService orderService;
 
+    @BeforeEach
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    void setUpTest() {
+        dao.insert("kr.wrightbrothers.apps.order.query.Order.mockOrderData", null, PartnerKey.WBDataBase.Alias.Admin);
+    }
+
     @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     @DisplayName("주문상태 집계 건수")
     void findOrderStatusStatistics() throws Exception {
         // 조회 파라미터 필드
@@ -129,6 +137,7 @@ public class OrderControllerTest extends BaseControllerTests {
     }
 
     @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     @DisplayName("주문내역 목록 조회")
     void findOrderList() throws Exception {
         // 조회 파라미터 필드
@@ -231,9 +240,10 @@ public class OrderControllerTest extends BaseControllerTests {
     }
 
     @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     @DisplayName("주문내역 조회")
     void findOrder() throws Exception {
-        String orderNo = "202211141716561223";
+        String orderNo = "192211151341424534";
 
         // 주문내역 상세 API 조회
         mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/orders/{orderNo}", orderNo)
@@ -301,6 +311,7 @@ public class OrderControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.productList[].deliveryChargeAmount").type(JsonFieldType.NUMBER).description("* 배송료"),
                                         fieldWithPath("data.productList[].cancelDay").type(JsonFieldType.STRING).description("* 취소일자").optional(),
                                         fieldWithPath("data.productList[].cancelReason").type(JsonFieldType.STRING).description("* 취소사유").optional(),
+                                        fieldWithPath("data.productList[].returnDeliveryCompany").type(JsonFieldType.STRING).description("* 반품 택배 회사").optional(),
                                         fieldWithPath("data.productList[].returnDeliveryEndDay").type(JsonFieldType.STRING).description("반품완료일자").optional(),
                                         fieldWithPath("data.productList[].returnInvoiceNo").type(JsonFieldType.STRING).description("반품배송번호").optional(),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
@@ -314,7 +325,7 @@ public class OrderControllerTest extends BaseControllerTests {
     @DisplayName("주문내역 수정")
     void updateOrder() throws Exception {
         OrderMemoUpdateDto updateParam = OrderMemoUpdateDto.builder()
-                .orderNo("202211141716561223")
+                .orderNo("192211151341424534")
                 .orderMemo("주문메모")
                 .build();
 
@@ -348,7 +359,7 @@ public class OrderControllerTest extends BaseControllerTests {
         // 변경 체크를 위한 조회
         OrderFindDto.Response nowDto = orderService.findOrder(OrderFindDto.Param.builder()
                 .partnerCode("PT0000001")
-                .orderNo("202211141716561223")
+                .orderNo("192211151341424534")
                 .build());
 
         // 검증
@@ -360,7 +371,7 @@ public class OrderControllerTest extends BaseControllerTests {
     @DisplayName("주문상품 상품준비중 상태변경")
     void updatePreparingDelivery() throws Exception {
         DeliveryPreparingDto deliveryPreparingDto = DeliveryPreparingDto.builder()
-                .orderNo("202211141716561223")
+                .orderNo("192211151341424534")
                 .build();
 
         // 주문상품 상품준비중 상태변경 API 테스트
@@ -393,7 +404,7 @@ public class OrderControllerTest extends BaseControllerTests {
         OrderFindDto.Response nowDto =  orderService.findOrder(
                 OrderFindDto.Param.builder()
                         .partnerCode("PT0000001")
-                        .orderNo("202211141716561223")
+                        .orderNo("192211151341424534")
                         .build()
         );
 

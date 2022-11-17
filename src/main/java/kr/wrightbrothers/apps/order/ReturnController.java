@@ -138,7 +138,7 @@ public class ReturnController extends WBController {
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })
     @ApiOperation(value = "반품메모 수정", notes = "반품 메모의 내용을 수정")
-    @PutMapping("/returns")
+    @PatchMapping("/returns")
     public WBModel updateReturnMemo(@ApiParam(value = "반품 메모 수정 데이터") @Valid @RequestBody ReturnMemoUpdateDto paramDto) {
         // 반품관리 정보 수정
         returnService.updateReturnMemo(paramDto);

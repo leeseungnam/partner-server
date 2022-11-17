@@ -7,6 +7,7 @@ import kr.wrightbrothers.apps.common.type.DeliveryType;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.*;
 import kr.wrightbrothers.apps.order.service.OrderService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,14 @@ class DeliveryControllerTest extends BaseControllerTests {
     @Autowired
     private OrderService orderService;
 
+    @BeforeEach
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    void setUpTest() {
+        dao.insert("kr.wrightbrothers.apps.order.query.Delivery.mockDeliveryData", null, PartnerKey.WBDataBase.Alias.Admin);
+    }
+
     @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     @DisplayName("배송내역 목록 조회")
     void findDeliveryList() throws Exception {
         // 조회 파라미터 필드
@@ -114,9 +122,10 @@ class DeliveryControllerTest extends BaseControllerTests {
     }
 
     @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     @DisplayName("배송내역 조회")
     void findDelivery() throws Exception {
-        String orderNo = "202211141716561223";
+        String orderNo = "192211151341424534";
 
         // 주문내역 상세 API 조회
         mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/deliveries/{orderNo}", orderNo)
@@ -170,7 +179,6 @@ class DeliveryControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.payment.cancelDate").type(JsonFieldType.STRING).description("취소 일시").optional(),
                                         fieldWithPath("data.payment.cancelReason").type(JsonFieldType.STRING).description("취소 사유").optional(),
                                         fieldWithPath("data.deliveryList[]").type(JsonFieldType.ARRAY).optional().description("배송진행 상품 목록"),
-                                        fieldWithPath("data.deliveryList[].orderNo").type(JsonFieldType.STRING).description("* 주문 번호"),
                                         fieldWithPath("data.deliveryList[].orderProductSeq").type(JsonFieldType.NUMBER).description("주문 상품 SEQ"),
                                         fieldWithPath("data.deliveryList[].productCode").type(JsonFieldType.STRING).description("상품 코드"),
                                         fieldWithPath("data.deliveryList[].productName").type(JsonFieldType.STRING).description("상품 이름"),
@@ -186,23 +194,6 @@ class DeliveryControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.deliveryList[].deliveryEndDay").type(JsonFieldType.STRING).optional().description("배송 완료일"),
                                         fieldWithPath("data.deliveryList[].deliveryStatusCode").type(JsonFieldType.STRING).optional().description("택배 진행 상태 코드"),
                                         fieldWithPath("data.deliveryList[].deliveryStatusName").type(JsonFieldType.STRING).optional().description("택배 진행 상태 이름"),
-                                        fieldWithPath("data.productList[]").optional().type(JsonFieldType.ARRAY).description("* 주문 상품 목록"),
-                                        fieldWithPath("data.productList[].orderProductSeq").type(JsonFieldType.NUMBER).description("주문 상품 SEQ"),
-                                        fieldWithPath("data.productList[].productCode").type(JsonFieldType.STRING).description("상품 코드"),
-                                        fieldWithPath("data.productList[].productName").type(JsonFieldType.STRING).description("상품 명"),
-                                        fieldWithPath("data.productList[].orderProductStatusCode").type(JsonFieldType.STRING).description("주문 상품 상태 코드"),
-                                        fieldWithPath("data.productList[].orderProductStatusName").type(JsonFieldType.STRING).description("주문 상품 상태 이름"),
-                                        fieldWithPath("data.productList[].finalSellAmount").type(JsonFieldType.NUMBER).description("판매 금액"),
-                                        fieldWithPath("data.productList[].optionName").type(JsonFieldType.STRING).description("옵션 명"),
-                                        fieldWithPath("data.productList[].optionSurcharge").type(JsonFieldType.NUMBER).description("옵션 변동 금액"),
-                                        fieldWithPath("data.productList[].productQty").type(JsonFieldType.NUMBER).description("구매 수량"),
-                                        fieldWithPath("data.productList[].deliveryType").type(JsonFieldType.STRING).description("배송 구분 타입"),
-                                        fieldWithPath("data.productList[].deliveryName").type(JsonFieldType.STRING).description("배송 구분 명"),
-                                        fieldWithPath("data.productList[].deliveryChargeAmount").type(JsonFieldType.NUMBER).description("배송료"),
-                                        fieldWithPath("data.productList[].cancelDay").type(JsonFieldType.STRING).description("취소일자").optional(),
-                                        fieldWithPath("data.productList[].cancelReason").type(JsonFieldType.STRING).description("취소사유").optional(),
-                                        fieldWithPath("data.productList[].returnDeliveryEndDay").type(JsonFieldType.STRING).description("반품완료일자").optional(),
-                                        fieldWithPath("data.productList[].returnInvoiceNo").type(JsonFieldType.STRING).description("반품배송번호").optional(),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
                                 )
                         ))
@@ -214,7 +205,7 @@ class DeliveryControllerTest extends BaseControllerTests {
     @DisplayName("배송메모 수정")
     void updateDeliveryMemo() throws Exception {
         DeliveryMemoUpdateDto updateParam = DeliveryMemoUpdateDto.builder()
-                .orderNo("202211141716561223")
+                .orderNo("192211151341424534")
                 .deliveryMemo("배송메모 변경변경")
                 .build();
 
@@ -248,7 +239,7 @@ class DeliveryControllerTest extends BaseControllerTests {
         // 변경 체크를 위한 조회
         OrderFindDto.Response nowDto = orderService.findOrder(OrderFindDto.Param.builder()
                 .partnerCode("PT0000001")
-                .orderNo("202211141716561223")
+                .orderNo("192211151341424534")
                 .build());
 
         // 검증
@@ -260,7 +251,7 @@ class DeliveryControllerTest extends BaseControllerTests {
     @DisplayName("배송지 저장")
     void updateDelivery() throws Exception {
         DeliveryUpdateDto updateDto = DeliveryUpdateDto.builder()
-                .orderNo("202211141819299533")
+                .orderNo("192211151341424534")
                 .orderProductSeqArray(new Integer[]{1})
                 .recipientName("수령자명")
                 .recipientPhone("01047183922")
@@ -307,7 +298,7 @@ class DeliveryControllerTest extends BaseControllerTests {
     @DisplayName("송장번호 저장")
     void updateDeliveryInvoice() throws Exception {
         DeliveryInvoiceUpdateDto updateDto = DeliveryInvoiceUpdateDto.builder()
-                .orderNo("202211141819299533")
+                .orderNo("192211151341424534")
                 .orderProductSeqArray(new Integer[]{1})
                 .deliveryCompanyCode("cjgls")
                 .deliveryCompanyName("CJ대한통운")

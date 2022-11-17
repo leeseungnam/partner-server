@@ -54,7 +54,7 @@ public class ReturnService {
                         .partnerCode(paramDto.getPartnerCode())
                         .orderNo(paramDto.getOrderNo())
                         .build()))
-                // 반품 요청 상품 리스트
+                // 반품 상품 리스트
                 .returnProductList(dao.selectList(namespace + "findReturnProductList", paramDto, PartnerKey.WBDataBase.Alias.Admin))
                 .build();
     }
@@ -65,18 +65,6 @@ public class ReturnService {
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void updateRequestReturn(RequestReturnUpdateDto paramDto) {
-        // 반품불가 처리 시 유효성 확인
-        if (OrderProductStatusCode.NON_RETURN.getCode().equals(paramDto.getReturnProcessCode())) {
-            if (ObjectUtils.isEmpty(paramDto.getRequestCode()))
-                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"불가 사유"});
-        }
-
-        // 중복 반품 요청 확인
-        if (dao.selectOne(namespace + "isRequestReturn", paramDto, PartnerKey.WBDataBase.Alias.Admin))
-            throw new WBBusinessException(ErrorCode.ALREADY_RETURN.getErrCode(), new String[]{OrderStatusCode.of(paramDto.getReturnProcessCode()).getName()});
-
-        AtomicInteger requestCompleteReturnCount = new AtomicInteger();
-        // 주문 상품 반품 상태값 변경 처리
         Arrays.stream(paramDto.getOrderProductSeqArray()).forEach(orderProductSeq -> {
             // 주문 상품 SEQ 설정
             paramDto.setOrderProductSeq(orderProductSeq);
@@ -86,65 +74,53 @@ public class ReturnService {
             // 반품 요청 처리
             switch (OrderProductStatusCode.of(paramDto.getReturnProcessCode())) {
                 case START_RETURN:
-                    // 반품 배송정보 수정
-                    if (!ObjectUtils.isEmpty(paramDto.getRequestCode()) & !ObjectUtils.isEmpty(paramDto.getRequestValue()))
-                        dao.update(namespace + "updateOrderDeliveryReturn", paramDto, PartnerKey.WBDataBase.Alias.Admin);
-
-                    // 아래 반품 취소 조건으로 진행을 이어나가게 하며,
-                    // 단순 배송 정보 수정에 대해서는 아래 반품 요청이 아니므로 진행 중지가 됨.
                 case WITHDRAWAL_RETURN:
-                    // 반품 요청이 아닐 경우 예외
+                    // 반품승인, 반품불가 처리는 반품요청 상태에서만 허용됨
                     if (!OrderProductStatusCode.REQUEST_RETURN.getCode().equals(currentStatusCode))
                         break;
 
-                    // 주문 상품 반품 진행 / 반품 철회 처리
-                    dao.update(namespace + "updateOrderProductReturnCode", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+                    // 반품승인 상태 처리(MultiQuery)
+                    // 주문 배송정보의 택배사, 송장번호.
+                    // 주문 상품의 상태 반품진행 상태변경
+                    if (OrderProductStatusCode.START_RETURN.getCode().equals(paramDto.getReturnProcessCode())) {
+                        dao.update(namespace + "updateApprovalReturn", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+                        break;
+                    }
 
-                    // 반품 취소 시 주문 상태 값은 반품요청 -> 배송완료 변경되야 함.
-                    if (OrderProductStatusCode.WITHDRAWAL_RETURN.getCode().equals(paramDto.getRequestCode()))
-                        paramDto.setReturnProcessCode(OrderStatusCode.FINISH_DELIVERY.getCode());
-
-                    // 주문 상태 변경 처리
-                    dao.update(namespace + "updateOrderReturnCode", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+                    // 반품취소 주문상품 상태변경
+                    dao.update(namespace + "updateWithdrawalReturn", paramDto, PartnerKey.WBDataBase.Alias.Admin);
                     break;
                 case REQUEST_COMPLETE_RETURN:
                 case NON_RETURN:
-                    // 반품 진행이 아닐 경우 예외
+                    // 반품완료, 반품불가 처리는 반품진행 상태에서만 허용됨
                     if (!OrderProductStatusCode.START_RETURN.getCode().equals(currentStatusCode))
                         break;
 
-                    // 주문 상품 반품 완료 요청 / 반품 불가 처리
-                    dao.update(namespace + "updateOrderProductReturnCode", paramDto, PartnerKey.WBDataBase.Alias.Admin);
-
-                    // 주문 상태 변경 처리
-                    dao.update(namespace + "updateOrderReturnCode", paramDto, PartnerKey.WBDataBase.Alias.Admin);
-
                     // 반품 완료 요청 시 결제는 결제취소 요청으로 처리
                     if (OrderStatusCode.REQUEST_COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode())) {
-                        dao.update(namespace + "updateRequestReturnOrderPartner", paramDto, PartnerKey.WBDataBase.Alias.Admin);
-                        requestCompleteReturnCount.incrementAndGet();
+                        dao.update(namespace + "updateRequestCompleteReturn", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+                        break;
                     }
 
+                    // 주문 상품 반품 완료 요청 / 반품 불가 처리
+                    dao.update(namespace + "updateNonReturn", paramDto, PartnerKey.WBDataBase.Alias.Admin);
                     break;
             }
         });
+        // 대표 주문, 결제 상태코드 갱신 공통 프로시져 호출
+        dao.update(namespaceOrder + "updateOrderStatusRefresh", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin);
 
-        // 반품 완료 요청에 대한 Queue 전송
-        if (requestCompleteReturnCount.get() > 0) {
-            PaymentCancelDto.BankInfo bankInfo =
-                    dao.selectOne("kr.wrightbrothers.apps.order.query.Payment.findBankInfo", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin);
+        // 무통장 반품완료 요청은 SNS 전송 제외
+        if (OrderProductStatusCode.REQUEST_COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()) &
+                (boolean) dao.selectOne(namespace + "isPayMethodNotBank", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin))
+            return;
 
-            orderQueue.sendToAdmin(
-                    DocumentSNS.REQUEST_RETURN_PRODUCT,
-                    // Queue 전송 데이터 객체 변환
-                    paramDto.toCancelQueueDto(bankInfo),
-                    PartnerKey.TransactionType.Update
-            );
-        }
-
-        if (!OrderStatusCode.REQUEST_COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()))
-            // 반품완료 요청 제외한 나머지 프로시저 호출로 주문정보 상태값 변경
-            dao.update("kr.wrightbrothers.apps.order.query.Order.updateOrderStatusRefresh", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin);
+        orderQueue.sendToAdmin(
+                DocumentSNS.REQUEST_RETURN_PRODUCT,
+                // Queue 전송 데이터 객체 변환
+                paramDto.toCancelQueueDto(paramDto.getReturnProcessCode()),
+                PartnerKey.TransactionType.Update
+        );
     }
 
     public ReturnDeliveryDto.Response findReturnDelivery(ReturnDeliveryDto.Param paramDto) {
