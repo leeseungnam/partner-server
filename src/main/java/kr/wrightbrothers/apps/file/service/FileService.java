@@ -169,6 +169,7 @@ public class FileService {
                     dao.update(namespace + "updateFileDisplaySeq", fileDto, PartnerKey.WBDataBase.Alias.Admin);
                     break;
                 case WBKey.TransactionType.Clone:
+                    fileDto.setFileStatus("R");
                     dao.insert(namespace + "insertFile", fileDto, PartnerKey.WBDataBase.Alias.Admin);
                     break;
             }
