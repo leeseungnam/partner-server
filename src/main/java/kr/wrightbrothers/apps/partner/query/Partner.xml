@@ -86,7 +86,8 @@
 	<update id="updatePartner" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerDto$ReqBody">
 		update partner set
 			partner_name = #{partnerName}
-		 ,	partner_status = #{partnerStatus}
+		,	partner_status = #{partnerStatus}
+	 	,	partner_kind = #{partnerKind}
 		,	business_classification_code = #{businessClassificationCode}
 		,	business_name = #{businessName}
 		,	business_no = #{businessNo}
