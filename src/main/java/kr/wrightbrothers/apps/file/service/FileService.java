@@ -168,6 +168,9 @@ public class FileService {
                 case WBKey.TransactionType.Read:
                     dao.update(namespace + "updateFileDisplaySeq", fileDto, PartnerKey.WBDataBase.Alias.Admin);
                     break;
+                case WBKey.TransactionType.Clone:
+                    dao.insert(namespace + "insertFile", fileDto, PartnerKey.WBDataBase.Alias.Admin);
+                    break;
             }
         });
 

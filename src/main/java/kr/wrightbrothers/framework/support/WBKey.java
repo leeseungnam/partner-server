@@ -53,6 +53,7 @@ public class WBKey {
 		public static final String Update 	= "U";
 		public static final String Delete 	= "D";
 		public static final String Read 	= "R";
+		public static final String Clone	= "C";
 	}
 	
 	/**
