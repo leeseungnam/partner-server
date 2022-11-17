@@ -98,7 +98,6 @@ public class PartnerDto {
         @JsonIgnore
         private String partnerCode;
         @ApiModelProperty(value = "파트너 상태 공통코드:000049(1:운영중, 2:운영중지)")
-        @JsonIgnore
         private String partnerStatus;
 
         public void changePartnerCode(String partnerCode) {

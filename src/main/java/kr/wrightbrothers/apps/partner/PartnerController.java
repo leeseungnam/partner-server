@@ -165,10 +165,6 @@ public class PartnerController extends WBController {
         paramDto.getPartnerContract().changePartnerCode(partnerCode);
         paramDto.getPartnerContract().changeContractCode(contractCode);
 
-        // front 확인 후 삭제.
-//        paramDto.getPartner().changePartnerStatus(Partner.Status.STOP.getCode());
-//        paramDto.getPartnerContract().changeContractStatus(Partner.Contract.Status.REQUEST.getCode());
-
         // create user set
         partnerService.updatePartnerAll(paramDto);
 
