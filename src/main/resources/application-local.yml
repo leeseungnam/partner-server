@@ -29,6 +29,7 @@ cloud:
       product: DEV-PARTNER-ADMIN-PRODUCT.fifo
       order: DEV-PARTNER-PLATFORM-ORDER.fifo
       partner: DEV-PARTNER-ADMIN-STORE.fifo
+      history: DEV-COMMON-HISTORY.fifo
 system:
   file:
     temp:
