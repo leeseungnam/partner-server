@@ -140,7 +140,7 @@
 		       upd_usr_id = #{userId},
 		       upd_dt = now()
 		 where ord_no = #{orderNo}
-		   and ord_dlvr_stus = 'D01'
+		   and ord_dlvr_stus in ('D01', 'D02')
 		<foreach collection="orderProductSeqArray" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
 			#{item}
 		</foreach>
