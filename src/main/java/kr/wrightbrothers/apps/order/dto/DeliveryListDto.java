@@ -53,6 +53,7 @@ public class DeliveryListDto {
         private String recipientPhone;              // 휴대전화
         private String recipientAddress;            // 주소
         private String recipientAddressDetail;      // 상세주소
+        private String returnFlag;                  // 반품여부
 
         // 주문 상태 ENUM 처리
         public void setDeliveryStatusName(String deliveryStatusName) {

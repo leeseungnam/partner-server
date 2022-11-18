@@ -18,7 +18,8 @@
 			o.rcpnt_nm as recipient_name,
 			o.rcpnt_usr_phn as recipient_phone,
 			o.rcpnt_adrs as recipient_address,
-			o.rcpnt_adrs_sub as recipient_address_detail
+			o.rcpnt_adrs_sub as recipient_address_detail,
+			if(g.non_count > 0, 'Y', 'N') as return_flag
 		  from ord_info o
 		 inner join ord_prnr_info s
 		    on o.ord_no = s.ord_no
@@ -27,6 +28,7 @@
 		 inner join (
 		     select
 		         _p.ord_no,
+		         sum(if(_p.non_rtn_tp_cd is not null and _p.non_rtn_tp_cd != '', 1, 0)) as non_count,
 		         concat(
 		             if(sum(if(_p.dlvr_tp = 'D01', 1, 0)) > 0, '택배', ''),
 					 if(sum(if(_p.dlvr_tp = 'D01', 1, 0)) > 0 and sum(if(_p.dlvr_tp = 'D07', 1, 0)) > 0, ' / ', ''),
@@ -103,11 +105,31 @@
 	</select>
 
 	<update id="updateDeliveryStart" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto">
+		<selectKey resultType="java.lang.String" keyProperty="nonReturnFlag">
+			select
+			    if(count(ord_no) > 0, 'Y', 'N')
+			  from ord_prdt_info
+			 where ord_no = #{orderNo}
+			   and prnr_cd = #{partnerCode}
+			   and non_rtn_tp_cd is not null
+			<foreach collection="orderProductSeqArray" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
+				#{item}
+			</foreach>
+		</selectKey>
 		update ord_shpn_info
-		   set dlvry_cmpny = #{deliveryCompanyCode},
-		       invc_no = #{invoiceNo},
-		       ord_dlvr_stus = 'D02',
-		       invc_inp_dt = now(),
+		   set ord_dlvr_stus = 'D02',
+		       <choose>
+				   <when test="nonReturnFlag == 'Y'.toString()">
+					   rtrn_prhb_dlvry_cmpny = #{deliveryCompanyCode},
+					   rtrn_prhb_invc_no = #{invoiceNo},
+					   rtrn_prhb_invc_inp_dt = now(),
+				   </when>
+				   <otherwise>
+					   dlvry_cmpny = #{deliveryCompanyCode},
+					   invc_no = #{invoiceNo},
+					   invc_inp_dt = now(),
+				   </otherwise>
+			   </choose>
 		       upd_usr_id = #{userId},
 		       upd_dt = now()
 		 where ord_no = #{orderNo}
@@ -127,7 +149,7 @@
 			#{item}
 		</foreach>
 		   and prnr_cd = #{partnerCode}
-		   and ord_prdt_stus in ('D01', 'D02');
+		   and ord_prdt_stus in ('D01', 'D02', 'R04');
 	</update>
 	
 	<update id="updateDelivery" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryUpdateDto">
@@ -162,16 +184,16 @@
 			p.prdt_nm as product_name,
 			p.optn_nm as option_name,
 			p.prdt_qty as product_qty,
-			d.dlvry_cmpny as delivery_company_code,
-			cd.intg_cd_val_nm as delivery_company_name,
-			d.invc_no as invoice_no,
+			if(p.non_rtn_tp_cd is null, d.dlvry_cmpny, d.rtrn_prhb_dlvry_cmpny) as delivery_company_code,
+			if(p.non_rtn_tp_cd is null, cd.intg_cd_val_nm, cdr.intg_cd_val_nm) as delivery_company_name,
+			if(p.non_rtn_tp_cd is null, d.invc_no, d.rtrn_prhb_invc_no)  as invoice_no,
 			d.rcpnt_nm as recipient_name,
 			d.rcpnt_usr_phn as recipient_phone,
 			concat('(', d.rcpnt_adrs_zip_cd, ') ', d.rcpnt_adrs, if(d.rcpnt_adrs_sub is not null and d.rcpnt_adrs_sub != '', concat(', ', d.rcpnt_adrs_sub), '')) as recipient_address,
-			date_format(d.dlvry_st_dt, '%Y-%m-%d') as delivery_start_day,
-			date_format(d.dlvry_end_dt, '%Y-%m-%d') as delivery_end_day,
-			d.ord_dlvr_stus as delivery_status_code,
-			d.ord_dlvr_stus as delivery_status_name
+			if(p.non_rtn_tp_cd is null, date_format(d.dlvry_st_dt, '%Y-%m-%d'), date_format(d.rtrn_prhb_dlvry_st_dt, '%Y-%m-%d')) as delivery_start_day,
+			if(p.non_rtn_tp_cd is null, date_format(d.dlvry_end_dt, '%Y-%m-%d'), date_format(d.rtrn_prhb_dlvry_end_dt, '%Y-%m-%d')) as delivery_end_day,
+			p.ord_prdt_stus as delivery_status_code,
+			p.ord_prdt_stus as delivery_status_name
 		  from ord_prdt_info p
 		  left join ord_shpn_info d
 		    on p.ord_no = d.ord_no
@@ -180,13 +202,16 @@
 		  left join com_intg_cd_dtl cd
 			on d.dlvry_cmpny = cd.intg_cd_val
 		   and cd.intg_cd_id = '000044'
+		  left join com_intg_cd_dtl cdr
+			on d.rtrn_prhb_dlvry_cmpny = cdr.intg_cd_val
+		   and cdr.intg_cd_id = '000044'
 	</sql>
 	<select id="findDeliveryProductList" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryFindDto$Param" resultType="kr.wrightbrothers.apps.order.dto.DeliveryProductDto">
 		<include refid="findDeliveryProductSql"/>
 	    -- 상품 준비 중, 배송중, 배송완료 목록
 		 where p.ord_no = #{orderNo}
 	       and p.prnr_cd = #{partnerCode}
-	       and d.ord_dlvr_stus in ('D01', 'D02', 'D05')
+	       and p.ord_prdt_stus in ('D01', 'D02', 'D05', 'R04')
 	</select>
 	
 	<select id="findExcelDeliveryList" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryExcelDto$Param" resultType="kr.wrightbrothers.apps.order.dto.DeliveryExcelDto$Response">

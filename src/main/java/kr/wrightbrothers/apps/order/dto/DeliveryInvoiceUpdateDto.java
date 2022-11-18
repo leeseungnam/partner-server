@@ -50,6 +50,8 @@ public class DeliveryInvoiceUpdateDto {
     private String userId;                  // 사용자 아이디
     @JsonIgnore
     private Integer orderProductSeq;        // 주문 상품 SEQ
+    @JsonIgnore
+    private String nonReturnFlag;           // 반품불가여부
 
     public void setAopPartnerCode(String partnerCode) {
         this.partnerCode = partnerCode;
@@ -61,6 +63,10 @@ public class DeliveryInvoiceUpdateDto {
 
     public void setOrderProductSeq(Integer orderProductSeq) {
         this.orderProductSeq = orderProductSeq;
+    }
+
+    public void setNonReturnFlag(String nonReturnFlag) {
+        this.nonReturnFlag = nonReturnFlag;
     }
 
     public Queue toQueueDto() {

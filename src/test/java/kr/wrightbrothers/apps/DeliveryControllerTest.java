@@ -60,7 +60,7 @@ class DeliveryControllerTest extends BaseControllerTests {
                         }
                 )
                 .startDay("2022-01-01")
-                .endDay("2022-10-10")
+                .endDay("2022-11-31")
                 .keywordType("NAME")
                 .keywordValue("")
                 .build();
@@ -113,6 +113,7 @@ class DeliveryControllerTest extends BaseControllerTests {
                                         fieldWithPath("data[].recipientPhone").type(JsonFieldType.STRING).description("휴대전화"),
                                         fieldWithPath("data[].recipientAddress").type(JsonFieldType.STRING).description("주소"),
                                         fieldWithPath("data[].recipientAddressDetail").type(JsonFieldType.STRING).description("상세주소"),
+                                        fieldWithPath("data[].returnFlag").type(JsonFieldType.STRING).description("**** 반품여부"),
                                         fieldWithPath("totalItems").type(JsonFieldType.NUMBER).description("전체 조회 건수"),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
                                 )

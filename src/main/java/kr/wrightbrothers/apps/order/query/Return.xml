@@ -229,7 +229,22 @@
 		 where ord_no					= #{orderNo}
 		   and ord_prdt_idx				= #{orderProductSeq}
 		   and prnr_cd					= #{partnerCode}
-		   and ord_prdt_stus			= 'R03'
+		   and ord_prdt_stus			= 'R03';
+
+		update ord_shpn_info
+		   set ord_dlvr_stus			= 'D01',
+		       upd_usr_id				= #{userId},
+		       upd_dt					= now()
+		 where ord_no					= #{orderNo}
+		   and ord_prdt_idx				= #{orderProductSeq}
+		   and ord_dlvr_stus			= 'D05';
+
+		update ord_prnr_info
+		   set ord_stus					= 'R04',
+			   upd_usr_id				= #{userId},
+			   upd_dt					= now()
+		 where ord_no					= #{orderNo}
+		   and prnr_cd					= #{partnerCode}
 	</update>
 
 	<select id="findExcelReturnList" parameterType="kr.wrightbrothers.apps.order.dto.ReturnExcelDto$Param" resultType="kr.wrightbrothers.apps.order.dto.ReturnExcelDto$Response">
