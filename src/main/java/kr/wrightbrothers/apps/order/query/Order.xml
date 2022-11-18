@@ -43,6 +43,24 @@
 		 inner join ord_prnr_info s
 			on o.ord_no = s.ord_no
 		   and s.prnr_cd = #{partnerCode}
+		 <choose>
+			 <when test="keywordValue != null and keywordValue != ''">
+			 	<if test="keywordType == 'MODEL'">
+		 inner join (
+		     select distinct
+		         p.ord_no
+		       from ord_prdt_info p
+		      inner join prdt_main m
+				 on p.prdt_cd = m.prdt_cd
+		        and p.prnr_cd = m.pur_rq_no
+		      where p.prnr_cd = #{partnerCode}
+			<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
+				m.prdt_nm like #{item} '%'
+			</foreach>
+		 ) p on o.ord_no = p.ord_no
+				</if>
+			 </when>
+		 </choose>
 		<where>
 			<choose>
 				<when test="keywordValue != null and keywordValue != ''">
@@ -93,7 +111,8 @@
 					</foreach>
 				</otherwise>
 			</choose>
-			<choose>
+		</where>
+		  <choose>
 				<when test="sortType == 'ORD'.toString()">
 					order by o.ord_dt desc
 				</when>
@@ -107,7 +126,6 @@
 					order by s.pay_amt desc
 				</when>
 			</choose>
-		</where>
 	</select>
 
 	<select id="findOrderStatusStatistics" parameterType="kr.wrightbrothers.apps.order.dto.OrderListDto$Param" resultType="kr.wrightbrothers.apps.order.dto.OrderListDto$Statistics">
@@ -124,6 +142,24 @@
 		 inner join ord_prnr_info s
 		    on o.ord_no = s.ord_no
 		   and s.prnr_cd = #{partnerCode}
+		<choose>
+			<when test="keywordValue != null and keywordValue != ''">
+				<if test="keywordType == 'MODEL'">
+		 inner join (
+		 	select distinct
+				p.ord_no
+			  from ord_prdt_info p
+			 inner join prdt_main m
+				on p.prdt_cd = m.prdt_cd
+			   and p.prnr_cd = m.pur_rq_no
+			 where p.prnr_cd = #{partnerCode}
+			<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
+				m.prdt_nm like #{item} '%'
+			</foreach>
+		 ) p on o.ord_no = p.ord_no
+				</if>
+			</when>
+		</choose>
 		<where>
 			<choose>
 				<when test="keywordValue != null and keywordValue != ''">

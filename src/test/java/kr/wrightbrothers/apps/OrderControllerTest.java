@@ -79,7 +79,8 @@ public class OrderControllerTest extends BaseControllerTests {
                 .rangeType("PAYMENT")
                 .startDay("2022-01-01")
                 .endDay("2022-10-10")
-                .keywordType("NAME")
+                .keywordType("MODEL")
+                .keywordValue("테스트")
                 .sortType("ORD")
                 .build();
 
@@ -116,7 +117,7 @@ public class OrderControllerTest extends BaseControllerTests {
                                         parameterWithName("rangeType").description("조회 기간 구분").attributes(key("etc").value("PAYMENT 결제일자, CANCEL 취소일자")),
                                         parameterWithName("startDay").description("검색 시작 일자").attributes(key("etc").value("YYYY-MM-DD 예)2022-09-13")),
                                         parameterWithName("endDay").description("검색 종료 일자").attributes(key("etc").value("YYYY-MM-DD 예)2022-09-13")),
-                                        parameterWithName("keywordType").description("키워드 구분").attributes(key("etc").value("NO 주문번호, NAME 주문명, USER 주문자")),
+                                        parameterWithName("keywordType").description("키워드 구분").attributes(key("etc").value("NO 주문번호, NAME 주문명, USER 주문자, MODEL 상품명")),
                                         parameterWithName("keywordValue").description("키워드 값").optional().attributes(key("etc").value("")),
                                         parameterWithName("sortType").description("정렬 구분").attributes(key("etc").value("ORD 주문일자순, PYT 결제일자순, HSAMT 판매가 높은순, LSAMT 판매가 낮은순")),
                                         parameterWithName("count").description("페이지 ROW 수").attributes(key("etc").value("")),
@@ -175,7 +176,8 @@ public class OrderControllerTest extends BaseControllerTests {
                 .rangeType("PAYMENT")
                 .startDay("2022-01-01")
                 .endDay("2022-10-10")
-                .keywordType("NAME")
+                .keywordType("MODEL")
+                .keywordValue("테스트")
                 .sortType("ORD")
                 .build();
 
@@ -212,7 +214,7 @@ public class OrderControllerTest extends BaseControllerTests {
                                         parameterWithName("rangeType").description("조회 기간 구분").attributes(key("etc").value("PAYMENT 결제일자, CANCEL 취소일자")),
                                         parameterWithName("startDay").description("검색 시작 일자").attributes(key("etc").value("YYYY-MM-DD 예)2022-09-13")),
                                         parameterWithName("endDay").description("검색 종료 일자").attributes(key("etc").value("YYYY-MM-DD 예)2022-09-13")),
-                                        parameterWithName("keywordType").description("키워드 구분").attributes(key("etc").value("NO 주문번호, NAME 주문명, USER 주문자")),
+                                        parameterWithName("keywordType").description("키워드 구분").attributes(key("etc").value("NO 주문번호, NAME 주문명, USER 주문자, MODEL 상품명")),
                                         parameterWithName("keywordValue").description("키워드 값").optional().attributes(key("etc").value("")),
                                         parameterWithName("sortType").description("정렬 구분").attributes(key("etc").value("ORD 주문일자순, PYT 결제일자순, HSAMT 판매가 높은순, LSAMT 판매가 낮은순")),
                                         parameterWithName("count").description("페이지 ROW 수").attributes(key("etc").value("")),
