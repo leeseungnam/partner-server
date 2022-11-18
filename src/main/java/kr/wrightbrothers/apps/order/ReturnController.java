@@ -180,7 +180,7 @@ public class ReturnController extends WBController {
     @PutMapping("/returns/{orderNo}/complete-return")
     public WBModel updateCompleteReturn(@Valid @RequestBody RequestReturnDto paramDto) {
         // 반품 완료에 대한 처리
-        returnService.updateRequestReturn(paramDto.toRequestReturnUpdateDto(OrderProductStatusCode.COMPLETE_RETURN.getName()));
+        returnService.updateRequestReturn(paramDto.toRequestReturnUpdateDto(OrderProductStatusCode.REQUEST_COMPLETE_RETURN.getCode()));
 
         return noneMgsResponse(messageSourceAccessor);
     }
