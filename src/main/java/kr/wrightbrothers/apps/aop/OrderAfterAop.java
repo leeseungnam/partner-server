@@ -37,7 +37,7 @@ public class OrderAfterAop {
                 DocumentSNS.UPDATE_ORDER,
                 HistoryMessages.builder()
                         .appKey(object.getString("orderNo"))
-                        .appNm("파트너주문")
+                        .appNm(DocumentSNS.UPDATE_HISTORY.getName())
                         .build(),
                 PartnerKey.TransactionType.Update
         );
