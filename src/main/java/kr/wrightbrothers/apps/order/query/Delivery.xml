@@ -115,7 +115,7 @@
 		<foreach collection="orderProductSeqArray" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
 			#{item}
 		</foreach>
-		   and ord_dlvr_stus = 'D01';
+		   and ord_dlvr_stus in ('D01', 'D02');
 
 		update ord_prdt_info
 		   set ord_prdt_stus = 'D02',
@@ -127,7 +127,7 @@
 			#{item}
 		</foreach>
 		   and prnr_cd = #{partnerCode}
-		   and ord_prdt_stus = 'D01';
+		   and ord_prdt_stus in ('D01', 'D02)';
 	</update>
 	
 	<update id="updateDelivery" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryUpdateDto">
