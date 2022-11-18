@@ -39,4 +39,11 @@ public class NonReturnDto {
                 .userId(this.userId)
                 .build();
     }
+
+    public void setAopPartnerCode(String partnerCode) {
+        this.partnerCode = partnerCode;
+    }
+    public void setAopUserId(String userId) {
+        this.userId = userId;
+    }
 }
