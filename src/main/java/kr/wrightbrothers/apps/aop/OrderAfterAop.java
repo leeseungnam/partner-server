@@ -34,10 +34,10 @@ public class OrderAfterAop {
 
         log.debug("Order History Send SNS. Order No::{},", object.getString("orderNo"));
         historyQueue.sendToAdmin(
-                DocumentSNS.UPDATE_ORDER,
+                DocumentSNS.UPDATE_HISTORY,
                 HistoryMessages.builder()
                         .appKey(object.getString("orderNo"))
-                        .appNm(DocumentSNS.UPDATE_HISTORY.getName())
+                        .appNm(DocumentSNS.UPDATE_ORDER.getName())
                         .build(),
                 PartnerKey.TransactionType.Update
         );

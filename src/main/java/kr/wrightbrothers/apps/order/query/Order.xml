@@ -116,9 +116,10 @@
 			count(1) as totalOrderCount,											-- 전체주문 건수
 		    ifnull(sum(if(s.ord_stus = 'O05', 1, 0)), 0) as completeOrderCount,		-- 주문완료 건수
 		    ifnull(sum(if(s.ord_stus = 'D01', 1, 0)), 0) as readyProductCount,		-- 상품준비 건수
-		    ifnull(sum(if(s.ord_stus = 'O06', 1, 0)), 0) as requestCancelCount,		-- 취소요청 건수
+		    ifnull(sum(if(s.pay_stus = 'S06', 1, 0)), 0) as requestCancelCount,		-- 취소요청 건수
 		    ifnull(sum(if(s.ord_stus = 'C05', 1, 0)), 0) as confirmPurchaseCount,	-- 구매확정 건수
-		    ifnull(sum(if(s.ord_stus = 'R05', 1, 0)), 0) as completeReturnCount		-- 반품완료 건수
+		    ifnull(sum(if(s.ord_stus = 'R05', 1, 0)), 0) as completeReturnCount,	-- 반품완료 건수
+			ifnull(sum(if(s.pay_stus = 'S09', 1, 0)), 0) as failCancelCount			-- 취소실패 건수
 		  from ord_info o
 		 inner join ord_prnr_info s
 		    on o.ord_no = s.ord_no

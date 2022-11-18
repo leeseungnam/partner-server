@@ -87,6 +87,7 @@ public class OrderListDto {
         private long requestCancelCount;    // 취소요청 건수
         private long confirmPurchaseCount;  // 구매확정 건수
         private long completeReturnCount;   // 반품완료 건수
+        private long failCancelCount;       // 취소실패 건수
     }
 
 }
