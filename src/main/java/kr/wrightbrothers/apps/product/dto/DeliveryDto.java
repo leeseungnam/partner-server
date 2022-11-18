@@ -41,6 +41,9 @@ public class DeliveryDto {
         @Max(value = 100000000, message = "기본 배송비")
         private Integer chargeBase;
 
+        @ApiModelProperty(value = "배송비 무료 기준코드")
+        private String termsFreeCode;
+
         @ApiModelProperty(value = "배송비 무료 기준요금")
         private Long termsFreeCharge;
 

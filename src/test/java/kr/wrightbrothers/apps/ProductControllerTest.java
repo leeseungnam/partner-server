@@ -142,6 +142,7 @@ class ProductControllerTest extends BaseControllerTests {
                         .deliveryBundleFlag("N")
                         .chargeType("2")
                         .chargeBase(3000)
+                        .termsFreeCode("F01")
                         .termsFreeCharge(10000000L)
                         .paymentType("2")
                         .surchargeFlag("N")
@@ -351,6 +352,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("delivery.deliveryBundleFlag").type(JsonFieldType.STRING).description("묶음배송").attributes(key("etc").value("Y 가능, N 불가")),
                                         fieldWithPath("delivery.chargeType").type(JsonFieldType.STRING).description("배송비 설정").attributes(key("etc").value("공통코드 000023")),
                                         fieldWithPath("delivery.chargeBase").type(JsonFieldType.NUMBER).description("기본 배송비").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.termsFreeCode").type(JsonFieldType.STRING).description("*** (무료)배송비 기준 코드").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.termsFreeCharge").type(JsonFieldType.NUMBER).description("(무료)배송비 기준 금액").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.paymentType").type(JsonFieldType.STRING).description("결제방식").attributes(key("etc").value("1 선결제, 2 착불, 3 착불 또는 선결제")),
                                         fieldWithPath("delivery.surchargeFlag").type(JsonFieldType.STRING).description("제주/도서산간 배송비 추가 여부").attributes(key("etc").value("Y 설정, N 미설정")),
@@ -485,6 +487,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.delivery.deliveryBundleFlag").type(JsonFieldType.STRING).description("묶음배송"),
                                         fieldWithPath("data.delivery.chargeType").type(JsonFieldType.STRING).description("배송비 설정"),
                                         fieldWithPath("data.delivery.chargeBase").type(JsonFieldType.NUMBER).description("기본 배송비"),
+                                        fieldWithPath("data.delivery.termsFreeCode").type(JsonFieldType.STRING).description("*** (무료)배송비 기준 코드").optional(),
                                         fieldWithPath("data.delivery.termsFreeCharge").type(JsonFieldType.NUMBER).description("(무료)배송비 기준 금액"),
                                         fieldWithPath("data.delivery.paymentType").type(JsonFieldType.STRING).description("결제방식"),
                                         fieldWithPath("data.delivery.surchargeFlag").type(JsonFieldType.STRING).description("제주/도서산간 배송비 추가 여부"),
@@ -608,6 +611,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("delivery.deliveryBundleFlag").type(JsonFieldType.STRING).description("묶음배송").attributes(key("etc").value("Y 가능, N 불가")),
                                         fieldWithPath("delivery.chargeType").type(JsonFieldType.STRING).description("배송비 설정").attributes(key("etc").value("공통코드 000023")),
                                         fieldWithPath("delivery.chargeBase").type(JsonFieldType.NUMBER).description("기본 배송비").attributes(key("etc").value("")),
+                                        fieldWithPath("delivery.termsFreeCode").type(JsonFieldType.STRING).description("*** (무료)배송비 기준 코드").attributes(key("etc").value("")).optional(),
                                         fieldWithPath("delivery.termsFreeCharge").type(JsonFieldType.NUMBER).description("(무료)배송비 기준 금액").attributes(key("etc").value("")),
                                         fieldWithPath("delivery.paymentType").type(JsonFieldType.STRING).description("결제방식").attributes(key("etc").value("1 선결제, 2 착불, 3 착불 또는 선결제")),
                                         fieldWithPath("delivery.surchargeFlag").type(JsonFieldType.STRING).description("제주/도서산간 배송비 추가 여부").attributes(key("etc").value("Y 설정, N 미설정")),

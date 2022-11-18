@@ -56,13 +56,8 @@ public class PaymentService {
             throw new WBBusinessException(ErrorCode.UNABLE_CANCEL_PAYMENT.getErrCode(), new String[]{"주문완료"});
         }
 
-        // 중복 결제 취소 / 취소 요청 여부 확인
-        if (dao.selectOne(namespace + "isCancelPayment", paramDto, PartnerKey.WBDataBase.Alias.Admin)) {
-            log.error("Payment Already Cancel Payment. OrderNo::{}", paramDto.getOrderNo());
-            throw new WBBusinessException(ErrorCode.ALREADY_CANCELED_PAYMENT.getErrCode());
-        }
-
-        // 주문 취소 요청 처리(주문상품, 파트너 주문 상태 취소요청 처리)
+        // 주문 취소 요청 처리(Multi Query)
+        // 파트너 주문, 주문 상품 취소요청 상태 처리
         dao.update(namespace + "updateRequestCancelPayment", paramDto, PartnerKey.WBDataBase.Alias.Admin);
         // 무통장 결제 시 환불 계좌 등록
         if (PaymentMethodCode.NON_BANK.getCode().equals(paramDto.getPaymentMethodCode())) {

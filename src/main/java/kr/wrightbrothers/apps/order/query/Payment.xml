@@ -19,10 +19,14 @@
 	<select id="isAfterOrderComplete" parameterType="kr.wrightbrothers.apps.order.dto.PaymentCancelDto" resultType="boolean">
 		-- 상품 준비중 상태인지 여부 확인
 		select
-		    if(ord_stus in ('O05'), false, true) as isAfterOrderComplete
-		  from ord_prnr_info
+		    if(count(ord_prdt_idx) = ${orderProductSeq.length}, false, true) as isAfterOrderComplete
+		  from ord_prdt_info
 		 where ord_no = #{orderNo}
 		   and prnr_cd = #{partnerCode}
+		   and ord_prdt_stus = 'O05'
+		<foreach collection="orderProductSeq" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
+			#{item}
+		</foreach>
 	</select>
 
 	<update id="updatePaymentRefundAccount" parameterType="kr.wrightbrothers.apps.order.dto.PaymentRefundDto$ReqBody">
@@ -86,9 +90,7 @@
 		   set ord_prdt_stus = 'O06',
 		       ord_prdt_pay_stus = 'S06',
 		       cnc_rq_dt = now(),
-		       <if test="cancelReasonCode != null and cancelReasonCode != ''.toString()">
-					cnc_rsn_cd = #{cancelReasonCode},
-			   </if>
+		       cnc_rsn_cd = #{cancelReasonCode},
 			   upd_usr_id = #{userId},
 			   upd_dt = now()
 		 where ord_no = #{orderNo}

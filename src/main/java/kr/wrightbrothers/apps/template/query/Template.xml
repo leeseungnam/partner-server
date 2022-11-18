@@ -55,6 +55,7 @@
 									  delivery_bundle_flag,
 		                              charge_type,
 		                              charge_base,
+		                              terms_free_code,
 		                              terms_free_charge,
 		                              payment_type,
 		                              surcharge_flag,
@@ -77,6 +78,7 @@
 			   #{delivery.deliveryBundleFlag},
 			   #{delivery.chargeType},
 			   #{delivery.chargeBase},
+			   #{delivery.termsFreeCode},
 			   #{delivery.termsFreeCharge},
 			   #{delivery.paymentType},
 			   #{delivery.surchargeFlag},
@@ -102,6 +104,7 @@
 			   delivery_bundle_flag				= #{delivery.deliveryBundleFlag},
 			   charge_type						= #{delivery.chargeType},
 			   charge_base						= #{delivery.chargeBase},
+			   terms_free_code					= #{delivery.termsFreeCode},
 			   terms_free_charge				= #{delivery.termsFreeCharge},
 			   payment_type						= #{delivery.paymentType},
 			   surcharge_flag					= #{delivery.surchargeFlag},
@@ -150,6 +153,7 @@
 			d.delivery_bundle_flag,
 			d.charge_type,
             d.charge_base,
+            d.terms_free_code,
             d.terms_free_charge,
             d.payment_type,
             d.surcharge_flag,
@@ -182,6 +186,7 @@
 			<result column="delivery_bundle_flag" property="deliveryBundleFlag" />
 			<result column="charge_type" property="chargeType" />
 			<result column="charge_base" property="chargeBase" />
+			<result column="terms_free_code" property="termsFreeCode" />
 			<result column="terms_free_charge" property="termsFreeCharge" />
 			<result column="payment_type" property="paymentType" />
 			<result column="surcharge_flag" property="surchargeFlag" />
