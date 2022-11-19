@@ -21,9 +21,6 @@
 		  and p.partner_kind is null
 	  </otherwise>
   </choose>
-		inner join partner_contract pc
-		   on p.partner_code = pc.partner_code
-		   and pc.contract_status = #{contractStatus}
 	</select>
 
 	<select id="findUserByDynamic" parameterType="kr.wrightbrothers.apps.user.dto.UserDto" resultType="kr.wrightbrothers.apps.user.dto.UserDto">
