@@ -410,7 +410,17 @@
 			rtn_addr_dtl		= #{returnAddressDetail},
 		    excng_chg			= #{exchangeCharge},
 			rtn_chg				= #{returnCharge},
-			rtn_dlvr_cmpny_cd	= #{returnDeliveryCompanyCode}
+			rtn_dlvr_cmpny_cd	= #{returnDeliveryCompanyCode};
+
+		insert into prdt_dlvr(prdt_cd,
+		                      prdt_dlvr_cd,
+		                      cre_usr_id)
+		values(#{productCode},
+		       #{deliveryType},
+		       #{userId})
+		on duplicate key
+		update
+		    prdt_dlvr_cd = #{deliveryType};
 	</insert>
 
 	<insert id="mergeInfoNotice" parameterType="kr.wrightbrothers.apps.product.dto.InfoNoticeDto$ReqBody">
