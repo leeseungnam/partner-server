@@ -4,7 +4,7 @@ phases:
   build:
     commands:
       - echo Build Starting on `date`
-      - mvn clean package -DskipTests -P dev
+      - mvn clean package -DskipTests -P stag
 
   post_build:
     commands:

@@ -20,4 +20,4 @@ else
 fi
 
 echo "> $APPLICATION_JAR 배포"
-nohup java -jar -Dspring.profiles.active=dev -Duser.timezone=Asia/Seoul $APPLICATION_JAR > /dev/null 2> /dev/null < /dev/null &
+nohup java -jar -Duser.timezone=Asia/Seoul $APPLICATION_JAR > /dev/null 2> /dev/null < /dev/null &
