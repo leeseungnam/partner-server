@@ -7,7 +7,6 @@ import kr.wrightbrothers.apps.partner.dto.PartnerContractSNSDto;
 import kr.wrightbrothers.apps.partner.dto.PartnerInsertDto;
 import kr.wrightbrothers.apps.partner.service.PartnerService;
 import kr.wrightbrothers.apps.queue.PartnerQueue;
-import kr.wrightbrothers.framework.support.WBKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -16,7 +15,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.context.annotation.Configuration;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -55,9 +53,9 @@ public class PartnerAfterAop {
     public void sendPartnerSnsData(JoinPoint joinPoint) throws Exception {
         log.info("[sendPartnerSnsData]::Partner Send SNS.");
 
-        AtomicReference<String> partnerCode = null;
-        AtomicReference<String> contractCode = null;
-        AtomicReference<DocumentSNS> documentSNS = null;
+        AtomicReference<String> partnerCode = new AtomicReference<>("");
+        AtomicReference<String> contractCode = new AtomicReference<>("");
+        AtomicReference<DocumentSNS> documentSNS = new AtomicReference<>(DocumentSNS.NULL);
 
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
 
