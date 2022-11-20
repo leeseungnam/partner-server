@@ -35,31 +35,35 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         log.info("[JwtTokenFilter]::doFilterInternal");
         String accessToken = TokenUtil.resolveTokenInHeader(request, PartnerKey.Jwt.Header.AUTHORIZATION);
 
-        if (ObjectUtils.isEmpty(signService.findById(accessToken)) && accessToken != null && jwtTokenProvider.validateToken(accessToken) == PartnerKey.JwtCode.ACCESS) {
-            Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        if(ObjectUtils.isEmpty(signService.findById(accessToken))){
+            if (accessToken != null && jwtTokenProvider.validateToken(accessToken) == PartnerKey.JwtCode.ACCESS) {
+                Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            log.info("Security Context {} 인증 정보 저장 완료.", authentication.getName());
-        } else if (accessToken != null && jwtTokenProvider.validateToken(accessToken) == PartnerKey.JwtCode.EXPIRED) {
-            String refreshToken = TokenUtil.resolveTokenInCookie(request, PartnerKey.Jwt.Alias.REFRESH_TOKEN);
+                log.info("Security Context {} 인증 정보 저장 완료.", authentication.getName());
+            } else if (accessToken != null && jwtTokenProvider.validateToken(accessToken) == PartnerKey.JwtCode.EXPIRED) {
+                String refreshToken = TokenUtil.resolveTokenInCookie(request, PartnerKey.Jwt.Alias.REFRESH_TOKEN);
 
-            // 재발급
-            if(refreshToken != null && jwtTokenProvider.validateToken(refreshToken) == PartnerKey.JwtCode.ACCESS) {
-                String newRefreshToken = jwtTokenProvider.reissueRefreshToken(refreshToken);
+                // 재발급
+                if(refreshToken != null && jwtTokenProvider.validateToken(refreshToken) == PartnerKey.JwtCode.ACCESS) {
+                    String newRefreshToken = jwtTokenProvider.reissueRefreshToken(refreshToken);
 
-                if(newRefreshToken != null){
+                    if(newRefreshToken != null){
 //                    response.setHeader(REFRESH_HEADER, "Bearer " + newRefreshToken);
-                    response.addCookie(TokenUtil.createCookie(PartnerKey.Jwt.Alias.REFRESH_TOKEN, newRefreshToken, REFRESH_TOKEN_VALIDATION_SECOND));
+                        response.addCookie(TokenUtil.createCookie(PartnerKey.Jwt.Alias.REFRESH_TOKEN, newRefreshToken, REFRESH_TOKEN_VALIDATION_SECOND));
 
-                    // access token 생성
-                    Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
-                    response.setHeader(PartnerKey.Jwt.Header.AUTHORIZATION, PartnerKey.Jwt.Type.BEARER + jwtTokenProvider.generateAccessToken(authentication));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                    log.info("reissue refresh Token & access Token");
+                        // access token 생성
+                        Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
+                        response.setHeader(PartnerKey.Jwt.Header.AUTHORIZATION, PartnerKey.Jwt.Type.BEARER + jwtTokenProvider.generateAccessToken(authentication));
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                        log.info("reissue refresh Token & access Token");
+                    }
                 }
+            } else {
+                log.info("유효한 JWT 토큰이 없습니다.");
             }
         } else {
-            log.info("유효한 JWT 토큰이 없습니다..");
+            log.info("유효하지 않은 JWT 토큰입니다.");
         }
         filterChain.doFilter(request, response);
     }
