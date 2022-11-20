@@ -14,17 +14,17 @@ spring:
 cloud:
   aws:
     sqs:
-      auto: false
-      product: DEV-PARTNER-PRODUCT.fifo
-      partner: DEV-PARTNER-STORE.fifo
+      auto: true
+      product: STG-PARTNER-PRODUCT.fifo
+      partner: STG-PARTNER-STORE.fifo
     sns:
       arn: 'arn:aws:sns:ap-northeast-2:094301229591:'
-      auto: false
-      ack: DEV-ACKMSG.fifo
-      product: DEV-PARTNER-ADMIN-PRODUCT.fifo
-      order: DEV-PARTNER-PLATFORM-ORDER.fifo
-      partner: DEV-PARTNER-ADMIN-STORE.fifo
-      history: DEV-COMMON-HISTORY.fifo
+      auto: true
+      ack: STG-ACKMSG.fifo
+      product: STG-PARTNER-ADMIN-PRODUCT.fifo
+      order: STG-PARTNER-PLATFORM-ORDER.fifo
+      partner: STG-PARTNER-ADMIN-STORE.fifo
+      history: STG-COMMON-HISTORY.fifo
 system:
   file:
     temp:
