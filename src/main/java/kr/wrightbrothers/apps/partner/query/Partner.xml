@@ -112,6 +112,15 @@
 			and contract_code = #{contractCode}
 	</update>
 
+	<update id="updatePartnerContractDay" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerUpdateDto$Param$Contract">
+		update partner_contract setfindPartnerContractSNS
+			contract_day = #{contractDay}
+		  ,	contract_start_day = #{contractStartDay}
+		  ,	contract_end_day = #{contractEndDay}
+		where partner_code = #{partnerCode}
+		  and contract_code = #{contractCode}
+	</update>
+
 	<update id="updatePartnerContract" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerUpdateDto$Param$Contract">
 		update partner_contract set
 			contract_manager_name = #{contractManagerName}
@@ -195,7 +204,7 @@
 			 , pc.contract_end_day
 			 , pc.contract_file_no
 		from partner_contract pc
-		where pc.contract_code = #{contractCode}
+		where pc.partner_code = #{partnerCode}
 	</select>
 
 	<select id="findPartnerByPartnerCode" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.partner.dto.PartnerDto$ResBody">

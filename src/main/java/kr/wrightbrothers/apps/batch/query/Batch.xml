@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.wrightbrothers.apps.batch.query.Batch">
+
+    <select id="findPartnerContractRenewal" resultType="kr.wrightbrothers.apps.batch.dto.PartnerTargetDto">
+        <![CDATA[
+        select
+            p.partner_code
+        ,   c.contract_code
+        from partner p
+                 inner join partner_contract c
+                            on p.partner_code = c.partner_code
+        where c.contract_end_day is not null
+          and timestampdiff(day, c.contract_end_day, date_format(now(),'%Y-%m-%d')) = 365
+        ]]>
+    </select>
+
+    <select id="findPartnerMailByPartnerCode" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.batch.dto.UserTargetDto">
+        select
+            u.user_name
+        ,   u.user_id as receiver
+        from users u
+        inner join users_partner up
+        on up.user_id = u.user_id
+        inner join partner p
+        on up.partner_code = p.partner_code
+        where up.partner_code = #{partnerCode}
+          and up.auth_code in ('ROLE_ADMIN')
+    </select>
+
+    <resultMap id="EmailTargetMap" type="kr.wrightbrothers.apps.batch.dto.EmailTargetDto">
+        <result column="name" property="name"/>
+        <collection property="receiverList" ofType="java.lang.String">
+            <result column="user_id"/>
+        </collection>
+    </resultMap>
+</mapper>

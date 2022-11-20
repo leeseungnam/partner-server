@@ -53,6 +53,16 @@
 
 
 
+	<select id="checkUserPasswordUpdate" parameterType="java.lang.String" resultType="boolean">
+		<![CDATA[
+		select if(timestampdiff(minute , update_date, date_format(now(),'%Y-%m-%d %T')) < 60, true, false) isUpdatePwd
+		from users
+		where user_id = #{userId}
+		and update_date is not null
+		and change_pwd_flag = 1
+		]]>
+	</select>
+
 	<select id="findAuthById" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.user.dto.UserAuthDto">
 		select
 			role.auth_code as auth_code,

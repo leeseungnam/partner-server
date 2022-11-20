@@ -41,6 +41,8 @@ public class SignController extends WBController {
             , HttpServletResponse response) {
         WBModel wbResponse = new WBModel();
 
+        UserDto user = userService.findUserByDynamic(UserDto.builder().userId(paramDto.getUserId()).build());
+
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(paramDto.getUserId(), paramDto.getUserPwd());
 
@@ -53,11 +55,13 @@ public class SignController extends WBController {
         log.debug("access token={}",accessToken);
         log.debug("refresh token={}",refreshToken);
 
-        wbResponse.addObject(WBKey.WBModel.DefaultDataKey, userService.findAuthById(authentication.getName()));
-        wbResponse.addObject(WBKey.WBModel.UserKey, userService.findUserByDynamic(UserDto.builder().userId(authentication.getName()).build()));
-
         response.setHeader(PartnerKey.Jwt.Header.AUTHORIZATION, PartnerKey.Jwt.Type.BEARER + accessToken);
         response.addCookie(TokenUtil.createCookie(PartnerKey.Jwt.Alias.REFRESH_TOKEN, refreshToken, REFRESH_TOKEN_VALIDATION_SECOND));
+
+        user.changePwd(null);
+
+        wbResponse.addObject(WBKey.WBModel.DefaultDataKey, userService.findAuthById(paramDto.getUserId()));
+        wbResponse.addObject(WBKey.WBModel.UserKey, user);
 
         return  wbResponse;
     }

@@ -78,7 +78,7 @@ public class PartnerBeforeAop {
         log.info("[ownFindCheck]::userId={}, auth={}",user.getUsername(), user.getUserAuth().getAuthCode());
 
         // system login pass - partner sqs 에서 강제 set authentic
-        if(user.getUsername().equals("super@wrightbrothers.kr")) {
+        if(User.Auth.SUPER.getType().equals(user.getUserAuth().getAuthCode())) {
             return;
         }
 

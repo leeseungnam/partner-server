@@ -18,7 +18,7 @@ public class WBKey {
 	public static final String WBAdminUser			= "A";
 	public static final String UTF8					= "UTF-8";
 	public static final String RequestMethodGet		= "GET";
-	public static final String RequestMethodPup		= "PUT";
+	public static final String RequestMethodPut		= "PUT";
 	public static final String RequestMethodPost	= "POST";
 	public static final String RequestMethodDelete	= "DELETE";
 	public static final String RequestMethodOption	= "OPTIONS";

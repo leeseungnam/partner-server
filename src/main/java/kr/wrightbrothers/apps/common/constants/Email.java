@@ -16,6 +16,9 @@ public enum Email {
     COMPLETE_PRODUCT("3", "[라이트브라더스] 파트너센터 상품 검수 완료 안내", "complete_product"),
     REJECT_PRODUCT("4", "[라이트브라더스] 파트너센터 상품 검수 반려 안내", "reject_product"),
     INVITE_OPERATOR("5", "[라이트브라더스] 파트너센터 운영자 초대", "invite_operator"),
+    RENEWAL_CONTRACT("6", "[라이트브라더스] 파트너센터 계약 갱신 안내", "renewal_contract"),
+    REJECT_CONTRACT("7", "[라이트브라더스] 파트너센터 스토어 심사 반려 안내", "reject_contract"),
+    COMPLETE_CONTRACT("8", "[라이트브라더스] 파트너센터 스토어 심사 완료 안내", "complete_ontract"),
 
     END("","", "");
 

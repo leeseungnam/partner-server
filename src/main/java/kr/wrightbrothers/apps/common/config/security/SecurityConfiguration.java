@@ -75,6 +75,7 @@ public class SecurityConfiguration {
                 .antMatchers("/v1/sign/login","/v1/sign/logout/response"
                         , "/v1/email/single", "/v1/user", "/v1/user/auth/email"
                         , "/v1/user/search/**", "/v1/user/password"
+                        , "/common/schedule/addJob"
                 )
                 .permitAll()
                 .anyRequest().authenticated()

@@ -97,6 +97,12 @@ public class UserController extends WBController {
     @PutMapping("/password")
     public WBModel updateUserPwd(@ApiParam @Valid @RequestBody UserPwdUpdateDto paramDto) {
 
+        UserDto user = userService.findUserByDynamic(UserDto.builder().userId(paramDto.getUserId()).build());
+
+        if(user.isChangePwdFlag())
+            if(!userService.checkUserPasswordUpdate(paramDto.getUserId()))
+                throw new WBCustomException(messagePrefix+"common.expired");
+
         // encoding password
         paramDto.changePwd(passwordEncoder.encode(paramDto.getUserPwd()));
         paramDto.setChangePwdFlag(false);

@@ -1,9 +1,12 @@
 package kr.wrightbrothers.apps.queue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.wrightbrothers.apps.common.constants.User;
 import kr.wrightbrothers.apps.common.type.DocumentSNS;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.queue.service.PartnerQueueService;
+import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
+import kr.wrightbrothers.apps.user.dto.UserAuthDto;
 import kr.wrightbrothers.framework.support.WBSQS;
 import kr.wrightbrothers.framework.support.dto.WBSnsDTO;
 import kr.wrightbrothers.framework.support.dto.WBSnsDTO.Header;
@@ -15,7 +18,13 @@ import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.aws.messaging.listener.SqsMessageDeletionPolicy;
 import org.springframework.cloud.aws.messaging.listener.annotation.SqsListener;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Slf4j
 @Component
@@ -69,6 +78,15 @@ public class PartnerQueue extends WBSQS {
     @SqsListener(value = "${cloud.aws.sqs.partner}", deletionPolicy = SqsMessageDeletionPolicy.ALWAYS)
     public void receiveFromAdmin(String message) {
         WBSnsDTO snsDto = null;
+
+        log.info("system id login");
+        UserPrincipal principal = new UserPrincipal("super@wrightbrothers.kr"
+                , ""
+                , List.of(new SimpleGrantedAuthority(User.Auth.SUPER.getType()))
+                , UserAuthDto.builder().authCode(User.Auth.SUPER.getType()).partnerCode("").build()
+        );
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        securityContext.setAuthentication(new UsernamePasswordAuthenticationToken(principal, "", principal.getAuthorities()));
 
         try {
             initMessage(message, queueName);

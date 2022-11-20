@@ -24,6 +24,9 @@ public class UserService {
     public boolean checkAuth(UserAuthDto paramDto) {
         return dao.selectOne(namespace + "checkAuth", paramDto, PartnerKey.WBDataBase.Alias.Default);
     }
+    public boolean checkUserPasswordUpdate(String userId) {
+        return dao.selectOne(namespace + "checkUserPasswordUpdate", userId, PartnerKey.WBDataBase.Alias.Default);
+    }
     public List<PartnerOperatorDto.ResBody>  findUserByPartnerCodeAndAuthCode(PartnerViewDto.Param paramDto) {
         return dao.selectList(namespace + "findUserByPartnerCodeAndAuthCode", paramDto, PartnerKey.WBDataBase.Alias.Default);
     }

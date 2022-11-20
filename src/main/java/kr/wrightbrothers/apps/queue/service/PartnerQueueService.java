@@ -3,7 +3,12 @@ package kr.wrightbrothers.apps.queue.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.wrightbrothers.apps.batch.dto.UserTargetDto;
+import kr.wrightbrothers.apps.batch.service.BatchService;
+import kr.wrightbrothers.apps.common.constants.Email;
 import kr.wrightbrothers.apps.common.constants.Partner;
+import kr.wrightbrothers.apps.email.dto.SingleEmailDto;
+import kr.wrightbrothers.apps.email.service.EmailService;
 import kr.wrightbrothers.apps.partner.dto.*;
 import kr.wrightbrothers.apps.partner.service.PartnerService;
 import kr.wrightbrothers.apps.queue.dto.PartnerReceiveDto;
@@ -14,13 +19,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.springframework.beans.BeanUtils;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -30,20 +33,10 @@ public class PartnerQueueService {
 
     private final WBCommonDao dao;
     private final PartnerService partnerService;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final BatchService batchService;
+    private final EmailService emailService;
     private final String namespace = "kr.wrightbrothers.apps.partner.query.Partner.";
 
-    // SNS 입점몰 상품 정보 조회
-//    public PartnerSendDto findPartnerSnsData(String partnerCode,
-//                                             String contractCode) {
-//        return PartnerSendDto.builder()
-//                .partner(Optional.of((PartnerDto.ResBody) dao.selectOne(namespace + "findPartnerByPartnerCode", partnerCode)).orElse(new PartnerDto.ResBody()))
-//                .partnerContract(Optional.of((PartnerContractDto.ResBody) dao.selectOne(namespace + "findPartnerContractByPartnerCode", PartnerViewDto.Param.builder()
-//                        .partnerCode(partnerCode)
-//                        .contractCode(contractCode)
-//                        .build())).orElse(new PartnerContractDto.ResBody()))
-//                .build();
-//    }
     public PartnerSendDto findPartnerSnsData(String partnerCode,
                                              String contractCode) {
         return PartnerSendDto.builder()
@@ -51,28 +44,28 @@ public class PartnerQueueService {
                 .partnerCode(partnerCode)
                 .contractCode(contractCode)
                 .partner(Optional.of((PartnerSNSDto) dao.selectOne(namespace + "findPartnerSNS", partnerCode)).orElse(new PartnerSNSDto()))
-                .partnerContract(Optional.of((PartnerContractSNSDto) dao.selectOne(namespace + "findPartnerContractSNS", contractCode)).orElse(new PartnerContractSNSDto()))
+                .partnerContract(Optional.of((PartnerContractSNSDto) dao.selectOne(namespace + "findPartnerContractSNS", partnerCode)).orElse(new PartnerContractSNSDto()))
                 .build();
     }
 
     public void updatePartnerSnsData(JSONObject body) throws JsonProcessingException {
 
-        // system 로그인 처리 .. 나중에 빼야 됨..
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken("super@wrightbrothers.kr", "1q2w3e4r5t");
-
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        log.info("system id login");
-
-        log.info("[updatePartnerSnsData]::RESULT_INSPECTION_PARTNER");
-
         // body convert
         PartnerInsertDto paramDto = convertPartnerInsertDto(body);
 
         log.info("[updatePartnerSnsData]::paramDto={}",paramDto.toString());
-        //  [todo] beforeAop 처리 추가 필요.
         partnerService.updatePartnerAll(paramDto);
+
+        // 심사결과 이메일 전송
+        Email email = null;
+
+        if(Partner.Contract.Status.REJECT.getCode().equals(paramDto.getPartnerContract().getContractStatus())) {
+            email = Email.REJECT_CONTRACT;
+        } else if(Partner.Contract.Status.COMPLETE.getCode().equals(paramDto.getPartnerContract().getContractStatus())) {
+            email = Email.COMPLETE_CONTRACT;
+        }
+        List<UserTargetDto> userTargetDtoList = batchService.findPartnerMailByPartnerCode(paramDto.getPartner().getPartnerCode());
+        emailService.sendMailPartnerContract(userTargetDtoList, email);
     }
 
     private PartnerInsertDto convertPartnerInsertDto(JSONObject body) throws JsonProcessingException {

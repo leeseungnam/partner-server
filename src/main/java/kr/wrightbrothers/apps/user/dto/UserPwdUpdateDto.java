@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 @ApiModel(value = "회원 비밀번호 변경 요청 데이터")
 @Getter
@@ -31,7 +33,10 @@ public class UserPwdUpdateDto {
     private String userPwd;
 
     @JsonIgnore
-    private boolean changePwdFlag;
+    private boolean changePwdFlag;  // 비밀번호 변경 여부 (0 : 변경불필요, 1:변경필요)
+
+    @JsonIgnore
+    private String updateDate;  // 수정일
 
     public void changePwd(String userPwd){
         this.userPwd = userPwd;

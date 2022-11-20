@@ -191,6 +191,9 @@ public class PartnerService {
         return result;
     }
 
+    public PartnerContractSNSDto findPartnerContractByPartnerCode(String partnerCode) {
+        return dao.selectOne(namespace + "findPartnerContractSNS", partnerCode);
+    }
     public PartnerInviteDto.ResBody findOperatorInvite(PartnerInviteDto.Param paramDto) {
         return dao.selectOne(namespace + "findOperatorInvite", paramDto);
     }
@@ -234,9 +237,9 @@ public class PartnerService {
                         .build());
     }
 
-    // 계약 생신
-    public void updateContract(){
-
+    // 계약 갱신
+    public void updateContractDay(PartnerContractDto.ReqBody paramDto){
+        dao.update(namespace+"updatePartnerContractDay", paramDto);
     }
 
     // 파트너 상태 변경
