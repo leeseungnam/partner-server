@@ -75,7 +75,7 @@ public class ProductService {
             Optional.ofNullable(paramDto.getOptionList()).orElseGet(Collections::emptyList)
                     .forEach(option -> dao.insert(namespace + "insertOption", option, PartnerKey.WBDataBase.Alias.Admin));
         // 배송 정보
-        dao.insert(namespace + "mergeDelivery", paramDto.getDelivery(), PartnerKey.WBDataBase.Alias.Admin);
+        dao.insert(namespace + "insertDelivery", paramDto.getDelivery(), PartnerKey.WBDataBase.Alias.Admin);
         // 정보 고시
         dao.insert(namespace + "mergeInfoNotice", paramDto.getInfoNotice(), PartnerKey.WBDataBase.Alias.Admin);
         // 안내 정보
@@ -136,7 +136,7 @@ public class ProductService {
             Optional.ofNullable(paramDto.getOptionList()).orElseGet(Collections::emptyList)
                     .forEach(option -> dao.insert(namespace + "insertOption", option, PartnerKey.WBDataBase.Alias.Admin));
         // 배송 정보
-        dao.update(namespace + "mergeDelivery", paramDto.getDelivery(), PartnerKey.WBDataBase.Alias.Admin);
+        dao.update(namespace + "updateDelivery", paramDto.getDelivery(), PartnerKey.WBDataBase.Alias.Admin);
         // 정보 고시
         dao.update(namespace + "mergeInfoNotice", paramDto.getInfoNotice(), PartnerKey.WBDataBase.Alias.Admin);
         // 안내 정보

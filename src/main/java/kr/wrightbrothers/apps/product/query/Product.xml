@@ -344,32 +344,32 @@
 		 where prdt_cd = #{productCode}
 	</delete>
 
-	<insert id="mergeDelivery" parameterType="kr.wrightbrothers.apps.product.dto.DeliveryDto$ReqBody">
+	<insert id="insertDelivery" parameterType="kr.wrightbrothers.apps.product.dto.DeliveryDto$ReqBody">
 		insert into prdt_dlvr_dtl(prdt_cd,
-		                          prdt_dlvr_cd,
-		                          dlvr_bun_flg,
-		                          chg_tp,
-		                          chg_base,
-		                          tms_free_cd,
-		                          tms_free_chg,
-		                          pay_tp,
-		                          surchg_flg,
-		                          area_cd,
-		                          schg_jeju,
-		                          schg_iso,
-		                          unstr_zip_cd,
-		                          unstr_addr,
-		                          unstr_addr_dtl,
-		                          rtn_zip_cd,
-		                          rtn_addr,
-		                          rtn_addr_dtl,
-		                          excng_chg,
-		                          rtn_chg,
-		                          rtn_dlvr_cmpny_cd,
-		                          cre_usr_id)
+								  prdt_dlvr_cd,
+								  dlvr_bun_flg,
+								  chg_tp,
+								  chg_base,
+								  tms_free_cd,
+								  tms_free_chg,
+								  pay_tp,
+								  surchg_flg,
+								  area_cd,
+								  schg_jeju,
+								  schg_iso,
+								  unstr_zip_cd,
+								  unstr_addr,
+								  unstr_addr_dtl,
+								  rtn_zip_cd,
+								  rtn_addr,
+								  rtn_addr_dtl,
+								  excng_chg,
+								  rtn_chg,
+								  rtn_dlvr_cmpny_cd,
+								  cre_usr_id)
 		values(#{productCode},
 			   #{deliveryType},
-		       #{deliveryBundleFlag},
+			   #{deliveryBundleFlag},
 			   #{chargeType},
 			   #{chargeBase},
 			   #{termsFreeCode},
@@ -380,47 +380,51 @@
 			   #{surchargeJejudo},
 			   #{surchargeIsolated},
 			   #{unstoringZipCode},
-		       #{unstoringAddress},
+			   #{unstoringAddress},
 			   #{unstoringAddressDetail},
 			   #{returnZipCode},
 			   #{returnAddress},
 			   #{returnAddressDetail},
-		       #{exchangeCharge},
+			   #{exchangeCharge},
 			   #{returnCharge},
 			   #{returnDeliveryCompanyCode},
-			   #{userId})
-		on duplicate key
-		update
-			prdt_dlvr_cd		= #{deliveryType},
-			dlvr_bun_flg		= #{deliveryBundleFlag},
-			chg_tp				= #{chargeType},
-			chg_base			= #{chargeBase},
-			tms_free_cd			= #{termsFreeCode},
-			tms_free_chg		= #{termsFreeCharge},
-			pay_tp				= #{paymentType},
-			surchg_flg			= #{surchargeFlag},
-			area_cd				= #{areaCode},
-			schg_jeju			= #{surchargeJejudo},
-			schg_iso			= #{surchargeIsolated},
-			unstr_zip_cd		= #{unstoringZipCode},
-			unstr_addr			= #{unstoringAddress},
-			unstr_addr_dtl		= #{unstoringAddressDetail},
-			rtn_zip_cd			= #{returnZipCode},
-			rtn_addr			= #{returnAddress},
-			rtn_addr_dtl		= #{returnAddressDetail},
-		    excng_chg			= #{exchangeCharge},
-			rtn_chg				= #{returnCharge},
-			rtn_dlvr_cmpny_cd	= #{returnDeliveryCompanyCode};
+			   #{userId});
 
 		insert into prdt_dlvr(prdt_cd,
-		                      prdt_dlvr_cd,
-		                      cre_usr_id)
+							  prdt_dlvr_cd,
+							  cre_usr_id)
 		values(#{productCode},
-		       #{deliveryType},
-		       #{userId})
-		on duplicate key
-		update
-		    prdt_dlvr_cd = #{deliveryType};
+			   #{deliveryType},
+			   #{userId});
+	</insert>
+
+	<insert id="updateDelivery" parameterType="kr.wrightbrothers.apps.product.dto.DeliveryDto$ReqBody">
+		update prdt_dlvr_dtl
+		   set prdt_dlvr_cd		= #{deliveryType},
+		       dlvr_bun_flg		= #{deliveryBundleFlag},
+			   chg_tp			= #{chargeType},
+			   chg_base			= #{chargeBase},
+			   tms_free_cd		= #{termsFreeCode},
+			   tms_free_chg		= #{termsFreeCharge},
+			   pay_tp			= #{paymentType},
+			   surchg_flg		= #{surchargeFlag},
+			   area_cd			= #{areaCode},
+			   schg_jeju		= #{surchargeJejudo},
+			   schg_iso			= #{surchargeIsolated},
+			   unstr_zip_cd		= #{unstoringZipCode},
+			   unstr_addr		= #{unstoringAddress},
+			   unstr_addr_dtl	= #{unstoringAddressDetail},
+			   rtn_zip_cd		= #{returnZipCode},
+			   rtn_addr			= #{returnAddress},
+			   rtn_addr_dtl		= #{returnAddressDetail},
+		       excng_chg		= #{exchangeCharge},
+			   rtn_chg			= #{returnCharge},
+			   rtn_dlvr_cmpny_cd= #{returnDeliveryCompanyCode}
+		 where prdt_cd = #{productCode};
+
+		update prdt_dlvr
+		   set prdt_dlvr_cd = #{deliveryType}
+		 where prdt_cd = #{productCode};
 	</insert>
 
 	<insert id="mergeInfoNotice" parameterType="kr.wrightbrothers.apps.product.dto.InfoNoticeDto$ReqBody">
