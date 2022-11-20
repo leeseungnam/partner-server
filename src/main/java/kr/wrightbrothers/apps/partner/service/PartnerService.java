@@ -65,11 +65,11 @@ public class PartnerService {
 
             fileService.s3FileUpload(fileList, null, false);
 
-            dao.update(namespace+"updatePartnerThumbnail", PartnerDto.ReqBody.builder()
-                    .partnerCode(partnerCode)
-                    .thumbnail(fileNo)
-                    .build());
         }
+        dao.update(namespace+"updatePartnerThumbnail", PartnerDto.ReqBody.builder()
+                .partnerCode(partnerCode)
+                .thumbnail(fileNo)
+                .build());
     }
     @Transactional(value = PartnerKey.WBDataBase.TransactionManager.Default)
     public void deletePartnerOperator(PartnerInviteDto.Param paramDto) {
