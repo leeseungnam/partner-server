@@ -304,6 +304,9 @@
 			dscnt_amt		= #{discountAmount},
 			pur_amt			= #{supplyAmount},
 			fnl_sell_amt	= #{finalSellAmount},
+			<if test="displayFlag == 'Y'.toString() and productStatusCode == 'S01'.toString()">
+				prdt_sell_st_dt = ifnull(prdt_sell_st_dt, now()),
+			</if>
 			dp_flg			= #{displayFlag},
 			prdt_optn_flg	= #{productOptionFlag},
 			prdt_stus_cd	= #{productStatusCode},
@@ -677,6 +680,9 @@
 		<if test="productCodeList.length != 0">
 		update prdt_sell_info
 		   set prdt_stus_cd = #{statusValue},
+		       <if test="statusValue == 'S08'">
+			   prdt_sell_ed_dt	= ifnull(prdt_sell_ed_dt, now()),
+			   </if>
 		       upd_usr_id	= #{userId},
 		       upd_dt		= now()
 		 where 1 = 1
@@ -696,9 +702,9 @@
 		 limit 1
 	</select>
 
-	<select id="isZeroStock" parameterType="java.lang.String" resultType="int">
+	<select id="isZeroStock" parameterType="java.lang.String" resultType="boolean">
 		select
-			if(count(prdt_cd) = 0, true, false) as isZeroStock
+			if(invty_qty = 0, true, false) as isZeroStock
 		  from prdt_sell_info
 		 where prdt_cd = #{productCode}
 	</select>
@@ -743,5 +749,12 @@
 		</foreach>
 		 order by p.cre_dt desc
 	</select>
-	
+
+	<select id="isSellStartDate" parameterType="java.lang.String" resultType="boolean">
+		select
+		    if(dp_flg = 'Y' and prdt_stus_cd = 'S01' and prdt_sell_st_dt is null, false, true) as isSellStartDate
+		  from prdt_sell_info
+		 where prdt_cd = #{productCode}
+	</select>
+
 </mapper>

@@ -78,13 +78,18 @@ public class ProductBeforeAop {
         log.debug("Product Change Status::{}", changeStatusCode);
         log.debug("Product Change Log::{}", changeLog);
 
+        // 판매완료 수정 불가
+        if (ProductStatusCode.END_OF_SALE.getCode().equals(currentStatusCode))
+            throw new WBBusinessException(ErrorCode.END_OF_SALE.getErrCode(), new String[]{"판매 완료"});
+
         // 상태 변경 아닐 시 종료
         if (currentStatusCode.equals(changeStatusCode)) return;
 
         switch (ProductStatusCode.of(changeStatusCode)) {
             case SALE:
                 if (!ProductStatusCode.RESERVATION.getCode().equals(currentStatusCode)
-                        && !(ProductStatusCode.PRODUCT_INSPECTION.getCode().equals(currentStatusCode) & changeLog.contains("검수 완료")))
+                        && !(ProductStatusCode.PRODUCT_INSPECTION.getCode().equals(currentStatusCode) & changeLog.contains("검수 완료"))
+                        && !ProductStatusCode.SOLD_OUT.getCode().equals(currentStatusCode))
                     throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"예약중/판매완료"});
                 break;
             case END_OF_SALE:

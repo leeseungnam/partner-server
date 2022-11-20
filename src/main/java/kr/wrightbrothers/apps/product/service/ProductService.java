@@ -90,19 +90,19 @@ public class ProductService {
         List<OptionDto.ResBody> optionList = dao.selectList(namespace + "findOptionList", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin);
         ProductFindDto.ResBody findDto = ProductFindDto.ResBody.builder()
                 // 상품 기본 정보
-                .product(Optional.of((ProductDto.ResBody) dao.selectOne(namespace + "findProduct", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin)).orElse(new ProductDto.ResBody()))
+                .product(dao.selectOne(namespace + "findProduct", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin))
                 // 상품 기본스펙
-                .basicSpec(Optional.of((BasicSpecDto.ResBody) dao.selectOne(namespace + "findBasicSpec", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin)).orElse(new BasicSpecDto.ResBody()))
+                .basicSpec(dao.selectOne(namespace + "findBasicSpec", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin))
                 // 판매 정보
-                .sellInfo(Optional.of((SellInfoDto.ResBody) dao.selectOne(namespace + "findSellInfo", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin)).orElse(new SellInfoDto.ResBody()))
+                .sellInfo(dao.selectOne(namespace + "findSellInfo", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin))
                 // 옵션 정보
                 .optionList(Optional.ofNullable(optionList).orElseGet(Collections::emptyList))
                 // 배송 정보
-                .delivery(Optional.of((DeliveryDto.ResBody) dao.selectOne(namespace + "findDelivery", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin)).orElse(new DeliveryDto.ResBody()))
+                .delivery(dao.selectOne(namespace + "findDelivery", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin))
                 // 정보 고시
-                .infoNotice(Optional.of((InfoNoticeDto.ResBody) dao.selectOne(namespace + "findInfoNotice", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin)).orElse(new InfoNoticeDto.ResBody()))
+                .infoNotice(dao.selectOne(namespace + "findInfoNotice", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin))
                 // 안내 정보
-                .guide(Optional.of((GuideDto.ResBody) dao.selectOne(namespace + "findGuide", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin)).orElse(new GuideDto.ResBody()))
+                .guide(dao.selectOne(namespace + "findGuide", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin))
                 .build();
 
         if (ProductStatusCode.REJECT_INSPECTION.getCode().equals(findDto.getSellInfo().getProductStatusCode()))
@@ -166,9 +166,9 @@ public class ProductService {
                     // 판매시작, 예약중 변경에 대한 재고 파악 체크
                     if (!"DP".equals(paramDto.getStatusType()) &&
                             (
-                                ProductStatusCode.SALE.getCode().equals(paramDto.getStatusType())
+                                ProductStatusCode.SALE.getCode().equals(paramDto.getStatusValue())
                                 ||
-                                ProductStatusCode.RESERVATION.getCode().equals(paramDto.getStatusType())
+                                ProductStatusCode.RESERVATION.getCode().equals(paramDto.getStatusValue())
                             )
                     ) {
                         // 판매 재고 0일 경우 예외처리 발생
