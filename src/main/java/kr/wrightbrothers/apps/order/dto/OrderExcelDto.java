@@ -44,9 +44,9 @@ public class OrderExcelDto {
         private Long productSellAmount;
         @ExcelBody(colIndex = 10, bodyType = ExcelBodyType.NUMBER)
         private Long productAmount;
-        @ExcelBody(colIndex = 11, bodyType = ExcelBodyType.NUMBER)
-        private Long paymentAmount;
         @ExcelBody(colIndex = 12, bodyType = ExcelBodyType.NUMBER)
+        private Long paymentAmount;
+        @ExcelBody(colIndex = 11, bodyType = ExcelBodyType.NUMBER)
         private Long productDeliveryChargeAmount;
         @ExcelBody(colIndex = 13)
         private String paymentMethod;

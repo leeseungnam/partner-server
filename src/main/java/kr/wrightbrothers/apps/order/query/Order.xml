@@ -300,7 +300,7 @@
 		    p.prdt_qty as product_qty,
 		    p.fnl_sell_amt as product_sell_amount,
 		    p.fnl_sell_amt as product_amount,
-		    s.pay_amt as payment_amount,
+		    s.pay_amt + s.dlvr_chrg_amt as payment_amount,
 		    p.dlvr_chrg_amt as product_delivery_charge_amount,
 		    o.pay_meth as payment_method,
 		    date_format(o.pym_dt, '%Y-%m-%d') as payment_day,
