@@ -481,7 +481,7 @@
 
 	<insert id="mergeGuide" parameterType="kr.wrightbrothers.apps.product.dto.GuideDto$ReqBody">
 		insert into prdt_gud_ctnt(prdt_cd,
-		                          md_cmt,
+		                          prdt_gud_cmt_two,
 		                          prdt_gud_cmt_one,
 		                          prdt_gud_cmt_four,
 		                          excng_chg_gud,
@@ -500,7 +500,7 @@
 			   #{userId})
 		on duplicate key
 		update
-			md_cmt				= #{productGuide},
+			prdt_gud_cmt_two	= #{productGuide},
 			prdt_gud_cmt_one	= #{productDescription},
 			prdt_gud_cmt_four	= #{deliveryGuide},
 			excng_chg_gud		= #{exchangeReturnGuide},
@@ -654,7 +654,7 @@
 	<select id="findGuide" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.product.dto.GuideDto$ResBody">
 		select
 		    prdt_gud_cmt_one productDescription,
-			md_cmt product_guide,
+			prdt_gud_cmt_two product_guide,
 			prdt_gud_cmt_four delivery_guide,
 			excng_chg_gud exchange_return_guide,
             as_gud as_guide,
