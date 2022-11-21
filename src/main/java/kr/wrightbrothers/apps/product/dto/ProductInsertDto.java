@@ -94,7 +94,9 @@ public class ProductInsertDto {
             if (ObjectUtils.isEmpty(this.optionList))
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"옵션 정보"});
 
-            this.optionList.forEach(option -> {
+            // 재고
+            int productStockQty = 0;
+            for (OptionDto.ReqBody option : this.optionList) {
                 if (ObjectUtils.isEmpty(option.getOptionSeq()))
                     throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"옵션 번호"});
                 if (ObjectUtils.isEmpty(option.getOptionName()))
@@ -105,7 +107,16 @@ public class ProductInsertDto {
                     throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"변동 금액"});
                 if (ObjectUtils.isEmpty(option.getOptionStockQty()))
                     throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"옵션 재고수량"});
-            });
+
+                // 판매완료 처리 시 재고 0개 처리
+                if (ProductStatusCode.SOLD_OUT.getCode().equals(this.sellInfo.getProductStatusCode()))
+                    option.setOptionStockQty(0);
+
+                productStockQty += option.getOptionStockQty();
+            }
+            // 재고 수량 유효성 확인
+            if (this.sellInfo.getProductStockQty() != productStockQty)
+                throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STOCK.getErrCode(), new String[]{""});
         }
     }
 
@@ -118,6 +129,12 @@ public class ProductInsertDto {
                 ProductStatusCode.RESERVATION.getCode().equals(this.sellInfo.getProductStatusCode())) {
             if (this.sellInfo.getProductStockQty() == 0)
                 throw new WBBusinessException(ErrorCode.INVALID_NUMBER_MIN.getErrCode(), new String[]{"판매재고", "1"});
+        }
+
+        // 상품 판매완료 상태변경 시 재고 0 처리
+        if (ProductStatusCode.SOLD_OUT.getCode().equals(this.sellInfo.getProductStatusCode())) {
+            // 상품 판매완료 상태는 기존 재구 무시하고 상품 재고 0개 처리(기획 장석민 협의 완료)
+            this.sellInfo.setProductStockQty(0);
         }
 
         // 상품 판매 옵션 유효성 검사
@@ -135,7 +152,6 @@ public class ProductInsertDto {
             throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"교환/반품 안내"});
         if (this.guide.getExchangeReturnGuide().length() < 30)
             throw new WBBusinessException(ErrorCode.INVALID_TEXT_SIZE.getErrCode(), new String[]{"교환/반품 안내", "30", "2000"});
-
         // 배송정보 유효성 검사
         this.delivery.validDelivery();
     }
