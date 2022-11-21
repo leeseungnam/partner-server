@@ -35,6 +35,24 @@
 				<maxHistory>${LOG_DAYS}</maxHistory>
 			</rollingPolicy>
 		</appender>
+
+		<appender name="error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+			<filter class="ch.qos.logback.classic.filter.LevelFilter">
+				<level>error</level>
+				<onMismatch>DENY</onMismatch>
+			</filter>
+			<file>${ROOT_LOG_PATH}/server/partner-error.log</file>
+			<encoder>
+				<pattern>${LOG_PATTERN}</pattern>
+			</encoder>
+			<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+				<fileNamePattern>${ROOT_LOG_PATH}/server/partner-error_%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+				<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+					<maxFileSize>${LOG_FILE_SIZE}</maxFileSize>
+				</timeBasedFileNamingAndTriggeringPolicy>
+				<maxHistory>${LOG_DAYS}</maxHistory>
+			</rollingPolicy>
+		</appender>
 	</springProfile>
 
 	<!-- Default Console Log -->
@@ -58,6 +76,7 @@
 
 	<root level="debug">
 		<springProfile name="dev,stag,prod">
+			<appender-ref ref="error" />
 			<appender-ref ref="server" />
 		</springProfile>
 		<appender-ref ref="Console" />
