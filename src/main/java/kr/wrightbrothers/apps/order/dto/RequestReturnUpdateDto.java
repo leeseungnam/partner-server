@@ -68,6 +68,8 @@ public class RequestReturnUpdateDto {
                                 .prnrCd(this.partnerCode)
                                 .stusCd(statusCode)
                                 .ordPrdtIdx(Arrays.stream(this.orderProductSeqArray).map(String::valueOf).collect(Collectors.toList()))
+                                .rsnCd(this.requestCode)
+                                .rsnNm(this.requestValue)
                                 .usrId(this.userId)
                                 .build()
                         ;
