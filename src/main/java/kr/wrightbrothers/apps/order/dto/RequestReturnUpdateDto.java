@@ -60,6 +60,8 @@ public class RequestReturnUpdateDto {
                                 .prnrCd(this.partnerCode)
                                 .stusCd(statusCode)
                                 .ordPrdtIdx(Arrays.stream(this.orderProductSeqArray).map(String::valueOf).collect(Collectors.toList()))
+                                .cncRsnCd(this.requestCode)
+                                .cncRsn(this.requestValue)
                                 .usrId(this.userId)
                                 .build()
                         :
@@ -73,6 +75,18 @@ public class RequestReturnUpdateDto {
                                 .usrId(this.userId)
                                 .build()
                         ;
+        }
+
+        public Object toApprovalQueueDto(String statusCode) {
+                return DeliveryPreparingDto.Queue.builder()
+                        .ordNo(this.orderNo)
+                        .prnrCd(this.partnerCode)
+                        .stusCd(statusCode)
+                        .ordPrdtIdx(Arrays.stream(this.orderProductSeqArray).map(String::valueOf).collect(Collectors.toList()))
+                        .dlvrCmpnyCd(this.requestCode)
+                        .invcNo(this.requestValue)
+                        .usrId(this.userId)
+                        .build();
         }
 
 }

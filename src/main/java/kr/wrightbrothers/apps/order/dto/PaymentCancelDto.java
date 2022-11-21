@@ -106,7 +106,8 @@ public class PaymentCancelDto {
         private String prnrCd;                  // 파트너코드
         private String stusCd;                  // 상태코드
         private List<String> ordPrdtIdx;        // 주문상품 IDX 배열
-        private String cncRsn;                  // 취소 사유 코드
+        private String cncRsnCd;                // 취소 사유 코드
+        private String cncRsn;                  // 취소 사유
         private String bankCd;                  // 은행코드
         private String bankAcntNo;              // 계좌번호
         private String dpstrNm;                 // 예금주
