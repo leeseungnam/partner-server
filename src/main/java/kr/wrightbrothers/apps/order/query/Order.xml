@@ -252,7 +252,7 @@
 		    p.ord_prdt_stus as order_product_status_code,
 		    p.ord_prdt_stus as order_product_status_name,
 		    p.fnl_sell_amt as final_sell_amount,
-		    p.optn_nm as option_name,
+		    if(p.optn_nm is null, '', concat(p.optn_nm, '-', p.optn_val)) as option_name,
 		    p.optn_schg as option_surcharge,
 		    p.prdt_qty as product_qty,
 		    p.dlvr_tp as delivery_type,
