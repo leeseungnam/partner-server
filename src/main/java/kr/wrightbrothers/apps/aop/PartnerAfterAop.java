@@ -97,6 +97,7 @@ public class PartnerAfterAop {
         });
     }
     //  섬네일 변경 시 추가 send to admin
+    /*
     @AfterReturning(value = "execution(* kr.wrightbrothers.apps.partner.PartnerController.*PartnerThumbnail(..))")
     public void sendPartnerSnsDataByUpdateThumbnail(JoinPoint joinPoint) throws Exception {
         log.info("[sendPartnerSnsDataByUpdateThumbnail]::Partner Send SNS ... START");
@@ -115,4 +116,5 @@ public class PartnerAfterAop {
         );
         log.info("[sendPartnerSnsDataByUpdateThumbnail]::Partner Send SNS ... END");
     }
+    */
 }
