@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -135,6 +136,21 @@ public class ReturnService {
     public void updateReturnDelivery(ReturnDeliveryDto.ReqBody paramDto) {
         // 반품지 배송정보 수정
         dao.update(namespace + "updateReturnDelivery", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+
+        // 수정 Queue 전송
+        orderQueue.sendToAdmin(
+                DocumentSNS.UPDATE_ORDER,
+                DeliveryPreparingDto.Queue.builder()
+                        .ordNo(paramDto.getOrderNo())
+                        .prnrCd(paramDto.getPartnerCode())
+                        .stusCd(dao.selectOne(namespace + "findOrderProductStatus", paramDto, PartnerKey.WBDataBase.Alias.Admin))
+                        .ordPrdtIdx(List.of(String.valueOf(paramDto.getOrderProductSeq())))
+                        .dlvrCmpnyCd(paramDto.getDeliveryCompanyCode())
+                        .invcNo(paramDto.getInvoiceNo())
+                        .usrId(paramDto.getUserId())
+                        .build(),
+                PartnerKey.TransactionType.Update
+        );
     }
 
     public void makeExcelFile(ReturnExcelDto.Param paramDto,

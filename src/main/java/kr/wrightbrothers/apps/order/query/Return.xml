@@ -89,6 +89,15 @@
 		</choose>
 	</select>
 
+	<select id="findOrderProductStatus" parameterType="kr.wrightbrothers.apps.order.dto.ReturnDeliveryDto$ReqBody" resultType="java.lang.String">
+		select
+		    ord_prdt_stus
+		  from ord_prdt_info
+		 where ord_no = #{orderNo}
+		   and prnr_cd = #{partnerCode}
+		   and ord_prdt_idx = #{orderProductSeq}
+	</select>
+
 	<update id="updateReturnMemo" parameterType="kr.wrightbrothers.apps.order.dto.ReturnMemoUpdateDto">
 		update ord_prnr_info
 		   set rtrn_memo = #{returnMemo},
