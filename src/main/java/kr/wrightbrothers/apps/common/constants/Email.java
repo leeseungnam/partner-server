@@ -20,7 +20,7 @@ public enum Email {
     REJECT_CONTRACT("7", "[라이트브라더스] 파트너센터 스토어 심사 반려 안내", "reject_contract"),
     COMPLETE_CONTRACT("8", "[라이트브라더스] 파트너센터 스토어 심사 완료 안내", "complete_ontract"),
 
-    END("","", "");
+    NULL("","", "");
 
     private final String code;
     private final String title;

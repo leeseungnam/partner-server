@@ -57,7 +57,7 @@ public class PartnerQueueService {
         partnerService.updatePartnerAll(paramDto);
 
         // 심사결과 이메일 전송
-        Email email = null;
+        Email email = Email.NULL;
 
         if(Partner.Contract.Status.REJECT.getCode().equals(paramDto.getPartnerContract().getContractStatus())) {
             email = Email.REJECT_CONTRACT;
