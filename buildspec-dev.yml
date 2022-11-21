@@ -4,7 +4,7 @@ phases:
   build:
     commands:
       - echo Build Starting on `date`
-      - mvn clean package -DskipTests -P stag
+      - mvn clean package -DskipTests -P dev
 
   post_build:
     commands:
@@ -14,8 +14,8 @@ phases:
 artifacts:
   files:
     - appspec.yml
-    - deploy.sh
     - initialize.sh
+    - release/dev/deploy.sh
     - target/*.jar
   discard-paths: yes
 

@@ -1,0 +1,24 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - echo Build Starting on `date`
+      - mvn clean package -DskipTests -P stag
+
+  post_build:
+    commands:
+      - echo build end
+      - pwd
+
+artifacts:
+  files:
+    - appspec.yml
+    - initialize.sh
+    - release/stag/deploy.sh
+    - target/*.jar
+  discard-paths: yes
+
+cache:
+  paths:
+    - '/root/.m2/caches/**/*'

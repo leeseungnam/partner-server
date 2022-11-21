@@ -1,0 +1,35 @@
+spring:
+  datasource-partner:
+    driver-class-name: org.mariadb.jdbc.Driver
+    jdbc-url: jdbc:mariadb://wrightbrothers-partner-stag.cf22cofp8pqh.ap-northeast-2.rds.amazonaws.com/partner?useSSL=false&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&allowMultiQueries=true
+    username: admin
+    password: pszqU1Be8LcZDWunv19N
+    maximumPoolSize: 5
+  datasource-admin:
+    driver-class-name: org.mariadb.jdbc.Driver
+    jdbc-url: jdbc:mariadb://wrightbrothers-stag-admin.c9lwghctzixx.ap-northeast-2.rds.amazonaws.com:3306/wrightbrothers?useSSL=false&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&allowMultiQueries=true
+    username: admin
+    password: rBEdceIdPrQMaHrQVcZj
+    maximumPoolSize: 5
+cloud:
+  aws:
+    sqs:
+      auto: true
+      product: STG-PARTNER-PRODUCT.fifo
+      partner: STG-PARTNER-STORE.fifo
+    sns:
+      arn: 'arn:aws:sns:ap-northeast-2:094301229591:'
+      auto: true
+      ack: STG-ACKMSG.fifo
+      product: STG-PARTNER-ADMIN-PRODUCT.fifo
+      order: STG-PARTNER-PLATFORM-ORDER.fifo
+      partner: STG-PARTNER-ADMIN-STORE.fifo
+      history: STG-COMMON-HISTORY.fifo
+system:
+  file:
+    temp:
+      # 임시 파일 저장 위치
+      path: /app/partner/file_temp
+app:
+  client:
+    host: http://13.209.45.4:3300
