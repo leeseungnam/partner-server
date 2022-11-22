@@ -84,6 +84,9 @@
 				</when>
 				<otherwise>
 					<choose>
+						<when test="rangeType == 'ORDER'.toString()">
+							and o.ord_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+						</when>
 						<when test="rangeType == 'PAYMENT'.toString()">
 							and o.pym_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
 						</when>
@@ -183,6 +186,9 @@
 				</when>
 				<otherwise>
 					<choose>
+						<when test="rangeType == 'ORDER'.toString()">
+							and o.ord_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
+						</when>
 						<when test="rangeType == 'PAYMENT'.toString()">
 							and o.pym_dt between concat(#{startDay}, ' 00:00:00.0') and concat(#{endDay}, ' 23:59:59.9')
 						</when>
