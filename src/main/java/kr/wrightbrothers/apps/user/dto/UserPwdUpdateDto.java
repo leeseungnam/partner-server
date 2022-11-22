@@ -22,7 +22,7 @@ import javax.validation.constraints.Size;
 public class UserPwdUpdateDto {
     @ApiModelProperty(value = "아이디(이메일)", required = true)
     @NotBlank(message = "아이디(이메일)")
-    @Size(min = 10, max = 50, message = "아이디(이메일)")
+    @Size(max = 50, message = "아이디(이메일)")
     @Pattern(regexp = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$", message = "아이디(이메일) 형식이 맞지 않습니다.")
     private String userId;
 
