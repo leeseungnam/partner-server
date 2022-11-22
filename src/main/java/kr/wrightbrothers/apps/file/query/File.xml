@@ -77,6 +77,7 @@
 		       file_desc = #{fileDescription},
 		       dp_seq = #{displaySeq},
 		       file_nm = #{fileName},
+		       use_flg = 'Y',
 			   upd_dt = now(),
 			   upd_usr_id = #{userId}
 		 where file_no = #{fileNo}
