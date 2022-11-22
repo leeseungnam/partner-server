@@ -152,6 +152,7 @@
 		from partner_reject pr
 		where pr.partner_code = #{partnerCode}
 		  and pr.contract_code = #{contractCode}
+		order by create_date desc
 	</select>
 
 	<insert id="insertPartnerReject" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerRejectDto$Param">
