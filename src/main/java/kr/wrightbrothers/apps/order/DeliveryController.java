@@ -157,6 +157,15 @@ public class DeliveryController extends WBController {
     }
 
     @UserPrincipalScope
+    @PutMapping("/deliveries/{orderNo}/freights")
+    public WBModel updateDeliveryFreight(@Valid @RequestBody DeliveryFreightUpdateDto paramDto) {
+        // 화물배송 등록
+        deliveryService.updateDeliveryFreight(paramDto);
+
+        return noneMgsResponse(messageSourceAccessor);
+    }
+
+    @UserPrincipalScope
     @ApiImplicitParams({
             @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
     })

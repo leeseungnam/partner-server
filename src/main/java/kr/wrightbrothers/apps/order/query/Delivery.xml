@@ -92,6 +92,32 @@
 		   and ord_prdt_idx = #{orderProductSeq}
 	</select>
 	
+	<select id="isDeliveryParcel" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryFreightUpdateDto" resultType="boolean">
+		select
+		    if(count(ord_prdt_idx) > 0, true, false) as isDeliveryParcel
+		  from ord_prdt_info
+		 where ord_no = #{orderNo}
+		   and prnr_cd = #{partnerCode}
+		   and dlvr_tp = 'D01'	-- 택배배송
+		-- 주문상품 SEQ
+		<foreach collection="orderProductSeqArray" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<select id="isDeliveryFreight" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryFreightUpdateDto" resultType="boolean">
+		select
+		    if(count(ord_prdt_idx) > 0, true, false) as isDeliveryFreight
+		  from ord_prdt_info
+		 where ord_no = #{orderNo}
+		   and prnr_cd = #{partnerCode}
+		   and dlvr_tp = 'D07'	-- 화물배송
+		-- 주문상품 SEQ
+		<foreach collection="orderProductSeqArray" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	
 	<select id="isDeliveryComplete" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto" resultType="boolean">
 		select
 		    if(count(ord_prdt_idx) > 0, true, false) as isDeliveryComplete
@@ -115,7 +141,28 @@
 			#{item}
 		</foreach>
 	</select>
+	
+	<update id="updateDeliveryFreight" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryFreightUpdateDto">
+		update ord_shpn_info
+		   set ord_dlvr_stus = 'D05'
+		 where ord_no = #{orderNo}
+		-- 주문상품 SEQ
+		<foreach collection="orderProductSeqArray" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
+			#{item}
+		</foreach>
+		   and ord_dlvr_stus = 'D01';
 
+		update ord_prdt_info
+		   set ord_prdt_stus = 'D05'
+		 where ord_no = #{orderNo}
+		   and prnr_cd = #{partnerCode}
+		-- 주문상품 SEQ
+		<foreach collection="orderProductSeqArray" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
+			#{item}
+		</foreach>
+		   and ord_prdt_stus = 'D01';
+	</update>
+	
 	<update id="updateDeliveryInvoice" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto">
 		<selectKey resultType="java.lang.String" keyProperty="nonReturnFlag">
 			select
@@ -174,7 +221,7 @@
 		       upd_usr_id = #{userId},
 		       upd_dt = now()
 		 where ord_no = #{orderNo}
-		   and ord_dlvr_stus in = 'D01'
+		   and ord_dlvr_stus = 'D01'
 		<foreach collection="orderProductSeqArray" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
 			#{item}
 		</foreach>

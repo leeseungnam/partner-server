@@ -7,6 +7,7 @@ import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.*;
 import kr.wrightbrothers.apps.queue.OrderQueue;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
+import kr.wrightbrothers.framework.lang.WBException;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -55,14 +56,39 @@ public class DeliveryService {
     }
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    public void updateDeliveryFreight(DeliveryFreightUpdateDto paramDto) {
+        // 요청 주문 상품 목록에 배송 진행된 상품 유무 확인
+        if (dao.selectOne(namespace + "isDeliveryComplete", paramDto, PartnerKey.WBDataBase.Alias.Admin))
+            throw new WBBusinessException(ErrorCode.COMPLETE_DELIVERY.getErrCode(), new String[]{"송장번호"});
+        // 택배 포함 여부 확인
+        if (dao.selectOne(namespace + "isDeliveryParcel", paramDto, PartnerKey.WBDataBase.Alias.Admin))
+            throw new WBBusinessException(ErrorCode.INVALID_DELIVERY_TYPE.getErrCode(), new String[]{"택배배송"});
+
+        // 화물배송 배송 등록(Multi Query)
+        dao.update(namespace + "updateDeliveryFreight", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+        // 주문 대표 상태코드 갱신
+        dao.update(namespaceOrder + "updateOrderStatusRefresh", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin);
+
+        // 상태 변경에 따른 SNS 전송
+        orderQueue.sendToAdmin(
+                DocumentSNS.UPDATE_ORDER,
+                paramDto.toQueueDto(),
+                PartnerKey.TransactionType.Update
+        );
+    }
+
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void updateDeliveryInvoice(DeliveryInvoiceUpdateDto paramDto) {
         // 요청 주문 상품 목록에 배송 진행된 상품 유무 확인
         if (dao.selectOne(namespace + "isDeliveryComplete", paramDto, PartnerKey.WBDataBase.Alias.Admin))
             throw new WBBusinessException(ErrorCode.COMPLETE_DELIVERY.getErrCode(), new String[]{"송장번호"});
+        // 화물배송 포함여부 확인
+        if (dao.selectOne(namespace + "isDeliveryFreight", paramDto, PartnerKey.WBDataBase.Alias.Admin))
+            throw new WBBusinessException(ErrorCode.INVALID_DELIVERY_TYPE.getErrCode(), new String[]{"화물배송"});
 
         // 택배사 정보(택배회사, 송장번호) 등록, 배송시작 상태 변경
         // 주문 배송, 주문 상품 Multi Query
-        dao.update(namespace + "updateDeliveryStart", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+        dao.update(namespace + "updateDeliveryInvoice", paramDto, PartnerKey.WBDataBase.Alias.Admin);
 
         // 상태 변경에 따른 SNS 전송
         orderQueue.sendToAdmin(
