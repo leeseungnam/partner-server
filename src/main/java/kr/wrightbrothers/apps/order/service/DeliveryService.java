@@ -63,8 +63,6 @@ public class DeliveryService {
         // 택배사 정보(택배회사, 송장번호) 등록, 배송시작 상태 변경
         // 주문 배송, 주문 상품 Multi Query
         dao.update(namespace + "updateDeliveryStart", paramDto, PartnerKey.WBDataBase.Alias.Admin);
-        // 대표 상태코드 최신화 프로시져 호출
-        dao.update(namespaceOrder + "updateOrderStatusRefresh", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin);
 
         // 상태 변경에 따른 SNS 전송
         orderQueue.sendToAdmin(
@@ -81,8 +79,8 @@ public class DeliveryService {
     }
 
     public void updateDelivery(DeliveryUpdateDto paramDto) {
-        // 요청 주문 상품 목록에 배송 진행된 상품 유무 확인
-        if (dao.selectOne(namespace + "isDeliveryComplete", paramDto, PartnerKey.WBDataBase.Alias.Admin))
+        // 배송 시작 상품은 배송지 정보 변경 불가
+        if (dao.selectOne(namespace + "isDeliveryStart", paramDto, PartnerKey.WBDataBase.Alias.Admin))
             throw new WBBusinessException(ErrorCode.COMPLETE_DELIVERY.getErrCode(), new String[]{"배송정보"});
 
         // 상품준비중 상품의 배송지 정보 변경 처리

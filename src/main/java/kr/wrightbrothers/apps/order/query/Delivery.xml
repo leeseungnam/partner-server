@@ -104,7 +104,19 @@
 		</foreach>
 	</select>
 
-	<update id="updateDeliveryStart" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto">
+	<select id="isDeliveryStart" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryUpdateDto" resultType="boolean">
+		select
+		    if(count(ord_prdt_idx) > 0, true, false) as isDeliveryStart
+		  from ord_shpn_info
+		 where ord_no = #{orderNo}
+		   and ord_dlvr_stus in ('D02', 'D05')	-- 배송시작, 배송완료
+		-- 주문상품 SEQ
+		<foreach collection="orderProductSeqArray" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<update id="updateDeliveryInvoice" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto">
 		<selectKey resultType="java.lang.String" keyProperty="nonReturnFlag">
 			select
 			    if(count(ord_no) > 0, 'Y', 'N')
@@ -117,11 +129,12 @@
 			</foreach>
 		</selectKey>
 		update ord_shpn_info
-		   set ord_dlvr_stus = 'D02',
+		   set upd_usr_id = #{userId},
 		       <choose>
 				   <when test="nonReturnFlag == 'Y'.toString()">
 					   rtrn_prhb_dlvry_cmpny = #{deliveryCompanyCode},
 					   rtrn_prhb_invc_no = #{invoiceNo},
+					   ord_dlvr_stus = 'D02',
 					   rtrn_prhb_invc_inp_dt = now(),
 				   </when>
 				   <otherwise>
@@ -130,7 +143,6 @@
 					   invc_inp_dt = now(),
 				   </otherwise>
 			   </choose>
-		       upd_usr_id = #{userId},
 		       upd_dt = now()
 		 where ord_no = #{orderNo}
 		-- 주문상품 SEQ
@@ -140,7 +152,7 @@
 		   and ord_dlvr_stus in ('D01', 'D02');
 
 		update ord_prdt_info
-		   set ord_prdt_stus = 'D02',
+		   set ord_prdt_stus = if(ord_prdt_stus = 'R04', 'D02', ord_prdt_stus),
 		       upd_usr_id = #{userId},
 		       upd_dt = now()
 		 where ord_no = #{orderNo}
@@ -162,7 +174,7 @@
 		       upd_usr_id = #{userId},
 		       upd_dt = now()
 		 where ord_no = #{orderNo}
-		   and ord_dlvr_stus in ('D01', 'D02')
+		   and ord_dlvr_stus in = 'D01'
 		<foreach collection="orderProductSeqArray" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
 			#{item}
 		</foreach>
