@@ -55,7 +55,6 @@ public class SellInfoDto {
         private Long finalSellAmount;
 
         @ApiModelProperty(value = "싱픔싱테", required = true)
-        @NotBlank(message = "상품상태")
         private String productStatusCode;
 
         @ApiModelProperty(value = "재고", required = true)
