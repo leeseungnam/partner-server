@@ -61,7 +61,7 @@
 		select
 		    s.ord_amt as order_amount,
 		    s.dlvr_chrg_amt as delivery_charge_amount,
-		    s.ord_amt + s.dlvr_chrg_amt as payment_amount,
+		    s.pay_amt as payment_amount,
 		    o.pym_dt as payment_date,
 		    (select max(trsctn_id) from ord_trsctn_info where ord_no = o.ord_no) as approval_no,
 		    null as rental_amount,
