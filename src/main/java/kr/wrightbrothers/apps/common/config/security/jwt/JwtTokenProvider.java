@@ -137,16 +137,16 @@ public class JwtTokenProvider implements InitializingBean {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return PartnerKey.JwtCode.ACCESS;
         } catch (SecurityException | MalformedJwtException e) {
-            log.info("잘못된 JWT 서명입니다.");
+            log.info("[validateToken]::잘못된 JWT 서명입니다.");
         } catch (ExpiredJwtException e) {
-            log.info("만료된 JWT 토큰입니다.");
+            log.info("[validateToken]::만료된 JWT 토큰입니다.");
             return PartnerKey.JwtCode.EXPIRED;
         } catch (UnsupportedJwtException e) {
-            log.info("지원되지 않는 JWT 토큰입니다.");
+            log.info("[validateToken]::지원되지 않는 JWT 토큰입니다.");
         } catch (IllegalArgumentException | JwtException e) {
-            log.info("JWT 토큰이 잘못 되었습니다.");
+            log.info("[validateToken]::JWT 토큰이 잘못 되었습니다.");
         }
-        log.info("JWT 토큰이 거부 되었습니다.");
+        log.info("[validateToken]::JWT 토큰이 거부 되었습니다.");
         return PartnerKey.JwtCode.DENIED;
     }
     @Transactional(value = PartnerKey.WBDataBase.TransactionManager.Default)

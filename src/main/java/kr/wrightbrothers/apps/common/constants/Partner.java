@@ -65,7 +65,7 @@ public class Partner {
         public enum Status {
             REQUEST("C01", "심사중"),
             //  최소 계약 or 재계약(중지 -> 운영)
-            COMPLETE("C02", "심사승인"),
+            COMPLETE("C02", "계약완료"),
             REJECT("C03", "심사반려"),
             //  자동 갱신
             AUTOMATIC("C04", "계약갱신"),
