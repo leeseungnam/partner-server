@@ -34,11 +34,15 @@
 	</select>
 
 	<select id="checkPartnerAuth" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerAuthDto" resultType="boolean">
-		select if(count(partner_code) = 0, false, true) as isPartnerAuth
-		from users_partner
-		where user_id = #{userId}
-		and auth_code = #{authCode}
-		and partner_code = #{partnerCode}
+		select if(count(up.partner_code) = 0, false, true) as isPartnerAuth
+		from users_partner up
+		join partner p
+		  on up.partner_code = p.partner_code
+		where up.user_id = #{userId}
+		and up.auth_code = #{authCode}
+		and up.partner_code = #{partnerCode}
+		and p.partner_status = 1
+
 	</select>
 
 	<select id="checkPartnerOperatorAuthCount" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerInviteDto$PartnerOperator" resultType="boolean">
