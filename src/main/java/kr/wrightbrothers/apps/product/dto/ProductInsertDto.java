@@ -124,6 +124,9 @@ public class ProductInsertDto {
         // 자전거 상품 추가 유효성 검사
         validBike();
 
+        if (ObjectUtils.isEmpty(this.sellInfo.getProductStatusCode()))
+            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"상품 진행 상태"});
+
         // 상품 판매 상태일 경우 판매재고 0 이상의 유효성 체크
         if (ProductStatusCode.SALE.getCode().equals(this.sellInfo.getProductStatusCode()) ||
                 ProductStatusCode.RESERVATION.getCode().equals(this.sellInfo.getProductStatusCode())) {

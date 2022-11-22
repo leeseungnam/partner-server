@@ -142,10 +142,10 @@ public class ProductController extends WBController {
         paramDto.setProductCode(
                 productUtil.generateProductCode(paramDto.getProduct().getCategoryTwoCode())
         );
-        // 추가 유효성 검사
-        paramDto.validProduct();
         // 검수대기 상태 변경
         paramDto.getSellInfo().setProductStatusCode(ProductStatusCode.PRODUCT_INSPECTION.getCode());
+        // 추가 유효성 검사
+        paramDto.validProduct();
 
         // 상품정보 등록
         productService.insertProduct(paramDto);
