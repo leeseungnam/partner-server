@@ -11,6 +11,8 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 public class SingleEmailDto {
 
@@ -20,8 +22,10 @@ public class SingleEmailDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class SingleEmail {
-        @ApiModelProperty(value = "수신 대상 아이디(이메일)", required = true)
-        @NotBlank(message = "수신 대상 아이디(이메일)")
+        @ApiModelProperty(value = "아이디(이메일)", required = true)
+        @NotBlank(message = "아이디(이메일)")
+        @Size(max = 50, message = "아이디(이메일)")
+        @Pattern(regexp = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$", message = "아이디(이메일) 형식이 맞지 않습니다.")
         private String userId;
     }
     @ApiModel(value = "메인 인증 요청 데이터")
