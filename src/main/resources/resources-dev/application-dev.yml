@@ -29,7 +29,7 @@ system:
   file:
     temp:
       # 임시 파일 저장 위치
-      path: /app/partner/file_temp
+      path: /app/partner/file_temp/
 app:
   client:
     host: http://3.36.25.109:3300
