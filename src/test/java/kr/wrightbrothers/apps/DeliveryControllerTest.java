@@ -183,6 +183,8 @@ class DeliveryControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.deliveryList[].productName").type(JsonFieldType.STRING).description("상품 이름"),
                                         fieldWithPath("data.deliveryList[].optionName").type(JsonFieldType.STRING).description("옵션 이름"),
                                         fieldWithPath("data.deliveryList[].productQty").type(JsonFieldType.NUMBER).description("상품 수량"),
+                                        fieldWithPath("data.deliveryList[].deliveryType").type(JsonFieldType.STRING).description("**** 배송 방법 타입"),
+                                        fieldWithPath("data.deliveryList[].deliveryName").type(JsonFieldType.STRING).description("**** 배송 방법 이름"),
                                         fieldWithPath("data.deliveryList[].deliveryCompanyCode").type(JsonFieldType.STRING).optional().description("택배사 코드"),
                                         fieldWithPath("data.deliveryList[].deliveryCompanyName").type(JsonFieldType.STRING).optional().description("택배사 이름"),
                                         fieldWithPath("data.deliveryList[].invoiceNo").type(JsonFieldType.STRING).optional().description("송장번호"),

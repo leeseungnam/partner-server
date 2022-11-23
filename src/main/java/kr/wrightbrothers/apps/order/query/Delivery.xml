@@ -266,6 +266,8 @@
 			p.prdt_nm as product_name,
 			p.optn_nm as option_name,
 			p.prdt_qty as product_qty,
+			p.dlvr_tp as delivery_type,
+			if(p.dlvr_tp = 'D01', '택배', '화물') as delivery_name,
 			if(p.non_rtn_tp_cd is null, d.dlvry_cmpny, d.rtrn_prhb_dlvry_cmpny) as delivery_company_code,
 			if(p.non_rtn_tp_cd is null, cd.intg_cd_val_nm, cdr.intg_cd_val_nm) as delivery_company_name,
 			if(p.non_rtn_tp_cd is null, d.invc_no, d.rtrn_prhb_invc_no)  as invoice_no,
