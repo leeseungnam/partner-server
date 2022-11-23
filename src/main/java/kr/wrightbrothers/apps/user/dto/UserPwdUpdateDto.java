@@ -29,7 +29,8 @@ public class UserPwdUpdateDto {
     @ApiModelProperty(value = "비밀번호", required = true)
     @NotBlank(message = "비밀번호")
     @Size(min = 10, max = 20, message = "비밀번호")
-    @Pattern(regexp = "^[A-Za-z0-9]{10,20}$", message = "비밀번호는 숫자,영문 조합 10~20자리만 입력 가능 합니다.")
+//    @Pattern(regexp = "^[A-Za-z0-9]{10,20}$", message = "비밀번호는 숫자,영문 조합 10~20자리만 입력 가능 합니다.")
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d!@#$%^&*\\(\\)\\-_=+,.<>/?₩~;\\[\\]:{}\'\"]{10,20}$", message = "비밀번호는 영문, 숫자, 특수문자 조합 10~20자리만 입력 가능 합니다.\n(영문, 숫자 조합 필수)")
     private String userPwd;
 
     @JsonIgnore
