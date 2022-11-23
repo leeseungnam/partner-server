@@ -4,10 +4,7 @@ import io.swagger.annotations.*;
 import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
 import kr.wrightbrothers.apps.common.config.security.jwt.JwtTokenProvider;
 import kr.wrightbrothers.apps.common.constants.User;
-import kr.wrightbrothers.apps.common.util.AwsSesUtil;
-import kr.wrightbrothers.apps.common.util.ErrorCode;
-import kr.wrightbrothers.apps.common.util.PartnerKey;
-import kr.wrightbrothers.apps.common.util.TokenUtil;
+import kr.wrightbrothers.apps.common.util.*;
 import kr.wrightbrothers.apps.email.dto.SingleEmailDto;
 import kr.wrightbrothers.apps.email.service.EmailService;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
@@ -153,7 +150,9 @@ public class UserController extends WBController {
 
         if(ObjectUtils.isEmpty(userDto)) throw new WBCustomException(ErrorCode.UNAUTHORIZED, messagePrefix+"user.unknown", null);
 
-        String authCode = RandomStringUtils.randomAlphanumeric(10).toUpperCase();
+        String authCode = RandomStringUtils.randomAlphanumeric(9).toUpperCase();
+        authCode += RandomUtil.getSpCha(new char[] {'!','@','#','$','%','^','&','*','(',')'}, 1);
+
         userDto.changePwd(passwordEncoder.encode(authCode));
 
         //transaction

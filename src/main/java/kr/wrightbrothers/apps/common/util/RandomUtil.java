@@ -18,6 +18,14 @@ public class RandomUtil {
     private final static int char0 = 48;
     private final static int char9 = 57;
 
+    public static String getSpCha(char[] targetCha, int length) {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < length; i++) {
+            int selectRandomPw = (int)(Math.random()*(targetCha.length));
+            sb.append(targetCha[selectRandomPw]);
+        }
+        return sb.toString();
+    }
     // UUID 조회
     public static String getUUID() {
         HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
