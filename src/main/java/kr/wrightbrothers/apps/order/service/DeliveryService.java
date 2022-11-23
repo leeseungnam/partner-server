@@ -59,7 +59,7 @@ public class DeliveryService {
     public void updateDeliveryFreight(DeliveryFreightUpdateDto paramDto) {
         // 요청 주문 상품 목록에 배송 진행된 상품 유무 확인
         if (dao.selectOne(namespace + "isDeliveryComplete", paramDto, PartnerKey.WBDataBase.Alias.Admin))
-            throw new WBBusinessException(ErrorCode.COMPLETE_DELIVERY.getErrCode(), new String[]{"송장번호"});
+            throw new WBBusinessException(ErrorCode.COMPLETE_DELIVERY.getErrCode(), new String[]{"화물배송"});
         // 택배 포함 여부 확인
         if (dao.selectOne(namespace + "isDeliveryParcel", paramDto, PartnerKey.WBDataBase.Alias.Admin))
             throw new WBBusinessException(ErrorCode.INVALID_DELIVERY_TYPE.getErrCode(), new String[]{"택배배송"});
