@@ -194,7 +194,7 @@ public class ProductService {
                               HttpServletResponse response) throws IOException {
         // 엑셀 템플릿 사용하여 기본 설정
         ExcelUtil excel = new ExcelUtil(
-                new FileInputStream(resourceLoader.getResource("classpath:templates/excel/productList.xlsx").getFile()),
+                resourceLoader.getResource("classpath:templates/excel/productList.xlsx").getInputStream(),
                 1
         );
 

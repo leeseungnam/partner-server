@@ -59,9 +59,10 @@ public class OrderService {
 
     public void makeExcelFile(OrderExcelDto.Param paramDto,
                               HttpServletResponse response) throws IOException {
+
         // 엑셀 템플릿 사용하여 기본 설정
         ExcelUtil excel = new ExcelUtil(
-                new FileInputStream(resourceLoader.getResource("classpath:templates/excel/orderList.xlsx").getFile()),
+                resourceLoader.getResource("classpath:templates/excel/orderList.xlsx").getInputStream(),
                 1
         );
 

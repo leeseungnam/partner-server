@@ -117,7 +117,7 @@ public class DeliveryService {
                               HttpServletResponse response) throws IOException {
         // 엑셀 템플릿 초기화
         ExcelUtil excel = new ExcelUtil(
-                new FileInputStream(resourceLoader.getResource("classpath:templates/excel/deliveryList.xlsx").getFile()),
+                resourceLoader.getResource("classpath:templates/excel/deliveryList.xlsx").getInputStream(),
                 1
         );
 

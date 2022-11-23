@@ -157,7 +157,7 @@ public class ReturnService {
                               HttpServletResponse response) throws IOException {
         // 엑셀 템플릿 초기화
         ExcelUtil excel = new ExcelUtil(
-                new FileInputStream(resourceLoader.getResource("classpath:templates/excel/returnList.xlsx").getFile()),
+                resourceLoader.getResource("classpath:templates/excel/returnList.xlsx").getInputStream(),
                 1
         );
 
