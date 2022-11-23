@@ -31,6 +31,12 @@ public class DeliveryFreightUpdateDto {
     private String partnerCode;                 // 파트너코드
     @JsonIgnore
     private String userId;                      // 사용자 아이디
+    @JsonIgnore
+    private String nonReturnFlag;               // 반품불가 플래그
+
+    public void setNonReturnFlag(String nonReturnFlag) {
+        this.nonReturnFlag = nonReturnFlag;
+    }
 
     public void setAopPartnerCode(String partnerCode) {
         this.partnerCode = partnerCode;
