@@ -86,6 +86,16 @@ public class ProductInsertDto {
             this.product.setBrandNo("0");
         if (ObjectUtils.isEmpty(this.product.getModelCode()))
             this.product.setModelCode("0");
+
+        // 자전거 기본스펙 해당 필드 Null 처리
+        if (!ObjectUtils.isEmpty(this.basicSpec)) {
+            if ("".equals(this.basicSpec.getMaxHeightPerson()))
+                this.basicSpec.setMaxHeightPerson(null);
+            if ("".equals(this.basicSpec.getMinHeightPerson()))
+                this.basicSpec.setMinHeightPerson(null);
+            if ("".equals(this.basicSpec.getBikeWeight()))
+                this.basicSpec.setBikeWeight(null);
+        }
     }
 
     // 상품 옵션 유효성 검사
