@@ -18,7 +18,7 @@ public enum Email {
     INVITE_OPERATOR("5", "[라이트브라더스] 파트너센터 운영자 초대", "invite_operator"),
     RENEWAL_CONTRACT("6", "[라이트브라더스] 파트너센터 계약 갱신 안내", "renewal_contract"),
     REJECT_CONTRACT("7", "[라이트브라더스] 파트너센터 스토어 심사 반려 안내", "reject_contract"),
-    COMPLETE_CONTRACT("8", "[라이트브라더스] 파트너센터 스토어 심사 완료 안내", "complete_ontract"),
+    COMPLETE_CONTRACT("8", "[라이트브라더스] 파트너센터 스토어 심사 완료 안내", "complete_contract"),
 
     NULL("","", "");
 
