@@ -71,7 +71,7 @@ public class DeliveryService {
 
         // 상태 변경에 따른 SNS 전송
         orderQueue.sendToAdmin(
-                DocumentSNS.UPDATE_ORDER,
+                DocumentSNS.UPDATE_ORDER_STATUS,
                 paramDto.toQueueDto(),
                 PartnerKey.TransactionType.Update
         );

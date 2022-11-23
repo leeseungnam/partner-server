@@ -111,7 +111,7 @@ public class OrderService {
 
         // SNS 주문상태 변경처리 전송
         orderQueue.sendToAdmin(
-                DocumentSNS.UPDATE_ORDER,
+                DocumentSNS.UPDATE_ORDER_STATUS,
                 // Queue 전송 데이터 객체 변환
                 paramDto.toQueueDto(dao.selectList(namespace + "findOrderProductSeq", paramDto, PartnerKey.WBDataBase.Alias.Admin)),
                 PartnerKey.TransactionType.Update

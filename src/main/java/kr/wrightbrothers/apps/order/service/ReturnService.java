@@ -120,7 +120,7 @@ public class ReturnService {
 
         orderQueue.sendToAdmin(
                 OrderProductStatusCode.REQUEST_COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()) ?
-                        DocumentSNS.REQUEST_RETURN_PRODUCT : DocumentSNS.UPDATE_ORDER,
+                        DocumentSNS.REQUEST_RETURN_PRODUCT : DocumentSNS.UPDATE_ORDER_STATUS,
                 // Queue 전송 데이터 객체 변환
                 OrderProductStatusCode.START_RETURN.getCode().equals(paramDto.getReturnProcessCode()) ?
                         paramDto.toApprovalQueueDto(paramDto.getReturnProcessCode()) : paramDto.toCancelQueueDto(paramDto.getReturnProcessCode()),
