@@ -340,6 +340,46 @@ class DeliveryControllerTest extends BaseControllerTests {
 
     @Test
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @DisplayName("화물배송 완료")
+    void udpateDeliveryFreight() throws Exception {
+        DeliveryFreightUpdateDto updateDto = DeliveryFreightUpdateDto.builder()
+                .orderNo("192211151341424534")
+                .orderProductSeqArray(new Integer[]{1})
+                .build();
+
+        // 화물배송 완료 API 테스트
+        mockMvc.perform(RestDocumentationRequestBuilders.put("/v1/deliveries/{orderNo}/freights", updateDto.getOrderNo())
+                    .header(AUTH_HEADER, JWT_TOKEN)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(new ObjectMapper().writeValueAsString(updateDto))
+                    .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.WBCommon.state").value("S"))
+                .andDo(
+                        document("delivery-freight-update",
+                                requestDocument(),
+                                responseDocument(),
+                                requestHeaders(
+                                        headerWithName(AUTH_HEADER).description("JWT 토큰")
+                                ),
+                                pathParameters(
+                                        parameterWithName("orderNo").description("주문 번호")
+                                ),
+                                relaxedRequestFields(
+                                        fieldWithPath("orderNo").type(JsonFieldType.STRING).description("주문 번호").attributes(key("etc").value("")),
+                                        fieldWithPath("orderProductSeqArray").type(JsonFieldType.ARRAY).description("주문 상품 SEQ").attributes(key("etc").value(""))
+                                ),
+                                responseFields(
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
+                                        fieldWithPath("WBCommon.message").type(JsonFieldType.STRING).description("메시지")
+                                )
+                ))
+                ;
+    }
+
+    @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     @DisplayName("배송지 정보 조회")
     void findDeliveryAddresses() throws Exception {
         String orderNo = "192211151341424534";

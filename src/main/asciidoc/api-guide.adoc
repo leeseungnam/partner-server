@@ -441,6 +441,17 @@ include::{snippets}/delivery-invoice-update/request-fields.adoc[]
 include::{snippets}/delivery-invoice-update/http-response.adoc[]
 include::{snippets}/delivery-invoice-update/response-fields.adoc[]
 
+==== 화불배송 완료
+
+.HTTP request
+include::{snippets}/delivery-freight-update/http-request.adoc[]
+include::{snippets}/delivery-freight-update/request-headers.adoc[]
+include::{snippets}/delivery-freight-update/path-parameters.adoc[]
+include::{snippets}/delivery-freight-update/request-fields.adoc[]
+.HTTP response
+include::{snippets}/delivery-freight-update/http-response.adoc[]
+include::{snippets}/delivery-freight-update/response-fields.adoc[]
+
 ==== 배송지 조회
 
 .HTTP request
