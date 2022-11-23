@@ -1,11 +1,5 @@
 server:
   port: 8090
-  # cookie
-  servlet:
-    session:
-      cookie:
-        same-site: none
-        secure: true
 spring:
   mvc:
     pathmatch:
