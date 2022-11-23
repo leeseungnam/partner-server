@@ -304,7 +304,7 @@
 			dscnt_amt		= #{discountAmount},
 			pur_amt			= #{supplyAmount},
 			fnl_sell_amt	= #{finalSellAmount},
-			<if test="displayFlag == 'Y'.toString() and productStatusCode == 'S01'.toString()">
+			<if test="productStatusCode == 'S01'.toString()">
 				prdt_sell_st_dt = ifnull(prdt_sell_st_dt, now()),
 			</if>
 			dp_flg			= #{displayFlag},
