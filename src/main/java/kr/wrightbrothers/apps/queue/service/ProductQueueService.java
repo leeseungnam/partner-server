@@ -152,6 +152,8 @@ public class ProductQueueService {
         log.info("Product Inspection Result From Admin. Partner Code::{}, Product Code::{}, ResultLog::{}",
                 productUpdateDto.getProduct().getPartnerCode(), productUpdateDto.getProduct().getProductCode(), Arrays.toString(productUpdateDto.getChangeLogList()));
 
+        // 판매 시작일 등록처리
+        productUtil.updateProductSellDate(productUpdateDto.getProductCode(), productUpdateDto.getSellInfo().getProductStatusCode());
         // SQS 입점몰 검수 결과 처리
         dao.update(namespace + "updateProductStatus", productUpdateDto, PartnerKey.WBDataBase.Alias.Admin);
         changeInfoService.insertChangeInfo(productUpdateDto.toChangeInfo());
