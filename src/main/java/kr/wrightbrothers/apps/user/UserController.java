@@ -151,7 +151,8 @@ public class UserController extends WBController {
 
         if(ObjectUtils.isEmpty(userDto)) throw new WBCustomException(ErrorCode.UNAUTHORIZED, messagePrefix+"user.unknown", null);
 
-        String authCode = RandomStringUtils.randomAlphanumeric(9).toUpperCase();
+//        String authCode = RandomStringUtils.randomAlphanumeric(9).toUpperCase();
+        String authCode = RandomUtil.generateAlphanumeric(9);
         authCode += RandomUtil.getSpCha(new char[] {'!','@','#','$','%','^','&','*','(',')'}, 1);
 
         userDto.changePwd(passwordEncoder.encode(authCode));
