@@ -3,7 +3,6 @@ package kr.wrightbrothers.apps.common.config.security.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.framework.lang.WBGlobalException;
-import kr.wrightbrothers.framework.support.WBKey;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -25,7 +24,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(
                 new ObjectMapper().writeValueAsString(
-                        WBGlobalException.exceptionResponse(ErrorCode.UNAUTHORIZED.getErrCode(), WBKey.Message.Type.Error, null))
+                        WBGlobalException.exceptionResponse(ErrorCode.FORBIDDEN_LOGIN.getErrCode(), "E", null)
+                )
         );
     }
 }

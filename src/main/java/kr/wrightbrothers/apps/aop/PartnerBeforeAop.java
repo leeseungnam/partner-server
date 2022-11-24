@@ -27,24 +27,19 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class PartnerBeforeAop {
 
-    private final String messagePrefix = "api.message.";
     private final WBCommonDao dao;
     private final String namespace = "kr.wrightbrothers.apps.partner.query.Partner.";
 
     /**
      * 계정 소유의 스토어인지 유효성 체크
      */
-    private void checkOwn(PartnerAuthDto paramDto, boolean isFind) {
+    private void checkOwn(PartnerAuthDto paramDto) {
         boolean isPartnerAuth = dao.selectOne(namespace + "checkPartnerAuth", paramDto);
         if (!isPartnerAuth) {
             log.error("Partner Own Error.");
             log.error("[checkPartnerAuth]::userId={}, authCode={}, partnerCode={}", paramDto.getUserId(), paramDto.getAuthCode(), paramDto.getPartnerCode());
 
-            if(isFind) {
-                throw new WBCustomException(ErrorCode.FORBIDDEN_REFRESH, messagePrefix+"common.forbidden", null);
-            } else {
-                throw new WBBusinessException(ErrorCode.FORBIDDEN.getErrCode());
-            }
+            throw new WBBusinessException(ErrorCode.FORBIDDEN.getErrCode());
         }
     }
 
@@ -105,7 +100,7 @@ public class PartnerBeforeAop {
                         .partnerCode(parmaDto.getPartnerCode())
                         .authCode(user.getUserAuth().getAuthCode())
                         .userId(user.getUsername())
-                        .build(), true);
+                        .build());
 
             } else if(obj instanceof PartnerInsertDto){
                 //  updatePartnerAll, insertPartner (check X)
@@ -116,7 +111,7 @@ public class PartnerBeforeAop {
                         .partnerCode(parmaDto.getPartner().getPartnerCode())
                         .authCode(user.getUserAuth().getAuthCode())
                         .userId(user.getUsername())
-                        .build(), false);
+                        .build());
 
             } else if (obj instanceof PartnerUpdateDto.ReqBody) {
                 //  updatePartner
@@ -127,7 +122,7 @@ public class PartnerBeforeAop {
                         .partnerCode(parmaDto.getPartnerCode())
                         .authCode(user.getUserAuth().getAuthCode())
                         .userId(user.getUsername())
-                        .build(), false);
+                        .build());
             } else {
                 log.info("[checkOwnPartner]::don't check own");
             }

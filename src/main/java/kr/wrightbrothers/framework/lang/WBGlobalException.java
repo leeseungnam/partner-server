@@ -222,6 +222,9 @@ public class WBGlobalException {
      * Use Message Properties
      */
     private JSONObject exceptionResponse(ErrorCode errorCode, String messageId, Object[] messageArgs) {
+        return exceptionResponse(errorCode, messageId, messageArgs, messageSourceAccessor);
+    }
+    public static JSONObject exceptionResponse(ErrorCode errorCode, String messageId, Object[] messageArgs, MessageSourceAccessor messageSourceAccessor) {
         JSONObject json = new JSONObject();
         json.put("WBCommon",
                 WBCommon.builder()

@@ -60,7 +60,7 @@ public class SignController extends WBController {
 
         user.changePwd(null);
 
-        wbResponse.addObject(WBKey.WBModel.DefaultDataKey, userService.findAuthById(paramDto.getUserId()));
+//        wbResponse.addObject(WBKey.WBModel.DefaultDataKey, userService.findAuthById(paramDto.getUserId()));
         wbResponse.addObject(WBKey.WBModel.UserKey, user);
 
         return  wbResponse;
