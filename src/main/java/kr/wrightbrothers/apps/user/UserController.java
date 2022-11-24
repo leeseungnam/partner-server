@@ -123,7 +123,7 @@ public class UserController extends WBController {
                 .userPhone(paramDto.getUserPhone())
                 .build());
 
-        if(ObjectUtils.isEmpty(userDto)) throw new WBCustomException(ErrorCode.UNAUTHORIZED, messagePrefix+"user.unknown", null);
+        if(ObjectUtils.isEmpty(userDto)) throw new WBCustomException(ErrorCode.FORBIDDEN, messagePrefix+"user.unknown", null);
 
         response.addObject("userId", userDto.getUserId());
 
@@ -148,7 +148,7 @@ public class UserController extends WBController {
                 .userPhone(paramDto.getUserPhone())
                 .build());
 
-        if(ObjectUtils.isEmpty(userDto)) throw new WBCustomException(ErrorCode.UNAUTHORIZED, messagePrefix+"user.unknown", null);
+        if(ObjectUtils.isEmpty(userDto)) throw new WBCustomException(ErrorCode.FORBIDDEN, messagePrefix+"user.unknown", null);
 
         String authCode = RandomStringUtils.randomAlphanumeric(9).toUpperCase();
         authCode += RandomUtil.getSpCha(new char[] {'!','@','#','$','%','^','&','*','(',')'}, 1);
