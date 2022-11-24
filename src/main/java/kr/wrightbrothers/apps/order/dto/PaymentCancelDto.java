@@ -76,7 +76,8 @@ public class PaymentCancelDto {
             throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"환불 예금주"});
     }
 
-    public Queue toCancelQueueDto(BankInfo bankInfo) {
+    public Queue toCancelQueueDto(BankInfo bankInfo,
+                                  Long paymentAmount) {
         // Null Safe
         bankInfo = Optional.ofNullable(bankInfo).orElseGet(PaymentCancelDto.BankInfo::new);
 
@@ -89,6 +90,9 @@ public class PaymentCancelDto {
                 .bankCd(bankInfo.getBankCd())
                 .bankAcntNo(bankInfo.getBankAcntNo())
                 .dpstrNm(bankInfo.getDpstrNm())
+                .payAmt(paymentAmount)
+                .rtrnDlvrAmt(0L)
+                .refundAmt(paymentAmount)
                 .usrId(this.userId)
                 .build();
     }
@@ -112,6 +116,9 @@ public class PaymentCancelDto {
         private String bankCd;                  // 은행코드
         private String bankAcntNo;              // 계좌번호
         private String dpstrNm;                 // 예금주
+        private Long payAmt;                    // 결제금액
+        private Long rtrnDlvrAmt;               // 반품배송금액
+        private Long refundAmt;                 // 환불예정금액
         private String usrId;                   // 로그인아이디
     }
 

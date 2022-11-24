@@ -7,10 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Getter
@@ -18,17 +15,15 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RequestReturnUpdateDto {
-        @NotBlank(message = "주문 번호")
         private String orderNo;                 // 주문 번호
-
-        @NotNull(message = "주문 상품 SEQ")
         private Integer[] orderProductSeqArray; // 주문 상품 SEQ
-
-        @NotBlank(message = "반품 요청 처리 구분")
         private String returnProcessCode;       // 반품 요청 구분
-
         private String requestCode;             // 요청 처리 코드
         private String requestValue;            // 요청 처리 데이터
+
+        private Long returnDeliveryAmount;      // 반품 배송비
+        private Long paymentAmount;             // 결제 금액
+        private Long refundAmount;              // 환불 예정 금액
 
         private String partnerCode;             // 파트너 코드
         @JsonIgnore
@@ -42,6 +37,18 @@ public class RequestReturnUpdateDto {
 
         public void setAopUserId(String userId) {
             this.userId = userId;
+        }
+
+        public void setReturnDeliveryAmount(Long returnDeliveryAmount) {
+                this.returnDeliveryAmount = returnDeliveryAmount;
+        }
+
+        public void setPaymentAmount(Long paymentAmount) {
+                this.paymentAmount = paymentAmount;
+        }
+
+        public void setRefundAmount(Long refundAmount) {
+                this.refundAmount = refundAmount;
         }
 
         public void setOrderProductSeq(Integer orderProductSeq) {
@@ -62,6 +69,9 @@ public class RequestReturnUpdateDto {
                                 .ordPrdtIdx(Arrays.stream(this.orderProductSeqArray).map(String::valueOf).collect(Collectors.toList()))
                                 .cncRsnCd(this.requestCode)
                                 .cncRsn(this.requestValue)
+                                .payAmt(this.paymentAmount)
+                                .rtrnDlvrAmt(this.returnDeliveryAmount)
+                                .refundAmt(this.refundAmount)
                                 .usrId(this.userId)
                                 .build()
                         :

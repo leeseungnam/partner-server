@@ -109,39 +109,61 @@
 
 	<select id="findReturnProductList" parameterType="kr.wrightbrothers.apps.order.dto.ReturnFindDto$Param" resultType="kr.wrightbrothers.apps.order.dto.ReturnProductDto">
 		select
-		    p.ord_prdt_idx as order_product_seq,
-		    p.prdt_cd as product_code,
-		    p.prdt_nm as product_name,
-		    p.optn_nm as option_name,
-		    p.fnl_sell_amt as final_sell_amount,
-			date_format(p.cnc_rq_dt, '%Y-%m-%d') as return_request_day,
-			date_format(p.cnc_cplt_dt, '%Y-%m-%d') as return_complete_day,
-			p.prdt_qty as product_qty,
-			p.ord_prdt_stus as order_product_status_code,
-			p.ord_prdt_stus as order_product_status_name,
-			d.rtrn_dlvry_cmpny as return_delivery_company_code,
-			cd.intg_cd_val_nm as return_delivery_company_name,
-			d.rtrn_invc_no as return_invoice_no,
-			if(p.cnc_rsn_cd = 'C99', p.cnc_rsn, c.intg_cd_val_nm) as return_reason,
-			rcd.intg_cd_val_nm as non_return_reason
-		  from ord_prdt_info p
-		  left join ord_shpn_info d
-		  	on p.ord_no = d.ord_no
-		   and p.ord_prdt_idx = d.ord_prdt_idx
-		   and p.prdt_cd = d.prdt_cd
-		  left join com_intg_cd_dtl cd
-		    on d.rtrn_dlvry_cmpny = cd.intg_cd_val
-		   and cd.intg_cd_id = '000044'
-		  left join com_intg_cd_dtl c
-			on p.non_rtn_tp_cd = c.intg_cd_val
-		   and c.intg_cd_id = '000074'
-		  left join com_intg_cd_dtl rcd
-		    on p.non_rtn_tp_cd = rcd.intg_cd_val
-		   and rcd.intg_cd_id = '000085'
-		 where p.ord_no = #{orderNo}
-		   and p.prnr_cd = #{partnerCode}
-		   and p.ord_prdt_stus in ('R01', 'R03', 'R04', 'R05', 'R06')	-- 반품요청, 반품진행, 반품불가, 반품완료, 반품완료 요청
-		 order by p.ord_prdt_idx
+		    o.order_product_seq,
+		    o.product_code,
+		    o.product_name,
+		    o.option_name,
+		    o.final_sell_amount,
+		    o.return_request_day,
+		    o.return_complete_day,
+		    o.product_qty,
+		    o.order_product_status_code,
+		    o.order_product_status_name,
+		    o.return_delivery_company_code,
+		    o.return_delivery_company_name,
+		    o.return_invoice_no,
+		    o.return_reason,
+		    o.non_return_reason,
+		    if(o.rank_amt = 1, o.return_delivery_amount, null) as return_delivery_amount,
+		    if(o.rank_amt = 1, o.final_sell_amount - o.return_delivery_amount, o.final_sell_amount) as refund_amount
+		from (select row_number() over (order by p.fnl_sell_amt desc)              as rank_amt,
+					 p.ord_prdt_idx                                                as order_product_seq,
+					 p.prdt_cd                                                     as product_code,
+					 p.prdt_nm                                                     as product_name,
+					 if(p.optn_nm is null, '', concat(p.optn_nm, '-', p.optn_val)) as option_name,
+					 p.fnl_sell_amt                                                as final_sell_amount,
+					 date_format(p.cnc_rq_dt, '%Y-%m-%d')                          as return_request_day,
+					 date_format(p.cnc_cplt_dt, '%Y-%m-%d')                        as return_complete_day,
+					 p.prdt_qty                                                    as product_qty,
+					 p.ord_prdt_stus                                               as order_product_status_code,
+					 p.ord_prdt_stus                                               as order_product_status_name,
+					 d.rtrn_dlvry_cmpny                                            as return_delivery_company_code,
+					 cd.intg_cd_val_nm                                             as return_delivery_company_name,
+					 d.rtrn_invc_no                                                as return_invoice_no,
+					 if(p.cnc_rsn_cd = 'C99', p.cnc_rsn, c.intg_cd_val_nm)         as return_reason,
+					 rcd.intg_cd_val_nm                                            as non_return_reason,
+					 s.rtrn_dlvr_amt											   as return_delivery_amount
+			  from ord_prdt_info p
+			      	   inner join ord_prnr_info s
+			      		on p.ord_no = s.ord_no
+			           and p.prnr_cd = s.prnr_cd
+					   left join ord_shpn_info d
+								 on p.ord_no = d.ord_no
+									 and p.ord_prdt_idx = d.ord_prdt_idx
+									 and p.prdt_cd = d.prdt_cd
+					   left join com_intg_cd_dtl cd
+								 on d.rtrn_dlvry_cmpny = cd.intg_cd_val
+									 and cd.intg_cd_id = '000044'
+					   left join com_intg_cd_dtl c
+								 on p.non_rtn_tp_cd = c.intg_cd_val
+									 and c.intg_cd_id = '000074'
+					   left join com_intg_cd_dtl rcd
+								 on p.non_rtn_tp_cd = rcd.intg_cd_val
+									 and rcd.intg_cd_id = '000085'
+			  where p.ord_no = #{orderNo}
+				and p.prnr_cd = #{partnerCode}
+				and p.ord_prdt_stus in ('R01', 'R03', 'R04', 'R05', 'R06') -- 반품요청, 반품진행, 반품불가, 반품완료, 반품완료 요청
+			  order by p.ord_prdt_idx) o
 	</select>
 
 	<select id="findOrderProductStatusCode" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto" resultType="java.lang.String">
@@ -226,6 +248,16 @@
 		   and ord_prdt_idx				= #{orderProductSeq}
 		   and prnr_cd					= #{partnerCode}
 		   and ord_prdt_stus			= 'R03'
+	</update>
+	
+	<update id="updateReturnDeliveryAmount" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto">
+		-- 반품 배송비
+		update ord_prnr_info
+		   set rtrn_dlvr_amt = #{returnDeliveryAmount},
+		       upd_usr_id = #{userId},
+		       upd_dt = now()
+		 where ord_no = #{orderNo}
+		   and prnr_cd = #{partnerCode}
 	</update>
 
 	<update id="updateNonReturn" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto">

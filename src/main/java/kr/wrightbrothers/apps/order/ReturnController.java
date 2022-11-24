@@ -165,7 +165,7 @@ public class ReturnController extends WBController {
     })
     @ApiOperation(value = "반품취소 처리", notes = "고객 반품 요청에 대한 취소 처리")
     @PutMapping("/returns/{orderNo}/cancel-return")
-    public WBModel updateCancelReturn(@Valid @RequestBody RequestReturnDto paramDto) {
+    public WBModel updateCancelReturn(@Valid @RequestBody CancelReturnDto paramDto) {
         // 반품 취소에 대한 처리
         returnService.updateRequestReturn(paramDto.toRequestReturnUpdateDto(OrderProductStatusCode.WITHDRAWAL_RETURN.getCode()));
 
@@ -179,6 +179,9 @@ public class ReturnController extends WBController {
     @ApiOperation(value = "반품완료 처리", notes = "고객 반품 요청에 대한 완료 처리")
     @PutMapping("/returns/{orderNo}/complete-return")
     public WBModel updateCompleteReturn(@Valid @RequestBody RequestReturnDto paramDto) {
+        // 유효성 체크
+        paramDto.valid();
+
         // 반품 완료에 대한 처리
         returnService.updateRequestReturn(paramDto.toRequestReturnUpdateDto(OrderProductStatusCode.REQUEST_COMPLETE_RETURN.getCode()));
 

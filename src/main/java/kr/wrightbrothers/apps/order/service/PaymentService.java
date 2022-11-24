@@ -4,10 +4,7 @@ import kr.wrightbrothers.apps.common.type.DocumentSNS;
 import kr.wrightbrothers.apps.common.type.PaymentMethodCode;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
-import kr.wrightbrothers.apps.order.dto.OrderFindDto;
-import kr.wrightbrothers.apps.order.dto.PaymentCancelDto;
-import kr.wrightbrothers.apps.order.dto.PaymentDto;
-import kr.wrightbrothers.apps.order.dto.PaymentRefundDto;
+import kr.wrightbrothers.apps.order.dto.*;
 import kr.wrightbrothers.apps.queue.OrderQueue;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
@@ -24,6 +21,7 @@ public class PaymentService {
     private final WBCommonDao dao;
     private final OrderQueue orderQueue;
     private final String namespace = "kr.wrightbrothers.apps.order.query.Payment.";
+    private final String namespaceOrder = "kr.wrightbrothers.apps.order.query.Order.";
 
     // 주문내역 상세정보 시 결제정보 조회
     public PaymentDto findPaymentToOrder(OrderFindDto.Param paramDto) {
@@ -68,6 +66,12 @@ public class PaymentService {
         }
 
         log.debug("Update Request Cancel Payment. OrderNo::{}", paramDto.getOrderNo());
+         PaymentDto payment = dao.selectOne(namespace + "findPaymentToOrder",
+                 OrderFindDto.Param.builder()
+                        .partnerCode(paramDto.getPartnerCode())
+                        .orderNo(paramDto.getOrderNo())
+                        .build(),
+                PartnerKey.WBDataBase.Alias.Admin);
 
         // 결제취소 요청에 대한 Queue 전송
         orderQueue.sendToAdmin(
@@ -78,7 +82,8 @@ public class PaymentService {
                                 .bankCd(paramDto.getRefundBankCode())
                                 .bankAcntNo(paramDto.getRefundBankAccountNo())
                                 .dpstrNm(paramDto.getRefundDepositorName())
-                                .build()),
+                                .build(),
+                        payment.getPaymentAmount()),
                 PartnerKey.TransactionType.Update
                 );
     }

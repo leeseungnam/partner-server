@@ -22,6 +22,8 @@ public class ReturnProductDto {
     private String returnInvoiceNo;             // 반품 송장번호
     private String returnReason;                // 반품 사유
     private String nonReturnReason;             // 반품불가 사유
+    private Long returnDeliveryAmount;          // 반품 배송비
+    private Long refundAmount;                  // 결제 취소 금액
 
     // 주문 상품 상태 ENUM 처리
     public void setOrderProductStatusName(String orderProductStatusCode) {

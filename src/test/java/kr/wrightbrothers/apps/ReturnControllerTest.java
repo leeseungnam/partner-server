@@ -180,6 +180,8 @@ public class ReturnControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.returnProductList[].returnInvoiceNo").type(JsonFieldType.STRING).optional().description("반품 송장 번호"),
                                         fieldWithPath("data.returnProductList[].returnReason").type(JsonFieldType.STRING).optional().description("* 반품 사유"),
                                         fieldWithPath("data.returnProductList[].nonReturnReason").type(JsonFieldType.STRING).optional().description("* 반품 불가 사유"),
+                                        fieldWithPath("data.returnProductList[].returnDeliveryAmount").type(JsonFieldType.NUMBER).optional().description("(추우가)반품배송금액"),
+                                        fieldWithPath("data.returnProductList[].refundAmount").type(JsonFieldType.NUMBER).optional().description("(추우가)결제취소금액"),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
                                 )
                 ))
@@ -271,7 +273,7 @@ public class ReturnControllerTest extends BaseControllerTests {
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     @DisplayName("반품 취소 처리")
     void updateCancelReturn() throws Exception {
-        RequestReturnDto updateParam = RequestReturnDto.builder()
+        CancelReturnDto updateParam = CancelReturnDto.builder()
                 .orderNo("192211151341424534")
                 .orderProductSeqArray(new Integer[]{1})
                 .build();
@@ -314,6 +316,9 @@ public class ReturnControllerTest extends BaseControllerTests {
         RequestReturnDto updateParam = RequestReturnDto.builder()
                 .orderNo("192211151341424534")
                 .orderProductSeqArray(new Integer[]{1})
+                .paymentAmount(100L)
+                .refundAmount(100L)
+                .returnDeliveryAmount(0L)
                 .build();
 
         // 반품 요청 상품 처리 API 테스트
@@ -337,7 +342,10 @@ public class ReturnControllerTest extends BaseControllerTests {
                                 ),
                                 relaxedRequestFields(
                                         fieldWithPath("orderNo").type(JsonFieldType.STRING).description("주문 번호").attributes(key("etc").value("")),
-                                        fieldWithPath("orderProductSeqArray").type(JsonFieldType.ARRAY).description("주문 상품 SEQ").attributes(key("etc").value(""))
+                                        fieldWithPath("orderProductSeqArray").type(JsonFieldType.ARRAY).description("주문 상품 SEQ").attributes(key("etc").value("")),
+                                        fieldWithPath("returnDeliveryAmount").type(JsonFieldType.NUMBER).description("(추우가)반품 배송비").attributes(key("etc").value("")),
+                                        fieldWithPath("paymentAmount").type(JsonFieldType.NUMBER).description("(추우가)결제 금액").attributes(key("etc").value("")),
+                                        fieldWithPath("refundAmount").type(JsonFieldType.NUMBER).description("(추우가)환불 예정 금액").attributes(key("etc").value(""))
                                 ),
                                 responseFields(
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
@@ -358,7 +366,7 @@ public class ReturnControllerTest extends BaseControllerTests {
                 .build();
 
         // 반품 요청 상품 처리 API 테스트
-        mockMvc.perform(RestDocumentationRequestBuilders.put("/v1/returns/{orderNo}/complete-return", updateParam.getOrderNo())
+        mockMvc.perform(RestDocumentationRequestBuilders.put("/v1/returns/{orderNo}/non-return", updateParam.getOrderNo())
                         .header(AUTH_HEADER, JWT_TOKEN)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(updateParam))

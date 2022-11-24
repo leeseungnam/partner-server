@@ -15,21 +15,12 @@ import javax.validation.constraints.NotNull;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RequestReturnDto {
+public class CancelReturnDto {
     @NotBlank(message = "주문 번호")
     private String orderNo;                 // 주문번호
 
     @NotNull(message = "주문 상품 SEQ")
     private Integer[] orderProductSeqArray; // 주문 상품 SEQ
-
-    @NotNull(message = "반품 배송비")
-    private Long returnDeliveryAmount;      // 반품 배송비
-
-    @NotNull(message = "결제 금액")
-    private Long paymentAmount;             // 결제 금액
-
-    @NotNull(message = "환불 예정 금액")
-    private Long refundAmount;              // 환불 예정 금액
 
     private String partnerCode;             // 파트너 코드
     @JsonIgnore
@@ -43,13 +34,6 @@ public class RequestReturnDto {
         this.userId = userId;
     }
 
-    // 유효성 검사
-    public void valid() {
-        if (this.refundAmount < 0)
-            throw new WBBusinessException(ErrorCode.INVALID_NUMBER_MIN.getErrCode(), new String[]{"환불 예정 금액", "0"});
-        if (this.refundAmount > this.paymentAmount)
-            throw new WBBusinessException(ErrorCode.INVALID_MONEY_MAX.getErrCode(), new String[]{"환불 예정 금액", String.valueOf(this.paymentAmount)});
-    }
 
     public RequestReturnUpdateDto toRequestReturnUpdateDto(String processCode) {
         return RequestReturnUpdateDto.builder()
@@ -57,9 +41,6 @@ public class RequestReturnDto {
                 .orderProductSeqArray(this.orderProductSeqArray)
                 .partnerCode(this.partnerCode)
                 .returnProcessCode(processCode)
-                .returnDeliveryAmount(this.returnDeliveryAmount)
-                .paymentAmount(this.paymentAmount)
-                .refundAmount(this.refundAmount)
                 .userId(this.userId)
                 .build();
     }
