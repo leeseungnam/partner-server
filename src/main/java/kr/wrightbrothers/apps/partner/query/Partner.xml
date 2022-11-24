@@ -41,8 +41,6 @@
 		where up.user_id = #{userId}
 		and up.auth_code = #{authCode}
 		and up.partner_code = #{partnerCode}
-		and p.partner_status = 1
-
 	</select>
 
 	<select id="checkPartnerOperatorAuthCount" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerInviteDto$PartnerOperator" resultType="boolean">
@@ -268,20 +266,26 @@
 	</select>
 
 	<select id="findUserAuthAndPartnerListByUserId" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerAndAuthFindDto$Param" resultType="kr.wrightbrothers.apps.partner.dto.PartnerAndAuthFindDto$ResBody">
+		<![CDATA[
 		select p.partner_name
 			 ,  p.partner_kind
 			 ,  up.partner_code
 			 ,  p.partner_status
 			 ,  up.auth_code
-			 , (select contract_code from partner_contract where partner_code = up.partner_code order by create_date desc limit 1) as contract_code
-     		 , (select contract_status from partner_contract where partner_code = up.partner_code order by create_date desc limit 1) as contract_status
+			 ,	pc.contract_code
+     		 ,	pc.contract_status
 			 , '' as comment
 			 , '' as display_status_name
 			 , '' as auth_code_name
 		from users_partner up
 	    inner join partner p
 		   on p.partner_code = up.partner_code
+		inner join partner_contract pc
+		   on pc.partner_code = up.partner_code
 		where up.user_id = #{userId}
+		order by (CASE WHEN ASCII(SUBSTRING(p.partner_name,1)) < 123 THEN 2 ELSE 1 END)
+		, p.partner_name
+		]]>
 	</select>
 
 	<insert id="insertPartner" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerDto$ReqBody">
