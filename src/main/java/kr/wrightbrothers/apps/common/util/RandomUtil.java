@@ -64,4 +64,16 @@ public class RandomUtil {
                 .toString();
     }
 
+    public static String generateAlphanumeric(int length) {
+        Random random = new Random();
+        StringBuffer buf = new StringBuffer();
+        for(int i=1; i<=length; i++) {
+            if(random.nextBoolean())
+                buf.append((char)(random.nextInt(26)+65));   // 0~25(26개) + 65
+            else
+                buf.append(random.nextInt(10));
+        }
+        return buf.toString();
+    }
+
 }

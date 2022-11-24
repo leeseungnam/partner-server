@@ -81,7 +81,8 @@ public class UserController extends WBController {
 
         if(!ObjectUtils.isEmpty(user)) throw new WBCustomException(messagePrefix+"common.already.insert.user.custom", new String[] {paramDto.getUserId()});
 
-        String authCode = RandomStringUtils.randomAlphanumeric(6).toUpperCase();
+//        String authCode = RandomStringUtils.randomAlphanumeric(6).toUpperCase();
+        String authCode = RandomUtil.generateAlphanumeric(6);
         paramDto.changeAuthCode(authCode);
 
         return  defaultResponse(emailService.singleSendEmail(paramDto));
