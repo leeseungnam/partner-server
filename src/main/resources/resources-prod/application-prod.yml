@@ -33,4 +33,4 @@ system:
       path: /app/partner/file_temp/
 app:
   client:
-    host: http://13.209.45.4:3300
+    host: https://partner.wrightbrothers.kr
