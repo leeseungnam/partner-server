@@ -30,6 +30,7 @@ cloud:
       order: DEV-PARTNER-PLATFORM-ORDER.fifo
       partner: DEV-PARTNER-ADMIN-STORE.fifo
       history: DEV-COMMON-HISTORY.fifo
+      noti: DEV-COMMON-NOTICE.fifo
 system:
   file:
     temp:

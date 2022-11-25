@@ -1,6 +1,8 @@
 package kr.wrightbrothers.apps.sign;
 
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import kr.wrightbrothers.apps.common.config.security.jwt.JwtTokenProvider;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.TokenUtil;

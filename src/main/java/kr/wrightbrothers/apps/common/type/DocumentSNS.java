@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 @Getter
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum DocumentSNS {
+    NOTI_SMS_SINGLE("SMS전송"),
     REQUEST_INSPECTION("파트너검수요청"),
     RESULT_INSPECTION("파트너검수결과"),
     REQUEST_INSPECTION_PARTNER("입점몰심사요청"),

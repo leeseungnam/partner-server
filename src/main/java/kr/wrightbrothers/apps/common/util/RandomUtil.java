@@ -42,6 +42,16 @@ public class RandomUtil {
     public static String generateNo() {
         return new SimpleDateFormat("yyyyMMddHHmmssSS").format(new Date()) + RandomUtils.nextLong();
     }
+    // 랜덤숫자 생성
+    public static String generateNumeric(int length) {
+        Random random = new Random();//랜덤 객체 생성
+        StringBuffer stringBuffer = new StringBuffer();
+
+        for(int i=0; i<length; i++) {
+            stringBuffer.append(random.nextInt(10));
+        }
+        return stringBuffer.toString();
+    }
 
     // 랜덤문자 생성
     public static String generateChar(int length) {
