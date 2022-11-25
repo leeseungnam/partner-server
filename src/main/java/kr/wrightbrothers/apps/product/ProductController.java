@@ -177,7 +177,10 @@ public class ProductController extends WBController {
     })
     @ApiOperation(value = "상품 수정", notes = "등록된 상품 정보 수정")
     @PutMapping("/products")
-    public WBModel updateProduct(@ApiParam(value = "상품 수정 데이터") @Valid @RequestBody ProductUpdateDto paramDto) {
+    public WBModel updateProduct(@ApiParam(value = "상품 수정 데이터") @Valid @RequestBody ProductUpdateDto paramDto,
+                                 @ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
+        // 상품타입 설정
+        paramDto.setProductType(user.getUserAuth().getPartnerKind());
         paramDto.setProductCode(paramDto.getProductCode());
         // 추가 유효성 검사
         paramDto.validProduct();
