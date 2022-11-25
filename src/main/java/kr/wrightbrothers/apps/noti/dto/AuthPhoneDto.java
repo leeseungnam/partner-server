@@ -20,8 +20,8 @@ public class AuthPhoneDto {
     @EqualsAndHashCode
     @ApiModel(value = "휴대폰번호 인증 데이터")
     public static class AuthPhone {
-        @ApiModelProperty(value = "휴대폰번호", required = true)
-        @NotBlank(message = "휴대폰번호")
+        @ApiModelProperty(value = "받는 사람 휴대폰번호", required = true)
+        @NotBlank(message = "받는 사람 휴대폰번호")
         private String phone;
     }
 
