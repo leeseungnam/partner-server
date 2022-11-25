@@ -682,6 +682,7 @@
 		   set prdt_stus_cd = #{statusValue},
 		       <if test="statusValue == 'S08'">
 			   prdt_sell_ed_dt	= ifnull(prdt_sell_ed_dt, now()),
+			   dp_flg = 'N',
 			   </if>
 		       upd_usr_id	= #{userId},
 		       upd_dt		= now()

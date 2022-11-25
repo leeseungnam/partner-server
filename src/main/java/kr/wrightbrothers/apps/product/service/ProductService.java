@@ -128,7 +128,9 @@ public class ProductService {
             if (!ObjectUtils.isEmpty(paramDto.getBasicSpec().getAgeList()))
                 dao.insert(namespace + "insertBasicSpecAge", paramDto.getBasicSpec(), PartnerKey.WBDataBase.Alias.Admin);
         }
-        // 판매 정보 수정
+        // 판매종료 시 노출 N 변경
+        if (ProductStatusCode.END_OF_SALE.getCode().equals(paramDto.getSellInfo().getProductStatusCode()))
+            paramDto.getSellInfo().setDisplayFlag("N");
         dao.update(namespace + "mergeSellInfo", paramDto.getSellInfo(), PartnerKey.WBDataBase.Alias.Admin);
         // 옵션 정보 수정
         dao.delete(namespace + "deleteOption", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin);
