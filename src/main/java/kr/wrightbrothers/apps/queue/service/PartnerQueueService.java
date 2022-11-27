@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
@@ -60,22 +61,19 @@ public class PartnerQueueService {
         log.info("[updatePartnerSnsData]::isUpdateContractDay={}", isUpdateContractDay);
         log.info("[updatePartnerSnsData]::ContractDay={}", paramDto.getPartnerContract().getContractDay());
         log.info("[updatePartnerSnsData]::ContractStatus={}", paramDto.getPartnerContract().getContractStatus());
+
         if(isUpdateContractDay && (Partner.Contract.Status.COMPLETE.getCode().equals(paramDto.getPartnerContract().getContractStatus()))) {
-            log.info("[updatePartnerSnsData]::1111");
             if(!ObjectUtils.isEmpty(paramDto.getPartnerContract().getContractDay())) {
-                log.info("[updatePartnerSnsData]::2222");
                 //  계약 시작일 : 계약일
-                paramDto.getPartnerContract().setContractStartDay(paramDto.getPartnerContract().getContractDay());
+                paramDto.getPartnerContract().setContractStartDay(LocalDate.parse(paramDto.getPartnerContract().getContractDay()).format(DateTimeFormatter.ofPattern("yyyyMMdd")));
                 //  계약 종료일 : 계약일 해당 년도 말일
                 paramDto.getPartnerContract().setContractEndDay(LocalDateTime.parse(paramDto.getPartnerContract().getContractDay())
                         .with(TemporalAdjusters.lastDayOfYear())
                         .toLocalDate()
-                        .format(DateTimeFormatter.ofPattern("yyyyMMdd"))
-                        .toString());
+                        .format(DateTimeFormatter.ofPattern("yyyyMMdd")));
 
                 log.info("[updatePartnerSnsData]::updateContractDay");
                 partnerService.updateContractDay(paramDto.getPartnerContract());
-                log.info("[updatePartnerSnsData]::3333");
             }
 
         }

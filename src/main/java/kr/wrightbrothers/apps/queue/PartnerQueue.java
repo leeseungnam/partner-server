@@ -167,12 +167,12 @@ public class PartnerQueue extends WBSQS {
             if(isSendNoti) {
                 List<String> phoneList = partnerService.findPartnerNotiTargetByPartnerCode(partnerCode);
                 for(String to : phoneList) {
-                    log.info("[receiveFromAdmin::sendPushToAdmin]::to={}", "");
                     notificationQueue.sendPushToAdmin(DocumentSNS.NOTI_KAKAO_SINGLE
                             , notification
                             , to
                             , templateValue
                     );
+                    log.info("[receiveFromAdmin::sendPushToAdmin]::to={}", "");
                 }
             }
         } catch (Exception e) {
