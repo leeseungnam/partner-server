@@ -2,6 +2,28 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="kr.wrightbrothers.apps.partner.query.Partner">
+	<select id="findPartnerNotiTargetByPartnerCode" parameterType="java.lang.String" resultType="java.lang.String">
+	(
+		select u.user_phone COLLATE utf8mb4_unicode_ci as phone
+		from users u
+		inner join users_partner up
+		on up.user_id = u.user_id
+		where up.partner_code = #{partnerCode}
+		and up.auth_code in ('ROLE_ADMIN')
+	)
+	union
+	(
+		select pn.notification_phone as phone
+		from partner_notification pn
+		where pn.partner_code = #{partnerCode}
+	)
+	union
+	(
+		select pc.contract_manager_phone as phone
+		from partner_contract pc
+		where pc.partner_code = #{partnerCode}
+	)
+	</select>
 	<delete id="deletePartnerOperator" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerInviteDto$Param">
 		delete from users_partner where partner_code = #{partnerCode} and user_id = #{inviteReceiver} and auth_code = #{authCode}
 	</delete>
@@ -115,7 +137,7 @@
 	</update>
 
 	<update id="updatePartnerContractDay" parameterType="kr.wrightbrothers.apps.partner.dto.PartnerUpdateDto$Param$Contract">
-		update partner_contract setfindPartnerContractSNS
+		update partner_contract set
 			contract_day = #{contractDay}
 		  ,	contract_start_day = #{contractStartDay}
 		  ,	contract_end_day = #{contractEndDay}

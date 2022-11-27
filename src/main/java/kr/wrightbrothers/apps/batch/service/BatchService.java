@@ -11,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,12 +40,17 @@ public class BatchService {
                 partnerService.updateContractDay(PartnerContractDto.ReqBody.builder()
                                 .partnerCode(targetDto.getPartnerCode())
                                 .contractCode(targetDto.getContractCode())
-                                .contractDay(LocalDate.now().toString())
-                                .contractStartDay(LocalDate.now().toString())
-                                .contractEndDay(LocalDate.now().plusYears(1).toString())
+//                                .contractDay(LocalDate.now().toString())    //  계약일은 최초계약일 개념으로 변경X
+                                .contractStartDay(LocalDateTime.now()
+                                        .with(TemporalAdjusters.firstDayOfYear())
+                                        .toLocalDate()
+                                        .format(DateTimeFormatter.ofPattern("yyyyMMdd")))    // 배치 실행 년도의 첫 번째 일(1월 1일)
+                                .contractEndDay(LocalDateTime.now()
+                                        .with(TemporalAdjusters.lastDayOfYear())
+                                        .toLocalDate()
+                                        .format(DateTimeFormatter.ofPattern("yyyyMMdd")))   // 배치 실행 년도의 마지막 일(12월 31일)
                         .build()
                 );
-
                 // 계약 자동 갱신 회원(관리자) 메일 발송
                 List<UserTargetDto> userTargetList = findPartnerMailByPartnerCode(targetDto.getPartnerCode());
                 emailService.sendMailPartnerContract(userTargetList, Email.RENEWAL_CONTRACT);

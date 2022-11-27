@@ -7,7 +7,6 @@ import kr.wrightbrothers.apps.batch.dto.UserTargetDto;
 import kr.wrightbrothers.apps.batch.service.BatchService;
 import kr.wrightbrothers.apps.common.constants.Email;
 import kr.wrightbrothers.apps.common.constants.Partner;
-import kr.wrightbrothers.apps.email.dto.SingleEmailDto;
 import kr.wrightbrothers.apps.email.service.EmailService;
 import kr.wrightbrothers.apps.partner.dto.*;
 import kr.wrightbrothers.apps.partner.service.PartnerService;
@@ -23,6 +22,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,8 +49,7 @@ public class PartnerQueueService {
                 .partnerContract(Optional.of((PartnerContractSNSDto) dao.selectOne(namespace + "findPartnerContractSNS", partnerCode)).orElse(new PartnerContractSNSDto()))
                 .build();
     }
-
-    public void updatePartnerSnsData(JSONObject body) throws JsonProcessingException {
+    public PartnerInsertDto updatePartnerSnsData(JSONObject body, boolean isUpdateContractDay) throws JsonProcessingException {
 
         // body convert
         PartnerInsertDto paramDto = convertPartnerInsertDto(body);
@@ -56,6 +57,28 @@ public class PartnerQueueService {
         log.info("[updatePartnerSnsData]::paramDto={}",paramDto.toString());
         partnerService.updatePartnerAll(paramDto);
 
+        log.info("[updatePartnerSnsData]::isUpdateContractDay={}", isUpdateContractDay);
+        log.info("[updatePartnerSnsData]::ContractDay={}", paramDto.getPartnerContract().getContractDay());
+        log.info("[updatePartnerSnsData]::ContractStatus={}", paramDto.getPartnerContract().getContractStatus());
+        if(isUpdateContractDay && (Partner.Contract.Status.COMPLETE.getCode().equals(paramDto.getPartnerContract().getContractStatus()))) {
+            log.info("[updatePartnerSnsData]::1111");
+            if(!ObjectUtils.isEmpty(paramDto.getPartnerContract().getContractDay())) {
+                log.info("[updatePartnerSnsData]::2222");
+                //  계약 시작일 : 계약일
+                paramDto.getPartnerContract().setContractStartDay(paramDto.getPartnerContract().getContractDay());
+                //  계약 종료일 : 계약일 해당 년도 말일
+                paramDto.getPartnerContract().setContractEndDay(LocalDateTime.parse(paramDto.getPartnerContract().getContractDay())
+                        .with(TemporalAdjusters.lastDayOfYear())
+                        .toLocalDate()
+                        .format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+                        .toString());
+
+                log.info("[updatePartnerSnsData]::updateContractDay");
+                partnerService.updateContractDay(paramDto.getPartnerContract());
+                log.info("[updatePartnerSnsData]::3333");
+            }
+
+        }
         // 심사결과 이메일 전송
         Email email = Email.NULL;
 
@@ -66,6 +89,8 @@ public class PartnerQueueService {
         }
         List<UserTargetDto> userTargetDtoList = batchService.findPartnerMailByPartnerCode(paramDto.getPartner().getPartnerCode());
         emailService.sendMailPartnerContract(userTargetDtoList, email);
+
+        return paramDto;
     }
 
     private PartnerInsertDto convertPartnerInsertDto(JSONObject body) throws JsonProcessingException {

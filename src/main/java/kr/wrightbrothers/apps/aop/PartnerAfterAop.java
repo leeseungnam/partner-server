@@ -1,12 +1,14 @@
 package kr.wrightbrothers.apps.aop;
 
+import kr.wrightbrothers.apps.common.constants.Notification;
 import kr.wrightbrothers.apps.common.type.DocumentSNS;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.partner.dto.PartnerContractDto;
-import kr.wrightbrothers.apps.partner.dto.PartnerContractSNSDto;
 import kr.wrightbrothers.apps.partner.dto.PartnerInsertDto;
-import kr.wrightbrothers.apps.partner.service.PartnerService;
+import kr.wrightbrothers.apps.queue.NotificationQueue;
 import kr.wrightbrothers.apps.queue.PartnerQueue;
+import kr.wrightbrothers.apps.user.dto.UserDto;
+import kr.wrightbrothers.apps.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -16,7 +18,6 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @Aspect
@@ -24,8 +25,8 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequiredArgsConstructor
 public class PartnerAfterAop {
     private final PartnerQueue partnerQueue;
-
-    private final PartnerService partnerService;
+    private final NotificationQueue notificationQueue;
+    private final UserService userService;
     /**
      * <pre>
      *     스토어 등록, 수정의 작업 로직이 구현되어 있는 해당 상품 서비스 함수가 정상적으로 실행된 후
@@ -53,48 +54,61 @@ public class PartnerAfterAop {
     public void sendPartnerSnsData(JoinPoint joinPoint) throws Exception {
         log.info("[sendPartnerSnsData]::Partner Send SNS.");
 
-        AtomicReference<String> partnerCode = new AtomicReference<>("");
-        AtomicReference<String> contractCode = new AtomicReference<>("");
-        AtomicReference<DocumentSNS> documentSNS = new AtomicReference<>(DocumentSNS.NULL);
+        boolean isSendNoti = false;
+        String userPhone = "";
+        String [] templateValue = new String[0];
+
+        String partnerCode = "";
+        String contractCode = "";
+        DocumentSNS documentSNS = DocumentSNS.NULL;
 
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+        Object obj = Arrays.stream(joinPoint.getArgs()).findFirst().orElseThrow();
 
-        Arrays.stream(joinPoint.getArgs()).forEach(obj -> {
+        if(obj instanceof PartnerInsertDto){
 
-            if(obj instanceof PartnerInsertDto){
-                PartnerInsertDto parmaDto = (PartnerInsertDto) obj;
+            PartnerInsertDto parmaDto = (PartnerInsertDto) obj;
 
-                documentSNS.set(DocumentSNS.REQUEST_INSPECTION_PARTNER);
-                partnerCode.set(parmaDto.getPartner().getPartnerCode());
-                contractCode.set(parmaDto.getPartnerContract().getContractCode());
+            documentSNS = DocumentSNS.REQUEST_INSPECTION_PARTNER;
+            partnerCode = parmaDto.getPartner().getPartnerCode();
+            contractCode = parmaDto.getPartnerContract().getContractCode();
 
-            } else if (obj instanceof PartnerContractDto.ReqBody) {
-                PartnerContractDto.ReqBody paramDto = (PartnerContractDto.ReqBody) obj;
+            // 파트너 등록 시 알림톡 발송 추가
+            isSendNoti = true;
+            UserDto user = userService.findUserByDynamic(UserDto.builder().userId(parmaDto.getPartner().getUserId()).build());
+            userPhone = user.getUserPhone();
+            templateValue = new String[]{parmaDto.getPartner().getPartnerName()};
 
-                documentSNS.set(DocumentSNS.UPDATE_PARTNER);
-                partnerCode.set(paramDto.getPartnerCode());
-                contractCode.set(paramDto.getContractCode());
+        } else if (obj instanceof PartnerContractDto.ReqBody) {
+            PartnerContractDto.ReqBody paramDto = (PartnerContractDto.ReqBody) obj;
 
-            } else if (obj instanceof PartnerContractDto.ReqBody) {
-                PartnerContractDto.ReqBody paramDto = (PartnerContractDto.ReqBody) obj;
+            documentSNS = DocumentSNS.UPDATE_PARTNER;
+            partnerCode = paramDto.getPartnerCode();
+            contractCode = paramDto.getContractCode();
 
-                documentSNS.set(DocumentSNS.UPDATE_PARTNER);
-                partnerCode.set(paramDto.getPartnerCode());
-                contractCode.set(paramDto.getContractCode());
+        } else {
+            log.info("[sendPartnerSnsData]::don't send partnerSnsData");
+            return;
+        }
+        // partner data send
+        partnerQueue.sendToAdmin(
+                documentSNS
+                , partnerCode
+                , contractCode
+                , methodSignature.getMethod().getName().contains("update") ?
+                        PartnerKey.TransactionType.Update : PartnerKey.TransactionType.Insert
+        );
+        log.info("[sendPartnerSnsData]::sendToAdmin::partnerCode={}, contractCode={}", partnerCode, contractCode);
 
-            } else {
-                log.info("[sendPartnerSnsData]::don't send partnerSnsData");
-                return;
-            }
-            partnerQueue.sendToAdmin(
-                    documentSNS.get()
-                    , partnerCode.get()
-                    , contractCode.get()
-                    , methodSignature.getMethod().getName().contains("update") ?
-                            PartnerKey.TransactionType.Update : PartnerKey.TransactionType.Insert
-            );
-            log.info("[sendPartnerSnsData]::partnerCode={}, contractCode={}", partnerCode, contractCode);
-        });
+        if(isSendNoti) {
+            log.info("[sendPartnerSnsData]::sendPushToAdmin::Send Partner Noti ... Start");
+            notificationQueue.sendPushToAdmin(
+                    DocumentSNS.NOTI_KAKAO_SINGLE
+                    , Notification.REGISTER_STORE
+                    , userPhone
+                    , templateValue);
+        }
+        log.info("[sendPartnerSnsData]::sendPushToAdmin::userPhone={}", userPhone);
     }
     //  섬네일 변경 시 추가 send to admin
     /*

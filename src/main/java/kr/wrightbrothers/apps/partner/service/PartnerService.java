@@ -111,7 +111,7 @@ public class PartnerService {
         );
 
         if(Partner.Contract.Status.REJECT.getCode().equals(paramDto.getPartnerContract().getContractStatus())) {
-            log.info("[insertPartnerReject]");
+            log.info("[insertPartnerReject]:: insert");
             dao.insert(namespace+"insertPartnerReject", paramDto.getPartnerReject());
         }
     }
@@ -196,6 +196,10 @@ public class PartnerService {
     }
     public PartnerInviteDto.ResBody findOperatorInvite(PartnerInviteDto.Param paramDto) {
         return dao.selectOne(namespace + "findOperatorInvite", paramDto);
+    }
+
+    public List<String> findPartnerNotiTargetByPartnerCode(String partnerCode) {
+        return dao.selectList(namespace + "findPartnerNotiTargetByPartnerCode", partnerCode);
     }
 
     public List<PartnerDto.ResBody> findPartnerListByBusinessNo(PartnerFindDto.Param paramDto) {

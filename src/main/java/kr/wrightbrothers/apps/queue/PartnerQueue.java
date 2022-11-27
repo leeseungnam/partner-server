@@ -1,9 +1,13 @@
 package kr.wrightbrothers.apps.queue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.wrightbrothers.apps.common.constants.Notification;
+import kr.wrightbrothers.apps.common.constants.Partner;
 import kr.wrightbrothers.apps.common.constants.User;
 import kr.wrightbrothers.apps.common.type.DocumentSNS;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.partner.dto.PartnerInsertDto;
+import kr.wrightbrothers.apps.partner.service.PartnerService;
 import kr.wrightbrothers.apps.queue.service.PartnerQueueService;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
 import kr.wrightbrothers.apps.user.dto.UserAuthDto;
@@ -31,12 +35,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PartnerQueue extends WBSQS {
 
-    private final WBAwsSns sender;
-    private final PartnerQueueService partnerQueueService;
     @Value("${cloud.aws.sns.partner}")
     private String topic;
     @Value("${cloud.aws.sqs.partner}")
     private String queueName;
+
+    private final WBAwsSns sender;
+    private final PartnerService partnerService;
+    private final PartnerQueueService partnerQueueService;
+    private final NotificationQueue notificationQueue;
 
     /**
      * 입점몰 API -> ADMIN 2.0 API
@@ -99,23 +106,74 @@ public class PartnerQueue extends WBSQS {
             log.info("[receiveFromAdmin]::Partner");
             log.info("[receiveFromAdmin]::Partner, docName={}",header.getDocuNm());
 
+            // notification data send
+            boolean isSendNoti = false;
+            String partnerCode = "";
+            String [] templateValue = new String[0];
+            Notification notification = Notification.NULL;
+
             switch (DocumentSNS.of(header.getDocuNm())){
                 case RESULT_INSPECTION_PARTNER:
                     if (PartnerKey.TransactionType.Update.equals(snsDto.getHeader().getTrsctnTp())) {
                         log.info("[receiveFromAdmin]::RESULT_INSPECTION_PARTNER={}",snsDto.getBody());
 
-                        partnerQueueService.updatePartnerSnsData(body);
+                        PartnerInsertDto partnerDto = partnerQueueService.updatePartnerSnsData(body, true);
                         ackMessage(snsDto);
+
+                        // send notification proc
+                        log.info("[receiveFromAdmin]::Send ::requestStatus={}",body.get("requestStatus").toString());
+                        if("S01".equals(body.get("requestStatus").toString())) {
+                            log.info("[receiveFromAdmin]::심사승인");
+                            isSendNoti = true;
+                            partnerCode = partnerDto.getPartner().getPartnerCode();
+                            notification = Notification.APPROVAL_STORE;
+
+                            // templateValue(심사승인) : 스토어명, 계약 시작일, 계약 종료일
+                            templateValue = new String[]{partnerDto.getPartner().getPartnerName(), partnerDto.getPartnerContract().getContractStartDay(), partnerDto.getPartnerContract().getContractEndDay()};
+                        } else if("S02".equals(body.get("requestStatus").toString())) {
+                            log.info("[receiveFromAdmin]::심사반려");
+                            isSendNoti = true;
+                            partnerCode = partnerDto.getPartner().getPartnerCode();
+                            notification = Notification.REJECT_STORE;
+
+                            // templateValue(심사반려) : 스토어명
+                            templateValue = new String[]{partnerDto.getPartner().getPartnerName()};
+                        } else {
+                            log.info("[receiveFromAdmin]::Send Fail::requestStatus={}",body.get("requestStatus").toString());
+                        }
                     }
                     break;
                 case UPDATE_PARTNER:
                     if(PartnerKey.TransactionType.Update.equals(snsDto.getHeader().getTrsctnTp())) {
                         log.info("[receiveFromAdmin]::UPDATE_PARTNER={}",snsDto.getBody());
 
-                        partnerQueueService.updatePartnerSnsData(body);
+                        PartnerInsertDto partnerDto = partnerQueueService.updatePartnerSnsData(body, false);
                         ackMessage(snsDto);
+
+                        // send notification proc
+                        if(Partner.Status.STOP.getCode().equals(partnerDto.getPartner().getPartnerStatus())
+                                && Partner.Contract.Status.WITHDRAWAL.equals(partnerDto.getPartnerContract().getContractStatus())) {
+                            isSendNoti = true;
+                            partnerCode = partnerDto.getPartner().getPartnerCode();
+                            notification = Notification.VIOLATION;
+
+                            // templateValue(심사반려) : 스토어명
+                            templateValue = new String[]{partnerDto.getPartner().getPartnerName()};
+                        }
                     }
                     break;
+            }
+            log.info("[receiveFromAdmin]::isSendNoti={}", isSendNoti);
+            if(isSendNoti) {
+                List<String> phoneList = partnerService.findPartnerNotiTargetByPartnerCode(partnerCode);
+                for(String to : phoneList) {
+                    log.info("[receiveFromAdmin::sendPushToAdmin]::to={}", "");
+                    notificationQueue.sendPushToAdmin(DocumentSNS.NOTI_KAKAO_SINGLE
+                            , notification
+                            , to
+                            , templateValue
+                    );
+                }
             }
         } catch (Exception e) {
             log.error("Partner SQS Receive Error. {}", e.getMessage());
