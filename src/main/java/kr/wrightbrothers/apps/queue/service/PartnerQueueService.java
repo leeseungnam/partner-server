@@ -59,16 +59,18 @@ public class PartnerQueueService {
         partnerService.updatePartnerAll(paramDto);
 
         log.info("[updatePartnerSnsData]::isUpdateContractDay={}", isUpdateContractDay);
-        log.info("[updatePartnerSnsData]::ContractDay={}", paramDto.getPartnerContract().getContractDay());
-        log.info("[updatePartnerSnsData]::ContractStatus={}", paramDto.getPartnerContract().getContractStatus());
+        log.info("[updatePartnerSnsData]::ContractDay={},ContractStatus={}", paramDto.getPartnerContract().getContractDay(), paramDto.getPartnerContract().getContractStatus());
 
         if(isUpdateContractDay && (Partner.Contract.Status.COMPLETE.getCode().equals(paramDto.getPartnerContract().getContractStatus()))) {
             if(!ObjectUtils.isEmpty(paramDto.getPartnerContract().getContractDay())) {
+                LocalDateTime contractDayOfLocalDateTime = LocalDateTime.parse(paramDto.getPartnerContract().getContractDay()+" 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                log.info("[updatePartnerSnsData]::contractDayOfLocalDateTime={}", contractDayOfLocalDateTime);
+                //  계약일
+                paramDto.getPartnerContract().setContractDay(contractDayOfLocalDateTime.toLocalDate().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
                 //  계약 시작일 : 계약일
-                paramDto.getPartnerContract().setContractStartDay(LocalDate.parse(paramDto.getPartnerContract().getContractDay()+" 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-                        .format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+                paramDto.getPartnerContract().setContractStartDay(contractDayOfLocalDateTime.toLocalDate().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
                 //  계약 종료일 : 계약일 해당 년도 말일
-                paramDto.getPartnerContract().setContractEndDay(LocalDateTime.parse(paramDto.getPartnerContract().getContractDay()+" 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                paramDto.getPartnerContract().setContractEndDay(contractDayOfLocalDateTime
                         .with(TemporalAdjusters.lastDayOfYear())
                         .toLocalDate()
                         .format(DateTimeFormatter.ofPattern("yyyyMMdd")));
