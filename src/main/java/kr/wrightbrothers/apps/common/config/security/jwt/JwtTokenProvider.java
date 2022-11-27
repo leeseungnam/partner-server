@@ -177,7 +177,7 @@ public class JwtTokenProvider implements InitializingBean {
 
         RefreshTokenDto findRefreshToken = refreshTokenService.findById(authentication.getName());
 
-        if(ObjectUtils.isEmpty(findRefreshToken)) new UsernameNotFoundException("userId : " + authentication.getName() + " was not found");
+        if(ObjectUtils.isEmpty(findRefreshToken)) throw new UsernameNotFoundException("userId : " + authentication.getName() + " was not found");
 
         if(findRefreshToken.getRefreshToken().equals(refreshToken)){
             // 새로운거 생성
