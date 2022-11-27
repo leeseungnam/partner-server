@@ -65,9 +65,10 @@ public class PartnerQueueService {
         if(isUpdateContractDay && (Partner.Contract.Status.COMPLETE.getCode().equals(paramDto.getPartnerContract().getContractStatus()))) {
             if(!ObjectUtils.isEmpty(paramDto.getPartnerContract().getContractDay())) {
                 //  계약 시작일 : 계약일
-                paramDto.getPartnerContract().setContractStartDay(LocalDate.parse(paramDto.getPartnerContract().getContractDay(), DateTimeFormatter.ofPattern("yyyy-MM-dd")).format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+                paramDto.getPartnerContract().setContractStartDay(LocalDate.parse(paramDto.getPartnerContract().getContractDay()+" 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                        .format(DateTimeFormatter.ofPattern("yyyyMMdd")));
                 //  계약 종료일 : 계약일 해당 년도 말일
-                paramDto.getPartnerContract().setContractEndDay(LocalDateTime.parse(paramDto.getPartnerContract().getContractDay(), DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                paramDto.getPartnerContract().setContractEndDay(LocalDateTime.parse(paramDto.getPartnerContract().getContractDay()+" 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
                         .with(TemporalAdjusters.lastDayOfYear())
                         .toLocalDate()
                         .format(DateTimeFormatter.ofPattern("yyyyMMdd")));
