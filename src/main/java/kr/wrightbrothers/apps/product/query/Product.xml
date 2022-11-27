@@ -348,6 +348,7 @@
 	</delete>
 
 	<insert id="insertDelivery" parameterType="kr.wrightbrothers.apps.product.dto.DeliveryDto$ReqBody">
+		<if test="deliveryType != 'D05'.toString()">
 		insert into prdt_dlvr_dtl(prdt_cd,
 								  prdt_dlvr_cd,
 								  dlvr_bun_flg,
@@ -392,7 +393,7 @@
 			   #{returnCharge},
 			   #{returnDeliveryCompanyCode},
 			   #{userId});
-
+		</if>
 		insert into prdt_dlvr(prdt_cd,
 							  prdt_dlvr_cd,
 							  cre_usr_id)
@@ -402,6 +403,7 @@
 	</insert>
 
 	<insert id="updateDelivery" parameterType="kr.wrightbrothers.apps.product.dto.DeliveryDto$ReqBody">
+		<if test="deliveryType != 'D05'.toString()">
 		update prdt_dlvr_dtl
 		   set prdt_dlvr_cd		= #{deliveryType},
 		       dlvr_bun_flg		= #{deliveryBundleFlag},
@@ -424,7 +426,7 @@
 			   rtn_chg			= #{returnCharge},
 			   rtn_dlvr_cmpny_cd= #{returnDeliveryCompanyCode}
 		 where prdt_cd = #{productCode};
-
+		</if>
 		update prdt_dlvr
 		   set prdt_dlvr_cd = #{deliveryType}
 		 where prdt_cd = #{productCode};

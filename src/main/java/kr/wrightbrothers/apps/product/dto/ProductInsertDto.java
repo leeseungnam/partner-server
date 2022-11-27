@@ -195,7 +195,8 @@ public class ProductInsertDto {
     public void setProductType(String partnerKind) {
         // 재생입점 재생자전거 코드 설정
         if ("2".equals(partnerKind)) {
-            this.product.setProductType("P04"); // 재생
+            this.product.setProductType("P04");     // 재생
+            this.delivery.setDeliveryType("D05");   // 재생배송
             return;
         }
 
