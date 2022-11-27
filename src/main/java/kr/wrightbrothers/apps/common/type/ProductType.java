@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum ProductType {
     NEW("P05", "신품"),
-    RECYCLING("P06", "재생"),
+    RECYCLING("P04", "재생"),
     NULL("", "");
 
     private final String type;
