@@ -13,12 +13,6 @@
 	)
 	union
 	(
-		select pn.notification_phone as phone
-		from partner_notification pn
-		where pn.partner_code = #{partnerCode}
-	)
-	union
-	(
 		select pc.contract_manager_phone as phone
 		from partner_contract pc
 		where pc.partner_code = #{partnerCode}
