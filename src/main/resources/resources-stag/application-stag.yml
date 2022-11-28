@@ -25,7 +25,7 @@ cloud:
       order: STG-PARTNER-PLATFORM-ORDER.fifo
       partner: STG-PARTNER-ADMIN-STORE.fifo
       history: STG-COMMON-HISTORY.fifo
-      noti: STG-COMMON-NOTICE.fifo
+      noti: DEV-COMMON-NOTICE.fifo
 system:
   file:
     temp:
