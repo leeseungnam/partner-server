@@ -310,7 +310,6 @@
 		     partner_code
 		    , partner_name
 		    , partner_status
-		    , partner_kind
 		    , business_classification_code
 		    , business_name
 		    , business_no
@@ -330,7 +329,6 @@
 			 #{partnerCode}
 			, #{partnerName}
 			, #{partnerStatus}
-			, #{partnerKind}
 			, #{businessClassificationCode}
 			, #{businessName}
 			, #{businessNo}
