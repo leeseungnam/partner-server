@@ -142,7 +142,7 @@
 					 d.rtrn_invc_no                                                as return_invoice_no,
 					 if(p.cnc_rsn_cd = 'C99', p.cnc_rsn, c.intg_cd_val_nm)         as return_reason,
 					 rcd.intg_cd_val_nm                                            as non_return_reason,
-					 s.rtrn_dlvr_amt											   as return_delivery_amount
+					 s.rtrn_dlvr_chrg_amt											   as return_delivery_amount
 			  from ord_prdt_info p
 			      	   inner join ord_prnr_info s
 			      		on p.ord_no = s.ord_no
@@ -253,7 +253,7 @@
 	<update id="updateReturnDeliveryAmount" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto">
 		-- 반품 배송비
 		update ord_prnr_info
-		   set rtrn_dlvr_amt = #{returnDeliveryAmount},
+		   set rtrn_dlvr_chrg_amt = #{returnDeliveryAmount},
 		       upd_usr_id = #{userId},
 		       upd_dt = now()
 		 where ord_no = #{orderNo}
