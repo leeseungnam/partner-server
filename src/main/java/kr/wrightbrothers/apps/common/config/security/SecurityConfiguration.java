@@ -102,7 +102,7 @@ public class SecurityConfiguration {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(List.of("http://localhost:3300", "http://3.36.25.109:3300", "http://13.209.45.4:3300", "https://dev.partner.wrightbrothers.kr", "https://stag.partner.wrightbrothers.kr", "https://partner.wrightbrothers.kr"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3300", "https://dev.partner.wrightbrothers.kr", "https://stag.partner.wrightbrothers.kr", "https://partner.wrightbrothers.kr"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-disposition", "Cache-Control", "Content-Type"));
         configuration.setExposedHeaders(List.of("Authorization", "Content-disposition"));
