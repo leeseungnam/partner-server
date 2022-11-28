@@ -152,7 +152,7 @@ public class PartnerQueue extends WBSQS {
 
                         // send notification proc
                         if(Partner.Status.STOP.getCode().equals(partnerDto.getPartner().getPartnerStatus())
-                                && Partner.Contract.Status.WITHDRAWAL.equals(partnerDto.getPartnerContract().getContractStatus())) {
+                                && Partner.Contract.Status.WITHDRAWAL.getCode().equals(partnerDto.getPartnerContract().getContractStatus())) {
                             isSendNoti = true;
                             partnerCode = partnerDto.getPartner().getPartnerCode();
                             notification = Notification.VIOLATION;
