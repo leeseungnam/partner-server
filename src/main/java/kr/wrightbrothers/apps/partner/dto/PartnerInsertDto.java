@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
+import org.springframework.util.ObjectUtils;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -36,6 +37,7 @@ public class PartnerInsertDto {
         // 작성자 아이디 SET
         partner.changeUserId(userId);
         partnerContract.changeUserId(userId);
-        partnerReject.changeUserId(userId);
+
+        if(!ObjectUtils.isEmpty(partnerReject)) partnerReject.changeUserId(userId);
     }
 }
