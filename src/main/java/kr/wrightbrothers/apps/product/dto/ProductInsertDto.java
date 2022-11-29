@@ -175,6 +175,11 @@ public class ProductInsertDto {
                 .length() < 30)
             throw new WBBusinessException(ErrorCode.INVALID_TEXT_SIZE.getErrCode(), new String[]{"상품 상세설명", "30", "10000"});
 
+        // 상품 상세설명 이미지 30개 이상 유효성 체크
+        if (this.guide.getProductDescription()
+                .split("img src").length -1 > 30)
+            throw new WBBusinessException(ErrorCode.INVALID_IMAGE_MAX.getErrCode(), new String[]{"30개"});
+
         if (ObjectUtils.isEmpty(this.guide.getExchangeReturnGuide()))
             throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"교환/반품 안내"});
         if (this.guide.getExchangeReturnGuide().length() < 30)
