@@ -17,6 +17,8 @@ public class OrderQueue extends WBSQS {
     private final WBAwsSns sender;
     @Value("${cloud.aws.sns.order}")
     private String topic;
+    @Value("${cloud.aws.sqs.order}}")
+    private String queueName;
 
     /**
      * 입점몰 API -> ADMIN 2.0 API
