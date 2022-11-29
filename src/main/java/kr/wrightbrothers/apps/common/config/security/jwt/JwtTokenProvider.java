@@ -53,7 +53,8 @@ public class JwtTokenProvider implements InitializingBean {
         this.wbUserDetailService = wbUserDetailService;
     }
 
-    private final static long ACCESS_TOKEN_VALIDATION_SECOND = 1000L * 60 * 60 * 2;
+//    private final static long ACCESS_TOKEN_VALIDATION_SECOND = 1000L * 60 * 60 * 2;
+    private final static long ACCESS_TOKEN_VALIDATION_SECOND = 1000L * 10;
     private final static long REFRESH_TOKEN_VALIDATION_SECOND = 1000L * 60 * 60 * 2;
     private Key key;
 
