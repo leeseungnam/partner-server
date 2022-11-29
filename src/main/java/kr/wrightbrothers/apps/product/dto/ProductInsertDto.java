@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
 @Jacksonized
@@ -120,6 +121,16 @@ public class ProductInsertDto {
     public void validProduct() {
         // 자전거 상품 추가 유효성 검사
         validBike();
+
+        // 이미지 30장 이상 등록 유효성 검사
+        AtomicInteger imgCount = new AtomicInteger();
+        fileList.forEach(file -> {
+            if ("D".equals(file.getFileStatus())) return;
+            imgCount.getAndIncrement();
+        });
+
+        if (imgCount.get() > 30)
+            throw new WBBusinessException(ErrorCode.INVALID_IMAGE_MAX.getErrCode(), new String[]{"30개"});
 
         // 자전거 기본스펙 해당 필드 Null 처리
         if (!ObjectUtils.isEmpty(this.basicSpec)) {
