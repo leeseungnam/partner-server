@@ -7,7 +7,6 @@ import kr.wrightbrothers.apps.common.constants.User;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.RandomUtil;
-import kr.wrightbrothers.apps.common.util.TokenUtil;
 import kr.wrightbrothers.apps.email.dto.SingleEmailDto;
 import kr.wrightbrothers.apps.email.service.EmailService;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
@@ -197,16 +196,11 @@ public class UserController extends WBController {
         SecurityContextHolder.getContext().setAuthentication(newAuth);
 
         String newAccessToken = jwtTokenProvider.generateAccessToken(newAuth);
-        String newRefreshToken = jwtTokenProvider.issueRefreshToken(authentication);
 
         log.info("ACCESS_TOKEN[OLD]::{}",accessToken);
         log.info("ACCESS_TOKEN[NEW]::{}",newAccessToken);
 
-        log.info("REFRESH_TOKEN[OLD]::{}",refreshToke);
-        log.info("REFRESH_TOKEN[NEW]::{}",newRefreshToken);
-
         log.info(userPrincipal.getUsername());
-
         if(!ObjectUtils.isEmpty(userPrincipal.getUserAuth())){
             log.info("UserAuth::{},{}",userPrincipal.getUserAuth().getAuthCode(), userPrincipal.getUserAuth().getPartnerCode());
         }else{
@@ -214,7 +208,6 @@ public class UserController extends WBController {
         }
 
         response.setHeader(PartnerKey.Jwt.Header.AUTHORIZATION, PartnerKey.Jwt.Type.BEARER + newAccessToken);
-        response.addCookie(TokenUtil.createCookie(PartnerKey.Jwt.Alias.REFRESH_TOKEN, newRefreshToken, REFRESH_TOKEN_VALIDATION_SECOND));
 
         return noneDataResponse();
     }

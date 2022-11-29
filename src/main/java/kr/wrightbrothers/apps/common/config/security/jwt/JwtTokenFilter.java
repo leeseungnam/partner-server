@@ -21,8 +21,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
-
-    private final static long REFRESH_TOKEN_VALIDATION_SECOND = 60 * 60 * 2;
+    private final static long REFRESH_TOKEN_VALIDATION_SECOND = 60 * 60 * 1;
     private final SignService signService;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -46,18 +45,20 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
                 // 재발급
                 if(refreshToken != null && jwtTokenProvider.validateToken(refreshToken) == PartnerKey.JwtCode.ACCESS) {
-                    String newRefreshToken = jwtTokenProvider.reissueRefreshToken(refreshToken);
+                    String newRefreshToken = jwtTokenProvider.reissueRefreshToken(accessToken, refreshToken);
 
                     if(newRefreshToken != null){
 //                    response.setHeader(REFRESH_HEADER, "Bearer " + newRefreshToken);
                         response.addCookie(TokenUtil.createCookie(PartnerKey.Jwt.Alias.REFRESH_TOKEN, newRefreshToken, REFRESH_TOKEN_VALIDATION_SECOND));
 
                         // access token 생성
-                        Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
+                        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
                         response.setHeader(PartnerKey.Jwt.Header.AUTHORIZATION, PartnerKey.Jwt.Type.BEARER + jwtTokenProvider.generateAccessToken(authentication));
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                         log.info("reissue refresh Token & access Token");
                     }
+                } else {
+                    log.info("[JwtTokenFilter]::REFRESH EXPIRED");
                 }
             } else {
                 log.info("유효한 JWT 토큰이 없습니다.");
