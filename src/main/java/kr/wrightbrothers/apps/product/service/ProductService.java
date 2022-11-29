@@ -114,6 +114,8 @@ public class ProductService {
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void updateProduct(ProductUpdateDto paramDto) {
+        // 판매 상태에 따른 재고 상품 계산처리
+        productUtil.updateProductStatusStock(paramDto);
         // 상품 판매 기간 처리
         productUtil.updateProductSellDate(paramDto.getProductCode(), paramDto.getSellInfo().getProductStatusCode());
 

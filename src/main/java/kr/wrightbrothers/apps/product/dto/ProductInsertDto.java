@@ -109,10 +109,6 @@ public class ProductInsertDto {
                 if (ObjectUtils.isEmpty(option.getOptionStockQty()))
                     throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"옵션 재고수량"});
 
-                // 판매완료 처리 시 재고 0개 처리
-                if (ProductStatusCode.SOLD_OUT.getCode().equals(this.sellInfo.getProductStatusCode()))
-                    option.setOptionStockQty(0);
-
                 productStockQty += option.getOptionStockQty();
             }
             // 재고 수량 유효성 확인
@@ -138,18 +134,15 @@ public class ProductInsertDto {
         if (ObjectUtils.isEmpty(this.sellInfo.getProductStatusCode()))
             throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"상품 진행 상태"});
 
-        // 상품 판매 상태일 경우 판매재고 0 이상의 유효성 체크
-        if (ProductStatusCode.SALE.getCode().equals(this.sellInfo.getProductStatusCode()) ||
-                ProductStatusCode.RESERVATION.getCode().equals(this.sellInfo.getProductStatusCode())) {
+        // 예약중 상태일 경우 판매재고 0 이상의 유효성 체크
+        if (ProductStatusCode.RESERVATION.getCode().equals(this.sellInfo.getProductStatusCode())) {
             if (this.sellInfo.getProductStockQty() == 0)
                 throw new WBBusinessException(ErrorCode.INVALID_NUMBER_MIN.getErrCode(), new String[]{"판매재고", "1"});
         }
 
-        // 상품 판매완료 상태변경 시 재고 0 처리
-        if (ProductStatusCode.SOLD_OUT.getCode().equals(this.sellInfo.getProductStatusCode())) {
-            // 상품 판매완료 상태는 기존 재구 무시하고 상품 재고 0개 처리(기획 장석민 협의 완료)
-            this.sellInfo.setProductStockQty(0);
-        }
+        // 판매중 상태에서의 재고 0일경우 판매완료 상태변경
+        if (ProductStatusCode.SALE.getCode().equals(this.sellInfo.getProductStatusCode()) && this.sellInfo.getProductStockQty() == 0)
+            this.sellInfo.setProductStatusCode(ProductStatusCode.SOLD_OUT.getCode());
 
         // 상품 판매 옵션 유효성 검사
         validOption();

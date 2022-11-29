@@ -98,6 +98,21 @@ public class ProductUtil {
     }
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    public void updateProductStatusStock(ProductUpdateDto paramDto) {
+        String currentStatus = dao.selectOne(namespace + "findProductStatus", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin);
+        // 판매완료 상태시 재고 0 이상일 경우 판매중 상태변경
+        if (ProductStatusCode.SOLD_OUT.getCode().equals(currentStatus) && paramDto.getSellInfo().getProductStockQty() > 0)
+            paramDto.getSellInfo().setProductStatusCode(ProductStatusCode.SALE.getCode());
+        else if (!ProductStatusCode.SOLD_OUT.getCode().equals(currentStatus)
+                && ProductStatusCode.SOLD_OUT.getCode().equals(paramDto.getSellInfo().getProductStatusCode())){
+            // 상품 판매완료 상태는 기존 재구 무시하고 상품 재고 0개 처리(기획 장석민 협의 완료)
+            paramDto.getSellInfo().setProductStockQty(0);
+            if ("Y".equals(paramDto.getSellInfo().getProductOptionFlag()))
+                paramDto.getOptionList().forEach(option -> option.setOptionStockQty(0));
+        }
+    }
+
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void updateProductSellDate(String productCode,
                                       String changeStatusCode) {
         // 현재 상품 상태 코드
