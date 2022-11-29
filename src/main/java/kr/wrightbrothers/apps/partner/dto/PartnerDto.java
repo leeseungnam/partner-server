@@ -69,12 +69,11 @@ public class PartnerDto {
 
         @ApiModelProperty(value = "사업자 주소", required = true)
         @NotBlank(message = "사업자 주소")
-        @Size(min = 2, max = 20, message = "사업자 주소")
         private String businessAddress;
 
         @ApiModelProperty(value = "사업자 주소 나머지", required = true)
         @NotBlank(message = "사업자 주소 나머지")
-        @Size(min = 2, max = 20, message = "사업자 주소 나머지")
+        @Size(min = 2, max = 100, message = "사업자 주소 나머지")
         private String businessAddressSub;
 
         @ApiModelProperty(value = "사업자 주소 우편번호", required = true)
