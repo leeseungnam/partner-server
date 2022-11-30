@@ -140,6 +140,23 @@ public class ProductInsertDto {
                 this.basicSpec.setMinHeightPerson(null);
             if ("".equals(this.basicSpec.getBikeWeight()) | "0".equals(this.basicSpec.getBikeWeight()))
                 this.basicSpec.setBikeWeight(null);
+
+            // 호환키 유효성
+            if (ObjectUtils.isEmpty(this.basicSpec.getMinHeightPerson()) || ObjectUtils.isEmpty(this.basicSpec.getMaxHeightPerson())) {
+                if (!(ObjectUtils.isEmpty(this.basicSpec.getMinHeightPerson()) && ObjectUtils.isEmpty(this.basicSpec.getMaxHeightPerson())))
+                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"호환키"});
+            }
+
+            // 기본스펙 호환키에 대한 유효성 체크
+            if (!ObjectUtils.isEmpty(this.basicSpec.getMinHeightPerson()) && !ObjectUtils.isEmpty(this.basicSpec.getMaxHeightPerson())) {
+                if (Long.parseLong(this.basicSpec.getMinHeightPerson()) > Long.parseLong(this.basicSpec.getMaxHeightPerson()))
+                    throw new WBBusinessException(ErrorCode.INVALID_RANGE.getErrCode(), new String[]{"호환키"});
+                if (Long.parseLong(this.basicSpec.getMinHeightPerson()) < 80)
+                    throw new WBBusinessException(ErrorCode.INVALID_NUMBER_MIN.getErrCode(), new String[]{"최소키", "80"});
+                if (Long.parseLong(this.basicSpec.getMaxHeightPerson()) > 250)
+                    throw new WBBusinessException(ErrorCode.INVALID_NUMBER_MAX.getErrCode(), new String[]{"최대키", "250"});
+            }
+
         }
 
         if (ObjectUtils.isEmpty(this.sellInfo.getProductStatusCode()))
