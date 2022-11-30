@@ -150,7 +150,7 @@ public class DeliveryDto {
             }
 
             // 범위 체크
-            if (this.chargeBase > 100000000)
+            if (ObjectUtils.isEmpty(this.chargeBase) && this.chargeBase > 100000000)
                 throw new WBBusinessException(ErrorCode.INVALID_MONEY_MAX.getErrCode(), new String[]{"기본 배송비", "100000000"});
 
         }
