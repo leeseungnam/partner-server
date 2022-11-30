@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Notification {
     // 파트너 회원가입 완료 즉시
-    SIGN_UP("P_AUTH_0001", "ATA",
+    SIGN_UP("KA01TP221130015224471v82jM4J1XOd", "ATA",
             "[라이트브라더스] 회원가입 완료 안내\n" +
                     "#{고객명}님, 파트너센터 회원가입이 완료되었습니다. 판매를 위해서는 스토어 등록이 필요합니다. \n" +
                     "스토어 등록은 사업자 등록이 된 사업자만 가능하며, 스토어 등록을 진행한 계정은 해당 스토어의 관리자로 등록됩니다.\n" +
@@ -26,14 +26,14 @@ public enum Notification {
                     "\n" +
                     "감사합니다.", ""),
     // 파트너 비밀번호 변경 후 즉시
-    CHANGE_PASSWORD("P_AUTH_0002", "ATA",
+    CHANGE_PASSWORD("KA01TP221125053653236zVTgLJFEd2o", "ATA",
             "[라이트브라더스] 비밀번호 변경 안내\n" +
                     "파트너센터 계정 비밀번호가 변경되었습니다.\n" +
                     "\n" +
                     "만약 비밀번호를 변경한 적이 없다면, 파트너센터 고객센터로 문의하시기 바랍니다.\n" +
                     "파트너 고객센터 : 02-797-0521", ""),
     // 스토어 등록 완료 즉시
-    REGISTER_STORE("P_AUTH_0003", "ATA",
+    REGISTER_STORE("KA01TP221125055400337tUSyJu0ol5F", "ATA",
             "[라이트브라더스] 스토어 등록 완료 안내\n" +
                     "#{스토어명}님, 라이트브라더스 스토어 등록이 완료되었습니다.\n" +
                     "\n" +
@@ -43,7 +43,7 @@ public enum Notification {
                     "◼︎ 입점 필요서류\n" +
                     "사업자 등록증, 통장 사본", ""),
     // 스토어 심사 승인 완료 즉시
-    APPROVAL_STORE("P_AUTH_0004", "ATA",
+    APPROVAL_STORE("KA01TP2211290655129106EK1PU6k4AL", "ATA",
             "[라이트브라더스] 스토어 심사 완료 안내\n" +
                     "{스토어명}님, 라이트브라더스 입점을 축하합니다!\n" +
                     "\n" +
@@ -67,7 +67,7 @@ public enum Notification {
                     "\n" +
                     "자세한 계약 정보를 확인하시려면, 파트너센터 > 판매자 정보를 확인해 주세요.", ""),
     // 스토어 심사 반려 즉시
-    REJECT_STORE("P_AUTH_0005", "ATA",
+    REJECT_STORE("KA01TP221130023847390TnrVNI1gdNu", "ATA",
             "[라이트브라더스] 스토어 심사 반려 안내\n" +
                     "{스토어명}님, 스토어 심사 반려되었습니다.\n" +
                     "\n" +
@@ -82,7 +82,7 @@ public enum Notification {
                     "4. 고객센터 전화번호가 연결되지 않아요.\n" +
                     "5. 세금계산서 이메일 주소가 잘못되었어요.", ""),
     // 계약 완료 즉시
-    CONTRACT_COMPLETE("P_AUTH_0006", "ATA",
+    CONTRACT_COMPLETE("KA01TP221124102236480VPRUGOqjmpn", "ATA",
             "[라이트브라더스] 파트너센터 계약 안내\n" +
                     "{스토어명}님, 라이트브라더스 파트너센터 입점 계약 완료되었습니다.\n" +
                     "\n" +
@@ -98,7 +98,7 @@ public enum Notification {
                     "\n" +
                     "자세한 계약 정보를 확인하시려면, 파트너센터 판매자 정보를 확인해 주세요.", ""),
     // 스토어 갱신 계약일 오전 9시
-    CONTRACT_RENEWAL("P_AUTH_0007", "ATA",
+    CONTRACT_RENEWAL("KA01TP2211250534541908RaIuahsSFR", "ATA",
             "[라이트브라더스] 파트너센터 계약 갱신 안내\n" +
                     "{스토어명}님, 라이트브라더스 파트너센터 입점 계약 갱신되었습니다.\n" +
                     "\n" +
@@ -112,7 +112,7 @@ public enum Notification {
                     "\n" +
                     "자세한 계약 정보를 확인하시려면, 파트너센터 판매자 정보를 확인해 주세요.", ""),
     // 스토어 계약 종료일 오전 9시
-    CONTRACT_END("P_AUTH_0008", "ATA",
+    CONTRACT_END("KA01TP221125061528124QKziRUpfQ0Q", "ATA",
             "[라이트브라더스] 파트너센터 계약 종료 안내\n" +
                     "#{스토어명}님, 오늘을 마지막으로 라이트브라더스 파트너센터 입점 계약이 종료될 예정입니다.\n" +
                     "그동안 라이트브라더스와 함께해 주셔서 진심으로 감사드립니다.\n" +
@@ -123,7 +123,7 @@ public enum Notification {
                     "\n" +
                     "계약을 다시 진행하려면 파트너 고객센터로 연락해 주세요.", ""),
     // 스토어 계약 종료일 60일전 오전 9시
-    CONTRACT_60DAY_PRIOR_END("P_AUTH_0009", "ATA",
+    CONTRACT_60DAY_PRIOR_END("KA01TP221125061710667Q68wz1wg2ol", "ATA",
             "[라이트브라더스] 계약 갱신 안내 \n" +
                     "안녕하세요 #{스토어명}님, \n" +
                     "\n" +
@@ -140,7 +140,7 @@ public enum Notification {
                     "\n" +
                     "계약 갱신 관련하여 곧 담당자가 연락드릴 예정입니다.", ""),
     // 스토어 계약 종료일 40일전 오전 9시
-    CONTRACT_40DAY_PRIOR_END("P_AUTH_0010", "ATA",
+    CONTRACT_40DAY_PRIOR_END("KA01TP221125061850966Xj7xzHh8T4V", "ATA",
             "[라이트브라더스] 계약 갱신 안내 \n" +
                     "안녕하세요 #{스토어명}님,\n" +
                     "\n" +
@@ -157,7 +157,7 @@ public enum Notification {
                     "\n" +
                     "계약 갱신 관련하여 곧 담당자가 연락드릴 예정입니다.", ""),
     // 스토어 운영 위반 처리 즉시
-    VIOLATION("P_AUTH_0011", "ATA",
+    VIOLATION("KA01TP221125062005405r73xWwDmVTw", "ATA",
             "[라이트브라더스] 파트너센터 운영 위반 안내\n" +
                     "#{스토어명}님, 라이트브라더스 파트너센터 판매 운영 정책 위반되어 안내드립니다.\n" +
                     "\n" +
