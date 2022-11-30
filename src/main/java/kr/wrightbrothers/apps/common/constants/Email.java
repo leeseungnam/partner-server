@@ -19,6 +19,7 @@ public enum Email {
     RENEWAL_CONTRACT("6", "[라이트브라더스] 파트너센터 계약 갱신 안내", "renewal_contract"),
     REJECT_CONTRACT("7", "[라이트브라더스] 파트너센터 스토어 심사 반려 안내", "reject_contract"),
     COMPLETE_CONTRACT("8", "[라이트브라더스] 파트너센터 스토어 심사 완료 안내", "complete_contract"),
+    END_CONTRACT("9", "[라이트브라더스] 파트너센터 계약 종료 안내", "end_contract"),
 
     NULL("","", "");
 
