@@ -28,21 +28,27 @@
 
 	<select id="findUserByDynamic" parameterType="kr.wrightbrothers.apps.user.dto.UserDto" resultType="kr.wrightbrothers.apps.user.dto.UserDto">
 		select
-		    user_id
-		,	user_pwd
-		,	user_name
-		,	change_pwd_flag
-		,	user_phone
-		  from users
+		    u.user_id
+		,	u.user_pwd
+		,	u.user_name
+		,	u.change_pwd_flag
+		,	u.user_phone
+		,	up.auth_code
+		  from users u
+		inner join users_partner up
+		  on u.user_id = up.user_id
 		 where 1=1
 	    <if test="userId != null and userId != ''">
-		   and user_id = #{userId}
+		   and u.user_id = #{userId}
 	    </if>
 		<if test="userName != null and userName != ''">
-		   and user_name = #{userName}
+		   and u.user_name = #{userName}
 		</if>
 		<if test="userPhone != null and userPhone != ''">
-		   and user_phone = #{userPhone}
+		   and u.user_phone = #{userPhone}
+		</if>
+		<if test="partnerCode != null and partnerCode != ''">
+			and up.partner_code = #{partnerCode}
 		</if>
 	</select>
 
