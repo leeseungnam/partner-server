@@ -4,7 +4,9 @@ import kr.wrightbrothers.apps.common.constants.Notification;
 import kr.wrightbrothers.apps.common.type.DocumentSNS;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.partner.dto.PartnerContractDto;
+import kr.wrightbrothers.apps.partner.dto.PartnerContractSNSDto;
 import kr.wrightbrothers.apps.partner.dto.PartnerInsertDto;
+import kr.wrightbrothers.apps.partner.service.PartnerService;
 import kr.wrightbrothers.apps.queue.NotificationQueue;
 import kr.wrightbrothers.apps.queue.PartnerQueue;
 import kr.wrightbrothers.apps.user.dto.UserDto;
@@ -27,6 +29,7 @@ public class PartnerAfterAop {
     private final PartnerQueue partnerQueue;
     private final NotificationQueue notificationQueue;
     private final UserService userService;
+    private final PartnerService partnerService;
     /**
      * <pre>
      *     스토어 등록, 수정의 작업 로직이 구현되어 있는 해당 상품 서비스 함수가 정상적으로 실행된 후
@@ -154,7 +157,6 @@ public class PartnerAfterAop {
         });
     }
     //  섬네일 변경 시 추가 send to admin
-    /*
     @AfterReturning(value = "execution(* kr.wrightbrothers.apps.partner.PartnerController.*PartnerThumbnail(..))")
     public void sendPartnerSnsDataByUpdateThumbnail(JoinPoint joinPoint) throws Exception {
         log.info("[sendPartnerSnsDataByUpdateThumbnail]::Partner Send SNS ... START");
@@ -173,5 +175,4 @@ public class PartnerAfterAop {
         );
         log.info("[sendPartnerSnsDataByUpdateThumbnail]::Partner Send SNS ... END");
     }
-    */
 }
