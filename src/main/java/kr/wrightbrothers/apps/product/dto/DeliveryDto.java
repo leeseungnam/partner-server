@@ -83,17 +83,14 @@ public class DeliveryDto {
         private String returnAddressDetail;
 
         @ApiModelProperty(value = "교환배송비", required = true)
-        @NotNull(message = "교환배송비")
         @Max(value = 10000000, message = "교환배송비")
         private Integer exchangeCharge;
 
         @ApiModelProperty(value = "반품배송비(편도)", required = true)
-        @NotNull(message = "반품배송비(편도)")
         @Max(value = 10000000, message = "반품배송비(편도)")
         private Integer returnCharge;
 
         @ApiModelProperty(value = "반품/교환 택배사", required = true)
-        @NotBlank(message = "반품/교환 택배사")
         private String returnDeliveryCompanyCode;
 
         public void validDelivery() {
@@ -110,12 +107,6 @@ public class DeliveryDto {
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"반품지 우편번호"});
             if (ObjectUtils.isEmpty(this.returnAddress))
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"반품지 주소"});
-            if (ObjectUtils.isEmpty(this.exchangeCharge))
-                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"교환배송비"});
-            if (ObjectUtils.isEmpty(this.returnCharge))
-                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"반품배송비(편도)"});
-            if (ObjectUtils.isEmpty(this.returnDeliveryCompanyCode))
-                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"반품/교환 택배사"});
             if (ObjectUtils.isEmpty(this.chargeType))
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"배송비 설정"});
 
