@@ -170,7 +170,7 @@ public class PartnerQueue extends WBSQS {
                     notificationQueue.sendPushToAdmin(DocumentSNS.NOTI_KAKAO_SINGLE
                             , notification
                             , to
-                            , templateValue
+                            , templateValue.toString()
                     );
                     log.info("[receiveFromAdmin::sendPushToAdmin]::to={}", "");
                 }

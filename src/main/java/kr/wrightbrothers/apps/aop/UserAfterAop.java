@@ -57,7 +57,7 @@ public class UserAfterAop {
             notificationQueue.sendPushToAdmin(DocumentSNS.NOTI_KAKAO_SINGLE
                     , notification
                     , user.getUserPhone()
-                    , methodSignature.getMethod().getName().contains("insert") ? new String[] {user.getUserName()} : null
+                    , methodSignature.getMethod().getName().contains("insert") ? new String[] {user.getUserName()}.toString() : null
             );
         }
         log.info("[sendPartnerSnsDataByUpdateThumbnail]::USER Send NOTI ... END");
