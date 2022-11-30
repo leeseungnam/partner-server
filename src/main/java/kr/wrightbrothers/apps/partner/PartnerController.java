@@ -242,7 +242,7 @@ public class PartnerController extends WBController {
             throw new WBCustomException(messagePrefix+"partner.invite.fail.own");
 
         //  관리자 계정 초대 확인
-        if(User.Auth.ADMIN.equals(user.getUserAuth().getAuthCode()))
+        if(User.Auth.ADMIN.getType().equals(user.getUserAuth().getAuthCode()))
             throw new WBCustomException(messagePrefix+"partner.invite.fail.admin");
 
         //  초대 가능 인원 확인
@@ -285,8 +285,6 @@ public class PartnerController extends WBController {
         paramDto.getPartnerOperator().changeInviteStatus("0");
         partnerService.insetPartnerOperator(paramDto);
 
-        //  send invite email
-        UserDto user = userService.findUserByDynamic(UserDto.builder().userId(paramDto.getPartnerOperator().getInviteReceiver()).build());
         //  send email
         SingleEmailDto.ResBody resBody = emailService.singleSendEmail(SingleEmailDto.ReqBody.builder()
                         .emailType(Email.INVITE_OPERATOR.getCode())
