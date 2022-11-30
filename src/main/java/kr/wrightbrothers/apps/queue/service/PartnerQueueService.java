@@ -3,11 +3,7 @@ package kr.wrightbrothers.apps.queue.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.wrightbrothers.apps.batch.dto.UserTargetDto;
-import kr.wrightbrothers.apps.batch.service.BatchService;
-import kr.wrightbrothers.apps.common.constants.Email;
 import kr.wrightbrothers.apps.common.constants.Partner;
-import kr.wrightbrothers.apps.email.service.EmailService;
 import kr.wrightbrothers.apps.partner.dto.*;
 import kr.wrightbrothers.apps.partner.service.PartnerService;
 import kr.wrightbrothers.apps.queue.dto.PartnerReceiveDto;
@@ -22,11 +18,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -36,8 +30,6 @@ public class PartnerQueueService {
 
     private final WBCommonDao dao;
     private final PartnerService partnerService;
-    private final BatchService batchService;
-    private final EmailService emailService;
     private final String namespace = "kr.wrightbrothers.apps.partner.query.Partner.";
 
     public PartnerSendDto findPartnerSnsData(String partnerCode,
@@ -78,19 +70,7 @@ public class PartnerQueueService {
                 log.info("[updatePartnerSnsData]::updateContractDay");
                 partnerService.updateContractDay(paramDto.getPartnerContract());
             }
-
         }
-        // 심사결과 이메일 전송
-        Email email = Email.NULL;
-
-        if(Partner.Contract.Status.REJECT.getCode().equals(paramDto.getPartnerContract().getContractStatus())) {
-            email = Email.REJECT_CONTRACT;
-        } else if(Partner.Contract.Status.COMPLETE.getCode().equals(paramDto.getPartnerContract().getContractStatus())) {
-            email = Email.COMPLETE_CONTRACT;
-        }
-        List<UserTargetDto> userTargetDtoList = batchService.findPartnerMailByPartnerCode(paramDto.getPartner().getPartnerCode());
-        emailService.sendMailPartnerContract(userTargetDtoList, email);
-
         return paramDto;
     }
 
