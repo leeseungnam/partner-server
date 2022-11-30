@@ -92,7 +92,7 @@ public class NotificationQueue extends WBSQS {
      * @param documentSNS 도큐멘트
      * @param notification 발송 템플릿
      * @param to 수신자
-     * @param messageValue 메시지 벨류 데이터 -> Arrays String
+     * @param messageValue 메시지 벨류 데이터
      */
     public void sendPushToAdmin(DocumentSNS documentSNS,
                                 Notification notification,

@@ -3,11 +3,6 @@ package kr.wrightbrothers.apps.common.constants;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 @Getter
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Notification {

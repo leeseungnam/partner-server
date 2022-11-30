@@ -126,7 +126,7 @@ public class PartnerQueue extends WBSQS {
                             log.info("[receiveFromAdmin]::심사승인");
                             isSendNoti = true;
                             partnerCode = partnerDto.getPartner().getPartnerCode();
-                            notification = Notification.APPROVAL_STORE;
+                            notification = Notification.CONTRACT_COMPLETE;
 
                             // templateValue(심사승인) : 스토어명, 계약 시작일, 계약 종료일
                             templateValue = new String[]{partnerDto.getPartner().getPartnerName(), partnerDto.getPartnerContract().getContractStartDay(), partnerDto.getPartnerContract().getContractEndDay()};
@@ -170,7 +170,7 @@ public class PartnerQueue extends WBSQS {
                     notificationQueue.sendPushToAdmin(DocumentSNS.NOTI_KAKAO_SINGLE
                             , notification
                             , to
-                            , templateValue.toString()
+                            , templateValue
                     );
                     log.info("[receiveFromAdmin::sendPushToAdmin]::to={}", "");
                 }

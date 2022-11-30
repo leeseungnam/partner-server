@@ -109,7 +109,7 @@ public class PartnerAfterAop {
                     DocumentSNS.NOTI_KAKAO_SINGLE
                     , Notification.REGISTER_STORE
                     , userPhone
-                    , templateValue.toString());
+                    , templateValue);
         }
         log.info("[sendPartnerSnsData]::sendPushToAdmin::userPhone={}", userPhone);
     }
@@ -147,7 +147,7 @@ public class PartnerAfterAop {
                         DocumentSNS.NOTI_KAKAO_SINGLE
                         , Notification.REGISTER_STORE
                         , user.getUserPhone()
-                        , new String[]{parmaDto.getPartner().getPartnerName()}.toString());
+                        , new String[]{parmaDto.getPartner().getPartnerName()});
 
                 log.info("[sendPartnerSnsData]::sendPushToAdmin::userPhone={}", user.getUserPhone());
             } else {
