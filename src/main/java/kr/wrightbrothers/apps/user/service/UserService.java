@@ -31,6 +31,9 @@ public class UserService {
         return dao.selectList(namespace + "findUserByPartnerCodeAndAuthCode", paramDto, PartnerKey.WBDataBase.Alias.Default);
     }
 
+    public UserDto findUserByUserIdAndPartnerCode(UserDto paramDto) {
+        return dao.selectOne(namespace + "findUserByUserIdAndPartnerCode", paramDto, PartnerKey.WBDataBase.Alias.Default);
+    }
     public UserDto findUserByDynamic(UserDto paramDto) {
         return dao.selectOne(namespace + "findUserByDynamic", paramDto, PartnerKey.WBDataBase.Alias.Default);
     }
