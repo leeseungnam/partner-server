@@ -110,8 +110,21 @@ public class ProductInsertDto {
                 if (ObjectUtils.isEmpty(option.getOptionStockQty()))
                     throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"옵션 재고수량"});
 
+                if (option.getOptionName().length() > 20)
+                    throw new WBBusinessException(ErrorCode.INVALID_TEXT_SIZE.getErrCode(), new String[]{"옵션명", "1", "20"});
+                if (option.getOptionValue().length() > 20)
+                    throw new WBBusinessException(ErrorCode.INVALID_TEXT_SIZE.getErrCode(), new String[]{"옵션항목", "1", "20"});
+                if (option.getOptionSurcharge() > 10000000)
+                    throw new WBBusinessException(ErrorCode.INVALID_MONEY_MAX.getErrCode(), new String[]{"변동금액", "10,000,000"});
+                if (option.getOptionSurcharge() < -10000000)
+                    throw new WBBusinessException(ErrorCode.INVALID_MONEY_MIN.getErrCode(), new String[]{"변동금액", "-10,000,000"});
+                if (option.getOptionStockQty() > 9999)
+                    throw new WBBusinessException(ErrorCode.INVALID_NUMBER_MAX.getErrCode(), new String[]{"옵션 재고수량", "9,999"});
+
                 productStockQty += option.getOptionStockQty();
             }
+
+
             // 재고 수량 유효성 확인
             if (this.sellInfo.getProductStockQty() != productStockQty)
                 throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STOCK.getErrCode(), new String[]{""});
