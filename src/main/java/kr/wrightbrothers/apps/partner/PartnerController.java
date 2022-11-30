@@ -233,7 +233,18 @@ public class PartnerController extends WBController {
     @PostMapping("/{partnerCode}/operator")
     public WBModel invitePartnerOperator(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode
             ,@ApiParam @Valid @RequestBody PartnerInviteInsertDto paramDto
+            ,@ApiIgnore @AuthenticationPrincipal UserPrincipal user
+
     ) {
+        //  [todo] validation aop로 이동 처리 필요
+        //  본인 계정 초대 확인
+        if(user.getUsername().equals(paramDto.getPartnerOperator().getInviteReceiver()))
+            throw new WBCustomException(messagePrefix+"partner.invite.fail.own");
+
+        //  관리자 계정 초대 확인
+        if(User.Auth.ADMIN.equals(user.getUserAuth().getAuthCode()))
+            throw new WBCustomException(messagePrefix+"partner.invite.fail.admin");
+
         //  초대 가능 인원 확인
         if(!partnerService.checkPartnerOperatorAuthCount(PartnerInviteDto.PartnerOperator.builder()
                 .partnerCode(paramDto.getPartnerOperator().getPartnerCode())
