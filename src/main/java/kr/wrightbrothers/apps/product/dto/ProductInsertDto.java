@@ -98,7 +98,13 @@ public class ProductInsertDto {
 
             // 재고
             int productStockQty = 0;
+            String preOptionName = "";
+            String preOptionValue = "";
             for (OptionDto.ReqBody option : this.optionList) {
+                // 옵션 중복등록 유효성 체크
+                if (option.getOptionName().equals(preOptionName) && option.getOptionValue().equals(preOptionValue))
+                    throw new WBBusinessException(ErrorCode.DUPLICATION_OBJECT.getErrCode(), new String[]{"옵션 정보 "});
+
                 if (ObjectUtils.isEmpty(option.getOptionSeq()))
                     throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"옵션 번호"});
                 if (ObjectUtils.isEmpty(option.getOptionName()))
@@ -122,18 +128,23 @@ public class ProductInsertDto {
                     throw new WBBusinessException(ErrorCode.INVALID_NUMBER_MAX.getErrCode(), new String[]{"옵션 재고수량", "9,999"});
 
                 productStockQty += option.getOptionStockQty();
+                preOptionName = option.getOptionName();
+                preOptionValue = option.getOptionValue();
             }
-
-
             // 재고 수량 유효성 확인
             if (this.sellInfo.getProductStockQty() != productStockQty)
                 throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STOCK.getErrCode(), new String[]{""});
+
         }
     }
 
     public void validProduct() {
         // 자전거 상품 추가 유효성 검사
         validBike();
+
+        // 판매재고 최대 수량 체크
+        if (this.sellInfo.getProductStockQty() > 9999)
+            throw new WBBusinessException(ErrorCode.INVALID_NUMBER_MAX.getErrCode(), new String[]{"재고", "9,999"});
 
         // 이미지 30장 이상 등록 유효성 검사
         AtomicInteger imgCount = new AtomicInteger();
