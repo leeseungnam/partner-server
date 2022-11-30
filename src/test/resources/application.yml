@@ -56,6 +56,7 @@ cloud:
       order: DEV-PARTNER-PLATFORM-ORDER.fifo
       partner: DEV-PARTNER-ADMIN-STORE.fifo
       history: DEV-COMMON-HISTORY.fifo
+      noti: DEV-COMMON-NOTICE.fifo
     ses:
       accessKey: AKIARL5GKSILRUJFMCMR
       secretKey: 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

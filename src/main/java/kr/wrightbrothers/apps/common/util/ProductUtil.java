@@ -91,8 +91,20 @@ public class ProductUtil {
         if (!mapper.convertValue(findDto.getInfoNotice(), InfoNoticeDto.InfoNotice.class).equals(mapper.convertValue(infoNotice, InfoNoticeDto.InfoNotice.class)))
             logList.add("상품 정보 고시");
 
-        if (!mapper.convertValue(findDto.getGuide(), GuideDto.Guide.class).equals(mapper.convertValue(guide, GuideDto.Guide.class)))
+        if (!findDto.getGuide().getProductDescription().equals(guide.getProductDescription()))
+            logList.add("상세 설명");
+
+        if (!findDto.getGuide().getProductGuide().equals(guide.getProductGuide()))
             logList.add("안내 사항");
+
+        if (!findDto.getGuide().getDeliveryGuide().equals(guide.getDeliveryGuide()))
+            logList.add("배송 안내");
+
+        if (!findDto.getGuide().getExchangeReturnGuide().equals(guide.getExchangeReturnGuide()))
+            logList.add("교환/반품 안내");
+
+        if (!findDto.getGuide().getAsGuide().equals(guide.getAsGuide()))
+            logList.add("A/S 안내");
 
         return logList.toArray(new String[0]);
     }
