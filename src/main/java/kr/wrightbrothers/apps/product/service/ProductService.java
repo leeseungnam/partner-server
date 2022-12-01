@@ -234,6 +234,16 @@ public class ProductService {
                         if (dao.selectOne(namespace + "isZeroStock", productCode, PartnerKey.WBDataBase.Alias.Admin))
                             throw new WBBusinessException(ErrorCode.INVALID_NUMBER_MIN.getErrCode(), new String[]{"판매재고", "1"});
                     }
+
+                    if (!"DP".equals(paramDto.getStatusType()) && currentStatus.equals(paramDto.getStatusValue())) {
+                        switch (ProductStatusCode.of(paramDto.getStatusValue())) {
+                            case SALE:
+                                throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"예약중/판매완료"});
+                            case END_OF_SALE:
+                            case RESERVATION:
+                                throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매중"});
+                        }
+                    }
                 });
 
         // 상태값 변경
