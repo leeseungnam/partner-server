@@ -111,6 +111,7 @@ public class NotificationQueue extends WBSQS {
                             .toPhone(to)
                             .templateId(notification.getMessageId())
                             .templateValue(messageValue)
+                            .snsDesc(notification.getDesc())
                             .build()
             );
             log.info("Notification Kakao Push Sender Complete. MessageId::{}, To::{}", notification.getMessageId(), to);

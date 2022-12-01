@@ -315,6 +315,7 @@ public class PartnerController extends WBController {
         //  set paramDto
         PartnerInviteDto.Param paramDto = PartnerInviteDto.Param.builder()
                 .inviteCode(inviteCode)
+                .inviteReceiver(user.getUsername())
                 .inviteStatus(PartnerKey.INTSTRING_TRUE) // acceptInvite 초대 수락상태 set
                 .build();
         //  select partnerCode, code, userId, inviteStatus
