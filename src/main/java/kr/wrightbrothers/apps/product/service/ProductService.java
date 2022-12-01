@@ -150,17 +150,15 @@ public class ProductService {
 
         if (ObjectUtils.isEmpty(currentProduct.getOptionList()) & ObjectUtils.isEmpty(paramDto.getOptionList())) return;
 
-        if (ObjectUtils.isEmpty(currentProduct.getOptionList()) | ObjectUtils.isEmpty(paramDto.getOptionList())) {
-            paramDto.setSqsLog(ArrayUtils.add(paramDto.getChangeLogList(), "옵션 정보"));
-            return;
-        }
 
         StringBuilder currentOptionStr = new StringBuilder();
-        for (OptionDto.ResBody dto : currentProduct.getOptionList())
-            currentOptionStr.append(dto.getOptionName()).append(dto.getOptionValue()).append(dto.getOptionSurcharge()).append(dto.getOptionStockQty());
+        if (!ObjectUtils.isEmpty(currentProduct.getOptionList()))
+            for (OptionDto.ResBody dto : currentProduct.getOptionList())
+                currentOptionStr.append(dto.getOptionName()).append(dto.getOptionValue()).append(dto.getOptionSurcharge()).append(dto.getOptionStockQty());
         StringBuilder updateOptionStr = new StringBuilder();
-        for (OptionDto.ReqBody dto : paramDto.getOptionList())
-            updateOptionStr.append(dto.getOptionName()).append(dto.getOptionValue()).append(dto.getOptionSurcharge()).append(dto.getOptionStockQty());
+        if (!ObjectUtils.isEmpty(paramDto.getOptionList()))
+            for (OptionDto.ReqBody dto : paramDto.getOptionList())
+                updateOptionStr.append(dto.getOptionName()).append(dto.getOptionValue()).append(dto.getOptionSurcharge()).append(dto.getOptionStockQty());
         if (!currentOptionStr.toString().equals(updateOptionStr.toString()))
             paramDto.setSqsLog(ArrayUtils.add(paramDto.getChangeLogList(), "옵션 정보"));
 

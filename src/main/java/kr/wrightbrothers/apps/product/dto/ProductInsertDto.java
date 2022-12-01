@@ -240,10 +240,15 @@ public class ProductInsertDto {
             this.infoNotice.setUserId(userId);
             this.guide.setUserId(userId);
 
-        Optional.ofNullable(this.optionList).orElseGet(Collections::emptyList)
-                .forEach(option -> option.setUserId(userId));
-        Optional.ofNullable(this.fileList).orElseGet(Collections::emptyList)
-                .forEach(file -> file.setUserId(userId));
+        if (!ObjectUtils.isEmpty(this.optionList) && ObjectUtils.isEmpty(this.optionList.get(0).getOptionName()))
+            this.optionList = null;
+
+        if (!ObjectUtils.isEmpty(this.optionList))
+            Optional.ofNullable(this.optionList).orElseGet(Collections::emptyList)
+                    .forEach(option -> option.setUserId(userId));
+        if (!ObjectUtils.isEmpty(this.fileList))
+            Optional.ofNullable(this.fileList).orElseGet(Collections::emptyList)
+                    .forEach(file -> file.setUserId(userId));
         if (!ObjectUtils.isEmpty(this.delivery))
             this.delivery.setUserId(userId);
         if (!ObjectUtils.isEmpty(this.basicSpec))
@@ -273,9 +278,9 @@ public class ProductInsertDto {
         this.sellInfo.setProductCode(productCode);
         this.infoNotice.setProductCode(productCode);
         this.guide.setProductCode(productCode);
-
-        Optional.ofNullable(this.optionList).orElseGet(Collections::emptyList)
-                .forEach(option -> option.setProductCode(productCode));
+        if (!ObjectUtils.isEmpty(this.optionList))
+            Optional.ofNullable(this.optionList).orElseGet(Collections::emptyList)
+                    .forEach(option -> option.setProductCode(productCode));
         if (!ObjectUtils.isEmpty(this.delivery))
             this.delivery.setProductCode(productCode);
         if (!ObjectUtils.isEmpty(this.basicSpec))
