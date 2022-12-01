@@ -48,6 +48,12 @@ public class ProductBeforeAop {
      * @param changeDisplayFlag 변경 전시 여부
      */
     private void validDisplayChange(String productNo, String changeDisplayFlag) {
+        // 현재 상품 상태 코드
+        String currentStatusCode = dao.selectOne(namespace + "findProductStatus", productNo, PartnerKey.WBDataBase.Alias.Admin);
+        // 판매완료 수정 불가
+        if (ProductStatusCode.END_OF_SALE.getCode().equals(currentStatusCode))
+            throw new WBBusinessException(ErrorCode.END_OF_SALE.getErrCode(), new String[]{"판매 완료"});
+
         if (changeDisplayFlag.equals(dao.selectOne(namespace + "findProductDisplayFlag", productNo, PartnerKey.WBDataBase.Alias.Admin))) {
             log.error("Product Display Change Error.");
             log.error("ProductCode::{}, ChangeDisplayFlag::{}", productNo, changeDisplayFlag);
