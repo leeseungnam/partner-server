@@ -44,7 +44,6 @@
 			 ,  invite_sender
 		from partner_invite
 		where invite_code = #{inviteCode}
-		  and invite_receiver = #{inviteReceiver}
 		order by create_date desc
          limit 1
 	</select>

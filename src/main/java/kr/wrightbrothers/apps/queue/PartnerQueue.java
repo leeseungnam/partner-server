@@ -178,7 +178,7 @@ public class PartnerQueue extends WBSQS {
                                 // templateValue(계약종료) : 스토어명
                                 templateValue = new String[]{partnerDto.getPartner().getPartnerName()};
 
-                                isSendEmail = true;
+                                isSendEmail = false;    // 계약종료(즉시) 에 대해서는 당장 이메일 발송 안함.
                                 email = Email.END_CONTRACT;
                             }
                         }

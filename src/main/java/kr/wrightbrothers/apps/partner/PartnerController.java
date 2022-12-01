@@ -234,7 +234,6 @@ public class PartnerController extends WBController {
     public WBModel invitePartnerOperator(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode
             ,@ApiParam @Valid @RequestBody PartnerInviteInsertDto paramDto
             ,@ApiIgnore @AuthenticationPrincipal UserPrincipal user
-
     ) {
         //  [todo] validation aop로 이동 처리 필요
         //  본인 계정 초대 확인
@@ -317,13 +316,16 @@ public class PartnerController extends WBController {
         PartnerInviteDto.Param paramDto = PartnerInviteDto.Param.builder()
                 .inviteCode(inviteCode)
                 .inviteStatus(PartnerKey.INTSTRING_TRUE) // acceptInvite 초대 수락상태 set
-                .inviteReceiver(user.getUsername())
                 .build();
         //  select partnerCode, code, userId, inviteStatus
         PartnerInviteDto.ResBody inviteInfo = partnerService.findOperatorInvite(paramDto);
 
+        //  초대 정보 확인
         if(ObjectUtils.isEmpty(inviteInfo)) throw new WBCustomException(messagePrefix+"common.not.exist.custom"
                 , new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.invite")});
+
+        //  초대 된 대상 - 로그인 대상 일치여부 확인
+        if(!inviteInfo.getInviteReceiver().equals(user.getUsername())) throw new WBCustomException(messagePrefix+"partner.invite.fail.diff.receiver");
 
         //  초대 가능 인원 확인
         if(!partnerService.checkPartnerOperatorAuthCount(PartnerInviteDto.PartnerOperator.builder()
