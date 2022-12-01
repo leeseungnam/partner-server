@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.apps.common.constants.Partner;
+import kr.wrightbrothers.apps.file.dto.FileDto;
+import kr.wrightbrothers.apps.file.dto.FileParamDto;
+import kr.wrightbrothers.apps.file.service.FileService;
 import kr.wrightbrothers.apps.partner.dto.*;
 import kr.wrightbrothers.apps.partner.service.PartnerService;
 import kr.wrightbrothers.apps.queue.dto.PartnerReceiveDto;
@@ -30,17 +33,25 @@ public class PartnerQueueService {
 
     private final WBCommonDao dao;
     private final PartnerService partnerService;
+    private final FileService fileService;
     private final String namespace = "kr.wrightbrothers.apps.partner.query.Partner.";
 
     public PartnerSendDto findPartnerSnsData(String partnerCode,
                                              String contractCode) {
-        return PartnerSendDto.builder()
+        PartnerSendDto partnerSendDto = PartnerSendDto.builder()
                 .registerId(((UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername())
                 .partnerCode(partnerCode)
                 .contractCode(contractCode)
                 .partner(Optional.of((PartnerSNSDto) dao.selectOne(namespace + "findPartnerSNS", partnerCode)).orElse(new PartnerSNSDto()))
                 .partnerContract(Optional.of((PartnerContractSNSDto) dao.selectOne(namespace + "findPartnerContractSNS", partnerCode)).orElse(new PartnerContractSNSDto()))
                 .build();
+
+        // admin platform 은 fileNo -> fileUrl청
+        if(!ObjectUtils.isEmpty(partnerSendDto.getPartner().getThumbnail())) {
+            FileDto fileDto = fileService.findFile(FileParamDto.builder().fileNo(partnerSendDto.getPartner().getThumbnail()).fileSeq(Long.valueOf(1)).build());
+            partnerSendDto.getPartner().setThumbnail(fileDto.getFileSource());
+        }
+        return partnerSendDto;
     }
     public PartnerInsertDto updatePartnerSnsData(JSONObject body, boolean isUpdateContractDay) throws JsonProcessingException {
 
