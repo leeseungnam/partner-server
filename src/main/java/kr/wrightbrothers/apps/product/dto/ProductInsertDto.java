@@ -17,10 +17,12 @@ import org.springframework.util.ObjectUtils;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Getter
 @Jacksonized
@@ -98,6 +100,7 @@ public class ProductInsertDto {
 
             // 재고
             int productStockQty = 0;
+            List<String> optionCheckList = new ArrayList<>();
             String preOptionName = "";
             String preOptionValue = "";
             for (OptionDto.ReqBody option : this.optionList) {
@@ -130,11 +133,14 @@ public class ProductInsertDto {
                 productStockQty += option.getOptionStockQty();
                 preOptionName = option.getOptionName();
                 preOptionValue = option.getOptionValue();
+                optionCheckList.add(option.getOptionName() + option.getOptionValue());
             }
             // 재고 수량 유효성 확인
             if (this.sellInfo.getProductStockQty() != productStockQty)
                 throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STOCK.getErrCode(), new String[]{""});
 
+             if (this.optionList.size() != optionCheckList.stream().distinct().count())
+                 throw new WBBusinessException(ErrorCode.DUPLICATION_OBJECT.getErrCode(), new String[]{"옵션 정보 "});
         }
     }
 
