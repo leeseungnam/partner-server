@@ -4,8 +4,11 @@ import kr.wrightbrothers.apps.common.annotation.ExcelBody;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class ExcelUtil {
@@ -151,5 +154,13 @@ public class ExcelUtil {
                         throw new RuntimeException(e);
                     }
                 });
+    }
+
+    public void excelWrite(String fileName,
+                           HttpServletResponse response) throws IOException {
+        response.setContentType("ms-vnd/excel");
+        response.setHeader("Content-Disposition", "attachment;filename=\"" + URLEncoder.encode(fileName, StandardCharsets.UTF_8) + "\";");
+        this.workbook.write(response.getOutputStream());
+        this.workbook.close();
     }
 }

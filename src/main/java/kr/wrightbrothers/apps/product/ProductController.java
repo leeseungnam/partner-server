@@ -116,9 +116,6 @@ public class ProductController extends WBController {
         // 상품 목록 조회
         List<ProductListDto.Response> productList = productService.findProductList(paramDto);
 
-        if (ObjectUtils.isEmpty(productList))
-            throw new WBBusinessException(ErrorCode.NO_CONTENT.getErrCode(), new String[]{"상품 목록"});
-
         // 엑셀 다운로드
         productService.makeExcelFile(
                 productList.stream()

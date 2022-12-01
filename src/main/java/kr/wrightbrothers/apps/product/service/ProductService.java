@@ -267,6 +267,11 @@ public class ProductService {
                 1
         );
 
+        if (ObjectUtils.isEmpty(productCodeList)) {
+            excel.excelWrite("상품목록리스트.xlsx", response);
+            return;
+        }
+
         List<ProductExcelDto> productList = dao.selectList(namespace + "findExcelProductList", productCodeList, PartnerKey.WBDataBase.Alias.Admin);
 
         // 엑셀 시트 생성
@@ -294,9 +299,6 @@ public class ProductService {
             }
         });
 
-        response.setContentType("ms-vnd/excel");
-        response.setHeader("Content-Disposition", "attachment;filename=\"" + URLEncoder.encode("상품목록리스트.xlsx", StandardCharsets.UTF_8) + "\";");
-        excel.workbook.write(response.getOutputStream());
-        excel.workbook.close();
+        excel.excelWrite("상품목록리스트.xlsx", response);
     }
 }
