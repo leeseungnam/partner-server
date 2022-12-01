@@ -16,6 +16,6 @@ public class CategoryService {
     private final String namespace = "kr.wrightbrothers.apps.category.query.Category.";
 
     public List<CategoryListDto> findCategoryList(String categoryGroup) {
-        return dao.selectList(namespace + "findCategoryList", categoryGroup, PartnerKey.WBDataBase.Alias.Admin);
+        return dao.selectList(namespace + "findCategoryList", categoryGroup, PartnerKey.WBDataBase.Alias.AdminRead);
     }
 }

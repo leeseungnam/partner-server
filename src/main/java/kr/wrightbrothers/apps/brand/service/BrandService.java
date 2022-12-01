@@ -16,6 +16,6 @@ public class BrandService {
     private final String namespace = "kr.wrightbrothers.apps.brand.query.Brand.";
 
     public List<BrandListDto> findBrandList() {
-        return dao.selectList(namespace + "findBrandList", null, PartnerKey.WBDataBase.Alias.Admin);
+        return dao.selectList(namespace + "findBrandList", null, PartnerKey.WBDataBase.Alias.AdminRead);
     }
 }
