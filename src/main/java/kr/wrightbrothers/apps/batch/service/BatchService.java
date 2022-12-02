@@ -53,7 +53,7 @@ public class BatchService {
                 );
                 // 계약 자동 갱신 회원(관리자) 메일 발송
                 List<UserTargetDto> userTargetList = findPartnerMailByPartnerCode(targetDto.getPartnerCode());
-                emailService.sendMailPartnerContract(userTargetList, Email.RENEWAL_CONTRACT);
+                emailService.sendMailPartnerContract(userTargetList, Email.RENEWAL_CONTRACT, null);
 
             } catch (Exception e) {
                 log.error("[renewalContract]::Error::targetDto={}",targetDto.toString());

@@ -21,14 +21,16 @@ public class EmailService {
 
     private final AwsSesUtil awsSesUtil;
 
-    public void sendMailPartnerContract(List<UserTargetDto> targetList, Email email) {
+    public void sendMailPartnerContract(List<UserTargetDto> targetList, Email email, Context context) {
         log.info("[sendMailPartnerContract]:: ... start");
 
         log.info("[sendMailPartnerContract]:: Send Mail Target={}", targetList.toString());
 
         for (UserTargetDto targetDto : targetList) {
             // 메일 발송 대상자
-            Context context = new Context();
+            if(ObjectUtils.isEmpty(context)) {
+                context = new Context();
+            }
             context.setVariable("userName", targetDto.getUserName());
 
             log.info("[sendMailPartnerContract]::target={}",targetDto.getUserName());

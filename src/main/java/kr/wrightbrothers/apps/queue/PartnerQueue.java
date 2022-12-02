@@ -31,6 +31,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.thymeleaf.context.Context;
 
 import java.util.List;
 
@@ -120,6 +121,7 @@ public class PartnerQueue extends WBSQS {
 
             boolean isSendEmail = false;
             Email email = Email.NULL;
+            Context context = null;
 
             switch (DocumentSNS.of(header.getDocuNm())){
                 case RESULT_INSPECTION_PARTNER:
@@ -150,6 +152,8 @@ public class PartnerQueue extends WBSQS {
 
                             isSendEmail = true;
                             email = Email.REJECT_CONTRACT;
+                            context = new Context();
+                            context.setVariable("rejectComment",partnerDto.getPartnerReject().getRejectComment());
                         } else {
                             log.info("[receiveFromAdmin]::Send Fail::requestStatus={}",body.get("requestStatus").toString());
                         }
@@ -189,7 +193,7 @@ public class PartnerQueue extends WBSQS {
             log.info("[receiveFromAdmin]::isSendEmail={}", isSendEmail);
             if(isSendEmail){
                 List<UserTargetDto> userTargetDtoList = batchService.findPartnerMailByPartnerCode(partnerCode);
-                emailService.sendMailPartnerContract(userTargetDtoList, email);
+                emailService.sendMailPartnerContract(userTargetDtoList, email, context);
             }
             //  Send Notification
             log.info("[receiveFromAdmin]::isSendNoti={}", isSendNoti);
