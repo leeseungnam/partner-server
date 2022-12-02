@@ -174,7 +174,7 @@ public class ProductQueueService {
             context.setVariable("rejectMessages",
                     productUpdateDto.getChangeLogList()[0].substring(
                             productUpdateDto.getChangeLogList()[0].indexOf("(") + 1,
-                            productUpdateDto.getChangeLogList()[0].length() - 1)
+                            productUpdateDto.getChangeLogList()[0].length() - 1).replaceAll("\n", "<br>")   // 개행처리
             );
 
         // 메일 발송 처리
