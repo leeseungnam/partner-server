@@ -170,6 +170,12 @@ public class ProductQueueService {
 
         Context context = new Context();
         context.setVariable("partnerName", findAddressDto.getPartnerName());
+        if (Email.REJECT_PRODUCT == email)
+            context.setVariable("rejectMessages",
+                    productUpdateDto.getChangeLogList()[0].substring(
+                            productUpdateDto.getChangeLogList()[0].indexOf("("),
+                            productUpdateDto.getChangeLogList()[0].length() - 1)
+            );
 
         // 메일 발송 처리
         awsSesUtil.multiSend(
