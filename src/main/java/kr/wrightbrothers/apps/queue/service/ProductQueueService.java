@@ -173,7 +173,7 @@ public class ProductQueueService {
         if (Email.REJECT_PRODUCT == email)
             context.setVariable("rejectMessages",
                     productUpdateDto.getChangeLogList()[0].substring(
-                            productUpdateDto.getChangeLogList()[0].indexOf("("),
+                            productUpdateDto.getChangeLogList()[0].indexOf("(") + 1,
                             productUpdateDto.getChangeLogList()[0].length() - 1)
             );
 
