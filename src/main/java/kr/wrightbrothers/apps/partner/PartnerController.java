@@ -160,29 +160,34 @@ public class PartnerController extends WBController {
             ,@ApiParam(value = "계약 코드") @PathVariable String contractCode
             ,@ApiParam @Valid @RequestBody PartnerInsertDto paramDto) {
 
-        // findBy사업자번호
-        // 단위과세 사업자 번호만 중복 허용
-        String businessNo = paramDto.getPartner().getBusinessNo();
-        String businessClassificationCode = paramDto.getPartner().getBusinessClassificationCode();
+        PartnerDto.ResBody partnerDto = partnerService.findPartnerInfoByPartnerCode(paramDto.getPartner().getPartnerCode());
 
         // 스토어명 중복체크.
-        if(!partnerService.checkPartnerNameCount(paramDto.getPartner().getPartnerName())) throw new WBCustomException(ErrorCode.INVALID_PARTNER_NAME, messagePrefix+"common.duplication.custom", new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.partner.name")});
-
-        List<PartnerDto.ResBody> partnerList = partnerService.findPartnerListByBusinessNo(PartnerFindDto.Param.builder()
-                .businessNo(businessNo)
-                .build());
-
-        // 단위과세 등록 인 경우 단위과세 아닌 타 사업유형의 경우 체크 사업자 번호 중복 체크
-        if(Partner.Classification.UNIT_TAXPATER.getCode().equals(businessClassificationCode)) {
-            partnerList.forEach(entity -> {
-                if(!Partner.Classification.UNIT_TAXPATER.getCode().equals(entity.getBusinessClassificationCode()))
-                    throw new WBCustomException(ErrorCode.INVALID_PARTNER_BISNO, messagePrefix+"common.duplication.custom", new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.business.no")});
-            });
-        }else{
-            // 단위과세 등록이 아닌 경우 복수 체크
-            if(partnerList.size() > 0) throw new WBCustomException(ErrorCode.INVALID_PARTNER_BISNO, messagePrefix+"common.duplication.custom", new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.business.no")});
+        if(!paramDto.getPartner().getPartnerName().equals(partnerDto.getPartnerName())) {
+            if(!partnerService.checkPartnerNameCount(paramDto.getPartner().getPartnerName())) throw new WBCustomException(ErrorCode.INVALID_PARTNER_NAME, messagePrefix+"common.duplication.custom", new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.partner.name")});
         }
 
+        // findBy사업자번호
+        // 단위과세 사업자 번호만 중복 허용
+        if(!paramDto.getPartner().getBusinessNo().equals(partnerDto.getBusinessNo())) {
+            String businessNo = paramDto.getPartner().getBusinessNo();
+            String businessClassificationCode = paramDto.getPartner().getBusinessClassificationCode();
+
+            List<PartnerDto.ResBody> partnerList = partnerService.findPartnerListByBusinessNo(PartnerFindDto.Param.builder()
+                    .businessNo(businessNo)
+                    .build());
+
+            // 단위과세 등록 인 경우 단위과세 아닌 타 사업유형의 경우 체크 사업자 번호 중복 체크
+            if(Partner.Classification.UNIT_TAXPATER.getCode().equals(businessClassificationCode)) {
+                partnerList.forEach(entity -> {
+                    if(!Partner.Classification.UNIT_TAXPATER.getCode().equals(entity.getBusinessClassificationCode()))
+                        throw new WBCustomException(ErrorCode.INVALID_PARTNER_BISNO, messagePrefix+"common.duplication.custom", new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.business.no")});
+                });
+            }else{
+                // 단위과세 등록이 아닌 경우 복수 체크
+                if(partnerList.size() > 0) throw new WBCustomException(ErrorCode.INVALID_PARTNER_BISNO, messagePrefix+"common.duplication.custom", new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.business.no")});
+            }
+        }
         if(partnerService.findPartnerContract(partnerCode, contractCode).getContractStatus().equals(Partner.Contract.Status.REQUEST.getCode())) throw new WBCustomException(messagePrefix+"partner.comment."+Partner.Status.STOP.getCode()+"."+Partner.Contract.Status.REQUEST.getCode());
 
         paramDto.getPartner().changePartnerCode(partnerCode);
