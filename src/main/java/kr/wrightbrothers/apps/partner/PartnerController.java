@@ -160,7 +160,7 @@ public class PartnerController extends WBController {
             ,@ApiParam(value = "계약 코드") @PathVariable String contractCode
             ,@ApiParam @Valid @RequestBody PartnerInsertDto paramDto) {
 
-        PartnerDto.ResBody partnerDto = partnerService.findPartnerInfoByPartnerCode(paramDto.getPartner().getPartnerCode());
+        PartnerDto.ResBody partnerDto = partnerService.findPartnerInfoByPartnerCode(contractCode);
 
         // 스토어명 중복체크.
         if(!paramDto.getPartner().getPartnerName().equals(partnerDto.getPartnerName())) {
