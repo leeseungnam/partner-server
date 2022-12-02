@@ -132,6 +132,9 @@ public class PartnerQueue extends WBSQS {
                         partnerCode = partnerDto.getPartner().getPartnerCode();
                         ackMessage(snsDto);
 
+                        context = new Context();
+                        context.setVariable("partnerName", partnerDto.getPartner().getPartnerName());
+
                         // send notification proc
                         log.info("[receiveFromAdmin]::Send ::requestStatus={}",body.get("requestStatus").toString());
                         if("S01".equals(body.get("requestStatus").toString())) {
@@ -152,8 +155,7 @@ public class PartnerQueue extends WBSQS {
 
                             isSendEmail = true;
                             email = Email.REJECT_CONTRACT;
-                            context = new Context();
-                            context.setVariable("rejectComment",partnerDto.getPartnerReject().getRejectComment());
+                            context.setVariable("rejectComment", partnerDto.getPartnerReject().getRejectComment());
                         } else {
                             log.info("[receiveFromAdmin]::Send Fail::requestStatus={}",body.get("requestStatus").toString());
                         }
@@ -166,6 +168,9 @@ public class PartnerQueue extends WBSQS {
                         PartnerInsertDto partnerDto = partnerQueueService.updatePartnerSnsData(body, false);
                         partnerCode = partnerDto.getPartner().getPartnerCode();
                         ackMessage(snsDto);
+
+                        context = new Context();
+                        context.setVariable("partnerName", partnerDto.getPartner().getPartnerName());
 
                         // send notification proc
                         if(Partner.Status.STOP.getCode().equals(partnerDto.getPartner().getPartnerStatus())) {
