@@ -159,6 +159,9 @@ public class PartnerService {
                 .contractCode(contractCode)
         );
     }
+    public PartnerDto.ResBody findPartnerInfoByPartnerCode(String partnerCode) {
+        return dao.selectOne(namespace + "findPartnerByPartnerCode", partnerCode);
+    }
 
     public PartnerViewDto.ResBody findPartnerByPartnerCode(PartnerViewDto.Param paramDto) {
 
