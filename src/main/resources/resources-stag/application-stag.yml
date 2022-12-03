@@ -1,7 +1,7 @@
 spring:
   datasource-partner:
     driver-class-name: org.mariadb.jdbc.Driver
-    jdbc-url: jdbc:mariadb://wrightbrothers-partner-stag.cf22cofp8pqh.ap-northeast-2.rds.amazonaws.com/partner?useSSL=false&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&allowMultiQueries=true
+    jdbc-url: jdbc:mariadb://wrightbrothers-partner-stag.cf22cofp8pqh.ap-northeast-2.rds.amazonaws.com:3306/partner?useSSL=false&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&allowMultiQueries=true
     username: admin
     password: pszqU1Be8LcZDWunv19N
     maximumPoolSize: 5
