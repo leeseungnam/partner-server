@@ -16,6 +16,6 @@ public class CodeService {
     private final String namespace = "kr.wrightbrothers.apps.code.query.Code.";
 
     public List<CodeListDto> findCodeList(String codeGroup) {
-        return dao.selectList(namespace + "findCodeList", codeGroup, PartnerKey.WBDataBase.Alias.Admin);
+        return dao.selectList(namespace + "findCodeList", codeGroup, PartnerKey.WBDataBase.Alias.AdminRead);
     }
 }

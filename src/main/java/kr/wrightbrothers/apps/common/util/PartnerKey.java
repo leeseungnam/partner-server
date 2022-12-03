@@ -32,6 +32,13 @@ public class PartnerKey {
 			public static final String AdminSqlSessionTemplate 		= "AdminSqlSessionTemplate";
 			public static final String AdminTransactionManager 		= "AdminTransactionManager";
 
+			// 어드민 데이터 설정(읽기권한)
+			public static final String AdminReadDataSource 			= "AdminReadDataSource";
+			public static final String AdminReadLog4jdbcProxySource = "AdminReadLog4jdbcProxySource";
+			public static final String AdminReadSqlSessionFactory 	= "AdminReadSqlSessionFactory";
+			public static final String AdminReadSqlSessionTemplate 	= "AdminReadSqlSessionTemplate";
+			public static final String AdminReadTransactionManager 	= "AdminReadTransactionManager";
+
 			public static final String SessionDataSource 			= "SessionDataSource";
 			public static final String SessionTransactionManager 	= "SessionTransactionManager";
 
@@ -69,13 +76,15 @@ public class PartnerKey {
 	public static class WBDataBase {
 
 		public static class Alias {
-			public static final String Default 	= "Default";
-			public static final String Admin	= "Admin";
+			public static final String Default		= "Default";
+			public static final String Admin		= "Admin";
+			public static final String AdminRead 	= "AdminRead";
 		}
 
 		public static class TransactionManager {
 			public static final String Default 		= WBConfig.Mybatis.DefaultTransactionManager;
 			public static final String Admin		= WBConfig.Mybatis.AdminTransactionManager;
+			public static final String AdminRead	= WBConfig.Mybatis.AdminReadTransactionManager;
 			public static final String Global 		= WBConfig.Mybatis.GlobalTransactionManager;
 		}
 	}

@@ -17,9 +17,12 @@ import org.springframework.util.ObjectUtils;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Getter
 @Jacksonized
@@ -97,7 +100,14 @@ public class ProductInsertDto {
 
             // 재고
             int productStockQty = 0;
+            List<String> optionCheckList = new ArrayList<>();
+            String preOptionName = "";
+            String preOptionValue = "";
             for (OptionDto.ReqBody option : this.optionList) {
+                // 옵션 중복등록 유효성 체크
+                if (option.getOptionName().equals(preOptionName) && option.getOptionValue().equals(preOptionValue))
+                    throw new WBBusinessException(ErrorCode.DUPLICATION_OBJECT.getErrCode(), new String[]{"옵션 정보 "});
+
                 if (ObjectUtils.isEmpty(option.getOptionSeq()))
                     throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"옵션 번호"});
                 if (ObjectUtils.isEmpty(option.getOptionName()))
@@ -109,21 +119,52 @@ public class ProductInsertDto {
                 if (ObjectUtils.isEmpty(option.getOptionStockQty()))
                     throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"옵션 재고수량"});
 
-                // 판매완료 처리 시 재고 0개 처리
-                if (ProductStatusCode.SOLD_OUT.getCode().equals(this.sellInfo.getProductStatusCode()))
-                    option.setOptionStockQty(0);
+                if (option.getOptionName().length() > 20)
+                    throw new WBBusinessException(ErrorCode.INVALID_TEXT_SIZE.getErrCode(), new String[]{"옵션명", "1", "20"});
+                if (option.getOptionValue().length() > 20)
+                    throw new WBBusinessException(ErrorCode.INVALID_TEXT_SIZE.getErrCode(), new String[]{"옵션항목", "1", "20"});
+                if (option.getOptionSurcharge() > 10000000)
+                    throw new WBBusinessException(ErrorCode.INVALID_MONEY_MAX.getErrCode(), new String[]{"변동금액", "10,000,000"});
+                if (option.getOptionSurcharge() < -10000000)
+                    throw new WBBusinessException(ErrorCode.INVALID_MONEY_MIN.getErrCode(), new String[]{"변동금액", "-10,000,000"});
+                if (option.getOptionStockQty() > 9999)
+                    throw new WBBusinessException(ErrorCode.INVALID_NUMBER_MAX.getErrCode(), new String[]{"옵션 재고수량", "9,999"});
 
                 productStockQty += option.getOptionStockQty();
+                preOptionName = option.getOptionName();
+                preOptionValue = option.getOptionValue();
+                optionCheckList.add(option.getOptionName() + option.getOptionValue());
             }
             // 재고 수량 유효성 확인
             if (this.sellInfo.getProductStockQty() != productStockQty)
                 throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STOCK.getErrCode(), new String[]{""});
+
+             if (this.optionList.size() != optionCheckList.stream().distinct().count())
+                 throw new WBBusinessException(ErrorCode.DUPLICATION_OBJECT.getErrCode(), new String[]{"옵션 정보 "});
         }
     }
 
     public void validProduct() {
+        // 상품이미지
+        if (ObjectUtils.isEmpty(fileList))
+            throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"상품 이미지"});
+
         // 자전거 상품 추가 유효성 검사
         validBike();
+
+        // 판매재고 최대 수량 체크
+        if (this.sellInfo.getProductStockQty() > 9999)
+            throw new WBBusinessException(ErrorCode.INVALID_NUMBER_MAX.getErrCode(), new String[]{"재고", "9,999"});
+
+        // 이미지 30장 이상 등록 유효성 검사
+        AtomicInteger imgCount = new AtomicInteger();
+        fileList.forEach(file -> {
+            if ("D".equals(file.getFileStatus())) return;
+            imgCount.getAndIncrement();
+        });
+
+        if (imgCount.get() > 30)
+            throw new WBBusinessException(ErrorCode.INVALID_IMAGE_MAX.getErrCode(), new String[]{"30개"});
 
         // 자전거 기본스펙 해당 필드 Null 처리
         if (!ObjectUtils.isEmpty(this.basicSpec)) {
@@ -133,23 +174,37 @@ public class ProductInsertDto {
                 this.basicSpec.setMinHeightPerson(null);
             if ("".equals(this.basicSpec.getBikeWeight()) | "0".equals(this.basicSpec.getBikeWeight()))
                 this.basicSpec.setBikeWeight(null);
+
+            // 호환키 유효성
+            if (ObjectUtils.isEmpty(this.basicSpec.getMinHeightPerson()) || ObjectUtils.isEmpty(this.basicSpec.getMaxHeightPerson())) {
+                if (!(ObjectUtils.isEmpty(this.basicSpec.getMinHeightPerson()) && ObjectUtils.isEmpty(this.basicSpec.getMaxHeightPerson())))
+                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"호환키"});
+            }
+
+            // 기본스펙 호환키에 대한 유효성 체크
+            if (!ObjectUtils.isEmpty(this.basicSpec.getMinHeightPerson()) && !ObjectUtils.isEmpty(this.basicSpec.getMaxHeightPerson())) {
+                if (Long.parseLong(this.basicSpec.getMinHeightPerson()) > Long.parseLong(this.basicSpec.getMaxHeightPerson()))
+                    throw new WBBusinessException(ErrorCode.INVALID_RANGE.getErrCode(), new String[]{"호환키"});
+                if (Long.parseLong(this.basicSpec.getMinHeightPerson()) < 80)
+                    throw new WBBusinessException(ErrorCode.INVALID_NUMBER_MIN.getErrCode(), new String[]{"최소키", "80"});
+                if (Long.parseLong(this.basicSpec.getMaxHeightPerson()) > 250)
+                    throw new WBBusinessException(ErrorCode.INVALID_NUMBER_MAX.getErrCode(), new String[]{"최대키", "250"});
+            }
+
         }
 
         if (ObjectUtils.isEmpty(this.sellInfo.getProductStatusCode()))
             throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"상품 진행 상태"});
 
-        // 상품 판매 상태일 경우 판매재고 0 이상의 유효성 체크
-        if (ProductStatusCode.SALE.getCode().equals(this.sellInfo.getProductStatusCode()) ||
-                ProductStatusCode.RESERVATION.getCode().equals(this.sellInfo.getProductStatusCode())) {
+        // 예약중 상태일 경우 판매재고 0 이상의 유효성 체크
+        if (ProductStatusCode.RESERVATION.getCode().equals(this.sellInfo.getProductStatusCode())) {
             if (this.sellInfo.getProductStockQty() == 0)
                 throw new WBBusinessException(ErrorCode.INVALID_NUMBER_MIN.getErrCode(), new String[]{"판매재고", "1"});
         }
 
-        // 상품 판매완료 상태변경 시 재고 0 처리
-        if (ProductStatusCode.SOLD_OUT.getCode().equals(this.sellInfo.getProductStatusCode())) {
-            // 상품 판매완료 상태는 기존 재구 무시하고 상품 재고 0개 처리(기획 장석민 협의 완료)
-            this.sellInfo.setProductStockQty(0);
-        }
+        // 판매중 상태에서의 재고 0일경우 판매완료 상태변경
+        if (ProductStatusCode.SALE.getCode().equals(this.sellInfo.getProductStatusCode()) && this.sellInfo.getProductStockQty() == 0)
+            this.sellInfo.setProductStatusCode(ProductStatusCode.SOLD_OUT.getCode());
 
         // 상품 판매 옵션 유효성 검사
         validOption();
@@ -161,6 +216,20 @@ public class ProductInsertDto {
                 throw new WBBusinessException(ErrorCode.INVALID_TEXT_SIZE.getErrCode(), new String[]{"자주 묻는 질문", "30", "2000"});
             return;
         }
+
+        // 상품 상세설명 최소 최대값 유효성 체크
+        if (this.guide.getProductDescription()
+                .replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", "")
+                .length() > 10000 |
+                this.guide.getProductDescription()
+                .replaceAll("<(/)?([a-zA-Z]*)(\\s[a-zA-Z]*=[^>]*)?(\\s)*(/)?>", "")
+                .length() < 30)
+            throw new WBBusinessException(ErrorCode.INVALID_TEXT_SIZE.getErrCode(), new String[]{"상품 상세설명", "30", "10000"});
+
+        // 상품 상세설명 이미지 30개 이상 유효성 체크
+        if (this.guide.getProductDescription()
+                .split("img src").length -1 > 30)
+            throw new WBBusinessException(ErrorCode.INVALID_IMAGE_MAX.getErrCode(), new String[]{"30개"});
 
         if (ObjectUtils.isEmpty(this.guide.getExchangeReturnGuide()))
             throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"교환/반품 안내"});
@@ -177,10 +246,15 @@ public class ProductInsertDto {
             this.infoNotice.setUserId(userId);
             this.guide.setUserId(userId);
 
-        Optional.ofNullable(this.optionList).orElseGet(Collections::emptyList)
-                .forEach(option -> option.setUserId(userId));
-        Optional.ofNullable(this.fileList).orElseGet(Collections::emptyList)
-                .forEach(file -> file.setUserId(userId));
+        if (!ObjectUtils.isEmpty(this.optionList) && ObjectUtils.isEmpty(this.optionList.get(0).getOptionName()))
+            this.optionList = null;
+
+        if (!ObjectUtils.isEmpty(this.optionList))
+            Optional.ofNullable(this.optionList).orElseGet(Collections::emptyList)
+                    .forEach(option -> option.setUserId(userId));
+        if (!ObjectUtils.isEmpty(this.fileList))
+            Optional.ofNullable(this.fileList).orElseGet(Collections::emptyList)
+                    .forEach(file -> file.setUserId(userId));
         if (!ObjectUtils.isEmpty(this.delivery))
             this.delivery.setUserId(userId);
         if (!ObjectUtils.isEmpty(this.basicSpec))
@@ -210,9 +284,9 @@ public class ProductInsertDto {
         this.sellInfo.setProductCode(productCode);
         this.infoNotice.setProductCode(productCode);
         this.guide.setProductCode(productCode);
-
-        Optional.ofNullable(this.optionList).orElseGet(Collections::emptyList)
-                .forEach(option -> option.setProductCode(productCode));
+        if (!ObjectUtils.isEmpty(this.optionList))
+            Optional.ofNullable(this.optionList).orElseGet(Collections::emptyList)
+                    .forEach(option -> option.setProductCode(productCode));
         if (!ObjectUtils.isEmpty(this.delivery))
             this.delivery.setProductCode(productCode);
         if (!ObjectUtils.isEmpty(this.basicSpec))

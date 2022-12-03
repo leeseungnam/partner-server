@@ -23,6 +23,12 @@ spring:
     username: admin
     password: rBEdceIdPrQMaHrQVcZj
     maximumPoolSize: 5
+  datasource-admin-read:
+    driver-class-name: org.mariadb.jdbc.Driver
+    jdbc-url: jdbc:mariadb://wrightbrothers-dev-admin.c9lwghctzixx.ap-northeast-2.rds.amazonaws.com:3306/wrightbrothers?useSSL=false&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&allowMultiQueries=true
+    username: admin
+    password: rBEdceIdPrQMaHrQVcZj
+    maximumPoolSize: 5
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -56,6 +62,7 @@ cloud:
       order: DEV-PARTNER-PLATFORM-ORDER.fifo
       partner: DEV-PARTNER-ADMIN-STORE.fifo
       history: DEV-COMMON-HISTORY.fifo
+      noti: DEV-COMMON-NOTICE.fifo
     ses:
       accessKey: AKIARL5GKSILRUJFMCMR
       secretKey: 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

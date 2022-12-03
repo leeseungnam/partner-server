@@ -5,6 +5,7 @@ import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
 import kr.wrightbrothers.apps.common.constants.Email;
 import kr.wrightbrothers.apps.common.constants.Partner;
 import kr.wrightbrothers.apps.common.constants.User;
+import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.email.dto.SingleEmailDto;
 import kr.wrightbrothers.apps.email.service.EmailService;
@@ -61,7 +62,7 @@ public class PartnerController extends WBController {
         String businessClassificationCode = paramDto.getPartner().getBusinessClassificationCode();
 
         // 스토어명 중복체크.
-        if(!partnerService.checkPartnerNameCount(paramDto.getPartner().getPartnerName())) throw new WBCustomException(messagePrefix+"common.duplication.custom", new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.partner.name")});
+        if(!partnerService.checkPartnerNameCount(paramDto.getPartner().getPartnerName())) throw new WBCustomException(ErrorCode.INVALID_PARTNER_NAME, messagePrefix+"common.duplication.custom", new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.partner.name")});
 
         List<PartnerDto.ResBody> partnerList = partnerService.findPartnerListByBusinessNo(PartnerFindDto.Param.builder()
                         .businessNo(businessNo)
@@ -71,11 +72,11 @@ public class PartnerController extends WBController {
         if(Partner.Classification.UNIT_TAXPATER.getCode().equals(businessClassificationCode)) {
             partnerList.forEach(entity -> {
                 if(!Partner.Classification.UNIT_TAXPATER.getCode().equals(entity.getBusinessClassificationCode()))
-                    throw new WBCustomException(messagePrefix+"common.duplication.custom", new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.business.no")});
+                    throw new WBCustomException(ErrorCode.INVALID_PARTNER_BISNO, messagePrefix+"common.duplication.custom", new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.business.no")});
             });
         }else{
             // 단위과세 등록이 아닌 경우 복수 체크
-            if(partnerList.size() > 0) throw new WBCustomException(messagePrefix+"common.duplication.custom", new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.business.no")});
+            if(partnerList.size() > 0) throw new WBCustomException(ErrorCode.INVALID_PARTNER_BISNO, messagePrefix+"common.duplication.custom", new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.business.no")});
         }
         // insertPartner
         partnerService.insertPartner(paramDto);
@@ -159,6 +160,34 @@ public class PartnerController extends WBController {
             ,@ApiParam(value = "계약 코드") @PathVariable String contractCode
             ,@ApiParam @Valid @RequestBody PartnerInsertDto paramDto) {
 
+        PartnerDto.ResBody partnerDto = partnerService.findPartnerInfoByPartnerCode(partnerCode);
+
+        // 스토어명 중복체크.
+        if(!paramDto.getPartner().getPartnerName().equals(partnerDto.getPartnerName())) {
+            if(!partnerService.checkPartnerNameCount(paramDto.getPartner().getPartnerName())) throw new WBCustomException(ErrorCode.INVALID_PARTNER_NAME, messagePrefix+"common.duplication.custom", new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.partner.name")});
+        }
+
+        // findBy사업자번호
+        // 단위과세 사업자 번호만 중복 허용
+        if(!paramDto.getPartner().getBusinessNo().equals(partnerDto.getBusinessNo())) {
+            String businessNo = paramDto.getPartner().getBusinessNo();
+            String businessClassificationCode = paramDto.getPartner().getBusinessClassificationCode();
+
+            List<PartnerDto.ResBody> partnerList = partnerService.findPartnerListByBusinessNo(PartnerFindDto.Param.builder()
+                    .businessNo(businessNo)
+                    .build());
+
+            // 단위과세 등록 인 경우 단위과세 아닌 타 사업유형의 경우 체크 사업자 번호 중복 체크
+            if(Partner.Classification.UNIT_TAXPATER.getCode().equals(businessClassificationCode)) {
+                partnerList.forEach(entity -> {
+                    if(!Partner.Classification.UNIT_TAXPATER.getCode().equals(entity.getBusinessClassificationCode()))
+                        throw new WBCustomException(ErrorCode.INVALID_PARTNER_BISNO, messagePrefix+"common.duplication.custom", new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.business.no")});
+                });
+            }else{
+                // 단위과세 등록이 아닌 경우 복수 체크
+                if(partnerList.size() > 0) throw new WBCustomException(ErrorCode.INVALID_PARTNER_BISNO, messagePrefix+"common.duplication.custom", new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.business.no")});
+            }
+        }
         if(partnerService.findPartnerContract(partnerCode, contractCode).getContractStatus().equals(Partner.Contract.Status.REQUEST.getCode())) throw new WBCustomException(messagePrefix+"partner.comment."+Partner.Status.STOP.getCode()+"."+Partner.Contract.Status.REQUEST.getCode());
 
         paramDto.getPartner().changePartnerCode(partnerCode);
@@ -233,7 +262,24 @@ public class PartnerController extends WBController {
     @PostMapping("/{partnerCode}/operator")
     public WBModel invitePartnerOperator(@ApiParam(value = "파트너 코드") @PathVariable String partnerCode
             ,@ApiParam @Valid @RequestBody PartnerInviteInsertDto paramDto
+            ,@ApiIgnore @AuthenticationPrincipal UserPrincipal user
     ) {
+        //  [todo] validation aop로 이동 처리 필요
+        //  본인 계정 초대 확인
+        if(user.getUsername().equals(paramDto.getPartnerOperator().getInviteReceiver()))
+            throw new WBCustomException(messagePrefix+"partner.invite.fail.own");
+
+        //  관리자 계정 초대 확인
+        UserDto target = userService.findUserByUserIdAndPartnerCode(UserDto.builder()
+                        .userId(paramDto.getPartnerOperator().getInviteReceiver())
+                        .partnerCode(partnerCode)
+                        .build()
+        );
+        if(!ObjectUtils.isEmpty(target)) {
+            if(User.Auth.ADMIN.getType().equals(target.getAuthCode()))
+                throw new WBCustomException(messagePrefix+"partner.invite.fail.admin");
+        }
+
         //  초대 가능 인원 확인
         if(!partnerService.checkPartnerOperatorAuthCount(PartnerInviteDto.PartnerOperator.builder()
                 .partnerCode(paramDto.getPartnerOperator().getPartnerCode())
@@ -274,8 +320,6 @@ public class PartnerController extends WBController {
         paramDto.getPartnerOperator().changeInviteStatus("0");
         partnerService.insetPartnerOperator(paramDto);
 
-        //  send invite email
-        UserDto user = userService.findUserByDynamic(UserDto.builder().userId(paramDto.getPartnerOperator().getInviteReceiver()).build());
         //  send email
         SingleEmailDto.ResBody resBody = emailService.singleSendEmail(SingleEmailDto.ReqBody.builder()
                         .emailType(Email.INVITE_OPERATOR.getCode())
@@ -300,14 +344,18 @@ public class PartnerController extends WBController {
         //  set paramDto
         PartnerInviteDto.Param paramDto = PartnerInviteDto.Param.builder()
                 .inviteCode(inviteCode)
-                .inviteStatus(PartnerKey.INTSTRING_TRUE) // acceptInvite 초대 수락상태 set
                 .inviteReceiver(user.getUsername())
+                .inviteStatus(PartnerKey.INTSTRING_TRUE) // acceptInvite 초대 수락상태 set
                 .build();
         //  select partnerCode, code, userId, inviteStatus
         PartnerInviteDto.ResBody inviteInfo = partnerService.findOperatorInvite(paramDto);
 
+        //  초대 정보 확인
         if(ObjectUtils.isEmpty(inviteInfo)) throw new WBCustomException(messagePrefix+"common.not.exist.custom"
                 , new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.invite")});
+
+        //  초대 된 대상 - 로그인 대상 일치여부 확인
+        if(!inviteInfo.getInviteReceiver().equals(user.getUsername())) throw new WBCustomException(messagePrefix+"partner.invite.fail.diff.receiver");
 
         //  초대 가능 인원 확인
         if(!partnerService.checkPartnerOperatorAuthCount(PartnerInviteDto.PartnerOperator.builder()

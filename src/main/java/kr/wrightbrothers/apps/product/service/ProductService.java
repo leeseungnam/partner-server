@@ -5,12 +5,15 @@ import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.ExcelUtil;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.ProductUtil;
+import kr.wrightbrothers.apps.file.dto.FileListDto;
+import kr.wrightbrothers.apps.file.dto.FileUpdateDto;
 import kr.wrightbrothers.apps.file.service.FileService;
 import kr.wrightbrothers.apps.product.dto.*;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
@@ -113,7 +116,61 @@ public class ProductService {
     }
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    public void productChangeLog(ProductUpdateDto paramDto) {
+        // 변경 사항 체크
+        ProductFindDto.ResBody currentProduct = findProduct(ProductFindDto.Param.builder()
+                .partnerCode(paramDto.getProduct().getPartnerCode())
+                .productCode(paramDto.getProductCode())
+                .build());
+        paramDto.setSqsLog(
+                productUtil.productModifyCheck(
+                        currentProduct,
+                        paramDto.getProduct(),
+                        paramDto.getBasicSpec(),
+                        paramDto.getSellInfo(),
+                        paramDto.getDelivery(),
+                        paramDto.getInfoNotice(),
+                        paramDto.getGuide()
+                ));
+
+        List<FileListDto> currentFileList = fileService.findFileList(paramDto.getProduct().getProductFileNo());
+
+        if (paramDto.getFileList().size() != currentFileList.size())
+            paramDto.setSqsLog(ArrayUtils.add(paramDto.getChangeLogList(), "상품 이미지"));
+        else {
+            StringBuilder currentFileStr = new StringBuilder();
+            for (FileListDto dto : currentFileList)
+                currentFileStr.append(dto.getFileOriginalName()).append(dto.getFileStatus());
+            StringBuilder updateFileStr = new StringBuilder();
+            for (FileUpdateDto dto : paramDto.getFileList())
+                updateFileStr.append(dto.getFileOriginalName()).append(dto.getFileStatus());
+            if (!currentFileStr.toString().equals(updateFileStr.toString()))
+                paramDto.setSqsLog(ArrayUtils.add(paramDto.getChangeLogList(), "상품 이미지"));
+        }
+
+        if (ObjectUtils.isEmpty(currentProduct.getOptionList()) & ObjectUtils.isEmpty(paramDto.getOptionList())) return;
+
+
+        StringBuilder currentOptionStr = new StringBuilder();
+        if (!ObjectUtils.isEmpty(currentProduct.getOptionList()))
+            for (OptionDto.ResBody dto : currentProduct.getOptionList())
+                currentOptionStr.append(dto.getOptionName()).append(dto.getOptionValue()).append(dto.getOptionSurcharge()).append(dto.getOptionStockQty());
+        StringBuilder updateOptionStr = new StringBuilder();
+        if (!ObjectUtils.isEmpty(paramDto.getOptionList()))
+            for (OptionDto.ReqBody dto : paramDto.getOptionList())
+                updateOptionStr.append(dto.getOptionName()).append(dto.getOptionValue()).append(dto.getOptionSurcharge()).append(dto.getOptionStockQty());
+        if (!currentOptionStr.toString().equals(updateOptionStr.toString()))
+            paramDto.setSqsLog(ArrayUtils.add(paramDto.getChangeLogList(), "옵션 정보"));
+
+    }
+
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void updateProduct(ProductUpdateDto paramDto) {
+        // 변동 로그
+        productChangeLog(paramDto);
+
+        // 판매 상태에 따른 재고 상품 계산처리
+        productUtil.updateProductStatusStock(paramDto);
         // 상품 판매 기간 처리
         productUtil.updateProductSellDate(paramDto.getProductCode(), paramDto.getSellInfo().getProductStatusCode());
 
@@ -177,6 +234,16 @@ public class ProductService {
                         if (dao.selectOne(namespace + "isZeroStock", productCode, PartnerKey.WBDataBase.Alias.Admin))
                             throw new WBBusinessException(ErrorCode.INVALID_NUMBER_MIN.getErrCode(), new String[]{"판매재고", "1"});
                     }
+
+                    if (!"DP".equals(paramDto.getStatusType()) && currentStatus.equals(paramDto.getStatusValue())) {
+                        switch (ProductStatusCode.of(paramDto.getStatusValue())) {
+                            case SALE:
+                                throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"예약중/판매완료"});
+                            case END_OF_SALE:
+                            case RESERVATION:
+                                throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매중"});
+                        }
+                    }
                 });
 
         // 상태값 변경
@@ -199,6 +266,11 @@ public class ProductService {
                 resourceLoader.getResource("classpath:templates/excel/productList.xlsx").getInputStream(),
                 1
         );
+
+        if (ObjectUtils.isEmpty(productCodeList)) {
+            excel.excelWrite("상품목록리스트.xlsx", response);
+            return;
+        }
 
         List<ProductExcelDto> productList = dao.selectList(namespace + "findExcelProductList", productCodeList, PartnerKey.WBDataBase.Alias.Admin);
 
@@ -227,9 +299,6 @@ public class ProductService {
             }
         });
 
-        response.setContentType("ms-vnd/excel");
-        response.setHeader("Content-Disposition", "attachment;filename=\"" + URLEncoder.encode("상품목록리스트.xlsx", StandardCharsets.UTF_8) + "\";");
-        excel.workbook.write(response.getOutputStream());
-        excel.workbook.close();
+        excel.excelWrite("상품목록리스트.xlsx", response);
     }
 }

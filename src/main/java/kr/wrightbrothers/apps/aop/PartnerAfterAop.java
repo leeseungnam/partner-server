@@ -4,7 +4,10 @@ import kr.wrightbrothers.apps.common.constants.Notification;
 import kr.wrightbrothers.apps.common.type.DocumentSNS;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.partner.dto.PartnerContractDto;
+import kr.wrightbrothers.apps.partner.dto.PartnerContractSNSDto;
 import kr.wrightbrothers.apps.partner.dto.PartnerInsertDto;
+import kr.wrightbrothers.apps.partner.dto.PartnerUpdateDto;
+import kr.wrightbrothers.apps.partner.service.PartnerService;
 import kr.wrightbrothers.apps.queue.NotificationQueue;
 import kr.wrightbrothers.apps.queue.PartnerQueue;
 import kr.wrightbrothers.apps.user.dto.UserDto;
@@ -16,6 +19,7 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.parameters.P;
 
 import java.util.Arrays;
 
@@ -27,6 +31,7 @@ public class PartnerAfterAop {
     private final PartnerQueue partnerQueue;
     private final NotificationQueue notificationQueue;
     private final UserService userService;
+    private final PartnerService partnerService;
     /**
      * <pre>
      *     스토어 등록, 수정의 작업 로직이 구현되어 있는 해당 상품 서비스 함수가 정상적으로 실행된 후
@@ -111,9 +116,10 @@ public class PartnerAfterAop {
         log.info("[sendPartnerSnsData]::sendPushToAdmin::userPhone={}", userPhone);
     }
 
-    @AfterReturning(value = "execution(* kr.wrightbrothers.apps.partner.PartnerController.updatePartnerAll(..))")
+    @AfterReturning(value = "execution(* kr.wrightbrothers.apps.partner.PartnerController.updatePartnerAll(..)) ||"
+            + "execution(* kr.wrightbrothers.apps.partner.PartnerController.updatePartner(..))")
     public void sendUpdatePartnerSnsData(JoinPoint joinPoint) throws Exception {
-        log.info("[sendPartnerSnsData]::Partner Send SNS.");
+        log.info("[sendUpdatePartnerSnsData]::Partner Send SNS.");
 
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         Arrays.stream(joinPoint.getArgs()).forEach(obj -> {
@@ -125,20 +131,18 @@ public class PartnerAfterAop {
                 String partnerCode = parmaDto.getPartner().getPartnerCode();
                 String contractCode = parmaDto.getPartnerContract().getContractCode();
 
-                // 파트너 등록 시 알림톡 발송 추가
-                UserDto user = userService.findUserByDynamic(UserDto.builder().userId(parmaDto.getPartner().getUserId()).build());
-
                 // partner data send
                 partnerQueue.sendToAdmin(
                         documentSNS
                         , partnerCode
                         , contractCode
-                        , methodSignature.getMethod().getName().contains("update") ?
-                                PartnerKey.TransactionType.Update : PartnerKey.TransactionType.Insert
+                        , PartnerKey.TransactionType.Update
                 );
-                log.info("[sendPartnerSnsData]::sendToAdmin::partnerCode={}, contractCode={}", partnerCode, contractCode);
+                log.info("[sendUpdatePartnerSnsData]::sendToAdmin::partnerCode={}, contractCode={}", partnerCode, contractCode);
 
-                log.info("[sendPartnerSnsData]::sendPushToAdmin::Send Partner Noti ... Start");
+                // 파트너 등록 시 알림톡 발송 추가
+                log.info("[sendUpdatePartnerSnsData]::sendPushToAdmin::Send Partner Noti ... Start");
+                UserDto user = userService.findUserByDynamic(UserDto.builder().userId(parmaDto.getPartner().getUserId()).build());
 
                 notificationQueue.sendPushToAdmin(
                         DocumentSNS.NOTI_KAKAO_SINGLE
@@ -146,7 +150,24 @@ public class PartnerAfterAop {
                         , user.getUserPhone()
                         , new String[]{parmaDto.getPartner().getPartnerName()});
 
-                log.info("[sendPartnerSnsData]::sendPushToAdmin::userPhone={}", user.getUserPhone());
+                log.info("[sendUpdatePartnerSnsData]::sendPushToAdmin::userPhone={}", user.getUserPhone());
+            } else if(obj instanceof PartnerUpdateDto.ReqBody){
+
+                PartnerUpdateDto.ReqBody parmaDto = (PartnerUpdateDto.ReqBody) obj;
+
+                DocumentSNS documentSNS = DocumentSNS.UPDATE_PARTNER;
+                String partnerCode = parmaDto.getPartnerCode();
+                String contractCode = parmaDto.getContractCode();
+
+                // partner data send
+                partnerQueue.sendToAdmin(
+                        documentSNS
+                        , partnerCode
+                        , contractCode
+                        , PartnerKey.TransactionType.Update
+                );
+                log.info("[sendPartnerSnsData]::sendToAdmin::partnerCode={}, contractCode={}", partnerCode, contractCode);
+
             } else {
                 log.info("[sendPartnerSnsData]::don't send partnerSnsData");
                 return;
@@ -154,7 +175,6 @@ public class PartnerAfterAop {
         });
     }
     //  섬네일 변경 시 추가 send to admin
-    /*
     @AfterReturning(value = "execution(* kr.wrightbrothers.apps.partner.PartnerController.*PartnerThumbnail(..))")
     public void sendPartnerSnsDataByUpdateThumbnail(JoinPoint joinPoint) throws Exception {
         log.info("[sendPartnerSnsDataByUpdateThumbnail]::Partner Send SNS ... START");
@@ -173,5 +193,4 @@ public class PartnerAfterAop {
         );
         log.info("[sendPartnerSnsDataByUpdateThumbnail]::Partner Send SNS ... END");
     }
-    */
 }

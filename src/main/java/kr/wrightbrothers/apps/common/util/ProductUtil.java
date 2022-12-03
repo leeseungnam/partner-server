@@ -91,10 +91,37 @@ public class ProductUtil {
         if (!mapper.convertValue(findDto.getInfoNotice(), InfoNoticeDto.InfoNotice.class).equals(mapper.convertValue(infoNotice, InfoNoticeDto.InfoNotice.class)))
             logList.add("상품 정보 고시");
 
-        if (!mapper.convertValue(findDto.getGuide(), GuideDto.Guide.class).equals(mapper.convertValue(guide, GuideDto.Guide.class)))
+        if (!findDto.getGuide().getProductDescription().equals(guide.getProductDescription()))
+            logList.add("상세 설명");
+
+        if (!findDto.getGuide().getProductGuide().equals(guide.getProductGuide()))
             logList.add("안내 사항");
 
+        if (!findDto.getGuide().getDeliveryGuide().equals(guide.getDeliveryGuide()))
+            logList.add("배송 안내");
+
+        if (!findDto.getGuide().getExchangeReturnGuide().equals(guide.getExchangeReturnGuide()))
+            logList.add("교환/반품 안내");
+
+        if (!findDto.getGuide().getAsGuide().equals(guide.getAsGuide()))
+            logList.add("A/S 안내");
+
         return logList.toArray(new String[0]);
+    }
+
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    public void updateProductStatusStock(ProductUpdateDto paramDto) {
+        String currentStatus = dao.selectOne(namespace + "findProductStatus", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin);
+        // 판매완료 상태시 재고 0 이상일 경우 판매중 상태변경
+        if (ProductStatusCode.SOLD_OUT.getCode().equals(currentStatus) && paramDto.getSellInfo().getProductStockQty() > 0)
+            paramDto.getSellInfo().setProductStatusCode(ProductStatusCode.SALE.getCode());
+        else if (!ProductStatusCode.SOLD_OUT.getCode().equals(currentStatus)
+                && ProductStatusCode.SOLD_OUT.getCode().equals(paramDto.getSellInfo().getProductStatusCode())){
+            // 상품 판매완료 상태는 기존 재구 무시하고 상품 재고 0개 처리(기획 장석민 협의 완료)
+            paramDto.getSellInfo().setProductStockQty(0);
+            if ("Y".equals(paramDto.getSellInfo().getProductOptionFlag()))
+                paramDto.getOptionList().forEach(option -> option.setOptionStockQty(0));
+        }
     }
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)

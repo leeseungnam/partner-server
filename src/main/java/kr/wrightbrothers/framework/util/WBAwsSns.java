@@ -48,7 +48,7 @@ public class WBAwsSns {
 					.withTopicArn(arn + snsNm)
 					.withMessage(new ObjectMapper().writeValueAsString(snsDto))
 					.withMessageGroupId(WBKey.Aws.Sns.GroupId)
-					.withMessageDeduplicationId(MDC.get("thread-id"));
+					.withMessageDeduplicationId(UUID.randomUUID().toString());
 
 			log.info("===================================================");
 			log.info("WB ADMIN SNS Send Publish.");

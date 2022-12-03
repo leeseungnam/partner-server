@@ -16,6 +16,6 @@ public class ModelService {
     private final String namespace = "kr.wrightbrothers.apps.brand.query.Model.";
 
     public List<ModelListDto> findModelList(String brandNo) {
-        return dao.selectList(namespace + "findModelList", brandNo, PartnerKey.WBDataBase.Alias.Admin);
+        return dao.selectList(namespace + "findModelList", brandNo, PartnerKey.WBDataBase.Alias.AdminRead);
     }
 }
