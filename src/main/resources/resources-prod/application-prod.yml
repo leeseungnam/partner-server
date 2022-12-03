@@ -35,8 +35,7 @@ cloud:
 system:
   file:
     temp:
-      # 임시 파일 저장 위치
-#      path: /app/partner/file_temp/
+      # 임시 파일 저장 위치 nfs mount
       path: /app/partner/files/
 app:
   client:
