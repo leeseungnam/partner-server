@@ -187,7 +187,9 @@ public class PartnerQueue extends WBSQS {
                                 // templateValue(계약종료) : 스토어명
                                 templateValue = new String[]{partnerDto.getPartner().getPartnerName()};
 
-                                isSendEmail = false;    // 계약종료(즉시) 에 대해서는 당장 이메일 발송 안함.
+                                //  계약종료(즉시) 에 대해서는 이메일 발송 안하는 걸로 변경.
+                                //  계약종료 및 갱신 안내 -> 어드민 배치로 처리 (종료 30일 전 메일발송)
+                                isSendEmail = false;
                                 email = Email.END_CONTRACT;
                             }
                         }
