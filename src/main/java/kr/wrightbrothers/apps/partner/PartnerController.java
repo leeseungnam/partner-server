@@ -249,6 +249,15 @@ public class PartnerController extends WBController {
         paramDto.changePartnerCode(partnerCode);
         paramDto.changeContractCode(contractCode);
 
+        //  알림톡 번호 중복 추가
+        String temp = "";
+        for(String phone : paramDto.getNotificationPhoneList()) {
+            if(!"".equals(temp)) {
+                if(temp.equals(phone)) throw new WBCustomException(ErrorCode.INVALID_PARTNER_BISNO, messagePrefix+"common.duplication.custom", new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.notification.phone")});
+            }
+            temp = phone;
+        }
+
         partnerService.updatePartner(paramDto);
 
         return defaultMsgResponse(messageSourceAccessor, "common.save.success");
@@ -363,10 +372,9 @@ public class PartnerController extends WBController {
                 .authCode(inviteInfo.getAuthCode())
                 .build())
         ) {
-            throw new WBCustomException(messagePrefix+"partner.invite.fail.max.sender"
+            throw new WBCustomException(messagePrefix+"partner.invite.fail.max.receiver"
                     , new String[] {
                     messageSourceAccessor.getMessage(messagePrefix+"word.user.status."+inviteInfo.getAuthCode())
-                    ,messageSourceAccessor.getMessage(messagePrefix+"partner.invite.max.count")
             });
         }
 
