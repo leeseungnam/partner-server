@@ -372,10 +372,9 @@ public class PartnerController extends WBController {
                 .authCode(inviteInfo.getAuthCode())
                 .build())
         ) {
-            throw new WBCustomException(messagePrefix+"partner.invite.fail.max.sender"
+            throw new WBCustomException(messagePrefix+"partner.invite.fail.max.receiver"
                     , new String[] {
                     messageSourceAccessor.getMessage(messagePrefix+"word.user.status."+inviteInfo.getAuthCode())
-                    ,messageSourceAccessor.getMessage(messagePrefix+"partner.invite.max.count")
             });
         }
 
