@@ -84,12 +84,14 @@ public class PartnerKey {
 
 		public static class Alias {
 			public static final String Default		= "Default";
+			public static final String DefaultRead	= "DefaultRead";
 			public static final String Admin		= "Admin";
 			public static final String AdminRead 	= "AdminRead";
 		}
 
 		public static class TransactionManager {
 			public static final String Default 		= WBConfig.Mybatis.DefaultTransactionManager;
+			public static final String DefaultRead 	= WBConfig.Mybatis.DefaultReadTransactionManager;
 			public static final String Admin		= WBConfig.Mybatis.AdminTransactionManager;
 			public static final String AdminRead	= WBConfig.Mybatis.AdminReadTransactionManager;
 			public static final String Global 		= WBConfig.Mybatis.GlobalTransactionManager;
