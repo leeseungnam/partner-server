@@ -249,6 +249,15 @@ public class PartnerController extends WBController {
         paramDto.changePartnerCode(partnerCode);
         paramDto.changeContractCode(contractCode);
 
+        //  알림톡 번호 중복 추가
+        String temp = "";
+        for(String phone : paramDto.getNotificationPhoneList()) {
+            if(!"".equals(temp)) {
+                if(temp.equals(phone)) throw new WBCustomException(ErrorCode.INVALID_PARTNER_BISNO, messagePrefix+"common.duplication.custom", new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.notification.phone")});
+                temp = phone;
+            }
+        }
+
         partnerService.updatePartner(paramDto);
 
         return defaultMsgResponse(messageSourceAccessor, "common.save.success");
