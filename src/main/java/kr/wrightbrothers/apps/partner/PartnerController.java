@@ -254,8 +254,8 @@ public class PartnerController extends WBController {
         for(String phone : paramDto.getNotificationPhoneList()) {
             if(!"".equals(temp)) {
                 if(temp.equals(phone)) throw new WBCustomException(ErrorCode.INVALID_PARTNER_BISNO, messagePrefix+"common.duplication.custom", new String[] {messageSourceAccessor.getMessage(messagePrefix+"word.notification.phone")});
-                temp = phone;
             }
+            temp = phone;
         }
 
         partnerService.updatePartner(paramDto);
