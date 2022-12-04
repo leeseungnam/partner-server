@@ -51,9 +51,9 @@ public class PartnerAfterAop {
      *     수정 (sns)
      * </pre>
      */
-    @AfterReturning(value = "execution(* kr.wrightbrothers.apps.partner.PartnerController.insert*(..)) ||"
-            //  계약서 자동 시 갱신 추가
-            +"execution(* kr.wrightbrothers.apps.partner.service.PartnerService.updateContractDay(..))"
+    @AfterReturning(value = "execution(* kr.wrightbrothers.apps.partner.PartnerController.insert*(..))"
+            //  계약서 자동 시 갱신 추가 -> 어드민에서 처리하도록 처리해놓음
+//            +"|| execution(* kr.wrightbrothers.apps.partner.service.PartnerService.updateContractDay(..))"
     )
     public void sendPartnerSnsData(JoinPoint joinPoint) throws Exception {
         log.info("[sendPartnerSnsData]::Partner Send SNS.");
