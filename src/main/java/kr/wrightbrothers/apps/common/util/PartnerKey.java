@@ -25,6 +25,13 @@ public class PartnerKey {
 			public static final String DefaultSqlSessionTemplate 	= "DefaultSqlSessionTemplate";
 			public static final String DefaultTransactionManager 	= "DefaultTransactionManager";
 
+			// 파트너 데이터 설정(읽기권한)
+			public static final String DefaultReadDataSource 			= "DefaultReadDataSource";
+			public static final String DefaultReadLog4jdbcProxySource 	= "DefaultReadLog4jdbcProxySource";
+			public static final String DefaultReadSqlSessionFactory 	= "DefaultReadSqlSessionFactory";
+			public static final String DefaultReadSqlSessionTemplate 	= "DefaultReadSqlSessionTemplate";
+			public static final String DefaultReadTransactionManager 	= "DefaultReadTransactionManager";
+
 			// 어드민 데이터 설정
 			public static final String AdminDataSource 				= "AdminDataSource";
 			public static final String AdminLog4jdbcProxySource 	= "AdminLog4jdbcProxySource";

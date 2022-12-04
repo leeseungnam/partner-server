@@ -2,7 +2,7 @@ package kr.wrightbrothers.apps.common.config.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.common.util.PartnerKey.WBConfig;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.interceptor.MyBatisInterceptor;
 import lombok.RequiredArgsConstructor;
@@ -33,21 +33,21 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 @EnableConfigurationProperties
 @EnableTransactionManagement
-public class DefaultDataBase {
+public class DefaultReadDataBase {
 
 	private final ApplicationContext ac;
-	@Value("${spring.datasource-partner.username}")
+	@Value("${spring.datasource-partner-read.username}")
 	private String username;
-	@Value("${spring.datasource-partner.password}")
+	@Value("${spring.datasource-partner-read.password}")
 	private String password;
-	@Value("${spring.datasource-partner.jdbc-url}")
+	@Value("${spring.datasource-partner-read.jdbc-url}")
 	private String url;
-	@Value("${spring.datasource-partner.driver-class-name}")
+	@Value("${spring.datasource-partner-read.driver-class-name}")
 	private String driverClassName;
-	@Value("${spring.datasource-partner.maximumPoolSize}")
+	@Value("${spring.datasource-partner-read.maximumPoolSize}")
 	private int maximumPoolSize;
 	
-	@Bean(name = PartnerKey.WBConfig.Mybatis.DefaultDataSource)
+	@Bean(name = WBConfig.Mybatis.DefaultReadDataSource)
 	@Primary
 	public DataSource DataSource() {
 		HikariConfig hikariConfig = new HikariConfig();
@@ -60,7 +60,7 @@ public class DefaultDataBase {
 		return new HikariDataSource(hikariConfig);
 	}
 
-	@Bean(name = PartnerKey.WBConfig.Mybatis.DefaultLog4jdbcProxySource)
+	@Bean(name = WBConfig.Mybatis.DefaultReadLog4jdbcProxySource)
 	@Primary
 	public Log4jdbcProxyDataSource Log4jdbcProxySource() {
 		Log4jdbcProxyDataSource proxyDataSource = new Log4jdbcProxyDataSource(DataSource());
@@ -71,7 +71,7 @@ public class DefaultDataBase {
 		return proxyDataSource;
 	}
 
-	@Bean(name = PartnerKey.WBConfig.Mybatis.DefaultSqlSessionFactory)
+	@Bean(name = WBConfig.Mybatis.DefaultReadSqlSessionFactory)
 	@Primary
 	public SqlSessionFactory SqlSessionFactory() throws Exception {
 		SqlSessionFactoryBean sessionFactoryBean = new SqlSessionFactoryBean();
@@ -97,13 +97,13 @@ public class DefaultDataBase {
 		return sessionFactoryBean.getObject();
 	}
 
-	@Bean(name = PartnerKey.WBConfig.Mybatis.DefaultSqlSessionTemplate)
+	@Bean(name = WBConfig.Mybatis.DefaultReadSqlSessionTemplate)
 	@Primary
 	public SqlSessionTemplate SqlSessionTemplate() throws Exception {
 		return new SqlSessionTemplate(SqlSessionFactory());
 	}
 
-	@Bean(name = PartnerKey.WBConfig.Mybatis.DefaultTransactionManager)
+	@Bean(name = WBConfig.Mybatis.DefaultReadTransactionManager)
 	@Primary
 	public PlatformTransactionManager TransactionManager() {
 		return new DataSourceTransactionManager(Log4jdbcProxySource());
