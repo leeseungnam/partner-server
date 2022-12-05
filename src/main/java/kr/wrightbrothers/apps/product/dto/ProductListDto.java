@@ -33,7 +33,7 @@ public class ProductListDto {
             if (ObjectUtils.isEmpty(this.keywordValue))
                 return;
 
-            this.keywordValueList = this.keywordValue.split(";");
+            this.keywordValueList = this.keywordValue.split(",");
         }
     }
 
