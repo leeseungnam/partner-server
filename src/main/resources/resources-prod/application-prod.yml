@@ -1,7 +1,7 @@
 spring:
   datasource-partner:
     driver-class-name: org.mariadb.jdbc.Driver
-    jdbc-url: jdbc:mariadb://wrightbrothers-partner-stag.cf22cofp8pqh.ap-northeast-2.rds.amazonaws.com:3306/partner?useSSL=false&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&allowMultiQueries=true
+    jdbc-url: jdbc:mariadb://wrightbrothers-partner-prod.cf22cofp8pqh.ap-northeast-2.rds.amazonaws.com:3306/partner?useSSL=false&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&allowMultiQueries=true
     username: admin
     password: pszqU1Be8LcZDWunv19N
     maximumPoolSize: 5
@@ -13,13 +13,13 @@ spring:
     maximumPoolSize: 5
   datasource-admin:
     driver-class-name: org.mariadb.jdbc.Driver
-    jdbc-url: jdbc:mariadb://wrightbrothers-stag-admin.c9lwghctzixx.ap-northeast-2.rds.amazonaws.com:3306/wrightbrothers?useSSL=false&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&allowMultiQueries=true
+    jdbc-url: jdbc:mariadb://wrightbrothers-prod-admin.c9lwghctzixx.ap-northeast-2.rds.amazonaws.com:3306/wrightbrothers?useSSL=false&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&allowMultiQueries=true
     username: admin
     password: rBEdceIdPrQMaHrQVcZj
     maximumPoolSize: 5
   datasource-admin-read:
     driver-class-name: org.mariadb.jdbc.Driver
-    jdbc-url: jdbc:mariadb://wrightbrothers-stag-admin.c9lwghctzixx.ap-northeast-2.rds.amazonaws.com:3306/wrightbrothers?useSSL=false&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&allowMultiQueries=true
+    jdbc-url: jdbc:mariadb://admin2prodread.c9lwghctzixx.ap-northeast-2.rds.amazonaws.com:3306/wrightbrothers?useSSL=false&useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&allowMultiQueries=true
     username: admin
     password: rBEdceIdPrQMaHrQVcZj
     maximumPoolSize: 5
@@ -27,17 +27,17 @@ cloud:
   aws:
     sqs:
       auto: true
-      product: STG-PARTNER-PRODUCT.fifo
-      partner: STG-PARTNER-STORE.fifo
+      product: PROD-PARTNER-PRODUCT.fifo
+      partner: PROD-PARTNER-STORE.fifo
     sns:
       arn: 'arn:aws:sns:ap-northeast-2:094301229591:'
       auto: true
-      ack: STG-ACKMSG.fifo
-      product: STG-PARTNER-ADMIN-PRODUCT.fifo
-      order: STG-PARTNER-PLATFORM-ORDER.fifo
-      partner: STG-PARTNER-ADMIN-STORE.fifo
-      history: STG-COMMON-HISTORY.fifo
-      noti: STG-COMMON-NOTICE.fifo
+      ack: PROD-ACKMSG.fifo
+      product: PROD-PARTNER-ADMIN-PRODUCT.fifo
+      order: PROD-PARTNER-PLATFORM-ORDER.fifo
+      partner: PROD-PARTNER-ADMIN-STORE.fifo
+      history: PROD-COMMON-HISTORY.fifo
+      noti: PROD-COMMON-NOTICE.fifo
 system:
   file:
     temp:
