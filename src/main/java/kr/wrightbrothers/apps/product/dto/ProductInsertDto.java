@@ -149,6 +149,9 @@ public class ProductInsertDto {
         if (ObjectUtils.isEmpty(fileList))
             throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"상품 이미지"});
 
+        if (ObjectUtils.isEmpty(this.product.getBrandNo()))
+            this.product.setBrandNo("0");
+
         // 자전거 상품 추가 유효성 검사
         validBike();
 
