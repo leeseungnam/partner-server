@@ -27,18 +27,17 @@ cloud:
   aws:
     sqs:
       auto: true
-      product: STG-PARTNER-PRODUCT.fifo
-      partner: STG-PARTNER-STORE.fifo
-      order: STG-PARTNER-ORDER.fifo
+      product: PROD-PARTNER-PRODUCT.fifo
+      partner: PROD-PARTNER-STORE.fifo
     sns:
       arn: 'arn:aws:sns:ap-northeast-2:094301229591:'
       auto: true
-      ack: STG-ACKMSG.fifo
-      product: STG-PARTNER-ADMIN-PRODUCT.fifo
-      order: STG-PARTNER-PLATFORM-ORDER.fifo
-      partner: STG-PARTNER-ADMIN-STORE.fifo
-      history: STG-COMMON-HISTORY.fifo
-      noti: STG-COMMON-NOTICE.fifo
+      ack: PROD-ACKMSG.fifo
+      product: PROD-PARTNER-ADMIN-PRODUCT.fifo
+      order: PROD-PARTNER-PLATFORM-ORDER.fifo
+      partner: PROD-PARTNER-ADMIN-STORE.fifo
+      history: PROD-COMMON-HISTORY.fifo
+      noti: PROD-COMMON-NOTICE.fifo
 system:
   file:
     temp:
