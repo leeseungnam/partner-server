@@ -23,6 +23,13 @@
 		    rep_return_flag
 		from address
 	   where partner_code = #{partnerCode}
+	   <if test="searchType != 'ALL'.toString()">
+		   and (
+		       rep_unstoring_flag = 'Y'
+		       or
+		       rep_return_flag = 'Y'
+		   )
+	   </if>
 	   order by create_date desc
 	</select>
 

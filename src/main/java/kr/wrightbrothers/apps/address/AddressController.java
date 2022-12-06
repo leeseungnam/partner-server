@@ -31,14 +31,16 @@ public class AddressController extends WBController {
     })
     @ApiOperation(value = "주소록 목록 조회", notes = "등록된 주소록의 목록 조회")
     @GetMapping("/addresses")
-    public WBModel findAddressList(@ApiParam(value = "페이지 행 수") @RequestParam int count,
-                                   @ApiParam(value = "현재 페이지") @RequestParam int page,
+    public WBModel findAddressList(@ApiParam(value = "페이지 행 수") @RequestParam(required = false, defaultValue = "2") int count,
+                                   @ApiParam(value = "현재 페이지") @RequestParam(required = false, defaultValue = "1") int page,
+                                   @ApiParam(value = "키워드 구분") @RequestParam(required = false, defaultValue = "ALL") String searchType,
                                    @ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
         WBModel response = new WBModel();
         AddressListDto.Param paramDto = AddressListDto.Param.builder()
                 .partnerCode(user.getUserAuth().getPartnerCode())
                 .count(count)
                 .page(page)
+                .searchType(searchType)
                 .build();
 
         // 주소록 목록 조회

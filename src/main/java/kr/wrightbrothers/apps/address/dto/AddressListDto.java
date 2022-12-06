@@ -16,6 +16,7 @@ public class AddressListDto {
     @EqualsAndHashCode(callSuper = false)
     public static class Param extends AbstractPageDto {
         private String partnerCode;         // 파크너 코드
+        private String searchType;          // 키워드 구분
     }
 
     @Getter

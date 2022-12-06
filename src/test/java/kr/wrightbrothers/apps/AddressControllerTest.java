@@ -61,6 +61,7 @@ class AddressControllerTest extends BaseControllerTests {
                 .contentType(MediaType.TEXT_HTML)
                         .queryParam("count", String.valueOf(1))
                         .queryParam("page", String.valueOf(1))
+                        .queryParam("searchType", "LIST")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -74,7 +75,8 @@ class AddressControllerTest extends BaseControllerTests {
                                 ),
                                 requestParameters(
                                         parameterWithName("count").description("페이지 ROW 수").attributes(key("etc").value("")),
-                                        parameterWithName("page").description("페이지").attributes(key("etc").value(""))
+                                        parameterWithName("page").description("페이지").attributes(key("etc").value("")),
+                                        parameterWithName("searchType").description("조회구분").attributes(key("etc").value("LIST : 기본목록, REP : 대표지주소"))
                                 ),
                                 responseFields(
                                         fieldWithPath("data[]").type(JsonFieldType.ARRAY).optional().description("주소록 목록"),
