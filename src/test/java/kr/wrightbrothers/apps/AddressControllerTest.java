@@ -74,9 +74,9 @@ class AddressControllerTest extends BaseControllerTests {
                                         headerWithName(AUTH_HEADER).description("JWT 토큰")
                                 ),
                                 requestParameters(
-                                        parameterWithName("count").description("페이지 ROW 수").attributes(key("etc").value("")),
-                                        parameterWithName("page").description("페이지").attributes(key("etc").value("")),
-                                        parameterWithName("searchType").description("조회구분").attributes(key("etc").value("LIST : 기본목록, REP : 대표지주소"))
+                                        parameterWithName("count").description("페이지 ROW 수").attributes(key("etc").value("")).optional(),
+                                        parameterWithName("page").description("페이지").attributes(key("etc").value("")).optional(),
+                                        parameterWithName("searchType").description("조회구분").attributes(key("etc").value("LIST : 기본목록, REP : 대표지주소")).optional()
                                 ),
                                 responseFields(
                                         fieldWithPath("data[]").type(JsonFieldType.ARRAY).optional().description("주소록 목록"),
