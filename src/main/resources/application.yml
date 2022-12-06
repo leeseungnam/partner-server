@@ -45,6 +45,6 @@ system:
 jwt:
   secret-key: aYEFtKMCn0xCg5caH1nnFuHfdAB0lBOvdonxq80VqOGNnG6QcyagXWOLrUdqJnzexUXYceMhGNFNYsA6rblSibUEh0yRsJ3XO1um1iMdoekOPzj4zKlokcu9TxTbz5DHYVLkqX3q9JrLgbLZFXD8ynOHfRHRL5Ge64iFZBVm9X517fwZrNornOmK2L7hUz10SgZpxAz6
   validation-time:
-    access-token-min: 20 #MIN(분)
+    access-token-min: 5 #MIN(분)
     refresh-token-min: 60 #MIN(분)
 
