@@ -109,9 +109,7 @@ public class ReturnService {
             }
         });
         // 대표 주문, 결제 상태코드 갱신 공통 프로시져 호출
-        // 반품 불가는 대표 주문 코드 변경을 하기에 제외
-        if (!OrderProductStatusCode.NON_RETURN.getCode().equals(paramDto.getReturnProcessCode()))
-            dao.update(namespaceOrder + "updateOrderStatusRefresh", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin);
+        dao.update(namespaceOrder + "updateOrderStatusRefresh", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin);
 
         // 반품완료 환불금액 처리
         if (OrderProductStatusCode.REQUEST_COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()))
