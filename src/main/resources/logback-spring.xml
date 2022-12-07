@@ -62,19 +62,19 @@
 		</layout>
 	</appender>
 
-	<logger name="jdbc" level="debug" />
+	<logger name="jdbc" level="warn" />
 	<logger name="org.springframework.web.filter.CommonsRequestLoggingFilter" level="debug">
 		<springProfile name="dev,stag,prod">
 			<appender-ref ref="app" />
 		</springProfile>
 	</logger>
-	<logger name="${ROOT_PACKAGE_NAME}" level="debug">
+	<logger name="${ROOT_PACKAGE_NAME}" level="info">
 		<springProfile name="dev,stag,prod">
 			<appender-ref ref="app" />
 		</springProfile>
 	</logger>
 
-	<root level="debug">
+	<root level="info">
 		<springProfile name="dev,stag,prod">
 			<appender-ref ref="error" />
 			<appender-ref ref="server" />
