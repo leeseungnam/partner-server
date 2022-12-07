@@ -122,7 +122,7 @@
 					 d.rtrn_dlvry_cmpny return_delivery_company_code,
 					 cd.intg_cd_val_nm return_delivery_company_name,
 					 d.rtrn_invc_no return_invoice_no,
-					 if(p.cnc_rsn_cd = 'C99', p.cnc_rsn, c.intg_cd_val_nm) return_reason,
+					 if(p.cnc_rsn is not null and p.cnc_rsn != '' , p.cnc_rsn, c.intg_cd_val_nm) return_reason,
 					 rcd.intg_cd_val_nm non_return_reason,
 					 if(p.cnc_pay_amt is not null, p.rtn_chg, null) return_delivery_amount,
 					 if(p.cnc_pay_amt is not null, p.fnl_sell_amt - p.rtn_chg, null) refund_amount
