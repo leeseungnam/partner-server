@@ -23,6 +23,7 @@ cloud:
       auto: true
       product: STG-PARTNER-PRODUCT.fifo
       partner: STG-PARTNER-STORE.fifo
+      order: STG-PARTNER-ORDER.fifo
     sns:
       arn: 'arn:aws:sns:ap-northeast-2:094301229591:'
       auto: true

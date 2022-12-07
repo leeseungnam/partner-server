@@ -50,10 +50,10 @@ public class WBSQS {
 	public void initMessage(String message, String queueName) {
 		try {
 			this.queueName = queueName;
-			log.debug("message : \n" + message);
+			log.debug("message : \n{}", message);
 			this.jsonMap = mapper.readValue(message, HashMap.class);
 		} catch (JsonProcessingException e) {
-			log.error(e.getMessage());
+			log.error(ExceptionUtils.getStackTrace(e));
 		}
 	}
 	
@@ -86,7 +86,7 @@ public class WBSQS {
 		try {
 			return (T) mapper.readValue(jsonMap.get(key), clazz);
 		} catch (JsonProcessingException e) {
-			log.error(e.getMessage());
+			log.error(ExceptionUtils.getStackTrace(e));
 		}
 		return null;
 	}
@@ -139,7 +139,7 @@ public class WBSQS {
 					.withMessageDeduplicationId(UUID.randomUUID().toString()));
 			log.debug("ackMessageID : " + res.getMessageId());
 		} catch (JsonProcessingException e1) {
-			log.error(e1.getMessage());
+			log.error(ExceptionUtils.getStackTrace(e1));
 		}
 	}
 }
