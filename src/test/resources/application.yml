@@ -50,6 +50,7 @@ cloud:
       auto: false
       product: DEV-PARTNER-PRODUCT.fifo
       partner: DEV-PARTNER-STORE.fifo
+      order: DEV-PARTNER-ORDER.fifo
     credentials:
       accessKey: AKIARL5GKSIL5OK4DO5V
       secretKey: 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

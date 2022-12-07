@@ -121,7 +121,7 @@ public class ReturnService {
 
         // 반품완료 환불금액 처리
         if (OrderProductStatusCode.REQUEST_COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()))
-            dao.update(namespace + "updateRefundAmount", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+            dao.update(namespace + "updateReturnDeliveryAmount", paramDto, PartnerKey.WBDataBase.Alias.Admin);
 
         // 무통장 반품완료 요청은 SNS 전송 제외
         if (OrderProductStatusCode.REQUEST_COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()) &
