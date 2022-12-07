@@ -187,6 +187,7 @@
 
 	<update id="updateApprovalReturn" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto">
 		-- 반품 배송택배 정보 등록
+		<if test="requestCode != null and requestValue != null">
 		update ord_shpn_info
 		   set rtrn_dlvry_cmpny 		= #{requestCode},
 		       rtrn_invc_no				= #{requestValue},
@@ -195,6 +196,8 @@
 		       upd_dt					= now()
 		 where ord_no 					= #{orderNo}
 		   and ord_prdt_idx 			= #{orderProductSeq};
+		</if>
+
 		-- 주문 상품 반품 진행 처리
 		update ord_prdt_info
 		   set ord_prdt_stus			= 'R03',
