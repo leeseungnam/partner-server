@@ -2,15 +2,13 @@ package kr.wrightbrothers.apps.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import kr.wrightbrothers.apps.common.type.OrderProductStatusCode;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,6 +28,8 @@ public class RequestReturnUpdateDto {
         private String userId;                  // 사용자 아이디
         @JsonIgnore
         private Integer orderProductSeq;        // 주문 상품 SEQ
+        @JsonIgnore
+        private Long deliveryAmount;            // 배송비(selectKeyData)
 
         public void setAopPartnerCode(String partnerCode) {
             this.partnerCode = partnerCode;
@@ -37,26 +37,6 @@ public class RequestReturnUpdateDto {
 
         public void setAopUserId(String userId) {
             this.userId = userId;
-        }
-
-        public void setReturnDeliveryAmount(Long returnDeliveryAmount) {
-                this.returnDeliveryAmount = returnDeliveryAmount;
-        }
-
-        public void setPaymentAmount(Long paymentAmount) {
-                this.paymentAmount = paymentAmount;
-        }
-
-        public void setRefundAmount(Long refundAmount) {
-                this.refundAmount = refundAmount;
-        }
-
-        public void setOrderProductSeq(Integer orderProductSeq) {
-            this.orderProductSeq = orderProductSeq;
-        }
-
-        public void setReturnProcessCode(String returnProcessCode){
-            this.returnProcessCode = returnProcessCode;
         }
 
         public Object toCancelQueueDto(String statusCode) {

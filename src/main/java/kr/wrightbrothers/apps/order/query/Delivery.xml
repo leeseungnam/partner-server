@@ -143,7 +143,7 @@
 	</select>
 	
 	<update id="updateDeliveryFreight" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryFreightUpdateDto">
-		<selectKey resultType="java.lang.String" keyProperty="nonReturnFlag">
+		<selectKey resultType="java.lang.String" keyProperty="nonReturnFlag" order="BEFORE">
 			select
 				if(count(ord_no) > 0, 'Y', 'N')
 			  from ord_prdt_info
@@ -187,7 +187,7 @@
 	</update>
 	
 	<update id="updateDeliveryInvoice" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto">
-		<selectKey resultType="java.lang.String" keyProperty="nonReturnFlag">
+		<selectKey resultType="java.lang.String" keyProperty="nonReturnFlag" order="BEFORE">
 			select
 			    if(count(ord_no) > 0, 'Y', 'N')
 			  from ord_prdt_info
@@ -204,7 +204,6 @@
 				   <when test="nonReturnFlag == 'Y'.toString()">
 					   rtrn_prhb_dlvry_cmpny = #{deliveryCompanyCode},
 					   rtrn_prhb_invc_no = #{invoiceNo},
-					   ord_dlvr_stus = 'D02',
 					   rtrn_prhb_invc_inp_dt = now(),
 				   </when>
 				   <otherwise>
@@ -222,7 +221,7 @@
 		   and ord_dlvr_stus in ('D01', 'D02');
 
 		update ord_prdt_info
-		   set ord_prdt_stus = if(ord_prdt_stus = 'R04', 'D02', ord_prdt_stus),
+		   set ord_prdt_stus = if(ord_prdt_stus = 'R04', 'D01', ord_prdt_stus),
 		       upd_usr_id = #{userId},
 		       upd_dt = now()
 		 where ord_no = #{orderNo}
@@ -232,6 +231,10 @@
 		</foreach>
 		   and prnr_cd = #{partnerCode}
 		   and ord_prdt_stus in ('D01', 'D02', 'R04');
+
+		<if test="nonReturnFlag == 'Y'.toString()">
+			CALL SP_updateOrderStatus(#{orderNo});
+		</if>
 	</update>
 	
 	<update id="updateDelivery" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryUpdateDto">
@@ -276,8 +279,8 @@
 			concat('(', d.rcpnt_adrs_zip_cd, ') ', d.rcpnt_adrs, if(d.rcpnt_adrs_sub is not null and d.rcpnt_adrs_sub != '', concat(', ', d.rcpnt_adrs_sub), '')) as recipient_address,
 			if(p.non_rtn_tp_cd is null, date_format(d.dlvry_st_dt, '%Y-%m-%d'), date_format(d.rtrn_prhb_dlvry_st_dt, '%Y-%m-%d')) as delivery_start_day,
 			if(p.non_rtn_tp_cd is null, date_format(d.dlvry_end_dt, '%Y-%m-%d'), date_format(d.rtrn_prhb_dlvry_end_dt, '%Y-%m-%d')) as delivery_end_day,
-			p.ord_prdt_stus as delivery_status_code,
-			p.ord_prdt_stus as delivery_status_name
+			d.ord_dlvr_stus as delivery_status_code,
+			d.ord_dlvr_stus as delivery_status_name
 		  from ord_prdt_info p
 		  left join ord_shpn_info d
 		    on p.ord_no = d.ord_no

@@ -7,7 +7,6 @@ import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.*;
 import kr.wrightbrothers.apps.queue.OrderQueue;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
-import kr.wrightbrothers.framework.lang.WBException;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -88,6 +86,7 @@ public class DeliveryService {
 
         // 택배사 정보(택배회사, 송장번호) 등록, 배송시작 상태 변경
         // 주문 배송, 주문 상품 Multi Query
+        // 반품불가 상태에서 진행된 케이스는 상태값 변경이 되기에 프로시저 호출
         dao.update(namespace + "updateDeliveryInvoice", paramDto, PartnerKey.WBDataBase.Alias.Admin);
 
         // 상태 변경에 따른 SNS 전송

@@ -1,6 +1,7 @@
 package kr.wrightbrothers.apps.order.service;
 
 import kr.wrightbrothers.apps.common.type.DocumentSNS;
+import kr.wrightbrothers.apps.common.type.NonReturnCode;
 import kr.wrightbrothers.apps.common.type.OrderProductStatusCode;
 import kr.wrightbrothers.apps.common.type.OrderStatusCode;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
@@ -10,12 +11,15 @@ import kr.wrightbrothers.apps.order.dto.*;
 import kr.wrightbrothers.apps.queue.OrderQueue;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileInputStream;
@@ -100,11 +104,15 @@ public class ReturnService {
                     // 반품 완료 요청 시 결제는 결제취소 요청으로 처리
                     if (OrderProductStatusCode.REQUEST_COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode())) {
                         dao.update(namespace + "updateRequestCompleteReturn", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+                        Reason reason = dao.selectOne(namespace + "findReturnReason", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+                        paramDto.setRequestCode(reason.getReasonCode());
+                        paramDto.setRequestValue(reason.getReasonValue());
                         break;
                     }
 
                     // 반품불가 요청에 따른 처리(Multi Query)
                     dao.update(namespace + "updateNonReturn", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+                    paramDto.setRequestValue(NonReturnCode.of(paramDto.getRequestCode()).getName());
                     break;
             }
         });
@@ -119,7 +127,7 @@ public class ReturnService {
 
         // 무통장 반품완료 요청은 SNS 전송 제외
         if (OrderProductStatusCode.REQUEST_COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()) &
-                (boolean) dao.selectOne(namespace + "isPayMethodNotBank", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin))
+                (boolean) dao.selectOne(namespace + "isPayMethodBank", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin))
             return;
 
         orderQueue.sendToAdmin(
@@ -207,5 +215,13 @@ public class ReturnService {
         response.setHeader("Content-Disposition", "attachment;filename=\"" + URLEncoder.encode("반품목록리스트.xlsx", StandardCharsets.UTF_8) + "\";");
         excel.workbook.write(response.getOutputStream());
         excel.workbook.close();
+    }
+
+    @Getter
+    @AllArgsConstructor
+    static
+    class Reason {
+        private String reasonCode;
+        private String reasonValue;
     }
 }

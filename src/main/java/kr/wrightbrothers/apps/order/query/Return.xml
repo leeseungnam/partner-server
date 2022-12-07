@@ -12,12 +12,12 @@
 		   and ord_stus = #{returnProcessCode}
 	</select>
 
-	<select id="isPayMethodNotBank" parameterType="java.lang.String" resultType="boolean">
+	<select id="isPayMethodBank" parameterType="java.lang.String" resultType="boolean">
 		select
-		    if(count(ord_no) > 0, true, false) as isPayMethodNotBank
+		    if(count(ord_no) > 0, true, false) as isPayMethodBank
 		  from ord_info
 		 where ord_no = #{orderNo}
-		   and pay_meth != 'P03'
+		   and pay_meth = 'P03'
 	</select>
 
 	<select id="findReturnList" parameterType="kr.wrightbrothers.apps.order.dto.ReturnListDto$Param" resultType="kr.wrightbrothers.apps.order.dto.ReturnListDto$Response">
@@ -109,40 +109,23 @@
 
 	<select id="findReturnProductList" parameterType="kr.wrightbrothers.apps.order.dto.ReturnFindDto$Param" resultType="kr.wrightbrothers.apps.order.dto.ReturnProductDto">
 		select
-		    o.order_product_seq,
-		    o.product_code,
-		    o.product_name,
-		    o.option_name,
-		    o.final_sell_amount,
-		    o.return_request_day,
-		    o.return_complete_day,
-		    o.product_qty,
-		    o.order_product_status_code,
-		    o.order_product_status_name,
-		    o.return_delivery_company_code,
-		    o.return_delivery_company_name,
-		    o.return_invoice_no,
-		    o.return_reason,
-		    o.non_return_reason,
-		    if(o.rank_amt = 1, o.return_delivery_amount, null) as return_delivery_amount,
-		    if(o.rank_amt = 1, o.final_sell_amount - o.return_delivery_amount, o.final_sell_amount) as refund_amount
-		from (select row_number() over (order by p.fnl_sell_amt desc)              as rank_amt,
-					 p.ord_prdt_idx                                                as order_product_seq,
-					 p.prdt_cd                                                     as product_code,
-					 p.prdt_nm                                                     as product_name,
-					 if(p.optn_nm is null, '', concat(p.optn_nm, '-', p.optn_val)) as option_name,
-					 p.fnl_sell_amt                                                as final_sell_amount,
-					 date_format(p.cnc_rq_dt, '%Y-%m-%d')                          as return_request_day,
-					 date_format(p.cnc_cplt_dt, '%Y-%m-%d')                        as return_complete_day,
-					 p.prdt_qty                                                    as product_qty,
-					 p.ord_prdt_stus                                               as order_product_status_code,
-					 p.ord_prdt_stus                                               as order_product_status_name,
-					 d.rtrn_dlvry_cmpny                                            as return_delivery_company_code,
-					 cd.intg_cd_val_nm                                             as return_delivery_company_name,
-					 d.rtrn_invc_no                                                as return_invoice_no,
-					 if(p.cnc_rsn_cd = 'C99', p.cnc_rsn, c.intg_cd_val_nm)         as return_reason,
-					 rcd.intg_cd_val_nm                                            as non_return_reason,
-					 s.rtrn_dlvr_chrg_amt											   as return_delivery_amount
+					 p.ord_prdt_idx order_product_seq,
+					 p.prdt_cd product_code,
+					 p.prdt_nm product_name,
+					 if(p.optn_nm is null, '', concat(p.optn_nm, '-', p.optn_val)) option_name,
+					 p.fnl_sell_amt final_sell_amount,
+					 date_format(p.cnc_rq_dt, '%Y-%m-%d') return_request_day,
+					 date_format(p.cnc_cplt_dt, '%Y-%m-%d') return_complete_day,
+					 p.prdt_qty product_qty,
+					 p.ord_prdt_stus order_product_status_code,
+					 p.ord_prdt_stus order_product_status_name,
+					 d.rtrn_dlvry_cmpny return_delivery_company_code,
+					 cd.intg_cd_val_nm return_delivery_company_name,
+					 d.rtrn_invc_no return_invoice_no,
+					 if(p.cnc_rsn_cd = 'C99', p.cnc_rsn, c.intg_cd_val_nm) return_reason,
+					 rcd.intg_cd_val_nm non_return_reason,
+					 if(p.cnc_pay_amt is not null, p.rtn_chg, null) return_delivery_amount,
+					 if(p.cnc_pay_amt is not null, p.fnl_sell_amt - p.rtn_chg, null) refund_amount
 			  from ord_prdt_info p
 			      	   inner join ord_prnr_info s
 			      		on p.ord_no = s.ord_no
@@ -155,7 +138,7 @@
 								 on d.rtrn_dlvry_cmpny = cd.intg_cd_val
 									 and cd.intg_cd_id = '000044'
 					   left join com_intg_cd_dtl c
-								 on p.non_rtn_tp_cd = c.intg_cd_val
+								 on p.cnc_rsn_cd = c.intg_cd_val
 									 and c.intg_cd_id = '000074'
 					   left join com_intg_cd_dtl rcd
 								 on p.non_rtn_tp_cd = rcd.intg_cd_val
@@ -163,7 +146,7 @@
 			  where p.ord_no = #{orderNo}
 				and p.prnr_cd = #{partnerCode}
 				and p.ord_prdt_stus in ('R01', 'R03', 'R04', 'R05', 'R06') -- 반품요청, 반품진행, 반품불가, 반품완료, 반품완료 요청
-			  order by p.ord_prdt_idx) o
+			  order by p.ord_prdt_idx
 	</select>
 
 	<select id="findOrderProductStatusCode" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto" resultType="java.lang.String">
@@ -237,11 +220,35 @@
 		   and ord_prdt_stus			= 'R01'
 	</update>
 
+	<select id="findReturnReason" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto" resultType="kr.wrightbrothers.apps.order.service.ReturnService$Reason">
+		select
+		    cnc_rsn_cd reasonCode,
+		    cnc_rsn reasonValue
+		  from ord_prdt_info
+		 where ord_no = #{orderNo}
+		   and ord_prdt_idx = #{orderProductSeq}
+	</select>
+
 	<update id="updateRequestCompleteReturn" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto">
+		<selectKey resultType="java.lang.Long" keyProperty="deliveryAmount" order="BEFORE">
+			select
+			    if(ord_prdt_idx = #{orderProductSeq}, #{returnDeliveryAmount}, 0) as deliveryAmount
+			  from (
+				select
+				    row_number() over (order by fnl_sell_amt desc) as rank_amt,
+					ord_prdt_idx
+				  from ord_prdt_info
+				 where ord_no = #{orderNo}
+				   and prnr_cd = #{partnerCode}
+				 limit 1
+			) s
+		</selectKey>
 		update ord_prdt_info
 		   set ord_prdt_stus			= 'R06',
 		       ord_prdt_pay_stus		= 'S06',
 		       cnc_cplt_dt				= now(),
+		       rtn_chg					= #{deliveryAmount},
+		       cnc_pay_amt				= fnl_sell_amt - #{deliveryAmount},
 		       upd_usr_id				= #{userId},
 		       upd_dt					= now()
 		 where ord_no					= #{orderNo}
