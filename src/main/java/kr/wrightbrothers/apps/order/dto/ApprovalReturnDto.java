@@ -21,10 +21,8 @@ public class ApprovalReturnDto {
     @NotNull(message = "주문 상품 SEQ")
     private Integer[] orderProductSeqArray; // 주문 상품 SEQ
 
-    @NotBlank(message = "택배사")
     private String deliveryCompanyCode;     // 택배 회사 코드
 
-    @NotBlank(message = "송장번호")
     private String invoiceNo;               // 운송장 번호
 
     private String partnerCode;             // 파트너 코드
