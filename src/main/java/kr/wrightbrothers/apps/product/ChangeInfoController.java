@@ -20,13 +20,9 @@ public class ChangeInfoController extends WBController {
 
     private final ChangeInfoService changeInfoService;
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "access token", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
-    })
-    @ApiOperation(value = "상품 변경 이력 조회", notes = "상품에 대한 변경 이력에 대한 정보를 제공")
     @GetMapping("/products/{productCode}/change-history")
-    public WBModel findProductChangeHistory(@ApiParam(value = "상품 코드") @PathVariable String productCode,
-                                            @ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
+    public WBModel findProductChangeHistory(@PathVariable String productCode,
+                                            @AuthenticationPrincipal UserPrincipal user) {
         return defaultResponse(
                 // 상품 상태 변경 이력
                 changeInfoService.findProductChangeHistory(

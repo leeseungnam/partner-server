@@ -1,9 +1,7 @@
 package kr.wrightbrothers.apps.order;
 
-import io.swagger.annotations.*;
 import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
-import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.*;
 import kr.wrightbrothers.apps.order.service.DeliveryService;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
@@ -16,7 +14,6 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -24,7 +21,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Api(tags = {"배송"})
 @RestController
 @RequestMapping("/v1")
 @RequiredArgsConstructor
@@ -33,20 +29,16 @@ public class DeliveryController extends WBController {
     private final MessageSourceAccessor messageSourceAccessor;
     private final DeliveryService deliveryService;
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
-    })
-    @ApiOperation(value = "배송관리 목록 조회", notes = "주문 정보의 배송 목록 조회")
     @GetMapping("/deliveries")
-    public WBModel findDeliveryList(@ApiParam(value = "배송상태") @RequestParam String[] deliveryStatus,
-                                    @ApiParam(value = "배송방법") @RequestParam String[] deliveryType,
-                                    @ApiParam(value = "조회기간 시작일") @RequestParam String startDay,
-                                    @ApiParam(value = "조회기간 종료일") @RequestParam String endDay,
-                                    @ApiParam(value = "키워드 구분") @RequestParam String keywordType,
-                                    @ApiParam(value = "키워드 값") @RequestParam(required = false) String keywordValue,
-                                    @ApiParam(value = "페이지 행 수") @RequestParam int count,
-                                    @ApiParam(value = "현재 페이지") @RequestParam int page,
-                                    @ApiIgnore @AuthenticationPrincipal UserPrincipal user
+    public WBModel findDeliveryList(@RequestParam String[] deliveryStatus,
+                                    @RequestParam String[] deliveryType,
+                                    @RequestParam String startDay,
+                                    @RequestParam String endDay,
+                                    @RequestParam String keywordType,
+                                    @RequestParam(required = false) String keywordValue,
+                                    @RequestParam int count,
+                                    @RequestParam int page,
+                                    @AuthenticationPrincipal UserPrincipal user
     ) {
         WBModel response = new WBModel();
         DeliveryListDto.Param paramDto = DeliveryListDto.Param.builder()
@@ -71,16 +63,16 @@ public class DeliveryController extends WBController {
     }
 
     @GetMapping("/deliveries/excel")
-    public void deliveryExcelDownload(@ApiParam(value = "배송상태") @RequestParam String[] deliveryStatus,
-                                      @ApiParam(value = "배송방법") @RequestParam String[] deliveryType,
-                                      @ApiParam(value = "조회기간 시작일") @RequestParam String startDay,
-                                      @ApiParam(value = "조회기간 종료일") @RequestParam String endDay,
-                                      @ApiParam(value = "키워드 구분") @RequestParam String keywordType,
-                                      @ApiParam(value = "키워드 값") @RequestParam(required = false) String keywordValue,
-                                      @ApiParam(value = "페이지 행 수") @RequestParam int count,
-                                      @ApiParam(value = "현재 페이지") @RequestParam int page,
-                                      @ApiIgnore @AuthenticationPrincipal UserPrincipal user,
-                                      @ApiIgnore HttpServletResponse response
+    public void deliveryExcelDownload(@RequestParam String[] deliveryStatus,
+                                      @RequestParam String[] deliveryType,
+                                      @RequestParam String startDay,
+                                      @RequestParam String endDay,
+                                      @RequestParam String keywordType,
+                                      @RequestParam(required = false) String keywordValue,
+                                      @RequestParam int count,
+                                      @RequestParam int page,
+                                      @AuthenticationPrincipal UserPrincipal user,
+                                      HttpServletResponse response
     ) throws IOException {
         DeliveryListDto.Param paramDto = DeliveryListDto.Param.builder()
                 .partnerCode(user.getUserAuth().getPartnerCode())
@@ -114,13 +106,9 @@ public class DeliveryController extends WBController {
         );
     }
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
-    })
-    @ApiOperation(value = "배송 관리 상세 정보 조회", notes = "주문 내역의 및 배송에 대한 상세 정보 조회")
     @GetMapping("/deliveries/{orderNo}")
-    public WBModel findDelivery(@ApiParam(value = "주문번호") @PathVariable String orderNo,
-                                @ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
+    public WBModel findDelivery(@PathVariable String orderNo,
+                                @AuthenticationPrincipal UserPrincipal user) {
         // 배송 관리 상세 정보 조회
         return defaultResponse(deliveryService.findDelivery(
                 DeliveryFindDto.Param.builder()
@@ -131,12 +119,8 @@ public class DeliveryController extends WBController {
     }
 
     @UserPrincipalScope
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
-    })
-    @ApiOperation(value = "배송 정보 수정", notes = "배송지 정보, 배송 메모에 대한 정보 수정")
     @PatchMapping("/deliveries")
-    public WBModel updateDeliveryMemo(@ApiParam(value = "배송 수정 데이터") @Valid @RequestBody DeliveryMemoUpdateDto paramDto) {
+    public WBModel updateDeliveryMemo(@Valid @RequestBody DeliveryMemoUpdateDto paramDto) {
         // 배송관리 정보 수정
         deliveryService.updateDeliveryMemo(paramDto);
 
@@ -144,12 +128,8 @@ public class DeliveryController extends WBController {
     }
 
     @UserPrincipalScope
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
-    })
-    @ApiOperation(value = "송장번호 저장", notes = "택배 발송되는 주문 상품의 택배사 / 송장번호 등록 및 수정")
     @PutMapping("/deliveries/{orderNo}/invoice")
-    public WBModel updateDeliveryInvoice(@ApiParam(value = "송장번호 입력 데이터") @Valid @RequestBody DeliveryInvoiceUpdateDto paramDto) {
+    public WBModel updateDeliveryInvoice(@Valid @RequestBody DeliveryInvoiceUpdateDto paramDto) {
         // 송장번호 수정
         deliveryService.updateDeliveryInvoice(paramDto);
 
@@ -166,12 +146,8 @@ public class DeliveryController extends WBController {
     }
 
     @UserPrincipalScope
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
-    })
-    @ApiOperation(value = "배송정보 저장", notes = "주문 상품의 배송정보를 등록 및 수정")
     @PutMapping("/deliveries")
-    public WBModel updateDelivery(@ApiParam(value = "배송정보 입력 데이터") @Valid @RequestBody DeliveryUpdateDto paramDto) {
+    public WBModel updateDelivery(@Valid @RequestBody DeliveryUpdateDto paramDto) {
         // 배송정보 수정
         deliveryService.updateDelivery(paramDto);
 
