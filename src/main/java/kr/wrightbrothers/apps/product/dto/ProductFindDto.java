@@ -1,5 +1,6 @@
 package kr.wrightbrothers.apps.product.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,6 +10,7 @@ public class ProductFindDto {
 
     @Getter
     @Builder
+    @AllArgsConstructor
     public static class Param {
         private String partnerCode;                 // 스토어 코드
         private String productCode;                 // 상품 코드

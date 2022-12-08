@@ -58,4 +58,8 @@ public class ProductUpdateDto extends ProductInsertDto {
         this.productCode = productCode;
         this.setProductCode(productCode);
     }
+
+    public ProductFindDto.Param toProductFindParam() {
+        return new ProductFindDto.Param(this.getProduct().getPartnerCode(), this.productCode);
+    }
 }

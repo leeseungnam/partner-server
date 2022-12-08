@@ -60,6 +60,9 @@ public class ExcelUtil {
         XSSFDataFormat format = workbook.createDataFormat();
         bodyNumber.setDataFormat(format.getFormat("#,##0"));
         initCellStyle(bodyNumber, font, HorizontalAlignment.RIGHT, convertShort("11110".toCharArray()));
+
+        // 엑셀 시트생성
+        this.sheet = this.workbook.getSheetAt(0);
     }
 
     // POI 폰트 초기화

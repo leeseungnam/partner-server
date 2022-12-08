@@ -16,16 +16,17 @@ public class ChangeInfoService {
 
     private final WBCommonDao dao;
     private final String namespace = "kr.wrightbrothers.apps.product.query.ChangeInfo.";
+    private final String namespaceProduct = "kr.wrightbrothers.apps.product.query.Product.";
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void insertChangeInfo(ChangeInfoDto.ReqBody paramDto) {
         if (ObjectUtils.isEmpty(paramDto.getProductLog())) return;
-        // 상태 변경 이력 등록
+
         dao.insert(namespace + "insertChangeInfo", paramDto);
     }
 
     public ChangeInfoListDto.Response findProductChangeHistory(ChangeInfoListDto.Param paramDto) {
-        ProductDto.ResBody product = dao.selectOne("kr.wrightbrothers.apps.product.query.Product.findProduct", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin);
+        ProductDto.ResBody product = dao.selectOne(namespaceProduct + "findProduct", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin);
 
         return ChangeInfoListDto.Response.builder()
                 .productCode(product.getProductCode())
