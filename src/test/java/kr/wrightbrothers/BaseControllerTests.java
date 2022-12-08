@@ -41,6 +41,7 @@ public class BaseControllerTests {
 	@Autowired
 	public JwtTokenProvider jwtTokenProvider;
 
+	public UserDetailDto userDetailDto;
 	public final String AUTH_HEADER = "Authorization";
 	public String JWT_TOKEN = "";
 
@@ -66,7 +67,7 @@ public class BaseControllerTests {
 	void setUp() {
 		SecurityContext context = SecurityContextHolder.getContext();
 
-		UserDetailDto userDetailDto = UserDetailDto.builder()
+		userDetailDto = UserDetailDto.builder()
 				.userId("test@wrightbrothers.kr")
 				.userPwd("")
 				.userAuth(UserAuthDto.builder()

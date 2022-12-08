@@ -311,6 +311,38 @@ include::{snippets}/template-delete/http-response.adoc[]
 include::{snippets}/template-delete/response-fields.adoc[]
 
 
+== 임시보관 API 관리
+
+=== 임시보관 등록
+
+.HTTP request
+include::{snippets}/temporaries-post/http-request.adoc[]
+include::{snippets}/temporaries-post/request-headers.adoc[]
+include::{snippets}/temporaries-post/request-fields.adoc[]
+.HTTP response
+include::{snippets}/temporaries-post/http-response.adoc[]
+include::{snippets}/temporaries-post/response-fields.adoc[]
+
+=== 임시보관 조회
+
+.HTTP request
+include::{snippets}/temporaries-find/http-request.adoc[]
+include::{snippets}/temporaries-find/request-headers.adoc[]
+include::{snippets}/temporaries-find/path-parameters.adoc[]
+.HTTP response
+include::{snippets}/temporaries-find/http-response.adoc[]
+include::{snippets}/temporaries-find/response-fields.adoc[]
+
+=== 임시보관 삭제
+
+.HTTP request
+include::{snippets}/temporaries-delete/http-request.adoc[]
+include::{snippets}/temporaries-delete/request-headers.adoc[]
+include::{snippets}/temporaries-delete/request-parameters.adoc[]
+.HTTP response
+include::{snippets}/temporaries-delete/http-response.adoc[]
+include::{snippets}/temporaries-delete/response-fields.adoc[]
+
 
 
 == 주문 API 관리
