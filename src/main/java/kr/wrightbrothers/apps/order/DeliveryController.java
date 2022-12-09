@@ -91,9 +91,6 @@ public class DeliveryController extends WBController {
         // 배송 내역 목록 조회
         List<DeliveryListDto.Response> deliveryList = deliveryService.findDeliveryList(paramDto);
 
-        if (ObjectUtils.isEmpty(deliveryList))
-            throw new WBBusinessException(ErrorCode.NO_CONTENT.getErrCode(), new String[]{"배송 목록"});
-
         // 엑셀 다운로드
         deliveryService.makeExcelFile(
                 DeliveryExcelDto.Param.builder()

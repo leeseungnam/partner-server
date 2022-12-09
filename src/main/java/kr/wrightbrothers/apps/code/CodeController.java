@@ -18,7 +18,6 @@ public class CodeController extends WBController {
 
     @GetMapping("/master-code/{codeGroup}/codes")
     public WBModel findCodeList(@PathVariable String codeGroup) {
-        // 코드 목록 조회
         return defaultResponse(codeService.findCodeList(codeGroup));
     }
 

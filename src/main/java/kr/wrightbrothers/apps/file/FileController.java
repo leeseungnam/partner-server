@@ -1,6 +1,5 @@
 package kr.wrightbrothers.apps.file;
 
-import io.swagger.annotations.*;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.RandomUtil;
 import kr.wrightbrothers.apps.file.dto.FileParamDto;

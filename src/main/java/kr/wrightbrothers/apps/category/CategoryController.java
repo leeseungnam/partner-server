@@ -18,7 +18,6 @@ public class CategoryController extends WBController {
 
     @GetMapping("/categories")
     public WBModel findCategoryList(@RequestParam String categoryGroup) {
-        // 카테고리 목록 조회
         return defaultResponse(categoryService.findCategoryList(categoryGroup));
     }
 

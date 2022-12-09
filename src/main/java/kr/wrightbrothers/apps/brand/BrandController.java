@@ -17,7 +17,6 @@ public class BrandController extends WBController {
 
     @GetMapping("/brands")
     public WBModel findBrandList() {
-        // 브랜드 목록 조회
         return defaultResponse(brandService.findBrandList());
     }
 

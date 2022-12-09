@@ -1,18 +1,15 @@
 package kr.wrightbrothers.apps.order;
 
 import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
-import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.order.dto.*;
 import kr.wrightbrothers.apps.order.service.OrderService;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
-import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.WBModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -112,9 +109,6 @@ public class OrderController extends WBController {
 
         // 주문 내역 목록 조회
         List<OrderListDto.Response> orderList = orderService.findOrderList(paramDto);
-
-        if (ObjectUtils.isEmpty(orderList))
-            throw new WBBusinessException(ErrorCode.NO_CONTENT.getErrCode(), new String[]{"주문 목록"});
 
         // 엑셀 다운로드
         orderService.makeExcelFile(

@@ -1,6 +1,5 @@
 package kr.wrightbrothers.apps.product.dto;
 
-import io.swagger.annotations.ApiModelProperty;
 import kr.wrightbrothers.apps.common.type.CategoryCode;
 import kr.wrightbrothers.apps.common.type.ProductLogCode;
 import kr.wrightbrothers.apps.common.type.ProductStatusCode;
@@ -22,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 @Getter
 @Jacksonized
@@ -30,39 +28,36 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductInsertDto {
-    @ApiModelProperty(value = "상품 정보", required = true)
+
+    /** 상품 정보 */
+    @Valid @NotNull(message = "상품 정보")
+    private ProductDto.ReqBody product;
+
+    /** 기본 스펙 정보 */
+    private BasicSpecDto.ReqBody basicSpec;
+
+    /** 판매 정보 */
+    @Valid @NotNull(message = "판매 정보")
+    private SellInfoDto.ReqBody sellInfo;
+
+    /** 옵션 정보 */
     @Valid
-    @NotNull(message = "상품 정보")
-    private ProductDto.ReqBody product;         // 상품 기본 정보
+    private List<OptionDto.ReqBody> optionList;
 
-    @ApiModelProperty(value = "기본 스펙")
-    private BasicSpecDto.ReqBody basicSpec;     // 기본 스펙 정보
+    /** 배송 정보 */
+    private DeliveryDto.ReqBody delivery;
 
-    @ApiModelProperty(value = "판매 정보", required = true)
-    @Valid
-    @NotNull(message = "판매 정보")
-    private SellInfoDto.ReqBody sellInfo;       // 판매 정보
+    /** 상품 정보 고시 */
+    @Valid @NotNull(message = "상품 정보 고시")
+    private InfoNoticeDto.ReqBody infoNotice;
 
-    @ApiModelProperty(value = "옵션 정보")
-    @Valid
-    private List<OptionDto.ReqBody> optionList; // 옵션 정보
+    /** 안내 사항 */
+    @Valid @NotNull(message = "안내 사항 정보")
+    private GuideDto.ReqBody guide;
 
-    @ApiModelProperty(value = "배송 정보")
-    private DeliveryDto.ReqBody delivery;       // 배송 정보
-
-    @ApiModelProperty(value = "상품 정보 고시", required = true)
-    @Valid
-    @NotNull(message = "상품 정보 고시")
-    private InfoNoticeDto.ReqBody infoNotice;   // 상품 정보 고시
-
-    @ApiModelProperty(value = "안내 사항", required = true)
-    @Valid
-    @NotNull(message = "안내 사항 정보")
-    private GuideDto.ReqBody guide;             // 안내사항 정보
-
-    @ApiModelProperty(value = "상품 이미지 목록", required = true)
+    /** 상품 등록 이미지 */
     @NotNull(message = "상품 이미지 파일 목록")
-    private List<FileUpdateDto> fileList;       // 상품 등록 이미지
+    private List<FileUpdateDto> fileList;
 
     public void setBasicSpec(BasicSpecDto.ReqBody paramDto) {
         this.basicSpec = paramDto;

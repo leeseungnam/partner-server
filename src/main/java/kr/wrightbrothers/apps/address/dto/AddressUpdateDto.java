@@ -1,7 +1,6 @@
 package kr.wrightbrothers.apps.address.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +17,6 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddressUpdateDto extends AddressDto {
-    @ApiModelProperty(value = "주소록 번호", required = true)
     @NotNull(message = "주소록 번호")
     private Long addressNo;
 

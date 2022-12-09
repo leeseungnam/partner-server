@@ -1,7 +1,6 @@
 package kr.wrightbrothers.apps.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.swagger.annotations.ApiModelProperty;
 import kr.wrightbrothers.apps.common.type.ProductLogCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,28 +10,29 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 
-@Getter
-@Builder
+@Getter @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class StatusUpdateDto {
-    @ApiModelProperty(value = "변경 상품 코드", required = true)
+
+    /** 변경 상품 코드 */
     @NotEmpty(message = "변경 상품 코드")
-    private String[] productCodeList;   // 변경 상품 코드
+    private String[] productCodeList;
 
-    @ApiModelProperty(value = "스토어 코드")
-    private String partnerCode;         // 스토어 코드
+    /** 스토어 코드 */
+    private String partnerCode;
 
-    @ApiModelProperty(value = "변경 구분", required = true)
+    /** 변경 구분 */
     @NotBlank(message = "변경 구분")
-    private String statusType;          // 변경 구분
+    private String statusType;
 
-    @ApiModelProperty(value = "변경 값", required = true)
+    /** 변경 값 */
     @NotBlank(message = "변경 값")
-    private String statusValue;         // 변경 값
+    private String statusValue;
 
+    /** 변경자 */
     @JsonIgnore
-    private String userId;              // 변경자
+    private String userId;
 
     public void setAopUserId(String userId) {
         this.userId = userId;

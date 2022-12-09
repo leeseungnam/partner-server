@@ -18,7 +18,6 @@ public class ModelController extends WBController {
 
     @GetMapping("/brands/{brandNo}/models")
     public WBModel findModelList(@PathVariable String brandNo) {
-        // 모델 목록 조회
         return defaultResponse(modelService.findModelList(brandNo));
     }
 }
