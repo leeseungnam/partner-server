@@ -69,7 +69,7 @@ public class ProductAfterAop {
                                 productCode,
                                 PartnerKey.TransactionType.Update
                         );
-                        log.debug("Product Batch Update Send SNS. ProductCode::{}", productCode);
+                        log.info("Product Batch Update Send SNS. ProductCode::{}, PartnerCode::{}", productCode, object.getString("partnerCode"));
                     });
         else if (object.has("product")) {
             // 상품 등록 / 변경에 따른 SNS 발송 처리
@@ -84,7 +84,7 @@ public class ProductAfterAop {
                     methodSignature.getMethod().getName().contains("update") ?
                             PartnerKey.TransactionType.Update : PartnerKey.TransactionType.Insert
             );
-            log.debug("Product Send SNS. ProductCode::{}", object.getJSONObject("product").getString("productCode"));
+            log.info("Product Send SNS. ProductCode::{}, PartnerCode::{}", object.getJSONObject("product").getString("productCode"), object.getJSONObject("product").getString("partnerCode"));
         }
     }
 

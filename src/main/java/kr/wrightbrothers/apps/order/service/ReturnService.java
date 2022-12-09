@@ -9,6 +9,7 @@ import kr.wrightbrothers.apps.order.dto.*;
 import kr.wrightbrothers.apps.queue.OrderQueue;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReturnService {
@@ -89,6 +91,8 @@ public class ReturnService {
         });
 
         dao.update(namespaceOrder + "updateOrderStatusRefresh", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin);
+
+        log.info("Order Return Process. OrderNo::{}, PartnerCode::{}, ReturnCode::{}", paramDto.getOrderNo(), paramDto.getPartnerCode(), paramDto.getReturnProcessCode());
 
         if (OrderProductStatusCode.REQUEST_COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()))
             dao.update(namespace + "updateReturnDeliveryAmount", paramDto, PartnerKey.WBDataBase.Alias.Admin);

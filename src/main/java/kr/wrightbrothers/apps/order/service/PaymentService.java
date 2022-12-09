@@ -58,6 +58,8 @@ public class PaymentService {
                         PartnerKey.WBDataBase.Alias.Admin
                 );
 
+        log.info("Order Payment Request Cancel. OrderNo::{}, PartnerCode::{}", paramDto.getOrderNo(), paramDto.getPartnerCode());
+
         // 결제취소 요청에 대한 Queue 전송
         orderQueue.sendToAdmin(
                 DocumentSNS.REQUEST_CANCEL_PAYMENT,
