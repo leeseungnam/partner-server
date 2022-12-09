@@ -6,14 +6,21 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+
 public class TemporaryDto {
 
     @Getter
     @Builder
     @AllArgsConstructor
     public static class Param {
+        /** 파트너 코드 */
         private String partnerCode;
+
+        /** 사용자 아이디 */
         private String userId;
+
+        /** 임시저장 타입 */
         private String storageType;
     }
 
@@ -22,11 +29,19 @@ public class TemporaryDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ReqBody {
-        private String storageData;
+        /** 임시저장 타입 */
+        @NotBlank(message = "임시저장 타입")
         private String storageType;
 
+        /** 임시저장 데이터 */
+        @NotBlank(message = "임시저장 데이터")
+        private String storageData;
+
+        /** 파트너 코드 */
         @JsonIgnore
         private String partnerCode;
+
+        /** 사용자 아이디 */
         @JsonIgnore
         private String userId;
 

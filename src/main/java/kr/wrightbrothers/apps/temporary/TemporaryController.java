@@ -14,6 +14,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.validation.Valid;
+
 @Slf4j
 @RestController
 @RequestMapping("/v1")
@@ -37,7 +39,7 @@ public class TemporaryController extends WBController {
 
     @UserPrincipalScope
     @PostMapping("/temporaries")
-    public WBModel mergeTemporary(@RequestBody TemporaryDto.ReqBody paramDto) throws JsonProcessingException {
+    public WBModel mergeTemporary(@Valid @RequestBody TemporaryDto.ReqBody paramDto) throws JsonProcessingException {
         // 임시데이터 저장 처리
         temporaryService.mergeTemporary(paramDto);
 
