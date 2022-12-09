@@ -15,19 +15,26 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ApprovalReturnDto {
+    /** 주문번호 */
     @NotBlank(message = "주문 번호")
-    private String orderNo;                 // 주문 번호
+    private String orderNo;
 
+    /** 주문 상품 SEQ */
     @NotNull(message = "주문 상품 SEQ")
-    private Integer[] orderProductSeqArray; // 주문 상품 SEQ
+    private Integer[] orderProductSeqArray;
 
-    private String deliveryCompanyCode;     // 택배 회사 코드
+    /** 택배 회사 코드 */
+    private String deliveryCompanyCode;
 
-    private String invoiceNo;               // 운송장 번호
+    /** 운송장 번호 */
+    private String invoiceNo;
 
-    private String partnerCode;             // 파트너 코드
+    /** 파트너 코드 */
+    private String partnerCode;
+
+    /** 사용자 아이디 */
     @JsonIgnore
-    private String userId;                  // 사용자 아이디
+    private String userId;
 
     public void setAopPartnerCode(String partnerCode) {
         this.partnerCode = partnerCode;

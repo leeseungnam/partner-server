@@ -8,19 +8,23 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-@Getter
-@Setter
+@Getter @Setter
 @Jacksonized
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddressInsertDto extends AddressDto {
+    /** 주소록 번호 */
     @JsonIgnore
-    private Long addressNo;         // 주소록 번호
+    private Long addressNo;
+
+    /** 파트너 코드 */
     @JsonIgnore
-    private String partnerCode;     // 파트너 코드
+    private String partnerCode;
+
+    /** 사용자 아이디 */
     @JsonIgnore
-    private String userId;          // 사용자 아이디
+    private String userId;
 
     public void setAopUserId(String userId) {
         this.userId = userId;

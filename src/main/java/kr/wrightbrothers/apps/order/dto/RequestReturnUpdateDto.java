@@ -7,29 +7,48 @@ import lombok.*;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-@Getter
-@Setter
-@Builder
+@Getter @Setter @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class RequestReturnUpdateDto {
-        private String orderNo;                 // 주문 번호
-        private Integer[] orderProductSeqArray; // 주문 상품 SEQ
-        private String returnProcessCode;       // 반품 요청 구분
-        private String requestCode;             // 요청 처리 코드
-        private String requestValue;            // 요청 처리 데이터
+        /** 주문 번호 */
+        private String orderNo;
 
-        private Long returnDeliveryAmount;      // 반품 배송비
-        private Long paymentAmount;             // 결제 금액
-        private Long refundAmount;              // 환불 예정 금액
+        /** 주문 상품 SEQ Array */
+        private Integer[] orderProductSeqArray;
 
-        private String partnerCode;             // 파트너 코드
+        /** 반품 요청 구분 */
+        private String returnProcessCode;
+
+        /** 요청 처리 코드 */
+        private String requestCode;
+
+        /** 요청 처리 데이터 */
+        private String requestValue;
+
+        /** 반품 배송비 */
+        private Long returnDeliveryAmount;
+
+        /** 결제 금액 */
+        private Long paymentAmount;
+
+        /** 환불 예정 금액 */
+        private Long refundAmount;
+
+        /** 파트너 코드 */
+        private String partnerCode;
+
+        /** 사용자 아이디 */
         @JsonIgnore
-        private String userId;                  // 사용자 아이디
+        private String userId;
+
+        /** 주문 상품 SEQ */
         @JsonIgnore
-        private Integer orderProductSeq;        // 주문 상품 SEQ
+        private Integer orderProductSeq;
+
+        /** 배송비 */
         @JsonIgnore
-        private Long deliveryAmount;            // 배송비(selectKeyData)
+        private Long deliveryAmount;
 
         public void setAopPartnerCode(String partnerCode) {
             this.partnerCode = partnerCode;

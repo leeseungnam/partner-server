@@ -1,7 +1,6 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,22 +9,24 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-@Getter
-@Builder
+@Getter @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class DeliveryMemoUpdateDto {
-    @ApiModelProperty(value = "주문번호", required = true)
+    /** 주문번호 */
     @NotBlank(message = "주문번호")
     private String orderNo;
 
-    @ApiModelProperty(value = "배송메모")
+    /** 배송메모 */
     @Size(max = 2000, message = "배송메모")
-    private String deliveryMemo;            // 배송 메모
+    private String deliveryMemo;
 
-    private String partnerCode;             // 파트너 코드
+    /** 파트너 코드 */
+    private String partnerCode;
+
+    /** 사용자 아이디 */
     @JsonIgnore
-    private String userId;                  // 사용자 아이디
+    private String userId;
 
     public void setAopPartnerCode(String partnerCode) {
         this.partnerCode = partnerCode;

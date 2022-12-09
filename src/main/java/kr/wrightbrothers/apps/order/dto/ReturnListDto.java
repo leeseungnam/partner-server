@@ -19,14 +19,29 @@ public class ReturnListDto {
     @SuperBuilder
     @EqualsAndHashCode(callSuper = false)
     public static class Param extends AbstractPageDto {
+        /** 파트너 코드 */
         private String partnerCode;
+
+        /** 반품 상태 */
         private String[] returnStatus;
+
+        /** 검색기간 구분 */
         private String rangeType;
-        private String startDay;            // 시작 일자
-        private String endDay;              // 종료 일자
-        private String keywordType;         // 키워드 종류
-        private String keywordValue;        // 키워드 값
-        private String[] keywordValueList;  // 여러검색 조건
+
+        /** 시작일자 */
+        private String startDay;
+
+        /** 종료일자 */
+        private String endDay;
+
+        /** 키워드 종료 */
+        private String keywordType;
+
+        /** 키워드 값 */
+        private String keywordValue;
+
+        /** 다중검색 */
+        private String[] keywordValueList;
 
         // 여러 상품 검색을 위해 구분자인 ; Split 처리
         public void splitKeywordValue() {
@@ -40,20 +55,47 @@ public class ReturnListDto {
     @Getter
     @AllArgsConstructor
     public static class Response {
-        private String returnRequestDay;            // 반품 요청 일자
-        private String orderNo;                     // 주문번호
-        private String orderDay;                    // 주문일자
-        private String orderUserName;               // 주문자
-        private String returnStatusCode;            // 주문상태 코드
-        private String returnStatusName;            // 주문상태 이름
-        private String paymentMethodCode;           // 결제수단 코드
-        private String paymentMethodName;           // 결제수단 이름
-        private String orderName;                   // 주문명
-        private String productName;                 // 반품요청 상품
-        private String returnReason;                // 반품사유
-        private Long orderAmount;                   // 주문금액
-        private Long finalSellAmount;               // 판매금액
-        private Long returnDeliveryChargeAmount;    // 반품배송비
+        /** 반품 요청 일자 */
+        private String returnRequestDay;
+
+        /** 주문 번호 */
+        private String orderNo;
+
+        /** 주문 일자 */
+        private String orderDay;
+
+        /** 주문자 */
+        private String orderUserName;
+
+        /** 주문 상태 코드 */
+        private String returnStatusCode;
+
+        /** 주문 상태 이름 */
+        private String returnStatusName;
+
+        /** 결제 수단 코드 */
+        private String paymentMethodCode;
+
+        /** 결제 수단 이름 */
+        private String paymentMethodName;
+
+        /** 주문명 */
+        private String orderName;
+
+        /** 반품요청 상품 */
+        private String productName;
+
+        /** 반품사유 */
+        private String returnReason;
+
+        /** 주문금액 */
+        private Long orderAmount;
+
+        /** 판매금액 */
+        private Long finalSellAmount;
+
+        /** 반품배송비 */
+        private Long returnDeliveryChargeAmount;
 
         // 반품 상태 ENUM 처리
         public void setReturnStatusName(String returnStatusName) {

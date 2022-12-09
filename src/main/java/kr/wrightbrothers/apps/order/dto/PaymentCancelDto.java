@@ -1,8 +1,6 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import kr.wrightbrothers.apps.common.type.PaymentMethodCode;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
@@ -20,46 +18,49 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Getter
-@Builder
-@ApiModel(value = "결제취소 요청")
+@Getter @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentCancelDto {
-    @ApiModelProperty(value = "주문 번호", required = true)
+    /** 주문 번호 */
     @NotBlank(message = "주문 번호")
-    private String orderNo;                 // 주문 번호
+    private String orderNo;
 
-    @ApiModelProperty(value = "주문 상품 SEQ", required = true)
+    /** 주문 상품 SEQ Array */
     @NotNull(message = "주문 상품 SEQ")
-    private Integer[] orderProductSeq;      // 주문 상품 SEQ
+    private Integer[] orderProductSeq;
 
-    @ApiModelProperty(value = "취소사유 코드", required = true)
+    /** 취소사유 코드 */
     @NotBlank(message = "취소사유 코드")
-    private String cancelReasonCode;        // 취소사유 코드
+    private String cancelReasonCode;
 
-    @ApiModelProperty(value = "취소사유 명", required = true)
+    /** 취소사유 명 */
     @NotBlank(message = "취소사유 명")
-    private String cancelReasonName;        // 취소사유 명
+    private String cancelReasonName;
 
-    @ApiModelProperty(value = "결제방법", required = true)
+    /** 결제방법 */
     @NotBlank(message = "결제방법")
-    private String paymentMethodCode;       // 결제방법
+    private String paymentMethodCode;
 
-    @ApiModelProperty(value = "은행코드")
-    private String refundBankCode;          // 은행코드
-    @ApiModelProperty(value = "은행명")
-    private String refundBankName;          // 은행명
+    /** 은행코드 */
+    private String refundBankCode;
 
-    @ApiModelProperty(value = "계좌번호")
+    /** 은행명 */
+    private String refundBankName;
+
+    /** 계좌번호 */
     @Size(min = 5, max = 30, message = "계좌번호")
-    private String refundBankAccountNo;     // 계좌번호
-    @ApiModelProperty(value = "예금주")
-    private String refundDepositorName;     // 예금주
+    private String refundBankAccountNo;
 
-    private String partnerCode;             // 파트너 코드
+    /** 예금주 */
+    private String refundDepositorName;
+
+    /** 파트너 코드 */
+    private String partnerCode;
+
+    /** 시영지 아이디 */
     @JsonIgnore
-    private String userId;                  // 사용자 아이디
+    private String userId;
 
     public void validRefundInfo() {
         // 무통장 결제 시 해당 유효성 체크
@@ -107,19 +108,44 @@ public class PaymentCancelDto {
     @Getter
     @Builder
     public static class Queue {
-        private String ordNo;                   // 주문번호
-        private String prnrCd;                  // 파트너코드
-        private String stusCd;                  // 상태코드
-        private List<String> ordPrdtIdx;        // 주문상품 IDX 배열
-        private String cncRsnCd;                // 취소 사유 코드
-        private String cncRsn;                  // 취소 사유
-        private String bankCd;                  // 은행코드
-        private String bankAcntNo;              // 계좌번호
-        private String dpstrNm;                 // 예금주
-        private Long payAmt;                    // 결제금액
-        private Long rtrnDlvrAmt;               // 반품배송금액
-        private Long refundAmt;                 // 환불예정금액
-        private String usrId;                   // 로그인아이디
+        /** 주문번호 */
+        private String ordNo;
+
+        /** 파트너코드 */
+        private String prnrCd;
+
+        /** 상태코드 */
+        private String stusCd;
+
+        /** 주문상품 IDX LIST */
+        private List<String> ordPrdtIdx;
+
+        /** 취소 사유 코드 */
+        private String cncRsnCd;
+
+        /** 취소 사유 */
+        private String cncRsn;
+
+        /** 은행 코드 */
+        private String bankCd;
+
+        /** 계좌번호 */
+        private String bankAcntNo;
+
+        /** 예금주 */
+        private String dpstrNm;
+
+        /** 결제금액 */
+        private Long payAmt;
+
+        /** 반품배송금액 */
+        private Long rtrnDlvrAmt;
+
+        /** 환불예정금액 */
+        private Long refundAmt;
+
+        /** 사용자 아이디 */
+        private String usrId;
     }
 
     @Getter
@@ -127,8 +153,13 @@ public class PaymentCancelDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class BankInfo {
-        private String bankCd;                  // 은행코드
-        private String bankAcntNo;              // 계좌번호
-        private String dpstrNm;                 // 예금주
+        /** 은행코드 */
+        private String bankCd;
+
+        /** 계좌번호 */
+        private String bankAcntNo;
+
+        /** 예금주 */
+        private String dpstrNm;
     }
 }

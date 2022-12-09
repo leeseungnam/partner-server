@@ -6,6 +6,9 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class CategoryListDto {
-    private String categoryCode;    // 카테고리 코드
-    private String categoryName;    // 카테고리 이름
+    /** 카테고리 코드 */
+    private String categoryCode;
+
+    /** 카테고리 이름 */
+    private String categoryName;
 }

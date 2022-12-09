@@ -1,6 +1,5 @@
 package kr.wrightbrothers.apps.template.dto;
 
-import io.swagger.annotations.ApiModelProperty;
 import kr.wrightbrothers.apps.common.type.TemplateType;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
@@ -20,19 +19,19 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TemplateDto {
-    @ApiModelProperty(value = "템플릿 구분", required = true)
+    /** 템플릿 구분 */
     @NotBlank(message = "템플릿 구분")
     private String templateType;
 
-    @ApiModelProperty(value = "템플릿 이름", required = true)
+    /** 템플릿 이름 */
     @NotBlank(message = "템플릿 이름")
     @Size(min = 2, max = 50, message = "템플릿 이름")
     private String templateName;
 
-    @ApiModelProperty(value = "안내 내용")
+    /** 안내 내용 */
     private String templateGuide;
 
-    @ApiModelProperty(value = "배송 정보")
+    /** 배송 정보 */
     private TemplateDeliveryDto delivery;
 
     public void validTemplate() {

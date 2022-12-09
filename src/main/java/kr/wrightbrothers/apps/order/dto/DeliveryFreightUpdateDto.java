@@ -1,7 +1,6 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.swagger.annotations.ApiModelProperty;
 import kr.wrightbrothers.apps.common.type.OrderStatusCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,25 +13,29 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Getter
-@Builder
+@Getter @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class DeliveryFreightUpdateDto {
 
-    @ApiModelProperty(value = "주문 번호", required = true)
+    /** 주문번호 */
     @NotBlank(message = "주문 번호")
-    private String orderNo;                     // 주문번호
+    private String orderNo;
 
-    @ApiModelProperty(value = "주문 상품 SEQ", required = true)
+    /** 주문상품 SEQ Array */
     @NotNull(message = "주문 상품 SEQ")
-    private Integer[] orderProductSeqArray;     // 주문상품 SEQ Array
+    private Integer[] orderProductSeqArray;
 
-    private String partnerCode;                 // 파트너코드
+    /** 파트너 코드 */
+    private String partnerCode;
+
+    /** 사용자 아이디 */
     @JsonIgnore
-    private String userId;                      // 사용자 아이디
+    private String userId;
+
+    /** 반품불가 여부 */
     @JsonIgnore
-    private String nonReturnFlag;               // 반품불가 플래그
+    private String nonReturnFlag;
 
     public void setNonReturnFlag(String nonReturnFlag) {
         this.nonReturnFlag = nonReturnFlag;
@@ -56,13 +59,21 @@ public class DeliveryFreightUpdateDto {
                 .build();
     }
 
-    @Getter
-    @Builder
+    @Getter @Builder
     public static class Queue {
-        private String ordNo;               // 주문번호
-        private String prnrCd;              // 파트너코드
-        private String stusCd;              // 상태코드
-        private List<String> ordPrdtIdx; // 주문상품 IDX 배열
-        private String usrId;               // 로그인 아이디
+        /** 주문번호 */
+        private String ordNo;
+
+        /** 파트너 코드 */
+        private String prnrCd;
+
+        /** 상태 코드 */
+        private String stusCd;
+
+        /** 주문상품 IDX LIST */
+        private List<String> ordPrdtIdx;
+
+        /** 사용자 아이디 */
+        private String usrId;
     }
 }

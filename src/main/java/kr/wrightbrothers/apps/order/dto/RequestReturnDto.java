@@ -11,29 +11,36 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-@Getter
-@Builder
+@Getter @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class RequestReturnDto {
+    /** 주문 번호 */
     @NotBlank(message = "주문 번호")
-    private String orderNo;                 // 주문번호
+    private String orderNo;
 
+    /** 주문 상품 SEQ Array */
     @NotNull(message = "주문 상품 SEQ")
-    private Integer[] orderProductSeqArray; // 주문 상품 SEQ
+    private Integer[] orderProductSeqArray;
 
+    /** 반품 배송비 */
     @NotNull(message = "반품 배송비")
-    private Long returnDeliveryAmount;      // 반품 배송비
+    private Long returnDeliveryAmount;
 
+    /** 결제 금액 */
     @NotNull(message = "결제 금액")
-    private Long paymentAmount;             // 결제 금액
+    private Long paymentAmount;
 
+    /** 환불 예정 금액 */
     @NotNull(message = "환불 예정 금액")
-    private Long refundAmount;              // 환불 예정 금액
+    private Long refundAmount;
 
-    private String partnerCode;             // 파트너 코드
+    /** 파트너 코드 */
+    private String partnerCode;
+
+    /** 사용자 아이디 */
     @JsonIgnore
-    private String userId;                  // 사용자 아이디
+    private String userId;
 
     public void setAopPartnerCode(String partnerCode) {
         this.partnerCode = partnerCode;

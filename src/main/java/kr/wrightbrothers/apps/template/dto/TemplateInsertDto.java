@@ -13,12 +13,17 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TemplateInsertDto extends TemplateDto {
+    /** 템플릿 번호 */
     @JsonIgnore
-    private Long templateNo;        // 템플릿 번호
+    private Long templateNo;
+
+    /** 파트너 코드 */
     @JsonIgnore
-    private String partnerCode;     // 파트너 코드
+    private String partnerCode;
+
+    /** 사용자 아이디 */
     @JsonIgnore
-    private String userId;          // 사용자 아이디
+    private String userId;
 
     public void setAopPartnerCode(String partnerCode) {
         this.partnerCode = partnerCode;
