@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration packagingData="true" scan="true" scanPeriod="30">
 	<springProfile name="dev,stag,prod">
-		<property name="ROOT_LOG_PATH" value="/Users/chals/partner_project/logs"/>
+		<property name="ROOT_LOG_PATH" value="/app/partner/logs"/>
 		<property name="ROOT_PACKAGE_NAME" value="kr.wrightbrothers"/>
 		<property name="LOG_PATTERN" value="%d [%X{thread-id}] %level [%c] %m%n"/>
 		<property name="LOG_DAYS" value="30"/>
