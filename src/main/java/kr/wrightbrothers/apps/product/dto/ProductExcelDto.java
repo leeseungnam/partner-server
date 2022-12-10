@@ -1,9 +1,9 @@
 package kr.wrightbrothers.apps.product.dto;
 
 import kr.wrightbrothers.apps.common.annotation.ExcelBody;
-import kr.wrightbrothers.apps.common.type.DeliveryType;
-import kr.wrightbrothers.apps.common.type.ExcelBodyType;
-import kr.wrightbrothers.apps.common.type.ProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.DeliveryConst;
+import kr.wrightbrothers.apps.common.constants.ExcelConst;
+import kr.wrightbrothers.apps.common.constants.ProductConst;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -34,19 +34,19 @@ public class ProductExcelDto {
     private String categoryThrName;
 
     /** 싱픔먕 */
-    @ExcelBody(colIndex = 6, bodyType = ExcelBodyType.LONG_TEXT)
+    @ExcelBody(colIndex = 6, bodyType = ExcelConst.Type.LONG_TEXT)
     private String productName;
 
     /** 상품옵션 */
-    @ExcelBody(colIndex = 7, bodyType = ExcelBodyType.LONG_TEXT)
+    @ExcelBody(colIndex = 7, bodyType = ExcelConst.Type.LONG_TEXT)
     private String productOption;
 
     /** 재고 */
-    @ExcelBody(colIndex = 8, bodyType = ExcelBodyType.NUMBER)
+    @ExcelBody(colIndex = 8, bodyType = ExcelConst.Type.NUMBER)
     private int productStockQty;
 
     /** 최종 판매가 */
-    @ExcelBody(colIndex = 9, bodyType = ExcelBodyType.NUMBER)
+    @ExcelBody(colIndex = 9, bodyType = ExcelConst.Type.NUMBER)
     private Long finalSellAmount;
 
     /** 상품상태 */
@@ -82,14 +82,14 @@ public class ProductExcelDto {
     private String updateDay;
 
     /** 등록자 */
-    @ExcelBody(colIndex = 18, bodyType = ExcelBodyType.LONG_TEXT)
+    @ExcelBody(colIndex = 18, bodyType = ExcelConst.Type.LONG_TEXT)
     private String createUserName;
 
     public void setDeliveryType(String deliveryType) {
-        this.deliveryType = DeliveryType.of(deliveryType).getName();
+        this.deliveryType = DeliveryConst.Type.of(deliveryType).getName();
     }
 
     public void setProductStatusCode(String productStatusCode) {
-        this.productStatusCode = ProductStatusCode.of(productStatusCode).getName();
+        this.productStatusCode = ProductConst.Status.of(productStatusCode).getName();
     }
 }

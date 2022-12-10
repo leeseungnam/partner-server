@@ -1,6 +1,6 @@
 package kr.wrightbrothers.apps.order.service;
 
-import kr.wrightbrothers.apps.common.type.DocumentSNS;
+import kr.wrightbrothers.apps.common.constants.DocumentSNS;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.ExcelUtil;
 import kr.wrightbrothers.apps.common.util.PartnerKey;

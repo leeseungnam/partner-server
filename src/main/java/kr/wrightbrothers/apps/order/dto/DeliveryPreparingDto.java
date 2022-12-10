@@ -1,7 +1,7 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import kr.wrightbrothers.apps.common.type.OrderStatusCode;
+import kr.wrightbrothers.apps.common.constants.OrderConst;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -45,7 +45,7 @@ public class DeliveryPreparingDto {
         return Queue.builder()
                 .ordNo(this.orderNo)
                 .prnrCd(this.partnerCode)
-                .stusCd(OrderStatusCode.READY_PRODUCT.getCode())
+                .stusCd(OrderConst.Status.READY_PRODUCT.getCode())
                 .ordPrdtIdx(ordPrdtIdx.stream().map(String::valueOf).collect(Collectors.toList()))
                 .rsnCd(this.value1)
                 .rsnNm(this.value2)
@@ -57,7 +57,7 @@ public class DeliveryPreparingDto {
         return Queue.builder()
                 .ordNo(this.orderNo)
                 .prnrCd(this.partnerCode)
-                .stusCd(OrderStatusCode.READY_PRODUCT.getCode())
+                .stusCd(OrderConst.Status.READY_PRODUCT.getCode())
                 .ordPrdtIdx(ordPrdtIdx.stream().map(String::valueOf).collect(Collectors.toList()))
                 .dlvrCmpnyCd(this.value1)
                 .invcNo(this.value2)

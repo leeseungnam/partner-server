@@ -1,7 +1,7 @@
 package kr.wrightbrothers.apps.order.service;
 
-import kr.wrightbrothers.apps.common.type.DocumentSNS;
-import kr.wrightbrothers.apps.common.type.PaymentMethodCode;
+import kr.wrightbrothers.apps.common.constants.PaymentConst;
+import kr.wrightbrothers.apps.common.constants.DocumentSNS;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.*;
@@ -47,7 +47,7 @@ public class PaymentService {
         // 주문 취소에 대한 상대값 변경 처리
         dao.update(namespace + "updateRequestCancelPayment", paramDto, PartnerKey.WBDataBase.Alias.Admin);
 
-        if (PaymentMethodCode.NON_BANK.getCode().equals(paramDto.getPaymentMethodCode())) {
+        if (PaymentConst.Method.NON_BANK.getCode().equals(paramDto.getPaymentMethodCode())) {
             paramDto.validRefundInfo();
             dao.update(namespace + "updatePaymentDetailRefundInfo", paramDto, PartnerKey.WBDataBase.Alias.Admin);
         }

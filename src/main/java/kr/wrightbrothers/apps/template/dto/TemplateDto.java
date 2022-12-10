@@ -1,6 +1,6 @@
 package kr.wrightbrothers.apps.template.dto;
 
-import kr.wrightbrothers.apps.common.type.TemplateType;
+import kr.wrightbrothers.apps.common.constants.TemplateConst;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
 import lombok.AllArgsConstructor;
@@ -36,7 +36,7 @@ public class TemplateDto {
 
     public void validTemplate() {
         // 가이드 템플릿 경우 체크
-        if (!TemplateType.DELIVERY.getType().equals(this.templateType)) {
+        if (!TemplateConst.Type.DELIVERY.getType().equals(this.templateType)) {
             if (ObjectUtils.isEmpty(this.templateGuide))
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"내용"});
             if (this.templateGuide.length() < 30 | this.templateGuide.length() > 2000)

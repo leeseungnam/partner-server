@@ -2,8 +2,7 @@ package kr.wrightbrothers.apps;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.BaseControllerTests;
-import kr.wrightbrothers.apps.common.type.DeliveryStatusCode;
-import kr.wrightbrothers.apps.common.type.DeliveryType;
+import kr.wrightbrothers.apps.common.constants.DeliveryConst;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.*;
 import kr.wrightbrothers.apps.order.service.OrderService;
@@ -47,16 +46,16 @@ class DeliveryControllerTest extends BaseControllerTests {
         DeliveryListDto.Param paramDto = DeliveryListDto.Param.builder()
                 .deliveryType(
                         new String[]{
-                                DeliveryType.PARCEL.getType(),
-                                DeliveryType.FREIGHT.getType()
+                                DeliveryConst.Type.PARCEL.getType(),
+                                DeliveryConst.Type.FREIGHT.getType()
                         }
                 )
                 .deliveryStatus(
                         new String[]{
-                                DeliveryStatusCode.READY_PRODUCT.getCode(),
-                                DeliveryStatusCode.START_DELIVERY.getCode(),
-                                DeliveryStatusCode.FINISH_DELIVERY.getCode(),
-                                DeliveryStatusCode.PARTIAL_DELIVERY.getCode()
+                                DeliveryConst.Status.READY_PRODUCT.getCode(),
+                                DeliveryConst.Status.START_DELIVERY.getCode(),
+                                DeliveryConst.Status.FINISH_DELIVERY.getCode(),
+                                DeliveryConst.Status.PARTIAL_DELIVERY.getCode()
                         }
                 )
                 .startDay("2022-01-01")

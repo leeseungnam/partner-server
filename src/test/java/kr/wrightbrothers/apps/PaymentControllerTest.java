@@ -2,8 +2,7 @@ package kr.wrightbrothers.apps;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.BaseControllerTests;
-import kr.wrightbrothers.apps.common.type.PaymentMethodCode;
-import kr.wrightbrothers.apps.common.type.PaymentStatusCode;
+import kr.wrightbrothers.apps.common.constants.PaymentConst;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.OrderFindDto;
 import kr.wrightbrothers.apps.order.dto.PaymentCancelDto;
@@ -50,7 +49,7 @@ public class PaymentControllerTest extends BaseControllerTests {
                 .orderProductSeq(new Integer[]{1})
                 .cancelReasonCode("C01")
                 .cancelReasonName("구매 의사 취소")
-                .paymentMethodCode(PaymentMethodCode.CARD.getCode())
+                .paymentMethodCode(PaymentConst.Method.CARD.getCode())
                 .build();
 
         // 주문내역 결제취소 API 테스트
@@ -95,7 +94,7 @@ public class PaymentControllerTest extends BaseControllerTests {
 
         // 검증
         //assertEquals(cancelDto.getCancelReasonName(), nowDto.getPayment().getCancelReason());
-        assertEquals(PaymentStatusCode.REQUEST_CANCEL_PAYMENT.getName(), nowDto.getPayment().getPaymentStatusName());
+        assertEquals(PaymentConst.Status.REQUEST_CANCEL_PAYMENT.getName(), nowDto.getPayment().getPaymentStatusName());
     }
 
     @Test

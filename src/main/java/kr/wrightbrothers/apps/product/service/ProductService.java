@@ -1,6 +1,6 @@
 package kr.wrightbrothers.apps.product.service;
 
-import kr.wrightbrothers.apps.common.type.ProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.ProductConst;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.ExcelUtil;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
@@ -96,7 +96,7 @@ public class ProductService {
                 .guide(dao.selectOne(namespace + "findGuide", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin))
                 .build();
 
-        if (ProductStatusCode.REJECT_INSPECTION.getCode().equals(findDto.getSellInfo().getProductStatusCode()))
+        if (ProductConst.Status.REJECT_INSPECTION.getCode().equals(findDto.getSellInfo().getProductStatusCode()))
             findDto.setRejectReason(dao.selectOne(namespace + "findProductRejectReason", paramDto.getProductCode()));
 
         return findDto;
@@ -155,7 +155,7 @@ public class ProductService {
         productUtil.updateProductSellDate(paramDto.getProductCode(), paramDto.getSellInfo().getProductStatusCode());
 
         // 판매종료 시 노출 N 변경
-        if (ProductStatusCode.END_OF_SALE.getCode().equals(paramDto.getSellInfo().getProductStatusCode()))
+        if (ProductConst.Status.END_OF_SALE.getCode().equals(paramDto.getSellInfo().getProductStatusCode()))
             paramDto.getSellInfo().setDisplayFlag("N");
 
         // 상품 데이터 수정
@@ -203,9 +203,9 @@ public class ProductService {
                     // 판매시작, 예약중 변경에 대한 재고 파악 체크
                     if (!"DP".equals(paramDto.getStatusType()) &&
                             (
-                                ProductStatusCode.SALE.getCode().equals(paramDto.getStatusValue())
+                                ProductConst.Status.SALE.getCode().equals(paramDto.getStatusValue())
                                 ||
-                                ProductStatusCode.RESERVATION.getCode().equals(paramDto.getStatusValue())
+                                ProductConst.Status.RESERVATION.getCode().equals(paramDto.getStatusValue())
                             )
                     ) {
                         // 판매 재고 0일 경우 예외처리 발생
@@ -214,7 +214,7 @@ public class ProductService {
                     }
 
                     if (!"DP".equals(paramDto.getStatusType()) && currentStatus.equals(paramDto.getStatusValue())) {
-                        switch (ProductStatusCode.of(paramDto.getStatusValue())) {
+                        switch (ProductConst.Status.of(paramDto.getStatusValue())) {
                             case SALE:
                                 throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"예약중/판매완료"});
                             case END_OF_SALE:

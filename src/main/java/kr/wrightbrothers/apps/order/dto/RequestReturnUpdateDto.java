@@ -1,7 +1,7 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import kr.wrightbrothers.apps.common.type.OrderProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.OrderConst;
 import lombok.*;
 
 import java.util.Arrays;
@@ -60,7 +60,7 @@ public class RequestReturnUpdateDto {
 
         public Object toCancelQueueDto(String statusCode) {
                 return
-                OrderProductStatusCode.REQUEST_COMPLETE_RETURN.getCode().equals(statusCode) ?
+                        OrderConst.ProductStatus.REQUEST_COMPLETE_RETURN.getCode().equals(statusCode) ?
                         PaymentCancelDto.Queue.builder()
                                 .ordNo(this.orderNo)
                                 .prnrCd(this.partnerCode)

@@ -2,7 +2,7 @@ package kr.wrightbrothers.apps;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.BaseControllerTests;
-import kr.wrightbrothers.apps.common.type.ProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.ProductConst;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.ProductUtil;
 import kr.wrightbrothers.apps.common.util.RandomUtil;
@@ -124,7 +124,7 @@ class ProductControllerTest extends BaseControllerTests {
                         .displayFlag("N")
                         .productOptionFlag("Y")
                         .finalSellAmount(2900000L)
-                        .productStatusCode(ProductStatusCode.SALE.getCode())
+                        .productStatusCode(ProductConst.Status.SALE.getCode())
                         .productStockQty(1)
                         .supplyAmount(0L)
                         .build())
@@ -198,12 +198,12 @@ class ProductControllerTest extends BaseControllerTests {
         ProductListDto.Param paramDto = ProductListDto.Param.builder()
                 .displayFlag(new String[]{"Y", "N"})
                 .status(new String[]{
-                        ProductStatusCode.PRODUCT_INSPECTION.getCode(),
-                        ProductStatusCode.SALE.getCode(),
-                        ProductStatusCode.RESERVATION.getCode(),
-                        ProductStatusCode.SOLD_OUT.getCode(),
-                        ProductStatusCode.END_OF_SALE.getCode(),
-                        ProductStatusCode.REJECT_INSPECTION.getCode()
+                        ProductConst.Status.PRODUCT_INSPECTION.getCode(),
+                        ProductConst.Status.SALE.getCode(),
+                        ProductConst.Status.RESERVATION.getCode(),
+                        ProductConst.Status.SOLD_OUT.getCode(),
+                        ProductConst.Status.END_OF_SALE.getCode(),
+                        ProductConst.Status.REJECT_INSPECTION.getCode()
                 })
                 .rangeType("PRODUCT")
                 .startDay(new SimpleDateFormat("yyyyMMdd").format(new Date()))
@@ -710,7 +710,7 @@ class ProductControllerTest extends BaseControllerTests {
                         .displayFlag("N")
                         .productOptionFlag("Y")
                         .finalSellAmount(2900000L)
-                        .productStatusCode(ProductStatusCode.PRODUCT_INSPECTION.getCode())
+                        .productStatusCode(ProductConst.Status.PRODUCT_INSPECTION.getCode())
                         .productStockQty(1)
                         .build())
                 .optionList(List.of(OptionDto.ReqBody.builder()

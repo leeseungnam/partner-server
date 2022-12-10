@@ -2,7 +2,7 @@ package kr.wrightbrothers.apps;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.BaseControllerTests;
-import kr.wrightbrothers.apps.common.type.OrderProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.OrderConst;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,8 +42,8 @@ public class ReturnControllerTest extends BaseControllerTests {
         ReturnListDto.Param paramDto = ReturnListDto.Param.builder()
                 .returnStatus(
                         new String[]{
-                                OrderProductStatusCode.REQUEST_RETURN.getCode(),
-                                OrderProductStatusCode.START_RETURN.getCode()
+                                OrderConst.ProductStatus.REQUEST_RETURN.getCode(),
+                                OrderConst.ProductStatus.START_RETURN.getCode()
                         }
                 )
                 .rangeType("PAYMENT")

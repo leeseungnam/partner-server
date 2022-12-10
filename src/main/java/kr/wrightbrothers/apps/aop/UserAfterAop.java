@@ -1,7 +1,7 @@
 package kr.wrightbrothers.apps.aop;
 
 import kr.wrightbrothers.apps.common.constants.Notification;
-import kr.wrightbrothers.apps.common.type.DocumentSNS;
+import kr.wrightbrothers.apps.common.constants.DocumentSNS;
 import kr.wrightbrothers.apps.queue.NotificationQueue;
 import kr.wrightbrothers.apps.user.dto.UserDto;
 import kr.wrightbrothers.apps.user.service.UserService;

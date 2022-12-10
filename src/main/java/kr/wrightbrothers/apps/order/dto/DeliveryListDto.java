@@ -1,8 +1,8 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import kr.wrightbrothers.apps.common.AbstractPageDto;
-import kr.wrightbrothers.apps.common.type.DeliveryStatusCode;
-import kr.wrightbrothers.apps.common.type.PaymentMethodCode;
+import kr.wrightbrothers.apps.common.constants.DeliveryConst;
+import kr.wrightbrothers.apps.common.constants.PaymentConst;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -97,11 +97,11 @@ public class DeliveryListDto {
 
         // 주문 상태 ENUM 처리
         public void setDeliveryStatusName(String deliveryStatusName) {
-            this.deliveryStatusName = DeliveryStatusCode.of(deliveryStatusName).getName();
+            this.deliveryStatusName = DeliveryConst.Status.of(deliveryStatusName).getName();
         }
         // 결제 수단 ENUM 처리
         public void setPaymentMethodName(String paymentMethodCode) {
-            this.paymentMethodName = PaymentMethodCode.of(paymentMethodCode).getName();
+            this.paymentMethodName = PaymentConst.Method.of(paymentMethodCode).getName();
         }
     }
 

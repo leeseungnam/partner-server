@@ -1,6 +1,6 @@
 package kr.wrightbrothers.apps.order.dto;
 
-import kr.wrightbrothers.apps.common.type.OrderStatusCode;
+import kr.wrightbrothers.apps.common.constants.OrderConst;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -64,6 +64,6 @@ public class OrderDto {
 
     // 주문 상태 ENUM 처리
     public void setOrderStatusName(String orderStatusCode) {
-        this.orderStatusName = OrderStatusCode.of(orderStatusCode).getName();
+        this.orderStatusName = OrderConst.Status.of(orderStatusCode).getName();
     }
 }

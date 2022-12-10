@@ -1,7 +1,7 @@
 package kr.wrightbrothers.apps.order.dto;
 
-import kr.wrightbrothers.apps.common.type.DeliveryType;
-import kr.wrightbrothers.apps.common.type.OrderProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.DeliveryConst;
+import kr.wrightbrothers.apps.common.constants.OrderConst;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -60,10 +60,10 @@ public class ProductDto {
     private String returnInvoiceNo;
 
     public void setOrderProductStatusName(String productStatusCode) {
-        this.orderProductStatusName = OrderProductStatusCode.of(productStatusCode).getName();
+        this.orderProductStatusName = OrderConst.ProductStatus.of(productStatusCode).getName();
     }
 
     public void setDeliveryName(String deliveryName) {
-        this.deliveryName = DeliveryType.of(deliveryName).getName();
+        this.deliveryName = DeliveryConst.Type.of(deliveryName).getName();
     }
 }

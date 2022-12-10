@@ -1,7 +1,7 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import kr.wrightbrothers.apps.common.type.OrderProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.OrderConst;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -47,7 +47,7 @@ public class ApprovalReturnDto {
         return RequestReturnUpdateDto.builder()
                 .orderNo(this.orderNo)
                 .orderProductSeqArray(this.orderProductSeqArray)
-                .returnProcessCode(OrderProductStatusCode.START_RETURN.getCode())
+                .returnProcessCode(OrderConst.ProductStatus.START_RETURN.getCode())
                 .requestCode(this.deliveryCompanyCode)
                 .requestValue(this.invoiceNo)
                 .partnerCode(this.partnerCode)

@@ -1,8 +1,8 @@
 package kr.wrightbrothers.apps.order.service;
 
-import kr.wrightbrothers.apps.common.type.DocumentSNS;
-import kr.wrightbrothers.apps.common.type.NonReturnCode;
-import kr.wrightbrothers.apps.common.type.OrderProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.OrderConst;
+import kr.wrightbrothers.apps.common.constants.ReasonConst;
+import kr.wrightbrothers.apps.common.constants.DocumentSNS;
 import kr.wrightbrothers.apps.common.util.ExcelUtil;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.*;
@@ -56,13 +56,13 @@ public class ReturnService {
             String currentStatusCode = dao.selectOne(namespace + "findOrderProductStatusCode", paramDto, PartnerKey.WBDataBase.Alias.Admin);
 
             // 반품 요청에 대한 처리
-            switch (OrderProductStatusCode.of(paramDto.getReturnProcessCode())) {
+            switch (OrderConst.ProductStatus.of(paramDto.getReturnProcessCode())) {
                 case START_RETURN:
                 case WITHDRAWAL_RETURN:
-                    if (!OrderProductStatusCode.REQUEST_RETURN.getCode().equals(currentStatusCode))
+                    if (!OrderConst.ProductStatus.REQUEST_RETURN.getCode().equals(currentStatusCode))
                         break;
 
-                    if (OrderProductStatusCode.START_RETURN.getCode().equals(paramDto.getReturnProcessCode())) {
+                    if (OrderConst.ProductStatus.START_RETURN.getCode().equals(paramDto.getReturnProcessCode())) {
                         // MultiQuery
                         // 반품 승인에 따른 진행 상태값 처리(택배정보는 필수값이 아니므로 존재 여부에 따른 수정 처리)
                         dao.update(namespace + "updateApprovalReturn", paramDto, PartnerKey.WBDataBase.Alias.Admin);
@@ -73,10 +73,10 @@ public class ReturnService {
                     break;
                 case REQUEST_COMPLETE_RETURN:
                 case NON_RETURN:
-                    if (!OrderProductStatusCode.START_RETURN.getCode().equals(currentStatusCode))
+                    if (!OrderConst.ProductStatus.START_RETURN.getCode().equals(currentStatusCode))
                         break;
 
-                    if (OrderProductStatusCode.REQUEST_COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode())) {
+                    if (OrderConst.ProductStatus.REQUEST_COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode())) {
                         // 반품배송비 처리는 판매금액이 가장 높은 주문상품에 몰빵 처리
                         dao.update(namespace + "updateRequestCompleteReturn", paramDto, PartnerKey.WBDataBase.Alias.Admin);
                         break;
@@ -85,7 +85,7 @@ public class ReturnService {
                     // MultiQuery
                     // 주문상품 반품불가 상태변경 처리
                     dao.update(namespace + "updateNonReturn", paramDto, PartnerKey.WBDataBase.Alias.Admin);
-                    paramDto.setRequestValue(NonReturnCode.of(paramDto.getRequestCode()).getName());
+                    paramDto.setRequestValue(ReasonConst.NonReturn.of(paramDto.getRequestCode()).getName());
                     break;
             }
         });
@@ -94,17 +94,17 @@ public class ReturnService {
 
         log.info("Order Return Process. OrderNo::{}, PartnerCode::{}, ReturnCode::{}", paramDto.getOrderNo(), paramDto.getPartnerCode(), paramDto.getReturnProcessCode());
 
-        if (OrderProductStatusCode.REQUEST_COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()))
+        if (OrderConst.ProductStatus.REQUEST_COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()))
             dao.update(namespace + "updateReturnDeliveryAmount", paramDto, PartnerKey.WBDataBase.Alias.Admin);
-        if (OrderProductStatusCode.REQUEST_COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()) &
+        if (OrderConst.ProductStatus.REQUEST_COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()) &
                 (boolean) dao.selectOne(namespace + "isPayMethodBank", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin))
             return;
 
         // 주문 Queue 전송
         orderQueue.sendToAdmin(
-                OrderProductStatusCode.REQUEST_COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()) ?
+                OrderConst.ProductStatus.REQUEST_COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()) ?
                         DocumentSNS.REQUEST_RETURN_PRODUCT : DocumentSNS.UPDATE_ORDER_STATUS,
-                OrderProductStatusCode.START_RETURN.getCode().equals(paramDto.getReturnProcessCode()) ?
+                OrderConst.ProductStatus.START_RETURN.getCode().equals(paramDto.getReturnProcessCode()) ?
                         paramDto.toApprovalQueueDto(paramDto.getReturnProcessCode()) : paramDto.toCancelQueueDto(paramDto.getReturnProcessCode()),
                 PartnerKey.TransactionType.Update
         );

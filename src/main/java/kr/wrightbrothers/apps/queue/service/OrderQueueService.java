@@ -1,7 +1,7 @@
 package kr.wrightbrothers.apps.queue.service;
 
 import kr.wrightbrothers.apps.common.constants.Notification;
-import kr.wrightbrothers.apps.common.type.DocumentSNS;
+import kr.wrightbrothers.apps.common.constants.DocumentSNS;
 import kr.wrightbrothers.apps.queue.NotificationQueue;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;

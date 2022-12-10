@@ -1,7 +1,6 @@
 package kr.wrightbrothers.apps.order.dto;
 
-import kr.wrightbrothers.apps.common.type.PaymentMethodCode;
-import kr.wrightbrothers.apps.common.type.PaymentStatusCode;
+import kr.wrightbrothers.apps.common.constants.PaymentConst;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -39,10 +38,10 @@ public class PaymentDto {
     private String paymentStatusName;
 
     public void setPaymentMethodName(String paymentMethodCode) {
-        this.paymentMethodName = PaymentMethodCode.of(paymentMethodCode).getName();
+        this.paymentMethodName = PaymentConst.Method.of(paymentMethodCode).getName();
     }
 
     public void setPaymentStatusName(String paymentStatusCode) {
-        this.paymentStatusName = PaymentStatusCode.of(paymentStatusCode).getName();
+        this.paymentStatusName = PaymentConst.Status.of(paymentStatusCode).getName();
     }
 }

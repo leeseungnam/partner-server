@@ -1,7 +1,7 @@
 package kr.wrightbrothers.apps.product.dto;
 
 import kr.wrightbrothers.apps.common.AbstractPageDto;
-import kr.wrightbrothers.apps.common.type.ProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.ProductConst;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -112,7 +112,7 @@ public class ProductListDto {
 
         // 상품 상태 ENUM 처리
         public void setProductStatusName(String productStatusName) {
-            this.productStatusName = ProductStatusCode.of(productStatusName).getName();
+            this.productStatusName = ProductConst.Status.of(productStatusName).getName();
         }
 
         public void setCreateUserName(String createUserName) {

@@ -1,7 +1,6 @@
 package kr.wrightbrothers.apps.product.dto;
 
-import kr.wrightbrothers.apps.common.type.ProductLogCode;
-import kr.wrightbrothers.apps.common.type.ProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.ProductConst;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,13 +31,13 @@ public class ProductUpdateDto extends ProductInsertDto {
      * @return 상품 변경 이력 DTO
      */
     public ChangeInfoDto.ReqBody toChangeInfo() {
-        String productLogCode = ProductLogCode.MODIFY.getCode();
+        String productLogCode = ProductConst.Log.MODIFY.getCode();
 
-        if (ProductStatusCode.REJECT_INSPECTION.getCode().equals(this.getSellInfo().getProductStatusCode()))
-            productLogCode = ProductLogCode.REJECT.getCode();
+        if (ProductConst.Status.REJECT_INSPECTION.getCode().equals(this.getSellInfo().getProductStatusCode()))
+            productLogCode = ProductConst.Log.REJECT.getCode();
 
         if (!ObjectUtils.isEmpty(changeLogList) && StringUtils.join(changeLogList, ", ").contains("검수 완료"))
-            productLogCode = ProductLogCode.INSPECTION.getCode();
+            productLogCode = ProductConst.Log.INSPECTION.getCode();
 
         return ChangeInfoDto.ReqBody.builder()
                 .productCode(this.productCode)

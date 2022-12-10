@@ -1,7 +1,7 @@
 package kr.wrightbrothers.apps.aop;
 
 import kr.wrightbrothers.apps.common.constants.Notification;
-import kr.wrightbrothers.apps.common.type.DocumentSNS;
+import kr.wrightbrothers.apps.common.constants.DocumentSNS;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.partner.dto.PartnerContractDto;
 import kr.wrightbrothers.apps.partner.dto.PartnerContractSNSDto;
@@ -19,7 +19,6 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.parameters.P;
 
 import java.util.Arrays;
 

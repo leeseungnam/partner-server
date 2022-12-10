@@ -1,7 +1,7 @@
 package kr.wrightbrothers.apps.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import kr.wrightbrothers.apps.common.type.ProductLogCode;
+import kr.wrightbrothers.apps.common.constants.ProductConst;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -47,7 +47,7 @@ public class StatusUpdateDto {
         return ChangeInfoDto.ReqBody.builder()
                 .productCode(productCode)
                 .productStatusCode(productStatusCode)
-                .productLogCode(ProductLogCode.MODIFY.getCode())
+                .productLogCode(ProductConst.Log.MODIFY.getCode())
                 .productLog("판매 정보 수정")
                 .userId(this.getUserId())
                 .build();

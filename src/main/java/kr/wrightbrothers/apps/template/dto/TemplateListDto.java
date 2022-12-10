@@ -1,7 +1,7 @@
 package kr.wrightbrothers.apps.template.dto;
 
 import kr.wrightbrothers.apps.common.AbstractPageDto;
-import kr.wrightbrothers.apps.common.type.TemplateType;
+import kr.wrightbrothers.apps.common.constants.TemplateConst;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -46,7 +46,7 @@ public class TemplateListDto {
 
         // 템플릿 구분 ENUM 처리
         public void setTemplateType(String templateType) {
-            this.templateType = TemplateType.of(templateType).getName();
+            this.templateType = TemplateConst.Type.of(templateType).getName();
         }
     }
 

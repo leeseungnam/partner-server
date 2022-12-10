@@ -1,6 +1,6 @@
 package kr.wrightbrothers.apps.aop;
 
-import kr.wrightbrothers.apps.common.type.DocumentSNS;
+import kr.wrightbrothers.apps.common.constants.DocumentSNS;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.queue.HistoryQueue;
 import kr.wrightbrothers.framework.util.JsonUtil;

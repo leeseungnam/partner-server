@@ -1,7 +1,7 @@
 package kr.wrightbrothers.apps.queue;
 
 import kr.wrightbrothers.apps.common.constants.Notification;
-import kr.wrightbrothers.apps.common.type.DocumentSNS;
+import kr.wrightbrothers.apps.common.constants.DocumentSNS;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.queue.dto.NotificationSendDto;
 import kr.wrightbrothers.apps.queue.dto.NotificationSmsSendDto;

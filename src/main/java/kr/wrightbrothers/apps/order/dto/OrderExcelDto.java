@@ -1,10 +1,9 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import kr.wrightbrothers.apps.common.annotation.ExcelBody;
-import kr.wrightbrothers.apps.common.type.ExcelBodyType;
-import kr.wrightbrothers.apps.common.type.OrderStatusCode;
-import kr.wrightbrothers.apps.common.type.PaymentMethodCode;
-import kr.wrightbrothers.apps.common.type.PaymentStatusCode;
+import kr.wrightbrothers.apps.common.constants.ExcelConst;
+import kr.wrightbrothers.apps.common.constants.OrderConst;
+import kr.wrightbrothers.apps.common.constants.PaymentConst;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,19 +33,19 @@ public class OrderExcelDto {
         private String orderStatus;
         @ExcelBody(colIndex = 5)
         private String orderName;
-        @ExcelBody(colIndex = 6, bodyType = ExcelBodyType.LONG_TEXT)
+        @ExcelBody(colIndex = 6, bodyType = ExcelConst.Type.LONG_TEXT)
         private String productName;
-        @ExcelBody(colIndex = 7, bodyType = ExcelBodyType.LONG_TEXT)
+        @ExcelBody(colIndex = 7, bodyType = ExcelConst.Type.LONG_TEXT)
         private String productOption;
-        @ExcelBody(colIndex = 8, bodyType = ExcelBodyType.NUMBER)
+        @ExcelBody(colIndex = 8, bodyType = ExcelConst.Type.NUMBER)
         private Integer productQty;
-        @ExcelBody(colIndex = 9, bodyType = ExcelBodyType.NUMBER)
+        @ExcelBody(colIndex = 9, bodyType = ExcelConst.Type.NUMBER)
         private Long productSellAmount;
-        @ExcelBody(colIndex = 10, bodyType = ExcelBodyType.NUMBER)
+        @ExcelBody(colIndex = 10, bodyType = ExcelConst.Type.NUMBER)
         private Long productAmount;
-        @ExcelBody(colIndex = 12, bodyType = ExcelBodyType.NUMBER)
+        @ExcelBody(colIndex = 12, bodyType = ExcelConst.Type.NUMBER)
         private Long paymentAmount;
-        @ExcelBody(colIndex = 11, bodyType = ExcelBodyType.NUMBER)
+        @ExcelBody(colIndex = 11, bodyType = ExcelConst.Type.NUMBER)
         private Long productDeliveryChargeAmount;
         @ExcelBody(colIndex = 13)
         private String paymentMethod;
@@ -58,23 +57,23 @@ public class OrderExcelDto {
         private String cancelDay;
         @ExcelBody(colIndex = 17)
         private String cancelReason;
-        @ExcelBody(colIndex = 18, bodyType = ExcelBodyType.LONG_TEXT)
+        @ExcelBody(colIndex = 18, bodyType = ExcelConst.Type.LONG_TEXT)
         private String address;
-        @ExcelBody(colIndex = 19, bodyType = ExcelBodyType.LONG_TEXT)
+        @ExcelBody(colIndex = 19, bodyType = ExcelConst.Type.LONG_TEXT)
         private String requestDetail;
-        @ExcelBody(colIndex = 20, bodyType = ExcelBodyType.LONG_TEXT)
+        @ExcelBody(colIndex = 20, bodyType = ExcelConst.Type.LONG_TEXT)
         private String orderMemo;
 
         public void setOrderStatus(String orderStatus) {
-            this.orderStatus = OrderStatusCode.of(orderStatus).getName();
+            this.orderStatus = OrderConst.Status.of(orderStatus).getName();
         }
 
         public void setPaymentMethod(String paymentMethod) {
-            this.paymentMethod = PaymentMethodCode.of(paymentMethod).getName();
+            this.paymentMethod = PaymentConst.Method.of(paymentMethod).getName();
         }
 
         public void setPaymentStatus(String paymentStatus) {
-            this.paymentStatus = PaymentStatusCode.of(paymentStatus).getName();
+            this.paymentStatus = PaymentConst.Status.of(paymentStatus).getName();
         }
     }
 }

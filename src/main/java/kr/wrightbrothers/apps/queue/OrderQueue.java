@@ -1,8 +1,8 @@
 package kr.wrightbrothers.apps.queue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.wrightbrothers.apps.common.type.DocumentSNS;
-import kr.wrightbrothers.apps.common.type.OrderProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.OrderConst;
+import kr.wrightbrothers.apps.common.constants.DocumentSNS;
 import kr.wrightbrothers.apps.queue.service.OrderQueueService;
 import kr.wrightbrothers.framework.support.WBSQS;
 import kr.wrightbrothers.framework.support.dto.WBSnsDTO;
@@ -71,7 +71,7 @@ public class OrderQueue extends WBSQS {
             // 관련 키 포함여부 체크
             if (!body.containsKey("ordNo") & !body.containsKey("prnrCd") & !body.containsKey("ordPrdtStus")) return;
             // 반품요청 여부 확인
-            if (!OrderProductStatusCode.REQUEST_RETURN.getCode().equals(body.get("ordPrdtStus"))) return;
+            if (!OrderConst.ProductStatus.REQUEST_RETURN.getCode().equals(body.get("ordPrdtStus"))) return;
 
             // 반품요청 푸시알림 처리
             log.info("Order SQS Receiver. OrderNo::{}, PartnerCode::{}, Order Product Status::{}",

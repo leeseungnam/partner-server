@@ -1,6 +1,6 @@
 package kr.wrightbrothers.apps.common.annotation;
 
-import kr.wrightbrothers.apps.common.type.ExcelBodyType;
+import kr.wrightbrothers.apps.common.constants.ExcelConst;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,5 +11,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ExcelBody {
     int colIndex();
-    ExcelBodyType bodyType() default ExcelBodyType.TEXT;
+    ExcelConst.Type bodyType() default ExcelConst.Type.TEXT;
 }

@@ -1,8 +1,7 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import kr.wrightbrothers.apps.common.annotation.ExcelBody;
-import kr.wrightbrothers.apps.common.type.DeliveryStatusCode;
-import kr.wrightbrothers.apps.common.type.DeliveryType;
+import kr.wrightbrothers.apps.common.constants.DeliveryConst;
 import kr.wrightbrothers.apps.common.util.MaskingUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -72,11 +71,11 @@ public class DeliveryExcelDto {
         private String deliveryMemo;
 
         public void setDeliveryStatus(String deliveryStatus) {
-            this.deliveryStatus = DeliveryStatusCode.of(deliveryStatus).getName();
+            this.deliveryStatus = DeliveryConst.Status.of(deliveryStatus).getName();
         }
 
         public void setDeliveryType(String deliveryType) {
-            this.deliveryType = DeliveryType.of(deliveryType).getName();
+            this.deliveryType = DeliveryConst.Status.of(deliveryType).getName();
         }
 
         public void setRecipientName(String recipientName) {

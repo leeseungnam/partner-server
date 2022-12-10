@@ -1,7 +1,7 @@
 package kr.wrightbrothers.apps.product;
 
 import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
-import kr.wrightbrothers.apps.common.type.ProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.ProductConst;
 import kr.wrightbrothers.apps.common.util.ProductUtil;
 import kr.wrightbrothers.apps.product.dto.*;
 import kr.wrightbrothers.apps.product.service.ProductService;
@@ -121,7 +121,7 @@ public class ProductController extends WBController {
                 productUtil.generateProductCode(paramDto.getProduct().getCategoryTwoCode())
         );
         // 검수대기 상태 변경
-        paramDto.getSellInfo().setProductStatusCode(ProductStatusCode.PRODUCT_INSPECTION.getCode());
+        paramDto.getSellInfo().setProductStatusCode(ProductConst.Status.PRODUCT_INSPECTION.getCode());
         paramDto.getSellInfo().setDisplayFlag("N");
         // 추가 유효성 검사
         paramDto.validProduct();

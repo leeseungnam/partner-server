@@ -3,7 +3,7 @@ package kr.wrightbrothers.apps.temporary.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.wrightbrothers.apps.common.type.StorageType;
+import kr.wrightbrothers.apps.common.constants.StorageConst;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.file.service.FileService;
 import kr.wrightbrothers.apps.product.dto.ProductInsertDto;
@@ -31,7 +31,7 @@ public class TemporaryService {
         dao.insert(namespace + "mergeTemporary", paramDto);
 
         // 상품 임시저장 데이터 경우 사진 등록 처리
-        if (StorageType.PRODUCT.getType().equals(paramDto.getStorageType())) {
+        if (StorageConst.Type.PRODUCT.getType().equals(paramDto.getStorageType())) {
             ProductInsertDto product = new ObjectMapper()
                     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                     .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)

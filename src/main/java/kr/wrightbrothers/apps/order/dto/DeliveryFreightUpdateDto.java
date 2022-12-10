@@ -1,7 +1,7 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import kr.wrightbrothers.apps.common.type.OrderStatusCode;
+import kr.wrightbrothers.apps.common.constants.OrderConst;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -53,7 +53,7 @@ public class DeliveryFreightUpdateDto {
         return Queue.builder()
                 .ordNo(this.orderNo)
                 .prnrCd(this.partnerCode)
-                .stusCd(OrderStatusCode.FINISH_DELIVERY.getCode())
+                .stusCd(OrderConst.Status.FINISH_DELIVERY.getCode())
                 .ordPrdtIdx(Arrays.stream(this.orderProductSeqArray).map(String::valueOf).collect(Collectors.toList()))
                 .usrId(this.userId)
                 .build();

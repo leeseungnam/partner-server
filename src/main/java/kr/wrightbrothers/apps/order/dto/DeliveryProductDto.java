@@ -1,6 +1,6 @@
 package kr.wrightbrothers.apps.order.dto;
 
-import kr.wrightbrothers.apps.common.type.DeliveryStatusCode;
+import kr.wrightbrothers.apps.common.constants.DeliveryConst;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -59,6 +59,6 @@ public class DeliveryProductDto {
     private String deliveryStatusName;
 
     public void setDeliveryStatusName(String deliveryStatusCode) {
-        this.deliveryStatusName = DeliveryStatusCode.of(deliveryStatusCode).getName();
+        this.deliveryStatusName = DeliveryConst.Status.of(deliveryStatusCode).getName();
     }
 }

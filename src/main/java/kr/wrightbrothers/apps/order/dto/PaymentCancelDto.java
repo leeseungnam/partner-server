@@ -1,7 +1,7 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import kr.wrightbrothers.apps.common.type.PaymentMethodCode;
+import kr.wrightbrothers.apps.common.constants.PaymentConst;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
 import lombok.AllArgsConstructor;
@@ -64,7 +64,7 @@ public class PaymentCancelDto {
 
     public void validRefundInfo() {
         // 무통장 결제 시 해당 유효성 체크
-        if (!PaymentMethodCode.NON_BANK.getCode().equals(this.paymentMethodCode))
+        if (!PaymentConst.Method.NON_BANK.getCode().equals(this.paymentMethodCode))
             return;
 
         if (ObjectUtils.isEmpty(this.refundBankCode))

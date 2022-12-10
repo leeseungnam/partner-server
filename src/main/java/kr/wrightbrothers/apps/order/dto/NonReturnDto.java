@@ -1,8 +1,8 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import kr.wrightbrothers.apps.common.type.NonReturnCode;
-import kr.wrightbrothers.apps.common.type.OrderProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.OrderConst;
+import kr.wrightbrothers.apps.common.constants.ReasonConst;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,9 +39,9 @@ public class NonReturnDto {
                 .orderNo(this.orderNo)
                 .orderProductSeqArray(this.orderProductSeqArray)
                 .partnerCode(this.partnerCode)
-                .returnProcessCode(OrderProductStatusCode.NON_RETURN.getCode())
+                .returnProcessCode(OrderConst.ProductStatus.NON_RETURN.getCode())
                 .requestCode(this.reasonCode)
-                .requestValue(NonReturnCode.of(this.reasonCode).getName())
+                .requestValue(ReasonConst.NonReturn.of(this.reasonCode).getName())
                 .userId(this.userId)
                 .build();
     }

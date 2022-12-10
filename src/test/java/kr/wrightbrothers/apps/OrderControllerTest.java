@@ -2,9 +2,8 @@ package kr.wrightbrothers.apps;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.BaseControllerTests;
-import kr.wrightbrothers.apps.common.type.OrderStatusCode;
-import kr.wrightbrothers.apps.common.type.PaymentMethodCode;
-import kr.wrightbrothers.apps.common.type.PaymentStatusCode;
+import kr.wrightbrothers.apps.common.constants.OrderConst;
+import kr.wrightbrothers.apps.common.constants.PaymentConst;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.DeliveryPreparingDto;
 import kr.wrightbrothers.apps.order.dto.OrderFindDto;
@@ -50,30 +49,30 @@ public class OrderControllerTest extends BaseControllerTests {
         OrderListDto.Param paramDto = OrderListDto.Param.builder()
                 .orderStatus(
                         new String[]{
-                                OrderStatusCode.COMPLETE_ORDER.getCode(),
-                                OrderStatusCode.READY_PRODUCT.getCode(),
-                                OrderStatusCode.CONFIRM_PURCHASE.getCode(),
-                                OrderStatusCode.CANCEL_ORDER.getCode(),
-                                OrderStatusCode.REQUEST_CANCEL.getCode(),
-                                OrderStatusCode.COMPLETE_CANCEL.getCode(),
-                                OrderStatusCode.START_DELIVERY.getCode(),
-                                OrderStatusCode.PARTIAL_DELIVERY.getCode(),
-                                OrderStatusCode.FINISH_DELIVERY.getCode()
+                                OrderConst.Status.COMPLETE_ORDER.getCode(),
+                                OrderConst.Status.READY_PRODUCT.getCode(),
+                                OrderConst.Status.CONFIRM_PURCHASE.getCode(),
+                                OrderConst.Status.CANCEL_ORDER.getCode(),
+                                OrderConst.Status.REQUEST_CANCEL.getCode(),
+                                OrderConst.Status.COMPLETE_CANCEL.getCode(),
+                                OrderConst.Status.START_DELIVERY.getCode(),
+                                OrderConst.Status.PARTIAL_DELIVERY.getCode(),
+                                OrderConst.Status.FINISH_DELIVERY.getCode()
                         }
                 )
                 .paymentStatus(
                         new String[]{
-                                PaymentStatusCode.WAIT_DEPOSIT.getCode(),
-                                PaymentStatusCode.COMPLETE_PAYMENT.getCode(),
-                                PaymentStatusCode.CANCEL_PAYMENT.getCode()
+                                PaymentConst.Status.WAIT_DEPOSIT.getCode(),
+                                PaymentConst.Status.COMPLETE_PAYMENT.getCode(),
+                                PaymentConst.Status.CANCEL_PAYMENT.getCode()
                         }
                 )
                 .paymentMethod(
                         new String[]{
-                                PaymentMethodCode.CARD.getCode(),
-                                PaymentMethodCode.BANK.getCode(),
-                                PaymentMethodCode.NON_BANK.getCode(),
-                                PaymentMethodCode.PAYCO.getCode()
+                                PaymentConst.Method.CARD.getCode(),
+                                PaymentConst.Method.BANK.getCode(),
+                                PaymentConst.Method.NON_BANK.getCode(),
+                                PaymentConst.Method.PAYCO.getCode()
                         }
                 )
                 .rangeType("PAYMENT")
@@ -146,31 +145,31 @@ public class OrderControllerTest extends BaseControllerTests {
         OrderListDto.Param paramDto = OrderListDto.Param.builder()
                 .orderStatus(
                         new String[]{
-                                OrderStatusCode.COMPLETE_ORDER.getCode(),
-                                OrderStatusCode.READY_PRODUCT.getCode(),
-                                OrderStatusCode.CONFIRM_PURCHASE.getCode(),
-                                OrderStatusCode.CANCEL_ORDER.getCode(),
-                                OrderStatusCode.REQUEST_CANCEL.getCode(),
-                                OrderStatusCode.COMPLETE_CANCEL.getCode(),
-                                OrderStatusCode.START_DELIVERY.getCode(),
-                                OrderStatusCode.PARTIAL_DELIVERY.getCode(),
-                                OrderStatusCode.FINISH_DELIVERY.getCode(),
+                                OrderConst.Status.COMPLETE_ORDER.getCode(),
+                                OrderConst.Status.READY_PRODUCT.getCode(),
+                                OrderConst.Status.CONFIRM_PURCHASE.getCode(),
+                                OrderConst.Status.CANCEL_ORDER.getCode(),
+                                OrderConst.Status.REQUEST_CANCEL.getCode(),
+                                OrderConst.Status.COMPLETE_CANCEL.getCode(),
+                                OrderConst.Status.START_DELIVERY.getCode(),
+                                OrderConst.Status.PARTIAL_DELIVERY.getCode(),
+                                OrderConst.Status.FINISH_DELIVERY.getCode(),
                                 "O10"
                         }
                 )
                 .paymentStatus(
                         new String[]{
-                                PaymentStatusCode.WAIT_DEPOSIT.getCode(),
-                                PaymentStatusCode.COMPLETE_PAYMENT.getCode(),
-                                PaymentStatusCode.CANCEL_PAYMENT.getCode()
+                                PaymentConst.Status.WAIT_DEPOSIT.getCode(),
+                                PaymentConst.Status.COMPLETE_PAYMENT.getCode(),
+                                PaymentConst.Status.CANCEL_PAYMENT.getCode()
                         }
                 )
                 .paymentMethod(
                         new String[]{
-                                PaymentMethodCode.CARD.getCode(),
-                                PaymentMethodCode.BANK.getCode(),
-                                PaymentMethodCode.NON_BANK.getCode(),
-                                PaymentMethodCode.PAYCO.getCode()
+                                PaymentConst.Method.CARD.getCode(),
+                                PaymentConst.Method.BANK.getCode(),
+                                PaymentConst.Method.NON_BANK.getCode(),
+                                PaymentConst.Method.PAYCO.getCode()
                         }
                 )
                 .rangeType("PAYMENT")
@@ -409,9 +408,9 @@ public class OrderControllerTest extends BaseControllerTests {
                         .build()
         );
 
-        assertEquals(nowDto.getOrder().getOrderStatusCode(), OrderStatusCode.READY_PRODUCT.getCode());
+        assertEquals(nowDto.getOrder().getOrderStatusCode(), OrderConst.Status.READY_PRODUCT.getCode());
         nowDto.getProductList().forEach(productDto -> {
-            assertEquals(productDto.getOrderProductStatusCode(), OrderStatusCode.READY_PRODUCT.getCode());
+            assertEquals(productDto.getOrderProductStatusCode(), OrderConst.Status.READY_PRODUCT.getCode());
         });
     }
 

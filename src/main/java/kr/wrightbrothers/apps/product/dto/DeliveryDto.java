@@ -1,7 +1,7 @@
 package kr.wrightbrothers.apps.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import kr.wrightbrothers.apps.common.type.ChargeType;
+import kr.wrightbrothers.apps.common.constants.DeliveryConst;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
 import lombok.*;
@@ -116,7 +116,7 @@ public class DeliveryDto {
                 throw new WBBusinessException(ErrorCode.INVALID_MONEY_MAX.getErrCode(), new String[]{"반품 배송비(편도)", "100000000"});
 
             // 배송비 설정이 무료의 경우 종료
-            if (ChargeType.FREE.getType().equals(this.chargeType)) return;
+            if (DeliveryConst.Charge.FREE.getType().equals(this.chargeType)) return;
 
             if (ObjectUtils.isEmpty(this.chargeBase))
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"기본 배송비"});
@@ -126,7 +126,7 @@ public class DeliveryDto {
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"제주/도서산간 추가 배송비 여부"});
 
             // 조건부 무료 경우 배송비 조건 휴요성 체크
-            if (ChargeType.TERMS_FREE.getType().equals(this.chargeType)) {
+            if (DeliveryConst.Charge.TERMS_FREE.getType().equals(this.chargeType)) {
                 if (ObjectUtils.isEmpty(this.termsFreeCharge))
                     throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"배송비 조건"});
 

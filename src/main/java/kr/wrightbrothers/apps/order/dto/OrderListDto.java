@@ -1,9 +1,8 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import kr.wrightbrothers.apps.common.AbstractPageDto;
-import kr.wrightbrothers.apps.common.type.OrderStatusCode;
-import kr.wrightbrothers.apps.common.type.PaymentMethodCode;
-import kr.wrightbrothers.apps.common.type.PaymentStatusCode;
+import kr.wrightbrothers.apps.common.constants.OrderConst;
+import kr.wrightbrothers.apps.common.constants.PaymentConst;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -112,15 +111,15 @@ public class OrderListDto {
 
         // 주문 상태 ENUM 처리
         public void setOrderStatusName(String orderStatusCode) {
-            this.orderStatusName = OrderStatusCode.of(orderStatusCode).getName();
+            this.orderStatusName = OrderConst.Status.of(orderStatusCode).getName();
         }
         // 결제 상태 ENUM 처리
         public void setPaymentStatusName(String paymentStatusCode) {
-            this.paymentStatusName = PaymentStatusCode.of(paymentStatusCode).getName();
+            this.paymentStatusName = PaymentConst.Status.of(paymentStatusCode).getName();
         }
         // 결제 수단 ENUM 처리
         public void setPaymentMethodName(String paymentMethodCode) {
-            this.paymentMethodName = PaymentMethodCode.of(paymentMethodCode).getName();
+            this.paymentMethodName = PaymentConst.Method.of(paymentMethodCode).getName();
         }
     }
 

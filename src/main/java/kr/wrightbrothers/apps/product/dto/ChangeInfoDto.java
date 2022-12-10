@@ -1,8 +1,7 @@
 package kr.wrightbrothers.apps.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import kr.wrightbrothers.apps.common.type.ProductLogCode;
-import kr.wrightbrothers.apps.common.type.ProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.ProductConst;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -59,11 +58,11 @@ public class ChangeInfoDto {
 
         // 상품 상태 ENUM 처리
         public void setProductStatusCode(String productStatusCode) {
-            this.productStatusCode = ProductStatusCode.of(productStatusCode).getName();
+            this.productStatusCode = ProductConst.Status.of(productStatusCode).getName();
         }
         // 로드 상태 ENUM 처리
         public void setProductLogCode(String productLogCode) {
-            this.productLogCode = ProductLogCode.of(productLogCode).getName();
+            this.productLogCode = ProductConst.Log.of(productLogCode).getName();
         }
     }
 }

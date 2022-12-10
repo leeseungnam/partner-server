@@ -7,7 +7,7 @@ import kr.wrightbrothers.apps.common.constants.Email;
 import kr.wrightbrothers.apps.common.constants.Notification;
 import kr.wrightbrothers.apps.common.constants.Partner;
 import kr.wrightbrothers.apps.common.constants.User;
-import kr.wrightbrothers.apps.common.type.DocumentSNS;
+import kr.wrightbrothers.apps.common.constants.DocumentSNS;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.email.service.EmailService;
 import kr.wrightbrothers.apps.partner.dto.PartnerInsertDto;

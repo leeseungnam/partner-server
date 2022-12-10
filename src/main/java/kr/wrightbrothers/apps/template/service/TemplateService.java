@@ -1,6 +1,6 @@
 package kr.wrightbrothers.apps.template.service;
 
-import kr.wrightbrothers.apps.common.type.TemplateType;
+import kr.wrightbrothers.apps.common.constants.TemplateConst;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.template.dto.*;
@@ -30,7 +30,7 @@ public class TemplateService {
         dao.insert(namespace + "insertTemplate", paramDto);
 
         // 템플릿 배송정보 등록
-        if (TemplateType.DELIVERY.getType().equals(paramDto.getTemplateType())) {
+        if (TemplateConst.Type.DELIVERY.getType().equals(paramDto.getTemplateType())) {
             dao.insert(namespace + "insertTemplateDelivery", paramDto);
             return;
         }
@@ -50,7 +50,7 @@ public class TemplateService {
         dao.update(namespace + "updateTemplate", paramDto);
 
         // 템플릿 배송정보 수정
-        if (TemplateType.DELIVERY.getType().equals(paramDto.getTemplateType())) {
+        if (TemplateConst.Type.DELIVERY.getType().equals(paramDto.getTemplateType())) {
             dao.update(namespace + "updateTemplateDelivery", paramDto);
             return;
         }

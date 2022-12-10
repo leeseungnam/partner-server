@@ -1,7 +1,7 @@
 package kr.wrightbrothers.apps.order;
 
 import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
-import kr.wrightbrothers.apps.common.type.OrderProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.OrderConst;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.order.dto.*;
 import kr.wrightbrothers.apps.order.service.ReturnService;
@@ -143,7 +143,7 @@ public class ReturnController extends WBController {
     @PutMapping("/returns/{orderNo}/cancel-return")
     public WBModel updateCancelReturn(@Valid @RequestBody CancelReturnDto paramDto) {
         // 반품 취소에 대한 처리
-        returnService.updateRequestReturn(paramDto.toRequestReturnUpdateDto(OrderProductStatusCode.WITHDRAWAL_RETURN.getCode()));
+        returnService.updateRequestReturn(paramDto.toRequestReturnUpdateDto(OrderConst.ProductStatus.WITHDRAWAL_RETURN.getCode()));
 
         return noneMgsResponse(messageSourceAccessor);
     }
@@ -155,7 +155,7 @@ public class ReturnController extends WBController {
         paramDto.valid();
 
         // 반품 완료에 대한 처리
-        returnService.updateRequestReturn(paramDto.toRequestReturnUpdateDto(OrderProductStatusCode.REQUEST_COMPLETE_RETURN.getCode()));
+        returnService.updateRequestReturn(paramDto.toRequestReturnUpdateDto(OrderConst.ProductStatus.REQUEST_COMPLETE_RETURN.getCode()));
 
         return noneMgsResponse(messageSourceAccessor);
     }

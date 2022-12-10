@@ -2,8 +2,8 @@ package kr.wrightbrothers.apps;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.BaseControllerTests;
-import kr.wrightbrothers.apps.common.type.ProductStatusCode;
-import kr.wrightbrothers.apps.common.type.StorageType;
+import kr.wrightbrothers.apps.common.constants.ProductConst;
+import kr.wrightbrothers.apps.common.constants.StorageConst;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.RandomUtil;
 import kr.wrightbrothers.apps.file.dto.FileUpdateDto;
@@ -124,7 +124,7 @@ public class TemporaryControllerTest extends BaseControllerTests {
                         .displayFlag("N")
                         .productOptionFlag("Y")
                         .finalSellAmount(2900000L)
-                        .productStatusCode(ProductStatusCode.SALE.getCode())
+                        .productStatusCode(ProductConst.Status.SALE.getCode())
                         .productStockQty(1)
                         .supplyAmount(0L)
                         .build())
@@ -186,7 +186,7 @@ public class TemporaryControllerTest extends BaseControllerTests {
     @DisplayName("임시저장")
     void mergeTemporary() throws Exception {
         TemporaryDto.ReqBody reqBody = TemporaryDto.ReqBody.builder()
-                .storageType(StorageType.PRODUCT.getType())
+                .storageType(StorageConst.Type.PRODUCT.getType())
                 .storageData(JsonUtil.ToString(productDto))
                 .build();
 
@@ -223,7 +223,7 @@ public class TemporaryControllerTest extends BaseControllerTests {
     @DisplayName("임시저장 조회")
     void findTemporary() throws Exception {
         // 임시저장 API 조회
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/temporaries/{storageType}", StorageType.PRODUCT.getType())
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/temporaries/{storageType}", StorageConst.Type.PRODUCT.getType())
                     .header(AUTH_HEADER, JWT_TOKEN)
                     .contentType(MediaType.TEXT_HTML)
                     .accept(MediaType.APPLICATION_JSON))
@@ -256,7 +256,7 @@ public class TemporaryControllerTest extends BaseControllerTests {
         mockMvc.perform(delete("/v1/temporaries")
                     .header(AUTH_HEADER, JWT_TOKEN)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .param("storageType", StorageType.PRODUCT.getType())
+                    .param("storageType", StorageConst.Type.PRODUCT.getType())
                     .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -282,7 +282,7 @@ public class TemporaryControllerTest extends BaseControllerTests {
         TemporaryDto.Response response = temporaryService.findTemporary(new TemporaryDto.Param(
                 userDetailDto.getUserAuth().getPartnerCode(),
                 userDetailDto.getUserId(),
-                StorageType.PRODUCT.getType()
+                StorageConst.Type.PRODUCT.getType()
         ));
         assertNull(response);
     }
