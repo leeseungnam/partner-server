@@ -119,6 +119,13 @@ public class PartnerContractDto {
         @ApiModelProperty(value = "은행 코드명")
         private String bankCodeName;
 
+        @ApiModelProperty(value = "계약서 파일명")
+        private String contractFileName;
+
+        public void changeContractFileName(String contractFileName) {
+            this.contractFileName = contractFileName;
+        }
+
         public void changeContractStatusName(String contractStatusName) {
             this.contractStatusName = contractStatusName;
         }
