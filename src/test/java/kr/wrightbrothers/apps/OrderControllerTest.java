@@ -288,6 +288,8 @@ public class OrderControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.payment").type(JsonFieldType.OBJECT).description("결제 정보"),
                                         fieldWithPath("data.payment.orderAmount").type(JsonFieldType.NUMBER).description("주문 금액"),
                                         fieldWithPath("data.payment.deliveryChargeAmount").type(JsonFieldType.NUMBER).description("배송 금액"),
+                                        fieldWithPath("data.payment.sspPoint").type(JsonFieldType.NUMBER).description("배송 금액"),
+                                        fieldWithPath("data.payment.saleAmount").type(JsonFieldType.NUMBER).description("배송 금액"),
                                         fieldWithPath("data.payment.paymentAmount").type(JsonFieldType.NUMBER).description("결제 금액"),
                                         fieldWithPath("data.payment.paymentDate").type(JsonFieldType.STRING).optional().description("결제 일시"),
                                         fieldWithPath("data.payment.approvalNo").type(JsonFieldType.STRING).optional().description("PG 승인번호"),

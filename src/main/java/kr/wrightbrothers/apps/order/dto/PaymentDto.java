@@ -13,6 +13,12 @@ public class PaymentDto {
     /** 배송료 */
     private Long deliveryChargeAmount;
 
+    /** SSP 포인트 */
+    private Long sspPoint;
+
+    /** 판매대금 */
+    private Long saleAmount;
+
     /** 결제 금액 */
     private Long paymentAmount;
 
