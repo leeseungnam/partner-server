@@ -140,6 +140,15 @@ public class DeliveryController extends WBController {
     }
 
     @UserPrincipalScope
+    @PutMapping("/deliveries/{orderNo}/pickup")
+    public WBModel updateDeliveryPickup(@Valid @RequestBody DeliveryPickupUpdateDto paramDto) {
+        // 방문수령 등록
+        deliveryService.updateDeliveryPickup(paramDto);
+
+        return noneMgsResponse(messageSourceAccessor);
+    }
+
+    @UserPrincipalScope
     @PutMapping("/deliveries")
     public WBModel updateDelivery(@Valid @RequestBody DeliveryUpdateDto paramDto) {
         // 배송정보 수정

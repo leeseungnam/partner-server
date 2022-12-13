@@ -484,6 +484,18 @@ include::{snippets}/delivery-freight-update/request-fields.adoc[]
 include::{snippets}/delivery-freight-update/http-response.adoc[]
 include::{snippets}/delivery-freight-update/response-fields.adoc[]
 
+==== 직접수령 완료
+
+.HTTP request
+include::{snippets}/delivery-pickup-update/http-request.adoc[]
+include::{snippets}/delivery-pickup-update/request-headers.adoc[]
+include::{snippets}/delivery-pickup-update/path-parameters.adoc[]
+include::{snippets}/delivery-pickup-update/request-fields.adoc[]
+.HTTP response
+include::{snippets}/delivery-pickup-update/http-response.adoc[]
+include::{snippets}/delivery-pickup-update/response-fields.adoc[]
+
+
 ==== 배송지 조회
 
 .HTTP request

@@ -16,6 +16,7 @@ public class DeliveryConst {
     public enum Type {
 
         PARCEL("D01", "택배"),
+        PICKUP("D06", "방문수령"),
         FREIGHT("D07", "화물"),
         NULL("", "");
 
@@ -80,6 +81,7 @@ public class DeliveryConst {
         FINISH_DELIVERY("D05", "배송완료"),
         PARTIAL_DELIVERY("D03", "부분배송"),
         EXCHANGE_DELIVERY("O11", "교환배송"),
+        PICKUP("D07", "방문수령완료"),
         NULL("", "");
 
         private final String code;

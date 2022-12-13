@@ -93,8 +93,6 @@ public class DeliveryDto {
             // 배송정보 유효성 검사
             if (ObjectUtils.isEmpty(this.deliveryType))
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"배송방법"});
-            if (ObjectUtils.isEmpty(this.deliveryBundleFlag))
-                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"묶음배송"});
             if (ObjectUtils.isEmpty(this.unstoringZipCode))
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"출고지 우편번호"});
             if (ObjectUtils.isEmpty(this.unstoringAddress))
@@ -103,8 +101,6 @@ public class DeliveryDto {
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"반품지 우편번호"});
             if (ObjectUtils.isEmpty(this.returnAddress))
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"반품지 주소"});
-            if (ObjectUtils.isEmpty(this.chargeType))
-                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"배송비 설정"});
 
             if (!ObjectUtils.isEmpty(this.returnAddressDetail) && this.returnAddressDetail.length() > 100)
                 throw new WBBusinessException(ErrorCode.INVALID_TEXT_SIZE.getErrCode(), new String[]{"반품지 상세주소", "0", "100"});
@@ -114,6 +110,14 @@ public class DeliveryDto {
                 throw new WBBusinessException(ErrorCode.INVALID_MONEY_MAX.getErrCode(), new String[]{"교환 배송비", "100000000"});
             if (!ObjectUtils.isEmpty(this.returnCharge) && this.returnCharge > 10000000)
                 throw new WBBusinessException(ErrorCode.INVALID_MONEY_MAX.getErrCode(), new String[]{"반품 배송비(편도)", "100000000"});
+
+            // 현장수령 배송 타입경우 종료
+            if (DeliveryConst.Type.PICKUP.getType().equals(this.deliveryType)) return;
+
+            if (ObjectUtils.isEmpty(this.deliveryBundleFlag))
+                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"묶음배송"});
+            if (ObjectUtils.isEmpty(this.chargeType))
+                throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"배송비 설정"});
 
             // 배송비 설정이 무료의 경우 종료
             if (DeliveryConst.Charge.FREE.getType().equals(this.chargeType)) return;

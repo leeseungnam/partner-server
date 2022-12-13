@@ -141,6 +141,32 @@
 			#{item}
 		</foreach>
 	</select>
+
+	<update id="updateDeliveryPickup" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryPickupUpdateDto">
+		update ord_shpn_info
+		   set ord_dlvr_stus = 'D07',
+			   dlvry_st_dt = now(),
+			   dlvry_end_dt = now(),
+			   upd_usr_id = #{userId},
+			   upd_dt = now()
+		 where ord_no = #{orderNo}
+		-- 주문상품 SEQ
+		<foreach collection="orderProductSeqArray" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
+			#{item}
+		</foreach>
+		   and ord_dlvr_stus = 'D01';
+
+		update ord_prdt_info
+		   set ord_prdt_stus = 'D05',
+		       dlvr_pck_dt = now()
+		 where ord_no = #{orderNo}
+		   and prnr_cd = #{partnerCode}
+		-- 주문상품 SEQ
+		<foreach collection="orderProductSeqArray" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
+			#{item}
+		</foreach>
+		   and ord_prdt_stus in ('D01', 'R04');
+	</update>
 	
 	<update id="updateDeliveryFreight" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryFreightUpdateDto">
 		<selectKey resultType="java.lang.String" keyProperty="nonReturnFlag" order="BEFORE">
@@ -185,7 +211,7 @@
 		</foreach>
 		   and ord_prdt_stus in ('D01', 'R04');
 	</update>
-	
+
 	<update id="updateDeliveryInvoice" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto">
 		<selectKey resultType="java.lang.String" keyProperty="nonReturnFlag" order="BEFORE">
 			select
@@ -270,7 +296,7 @@
 			p.optn_nm as option_name,
 			p.prdt_qty as product_qty,
 			p.dlvr_tp as delivery_type,
-			if(p.dlvr_tp = 'D01', '택배', '화물') as delivery_name,
+			p.dlvr_tp as delivery_name,
 			if(p.non_rtn_tp_cd is null, d.dlvry_cmpny, d.rtrn_prhb_dlvry_cmpny) as delivery_company_code,
 			if(p.non_rtn_tp_cd is null, cd.intg_cd_val_nm, cdr.intg_cd_val_nm) as delivery_company_name,
 			if(p.non_rtn_tp_cd is null, d.invc_no, d.rtrn_prhb_invc_no)  as invoice_no,
@@ -279,8 +305,8 @@
 			concat('(', d.rcpnt_adrs_zip_cd, ') ', d.rcpnt_adrs, if(d.rcpnt_adrs_sub is not null and d.rcpnt_adrs_sub != '', concat(', ', d.rcpnt_adrs_sub), '')) as recipient_address,
 			if(p.non_rtn_tp_cd is null, date_format(d.dlvry_st_dt, '%Y-%m-%d'), date_format(d.rtrn_prhb_dlvry_st_dt, '%Y-%m-%d')) as delivery_start_day,
 			if(p.non_rtn_tp_cd is null, date_format(d.dlvry_end_dt, '%Y-%m-%d'), date_format(d.rtrn_prhb_dlvry_end_dt, '%Y-%m-%d')) as delivery_end_day,
-			d.ord_dlvr_stus as delivery_status_code,
-			d.ord_dlvr_stus as delivery_status_name
+			if(d.ord_dlvr_stus = 'D07', d.ord_dlvr_stus, p.ord_prdt_stus) delivery_status_code,
+			if(d.ord_dlvr_stus = 'D07', d.ord_dlvr_stus, p.ord_prdt_stus) as delivery_status_name
 		  from ord_prdt_info p
 		  left join ord_shpn_info d
 		    on p.ord_no = d.ord_no

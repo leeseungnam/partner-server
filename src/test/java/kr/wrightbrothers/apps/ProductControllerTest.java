@@ -348,7 +348,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("optionList[].optionSurcharge").type(JsonFieldType.NUMBER).description("변동 금액").optional().attributes(key("etc").value("")),
                                         fieldWithPath("optionList[].optionStockQty").type(JsonFieldType.NUMBER).description("옵션 재고 수량").optional().attributes(key("etc").value("")),
                                         fieldWithPath("delivery").type(JsonFieldType.OBJECT).description("배송 정보").attributes(key("etc").value("")),
-                                        fieldWithPath("delivery.deliveryType").type(JsonFieldType.STRING).description("배송방법").attributes(key("etc").value("D01 택배/소포/등기, D07 직접배송(화물배달)")),
+                                        fieldWithPath("delivery.deliveryType").type(JsonFieldType.STRING).description("배송방법").attributes(key("etc").value("D01 택배/소포/등기, D07 직접배송(화물배달), D06 방문수령")),
                                         fieldWithPath("delivery.deliveryBundleFlag").type(JsonFieldType.STRING).description("묶음배송").attributes(key("etc").value("Y 가능, N 불가")),
                                         fieldWithPath("delivery.chargeType").type(JsonFieldType.STRING).description("배송비 설정").attributes(key("etc").value("공통코드 000023")),
                                         fieldWithPath("delivery.chargeBase").type(JsonFieldType.NUMBER).description("기본 배송비").attributes(key("etc").value("")),
@@ -607,7 +607,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("optionList[].optionSurcharge").type(JsonFieldType.NUMBER).description("변동 금액").optional().attributes(key("etc").value("")),
                                         fieldWithPath("optionList[].optionStockQty").type(JsonFieldType.NUMBER).description("옵션 재고 수량").optional().attributes(key("etc").value("")),
                                         fieldWithPath("delivery").type(JsonFieldType.OBJECT).description("배송 정보").attributes(key("etc").value("")),
-                                        fieldWithPath("delivery.deliveryType").type(JsonFieldType.STRING).description("배송방법").attributes(key("etc").value("D01 택배/소포/등기, D07 직접배송(화물배달)")),
+                                        fieldWithPath("delivery.deliveryType").type(JsonFieldType.STRING).description("배송방법").attributes(key("etc").value("D01 택배/소포/등기, D07 직접배송(화물배달), D06 방문수령")),
                                         fieldWithPath("delivery.deliveryBundleFlag").type(JsonFieldType.STRING).description("묶음배송").attributes(key("etc").value("Y 가능, N 불가")),
                                         fieldWithPath("delivery.chargeType").type(JsonFieldType.STRING).description("배송비 설정").attributes(key("etc").value("공통코드 000023")),
                                         fieldWithPath("delivery.chargeBase").type(JsonFieldType.NUMBER).description("기본 배송비").attributes(key("etc").value("")),
@@ -758,7 +758,6 @@ class ProductControllerTest extends BaseControllerTests {
                         .build())
                 .build();
     }
-
 
     @Test
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)

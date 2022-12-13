@@ -4,6 +4,8 @@ import kr.wrightbrothers.apps.common.constants.DocumentSNS;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.ExcelUtil;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.common.util.PartnerKey.WBDataBase.Alias;
+import kr.wrightbrothers.apps.common.util.PartnerKey.WBDataBase.TransactionManager;
 import kr.wrightbrothers.apps.order.dto.*;
 import kr.wrightbrothers.apps.queue.OrderQueue;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
@@ -42,7 +44,7 @@ public class DeliveryService {
                 .build();
     }
 
-    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @Transactional(transactionManager = TransactionManager.Global)
     public void updateDeliveryFreight(DeliveryFreightUpdateDto paramDto) {
         if (dao.selectOne(namespace + "isDeliveryComplete", paramDto, PartnerKey.WBDataBase.Alias.Admin))
             throw new WBBusinessException(ErrorCode.COMPLETE_DELIVERY.getErrCode(), new String[]{"화물배송"});
@@ -54,6 +56,24 @@ public class DeliveryService {
         // 반품불가에 따른 분기처리에 대한 부분도 해당 SQL 처리 되어있으니 참고할 것.
         dao.update(namespace + "updateDeliveryFreight", paramDto, PartnerKey.WBDataBase.Alias.Admin);
         dao.update(namespaceOrder + "updateOrderStatusRefresh", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin);
+
+        // SNS 주문상태 변경처리 전송
+        orderQueue.sendToAdmin(
+                DocumentSNS.UPDATE_ORDER_STATUS,
+                paramDto.toQueueDto(),
+                PartnerKey.TransactionType.Update
+        );
+    }
+
+    @Transactional(transactionManager = TransactionManager.Global)
+    public void updateDeliveryPickup(DeliveryPickupUpdateDto paramDto) {
+        if (dao.selectOne(namespace + "isDeliveryComplete", paramDto, Alias.Admin))
+            throw new WBBusinessException(ErrorCode.COMPLETE_DELIVERY.getErrCode(), new String[]{"방문수령"});
+
+        // MultiQuery
+        // 직접방문 수령은 배송방법 상관없이 배송완료 상태처리(배송테이블 상태는 수령으로 체크)
+        dao.update(namespace + "updateDeliveryPickup", paramDto, Alias.Admin);
+        dao.update(namespaceOrder + "updateOrderStatusRefresh", paramDto.getOrderNo(), Alias.Admin);
 
         // SNS 주문상태 변경처리 전송
         orderQueue.sendToAdmin(

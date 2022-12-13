@@ -61,4 +61,8 @@ public class DeliveryProductDto {
     public void setDeliveryStatusName(String deliveryStatusCode) {
         this.deliveryStatusName = DeliveryConst.Status.of(deliveryStatusCode).getName();
     }
+
+    public void setDeliveryName(String deliveryName) {
+        this.deliveryName = DeliveryConst.Type.of(deliveryName).getName();
+    }
 }
