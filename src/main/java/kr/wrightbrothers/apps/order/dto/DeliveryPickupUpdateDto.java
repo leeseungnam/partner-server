@@ -55,6 +55,13 @@ public class DeliveryPickupUpdateDto {
         this.userId = userId;
     }
 
+    public DeliveryInvoiceUpdateDto toDeliveryInvoiceUpdateDto() {
+        return DeliveryInvoiceUpdateDto.builder()
+                .orderNo(this.orderNo)
+                .orderProductSeqArray(this.orderProductSeqArray)
+                .build();
+    }
+
     public DeliveryFreightUpdateDto.Queue toQueueDto() {
         return DeliveryFreightUpdateDto.Queue.builder()
             .ordNo(this.orderNo)

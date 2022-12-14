@@ -33,29 +33,29 @@ public class DeliveryService {
     private final String namespaceOrder = "kr.wrightbrothers.apps.order.query.Order.";
 
     public List<DeliveryListDto.Response> findDeliveryList(DeliveryListDto.Param paramDto) {
-        return dao.selectList(namespace + "findDeliveryList", paramDto, paramDto.getRowBounds(), PartnerKey.WBDataBase.Alias.Admin);
+        return dao.selectList(namespace + "findDeliveryList", paramDto, paramDto.getRowBounds(), Alias.Admin);
     }
 
     public DeliveryFindDto.Response findDelivery(DeliveryFindDto.Param paramDto) {
         return DeliveryFindDto.Response.builder()
-                .order(dao.selectOne(namespaceOrder + "findOrder", paramDto.toOrderFindParam(), PartnerKey.WBDataBase.Alias.Admin))
+                .order(dao.selectOne(namespaceOrder + "findOrder", paramDto.toOrderFindParam(), Alias.Admin))
                 .payment(paymentService.findPaymentToOrder(paramDto.toOrderFindParam()))
-                .deliveryList(dao.selectList(namespace + "findDeliveryProductList", paramDto, PartnerKey.WBDataBase.Alias.Admin))
+                .deliveryList(dao.selectList(namespace + "findDeliveryProductList", paramDto, Alias.Admin))
                 .build();
     }
 
     @Transactional(transactionManager = TransactionManager.Global)
     public void updateDeliveryFreight(DeliveryFreightUpdateDto paramDto) {
-        if (dao.selectOne(namespace + "isDeliveryComplete", paramDto, PartnerKey.WBDataBase.Alias.Admin))
+        if (dao.selectOne(namespace + "isDeliveryComplete", paramDto, Alias.Admin))
             throw new WBBusinessException(ErrorCode.COMPLETE_DELIVERY.getErrCode(), new String[]{"화물배송"});
-        if (dao.selectOne(namespace + "isDeliveryParcel", paramDto, PartnerKey.WBDataBase.Alias.Admin))
+        if (dao.selectOne(namespace + "isDeliveryParcel", paramDto, Alias.Admin))
             throw new WBBusinessException(ErrorCode.INVALID_DELIVERY_TYPE.getErrCode(), new String[]{"택배배송"});
 
         // MultiQuery
         // 화물배송 진행은 배송중의 단계가 없이 시작과 동시에 배송완료 상태 처리
         // 반품불가에 따른 분기처리에 대한 부분도 해당 SQL 처리 되어있으니 참고할 것.
-        dao.update(namespace + "updateDeliveryFreight", paramDto, PartnerKey.WBDataBase.Alias.Admin);
-        dao.update(namespaceOrder + "updateOrderStatusRefresh", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin);
+        dao.update(namespace + "updateDeliveryFreight", paramDto, Alias.Admin);
+        dao.update(namespaceOrder + "updateOrderStatusRefresh", paramDto.getOrderNo(), Alias.Admin);
 
         // SNS 주문상태 변경처리 전송
         orderQueue.sendToAdmin(
@@ -67,7 +67,7 @@ public class DeliveryService {
 
     @Transactional(transactionManager = TransactionManager.Global)
     public void updateDeliveryPickup(DeliveryPickupUpdateDto paramDto) {
-        if (dao.selectOne(namespace + "isDeliveryComplete", paramDto, Alias.Admin))
+        if (dao.selectOne(namespace + "isDeliveryComplete", paramDto.toDeliveryInvoiceUpdateDto(), Alias.Admin))
             throw new WBBusinessException(ErrorCode.COMPLETE_DELIVERY.getErrCode(), new String[]{"방문수령"});
 
         // MultiQuery
@@ -83,17 +83,17 @@ public class DeliveryService {
         );
     }
 
-    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @Transactional(transactionManager = TransactionManager.Global)
     public void updateDeliveryInvoice(DeliveryInvoiceUpdateDto paramDto) {
-        if (dao.selectOne(namespace + "isDeliveryComplete", paramDto, PartnerKey.WBDataBase.Alias.Admin))
-            throw new WBBusinessException(ErrorCode.COMPLETE_DELIVERY.getErrCode(), new String[]{"송장번호"});
-        if (dao.selectOne(namespace + "isDeliveryFreight", paramDto, PartnerKey.WBDataBase.Alias.Admin))
+        if (dao.selectOne(namespace + "isDeliveryStart", paramDto.toDeliveryUpdateDto(), Alias.Admin))
+            throw new WBBusinessException(ErrorCode.INVALID_DELIVERY_PREPARING.getErrCode(), new String[]{"상품준비중"});
+        if (dao.selectOne(namespace + "isDeliveryFreight", paramDto, Alias.Admin))
             throw new WBBusinessException(ErrorCode.INVALID_DELIVERY_TYPE.getErrCode(), new String[]{"화물배송"});
 
         // MultiQuery
         // 택배배송의 필요 정보인 택배사, 송장번호 변경 처리
         // 반품불가에 따른 배송 시 필요 주문상품 상태 변경 처리
-        dao.update(namespace + "updateDeliveryInvoice", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+        dao.update(namespace + "updateDeliveryInvoice", paramDto, Alias.Admin);
 
         // 상태 변경에 따른 SNS 전송
         orderQueue.sendToAdmin(
@@ -104,14 +104,14 @@ public class DeliveryService {
     }
 
     public void updateDeliveryMemo(DeliveryMemoUpdateDto paramDto) {
-        dao.update(namespace + "updateDeliveryMemo", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+        dao.update(namespace + "updateDeliveryMemo", paramDto, Alias.Admin);
     }
 
     public void updateDelivery(DeliveryUpdateDto paramDto) {
-        if (dao.selectOne(namespace + "isDeliveryStart", paramDto, PartnerKey.WBDataBase.Alias.Admin))
+        if (dao.selectOne(namespace + "isDeliveryStart", paramDto, Alias.Admin))
             throw new WBBusinessException(ErrorCode.COMPLETE_DELIVERY.getErrCode(), new String[]{"배송정보"});
 
-        dao.update(namespace + "updateDelivery", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+        dao.update(namespace + "updateDelivery", paramDto, Alias.Admin);
     }
 
     public void makeExcelFile(DeliveryExcelDto.Param paramDto,
@@ -126,7 +126,7 @@ public class DeliveryService {
             return;
         }
 
-        List<DeliveryExcelDto.Response> deliveryList = dao.selectList(namespace + "findExcelDeliveryList", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+        List<DeliveryExcelDto.Response> deliveryList = dao.selectList(namespace + "findExcelDeliveryList", paramDto, Alias.Admin);
 
         // 엑셀 생성
         deliveryList.forEach(delivery -> {
@@ -166,6 +166,6 @@ public class DeliveryService {
     }
 
     public DeliveryAddressDto.Response findDeliveryAddresses(DeliveryAddressDto.Param paramDto) {
-        return dao.selectOne(namespace + "findDeliveryAddresses", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+        return dao.selectOne(namespace + "findDeliveryAddresses", paramDto, Alias.Admin);
     }
 }

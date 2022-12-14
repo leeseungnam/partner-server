@@ -72,6 +72,13 @@ public class DeliveryInvoiceUpdateDto {
         this.nonReturnFlag = nonReturnFlag;
     }
 
+    public DeliveryUpdateDto toDeliveryUpdateDto() {
+        return DeliveryUpdateDto.builder()
+                .orderNo(this.orderNo)
+                .orderProductSeqArray(this.orderProductSeqArray)
+                .build();
+    }
+
     public Queue toQueueDto() {
         return Queue.builder()
                 .ordNo(this.orderNo)
