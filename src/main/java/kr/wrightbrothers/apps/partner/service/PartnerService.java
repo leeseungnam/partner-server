@@ -188,6 +188,11 @@ public class PartnerService {
             if(!ObjectUtils.isEmpty(file)) result.getPartner().changeThumbmailUrl(file.getFileSource());
         }
 
+        if(!ObjectUtils.isEmpty(result.getPartnerContract().getContractFileNo())) {
+            FileDto file = fileService.findFile(FileParamDto.builder().fileNo(result.getPartnerContract().getContractFileNo()).fileSeq(Long.valueOf(1)).build());
+            if(!ObjectUtils.isEmpty(file)) result.getPartnerContract().changeContractFileName(file.getFileOriginalName());
+        }
+
         result.getPartnerContract().changeContractStatusName(Partner.Contract.Status.valueOfCode(result.getPartnerContract().getContractStatus()).getName());
         result.getPartnerContract().changeBankCodeName(Partner.Contract.Bank.valueOfCode(result.getPartnerContract().getBankCode()).getName());
 
