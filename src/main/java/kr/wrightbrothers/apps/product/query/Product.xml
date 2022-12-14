@@ -3,12 +3,12 @@
 
 <mapper namespace="kr.wrightbrothers.apps.product.query.Product">
 	
-	<select id="isProductNonInspection" parameterType="java.lang.String" resultType="boolean">
+	<select id="isNonInspectionReject" parameterType="java.lang.String" resultType="boolean">
 		select
-			if(count(prdt_cd) = 0, true, false) as isProductNonInspection
+			if(count(prdt_cd) > 0, false, true) as isNonInspectionReject
 		  from prdt_sell_info
 		 where prdt_cd = #{productCode}
-		   and prdt_stus_cd in ('S06', 'S09', 'S10')
+		   and prdt_stus_cd = 'S10'
 	</select>
 	
 	<select id="isProductInspection" parameterType="java.lang.String" resultType="boolean">

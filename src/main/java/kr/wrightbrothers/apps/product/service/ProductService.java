@@ -279,7 +279,7 @@ public class ProductService {
 
     @Transactional(transactionManager = TransactionManager.Global)
     public void deleteProduct(ProductParamDto paramDto) {
-        if (dao.selectOne(namespace + "isProductNonInspection", paramDto.getProductCode(), Alias.Admin))
+        if (dao.selectOne(namespace + "isNonInspectionReject", paramDto.getProductCode(), Alias.Admin))
             throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_DELETE.getErrCode());
 
         // 상품테이블 삭제

@@ -808,7 +808,7 @@ class ProductControllerTest extends BaseControllerTests {
         productDto.setProductCode(
                 productUtil.generateProductCode(productDto.getProduct().getCategoryTwoCode())
         );
-        productDto.getSellInfo().setProductStatusCode(ProductConst.Status.PRODUCT_INSPECTION.getCode());
+        productDto.getSellInfo().setProductStatusCode(ProductConst.Status.REJECT_INSPECTION.getCode());
         productService.insertProduct(productDto);
 
         // 삭제 API 테스트
