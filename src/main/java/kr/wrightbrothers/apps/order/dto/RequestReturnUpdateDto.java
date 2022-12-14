@@ -50,6 +50,10 @@ public class RequestReturnUpdateDto {
         @JsonIgnore
         private Long deliveryAmount;
 
+        /** 판매금액 최대인 상품 SEQ */
+        @JsonIgnore
+        private Long maxSeq;
+
         public void setAopPartnerCode(String partnerCode) {
             this.partnerCode = partnerCode;
         }

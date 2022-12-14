@@ -59,6 +59,12 @@ public class ProductDto {
     /** 반품 배송 번호 */
     private String returnInvoiceNo;
 
+    /** 포인트 */
+    private Long sspPoint;
+
+    /** 판매대금 */
+    private Long saleAmount;
+
     public void setOrderProductStatusName(String productStatusCode) {
         this.orderProductStatusName = OrderConst.ProductStatus.of(productStatusCode).getName();
     }

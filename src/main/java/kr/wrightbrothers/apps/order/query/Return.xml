@@ -125,7 +125,7 @@
 					 if(p.cnc_rsn is not null and p.cnc_rsn != '' , p.cnc_rsn, c.intg_cd_val_nm) return_reason,
 					 rcd.intg_cd_val_nm non_return_reason,
 					 if(p.cnc_pay_amt is not null, p.rtn_chg, null) return_delivery_amount,
-					 if(p.cnc_pay_amt is not null, p.fnl_sell_amt - p.rtn_chg, null) refund_amount
+					 if(p.cnc_pay_amt is not null, p.cnc_pay_amt, null) refund_amount
 			  from ord_prdt_info p
 			      	   inner join ord_prnr_info s
 			      		on p.ord_no = s.ord_no
@@ -224,12 +224,13 @@
 	</update>
 
 	<update id="updateRequestCompleteReturn" parameterType="kr.wrightbrothers.apps.order.dto.RequestReturnUpdateDto">
-		<selectKey resultType="java.lang.Long" keyProperty="deliveryAmount" order="BEFORE">
+		<selectKey resultType="java.lang.Long" keyProperty="maxSeq" order="BEFORE">
 			select
-			    if(ord_prdt_idx = #{orderProductSeq}, #{returnDeliveryAmount}, 0) as deliveryAmount
+				ord_prdt_idx as maxSeq
 			  from (
 				select
 				    row_number() over (order by fnl_sell_amt desc) as rank_amt,
+				    dlvr_chrg_amt,
 					ord_prdt_idx
 				  from ord_prdt_info
 				 where ord_no = #{orderNo}
@@ -241,8 +242,8 @@
 		   set ord_prdt_stus			= 'R06',
 		       ord_prdt_pay_stus		= 'S06',
 		       cnc_cplt_dt				= now(),
-		       rtn_chg					= #{deliveryAmount},
-		       cnc_pay_amt				= fnl_sell_amt - #{deliveryAmount},
+		       rtn_chg					= if(ord_prdt_idx = #{maxSeq}, #{returnDeliveryAmount}, 0),
+		       cnc_pay_amt				= if(ord_prdt_idx = #{maxSeq}, fnl_sell_amt + dlvr_chrg_amt - #{returnDeliveryAmount}, fnl_sell_amt),
 		       upd_usr_id				= #{userId},
 		       upd_dt					= now()
 		 where ord_no					= #{orderNo}
