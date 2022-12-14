@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
@@ -797,6 +798,49 @@ class ProductControllerTest extends BaseControllerTests {
                                 )
                 ))
         ;
+    }
+
+    @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @DisplayName("상품(검수) 삭제")
+    void deleteProduct() throws Exception {
+        // 상품 등록
+        productDto.setProductCode(
+                productUtil.generateProductCode(productDto.getProduct().getCategoryTwoCode())
+        );
+        productDto.getSellInfo().setProductStatusCode(ProductConst.Status.PRODUCT_INSPECTION.getCode());
+        productService.insertProduct(productDto);
+
+        // 삭제 API 테스트
+        mockMvc.perform(delete("/v1/products")
+                        .header(AUTH_HEADER, JWT_TOKEN)
+                        .contentType(MediaType.TEXT_HTML)
+                        .queryParam("productCode", productDto.getProduct().getProductCode())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.WBCommon.state").value("S"))
+                .andDo(
+                        document("product-delete",
+                                requestDocument(),
+                                responseDocument(),
+                                requestHeaders(
+                                        headerWithName(AUTH_HEADER).description("JWT 토큰")
+                                ),
+                                requestParameters(
+                                        parameterWithName("productCode").description("상품 코드").attributes(key("etc").value(""))
+                                ),
+                                responseFields(
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
+                                        fieldWithPath("WBCommon.message").type(JsonFieldType.STRING).description("메시지")
+                                )
+                        )
+                )
+                ;
+
+        // 검증
+        ProductDto.ResBody findProduct = dao.selectOne("kr.wrightbrothers.apps.product.query.Product.findProduct", productDto.getProduct().getProductCode(), PartnerKey.WBDataBase.Alias.Admin);
+        assertNull(findProduct);
     }
 
 }

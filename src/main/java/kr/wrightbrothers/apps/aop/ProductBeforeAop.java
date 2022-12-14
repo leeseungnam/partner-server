@@ -107,7 +107,8 @@ public class ProductBeforeAop {
     }
 
     @Before(value =
-            "execution(* kr.wrightbrothers.apps.product.service.*Service.update*(..)) ||" +
+            "execution(* kr.wrightbrothers.apps.product.service.*Service.delete*(..)) || " +
+            "execution(* kr.wrightbrothers.apps.product.service.*Service.update*(..)) || " +
             "execution(* kr.wrightbrothers.apps.product.service.*Service.findProduct(..))"
     )
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)

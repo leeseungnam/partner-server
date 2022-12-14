@@ -3,6 +3,14 @@
 
 <mapper namespace="kr.wrightbrothers.apps.product.query.Product">
 	
+	<select id="isProductNonInspection" parameterType="java.lang.String" resultType="boolean">
+		select
+			if(count(prdt_cd) = 0, true, false) as isProductNonInspection
+		  from prdt_sell_info
+		 where prdt_cd = #{productCode}
+		   and prdt_stus_cd in ('S06', 'S09', 'S10')
+	</select>
+	
 	<select id="isProductInspection" parameterType="java.lang.String" resultType="boolean">
 		select
 		    if(count(prdt_cd) = 0, false, true) as isProductInspection
@@ -759,5 +767,56 @@
 		  from prdt_sell_info
 		 where prdt_cd = #{productCode}
 	</select>
+
+	<delete id="deleteProduct" parameterType="java.lang.String">
+		delete
+		  from prdt_main
+		 where prdt_cd = #{productCode}
+	</delete>
+	<delete id="deleteSellInfo" parameterType="java.lang.String">
+		delete
+		  from prdt_sell_info
+		 where prdt_cd = #{productCode};
+
+		delete
+		  from prdt_sell_chnl
+		 where prdt_cd = #{productCode};
+	</delete>
+	<delete id="deleteInfoNotice" parameterType="java.lang.String">
+		delete
+		  from prdt_info_bltn
+		 where prdt_cd = #{productCode}
+	</delete>
+	<delete id="deleteGuide" parameterType="java.lang.String">
+		delete
+		  from prdt_gud_ctnt
+		 where prdt_cd = #{productCode}
+	</delete>
+	<delete id="deleteBasicSpec" parameterType="java.lang.String">
+		delete
+		  from prdt_bsc_spec
+		 where prdt_cd = #{productCode};
+		delete
+		  from prdt_emrk_age
+		 where prdt_cd = #{productCode}
+	</delete>
+	<delete id="deleteDelivery" parameterType="java.lang.String">
+		delete
+		  from prdt_dlvr_dtl
+		 where prdt_cd = #{productCode};
+		delete
+		  from prdt_dlvr
+		 where prdt_cd = #{productCode}
+	</delete>
+	<delete id="deleteProductRequest" parameterType="java.lang.String">
+		delete
+		  from prdt_req
+		 where prdt_cd = #{productCode}
+	</delete>
+	<delete id="deleteProductRequestHistory" parameterType="java.lang.String">
+		delete
+		  from prdt_req_his
+		 where prdt_cd = #{productCode}
+	</delete>
 
 </mapper>

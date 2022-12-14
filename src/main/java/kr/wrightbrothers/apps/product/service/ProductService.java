@@ -3,7 +3,7 @@ package kr.wrightbrothers.apps.product.service;
 import kr.wrightbrothers.apps.common.constants.ProductConst;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.ExcelUtil;
-import kr.wrightbrothers.apps.common.util.PartnerKey;
+import kr.wrightbrothers.apps.common.util.PartnerKey.WBDataBase.*;
 import kr.wrightbrothers.apps.common.util.ProductUtil;
 import kr.wrightbrothers.apps.file.dto.FileListDto;
 import kr.wrightbrothers.apps.file.dto.FileUpdateDto;
@@ -46,7 +46,7 @@ public class ProductService {
     private final ChangeInfoService changeInfoService;
 
     public List<ProductListDto.Response> findProductList(ProductListDto.Param paramDto) {
-        return dao.selectList(namespace + "findProductList" ,paramDto, paramDto.getRowBounds(), PartnerKey.WBDataBase.Alias.Admin)
+        return dao.selectList(namespace + "findProductList" ,paramDto, paramDto.getRowBounds(), Alias.Admin)
                 .stream()
                 .map(product -> (ProductListDto.Response) product)
                 // 회원 정보는 RDS 나눠진 관계로 따로 회원명 처리
@@ -56,26 +56,26 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @Transactional(transactionManager = TransactionManager.Global)
     public void insertProduct(ProductInsertDto paramDto) {
         // 상품 데이터 저장
-        dao.insert(namespace + "insertProduct", paramDto.getProduct(), PartnerKey.WBDataBase.Alias.Admin);
-        dao.insert(namespace + "mergeSellInfo", paramDto.getSellInfo(), PartnerKey.WBDataBase.Alias.Admin);
-        dao.insert(namespace + "mergeInfoNotice", paramDto.getInfoNotice(), PartnerKey.WBDataBase.Alias.Admin);
-        dao.insert(namespace + "mergeGuide", paramDto.getGuide(), PartnerKey.WBDataBase.Alias.Admin);
+        dao.insert(namespace + "insertProduct", paramDto.getProduct(), Alias.Admin);
+        dao.insert(namespace + "mergeSellInfo", paramDto.getSellInfo(), Alias.Admin);
+        dao.insert(namespace + "mergeInfoNotice", paramDto.getInfoNotice(), Alias.Admin);
+        dao.insert(namespace + "mergeGuide", paramDto.getGuide(), Alias.Admin);
 
         // 필수 데이터가 아닌 관계로 널체크 후 데이터 처리
         if ("Y".equals(paramDto.getSellInfo().getProductOptionFlag())) {
             Optional.ofNullable(paramDto.getOptionList()).orElseGet(Collections::emptyList)
-                    .forEach(option -> dao.insert(namespace + "insertOption", option, PartnerKey.WBDataBase.Alias.Admin));
+                    .forEach(option -> dao.insert(namespace + "insertOption", option, Alias.Admin));
         }
         if (!ObjectUtils.isEmpty(paramDto.getDelivery())) {
-            dao.insert(namespace + "insertDelivery", paramDto.getDelivery(), PartnerKey.WBDataBase.Alias.Admin);
+            dao.insert(namespace + "insertDelivery", paramDto.getDelivery(), Alias.Admin);
         }
         if (!ObjectUtils.isEmpty(paramDto.getBasicSpec())) {
-            dao.insert(namespace + "mergeBasicSpec", paramDto.getBasicSpec(), PartnerKey.WBDataBase.Alias.Admin);
+            dao.insert(namespace + "mergeBasicSpec", paramDto.getBasicSpec(), Alias.Admin);
             if (!ObjectUtils.isEmpty(paramDto.getBasicSpec().getAgeList())) {
-                dao.insert(namespace + "insertBasicSpecAge", paramDto.getBasicSpec(), PartnerKey.WBDataBase.Alias.Admin);
+                dao.insert(namespace + "insertBasicSpecAge", paramDto.getBasicSpec(), Alias.Admin);
             }
         }
 
@@ -85,15 +85,15 @@ public class ProductService {
     }
 
     public ProductFindDto.ResBody findProduct(ProductFindDto.Param paramDto) {
-        List<OptionDto.ResBody> optionList = dao.selectList(namespace + "findOptionList", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin);
+        List<OptionDto.ResBody> optionList = dao.selectList(namespace + "findOptionList", paramDto.getProductCode(), Alias.Admin);
         ProductFindDto.ResBody findDto = ProductFindDto.ResBody.builder()
-                .product(dao.selectOne(namespace + "findProduct", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin))
-                .basicSpec(dao.selectOne(namespace + "findBasicSpec", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin))
-                .sellInfo(dao.selectOne(namespace + "findSellInfo", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin))
+                .product(dao.selectOne(namespace + "findProduct", paramDto.getProductCode(), Alias.Admin))
+                .basicSpec(dao.selectOne(namespace + "findBasicSpec", paramDto.getProductCode(), Alias.Admin))
+                .sellInfo(dao.selectOne(namespace + "findSellInfo", paramDto.getProductCode(), Alias.Admin))
                 .optionList(Optional.ofNullable(optionList).orElseGet(Collections::emptyList))
-                .delivery(dao.selectOne(namespace + "findDelivery", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin))
-                .infoNotice(dao.selectOne(namespace + "findInfoNotice", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin))
-                .guide(dao.selectOne(namespace + "findGuide", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin))
+                .delivery(dao.selectOne(namespace + "findDelivery", paramDto.getProductCode(), Alias.Admin))
+                .infoNotice(dao.selectOne(namespace + "findInfoNotice", paramDto.getProductCode(), Alias.Admin))
+                .guide(dao.selectOne(namespace + "findGuide", paramDto.getProductCode(), Alias.Admin))
                 .build();
 
         if (ProductConst.Status.REJECT_INSPECTION.getCode().equals(findDto.getSellInfo().getProductStatusCode()))
@@ -102,7 +102,7 @@ public class ProductService {
         return findDto;
     }
 
-    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @Transactional(transactionManager = TransactionManager.Global)
     public void productChangeLog(ProductUpdateDto paramDto) {
         ProductFindDto.ResBody currentProduct = findProduct(paramDto.toProductFindParam());
         paramDto.setSqsLog(
@@ -147,7 +147,7 @@ public class ProductService {
 
     }
 
-    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @Transactional(transactionManager = TransactionManager.Global)
     public void updateProduct(ProductUpdateDto paramDto) {
         // 업데이트 처리 전 변경로그, 재고에 따른 상태처리, 판매일자 처리
         productChangeLog(paramDto);
@@ -159,26 +159,26 @@ public class ProductService {
             paramDto.getSellInfo().setDisplayFlag("N");
 
         // 상품 데이터 수정
-        dao.update(namespace + "updateProduct", paramDto.getProduct(), PartnerKey.WBDataBase.Alias.Admin);
-        dao.update(namespace + "mergeSellInfo", paramDto.getSellInfo(), PartnerKey.WBDataBase.Alias.Admin);
-        dao.update(namespace + "mergeInfoNotice", paramDto.getInfoNotice(), PartnerKey.WBDataBase.Alias.Admin);
-        dao.update(namespace + "mergeGuide", paramDto.getGuide(), PartnerKey.WBDataBase.Alias.Admin);
-        dao.delete(namespace + "deleteOption", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin);
+        dao.update(namespace + "updateProduct", paramDto.getProduct(), Alias.Admin);
+        dao.update(namespace + "mergeSellInfo", paramDto.getSellInfo(), Alias.Admin);
+        dao.update(namespace + "mergeInfoNotice", paramDto.getInfoNotice(), Alias.Admin);
+        dao.update(namespace + "mergeGuide", paramDto.getGuide(), Alias.Admin);
+        dao.delete(namespace + "deleteOption", paramDto.getProductCode(), Alias.Admin);
 
         // 필수 데이터가 아닌 관계로 널체크 후 데이터 처리
         if ("Y".equals(paramDto.getSellInfo().getProductOptionFlag())) {
             Optional.ofNullable(paramDto.getOptionList()).orElseGet(Collections::emptyList)
-                    .forEach(option -> dao.insert(namespace + "insertOption", option, PartnerKey.WBDataBase.Alias.Admin));
+                    .forEach(option -> dao.insert(namespace + "insertOption", option, Alias.Admin));
         }
         if (!ObjectUtils.isEmpty(paramDto.getBasicSpec())) {
-            dao.update(namespace + "mergeBasicSpec", paramDto.getBasicSpec(), PartnerKey.WBDataBase.Alias.Admin);
-            dao.delete(namespace + "deleteBasicSpecAge", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin);
+            dao.update(namespace + "mergeBasicSpec", paramDto.getBasicSpec(), Alias.Admin);
+            dao.delete(namespace + "deleteBasicSpecAge", paramDto.getProductCode(), Alias.Admin);
             if (!ObjectUtils.isEmpty(paramDto.getBasicSpec().getAgeList())) {
-                dao.insert(namespace + "insertBasicSpecAge", paramDto.getBasicSpec(), PartnerKey.WBDataBase.Alias.Admin);
+                dao.insert(namespace + "insertBasicSpecAge", paramDto.getBasicSpec(), Alias.Admin);
             }
         }
         if (!ObjectUtils.isEmpty(paramDto.getDelivery())) {
-            dao.update(namespace + "updateDelivery", paramDto.getDelivery(), PartnerKey.WBDataBase.Alias.Admin);
+            dao.update(namespace + "updateDelivery", paramDto.getDelivery(), Alias.Admin);
         }
 
         // 이력 및 S3 처리
@@ -186,12 +186,12 @@ public class ProductService {
         fileService.s3FileUpload(paramDto.getFileList(), WBKey.Aws.A3.Product_Img_Path + paramDto.getProduct().getProductCode(), true);
     }
 
-    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @Transactional(transactionManager = TransactionManager.Global)
     public void updateProductStatus(StatusUpdateDto paramDto) {
         // 이력정보 등록
         Arrays.stream(paramDto.getProductCodeList())
                 .forEach(productCode -> {
-                    String currentStatus = dao.selectOne(namespace + "findProductStatus", productCode, PartnerKey.WBDataBase.Alias.Admin);
+                    String currentStatus = dao.selectOne(namespace + "findProductStatus", productCode, Alias.Admin);
                     // 상품 변경 이력
                     changeInfoService.insertChangeInfo(
                             paramDto.toChangeInfo(
@@ -209,7 +209,7 @@ public class ProductService {
                             )
                     ) {
                         // 판매 재고 0일 경우 예외처리 발생
-                        if (dao.selectOne(namespace + "isZeroStock", productCode, PartnerKey.WBDataBase.Alias.Admin))
+                        if (dao.selectOne(namespace + "isZeroStock", productCode, Alias.Admin))
                             throw new WBBusinessException(ErrorCode.INVALID_NUMBER_MIN.getErrCode(), new String[]{"판매재고", "1"});
                     }
 
@@ -226,15 +226,15 @@ public class ProductService {
 
         // 상태값 변경
         if ("DP".equals(paramDto.getStatusType())) {
-            dao.update(namespace + "bulkUpdateProductDisplay", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+            dao.update(namespace + "bulkUpdateProductDisplay", paramDto, Alias.Admin);
             return;
         }
 
-        dao.update(namespace + "bulkUpdateProductStatus", paramDto, PartnerKey.WBDataBase.Alias.Admin);
+        dao.update(namespace + "bulkUpdateProductStatus", paramDto, Alias.Admin);
     }
 
     public int findProductCountByPartnerCode(String partnerCode) {
-        return dao.selectOne(namespace + "findProductCountByPartnerCode", partnerCode, PartnerKey.WBDataBase.Alias.Admin);
+        return dao.selectOne(namespace + "findProductCountByPartnerCode", partnerCode, Alias.Admin);
     }
 
     public void makeExcelFile(List<String> productCodeList,
@@ -250,7 +250,7 @@ public class ProductService {
             return;
         }
 
-        List<ProductExcelDto> productList = dao.selectList(namespace + "findExcelProductList", productCodeList, PartnerKey.WBDataBase.Alias.Admin);
+        List<ProductExcelDto> productList = dao.selectList(namespace + "findExcelProductList", productCodeList, Alias.Admin);
 
         // 엑셀 생성
         productList.forEach(product -> {
@@ -275,5 +275,24 @@ public class ProductService {
         });
 
         excel.excelWrite("상품목록리스트.xlsx", response);
+    }
+
+    @Transactional(transactionManager = TransactionManager.Global)
+    public void deleteProduct(ProductParamDto paramDto) {
+        if (dao.selectOne(namespace + "isProductNonInspection", paramDto.getProductCode(), Alias.Admin))
+            throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_DELETE.getErrCode());
+
+        // 상품테이블 삭제
+        dao.delete(namespace + "deleteSellInfo", paramDto.getProductCode(), Alias.Admin);
+        dao.delete(namespace + "deleteInfoNotice", paramDto.getProductCode(), Alias.Admin);
+        dao.delete(namespace + "deleteGuide", paramDto.getProductCode(), Alias.Admin);
+        dao.delete(namespace + "deleteBasicSpec", paramDto.getProductCode(), Alias.Admin);
+        dao.delete(namespace + "deleteDelivery", paramDto.getProductCode(), Alias.Admin);
+        dao.delete(namespace + "deleteOption", paramDto.getProductCode(), Alias.Admin);
+        dao.delete(namespace + "deleteProduct", paramDto.getProductCode(), Alias.Admin);
+        // 검수테이블 삭제
+        dao.delete(namespace + "deleteProductRequest", paramDto.getProductCode(), Alias.Admin);
+        dao.delete(namespace + "deleteProductRequestHistory", paramDto.getProductCode(), Alias.Admin);
+
     }
 }
