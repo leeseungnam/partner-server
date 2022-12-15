@@ -283,19 +283,19 @@ public class ProductService {
             throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_DELETE.getErrCode());
 
         // 주문상품 삭제
-        Arrays.stream(paramDto.getProductCodeList()).forEach(productCode -> {
-            // 상품테이블 삭제
-            dao.delete(namespace + "deleteSellInfo", productCode, Alias.Admin);
-            dao.delete(namespace + "deleteInfoNotice", productCode, Alias.Admin);
-            dao.delete(namespace + "deleteGuide", productCode, Alias.Admin);
-            dao.delete(namespace + "deleteBasicSpec", productCode, Alias.Admin);
-            dao.delete(namespace + "deleteDelivery", productCode, Alias.Admin);
-            dao.delete(namespace + "deleteOption", productCode, Alias.Admin);
-            dao.delete(namespace + "deleteProduct", productCode, Alias.Admin);
-
-            // 검수테이블 삭제
-            dao.delete(namespace + "deleteProductRequest", productCode, Alias.Admin);
-            dao.delete(namespace + "deleteProductRequestHistory", productCode, Alias.Admin);
-        });
+//        Arrays.stream(paramDto.getProductCodeList()).forEach(productCode -> {
+//            // 상품테이블 삭제
+//            dao.delete(namespace + "deleteSellInfo", productCode, Alias.Admin);
+//            dao.delete(namespace + "deleteInfoNotice", productCode, Alias.Admin);
+//            dao.delete(namespace + "deleteGuide", productCode, Alias.Admin);
+//            dao.delete(namespace + "deleteBasicSpec", productCode, Alias.Admin);
+//            dao.delete(namespace + "deleteDelivery", productCode, Alias.Admin);
+//            dao.delete(namespace + "deleteOption", productCode, Alias.Admin);
+//            dao.delete(namespace + "deleteProduct", productCode, Alias.Admin);
+//
+//            // 검수테이블 삭제
+//            dao.delete(namespace + "deleteProductRequest", productCode, Alias.Admin);
+//            dao.delete(namespace + "deleteProductRequestHistory", productCode, Alias.Admin);
+//        });
     }
 }
