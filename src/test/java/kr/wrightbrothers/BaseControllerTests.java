@@ -50,7 +50,7 @@ public class BaseControllerTests {
 				removeHeaders("Content-Length", "Accept"),
 				modifyUris()
 						.scheme("https")
-						.host("admin.wrightbrothers.kr")
+						.host("partner.wrightbrothers.kr")
 						.removePort(),
 				prettyPrint()
 		);
