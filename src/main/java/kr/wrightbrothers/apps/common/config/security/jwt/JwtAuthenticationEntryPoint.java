@@ -6,6 +6,7 @@ import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.TokenUtil;
 import kr.wrightbrothers.framework.lang.WBGlobalException;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -32,20 +33,15 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         String accessToken = TokenUtil.resolveTokenInHeader(request, PartnerKey.Jwt.Header.AUTHORIZATION);
         String refreshToken = TokenUtil.resolveTokenInCookie(request, PartnerKey.Jwt.Alias.REFRESH_TOKEN);
 
+        JSONObject responseObject = WBGlobalException.exceptionResponse(ErrorCode.FORBIDDEN_LOGIN.getErrCode(), "E", null);
+
         if(!ObjectUtils.isEmpty(accessToken)) {
             if (ObjectUtils.isEmpty(refreshToken)) {
-                response.getWriter()
-                        .write(new ObjectMapper()
-                                .writeValueAsString(WBGlobalException.exceptionResponse(ErrorCode.UNAUTHORIZED_TOKEN.getErrCode(), "E", null)));
+                responseObject = WBGlobalException.exceptionResponse(ErrorCode.UNAUTHORIZED_TOKEN.getErrCode(), "E", null);
             } else {
-                response.getWriter()
-                        .write(new ObjectMapper()
-                                .writeValueAsString(WBGlobalException.exceptionResponse(ErrorCode.FORBIDDEN_LOGOUT.getErrCode(), "E", null)));
+                responseObject = WBGlobalException.exceptionResponse(ErrorCode.FORBIDDEN_LOGOUT.getErrCode(), "E", null);
             }
-        } else {
-            response.getWriter()
-                    .write(new ObjectMapper()
-                            .writeValueAsString(WBGlobalException.exceptionResponse(ErrorCode.FORBIDDEN_LOGIN.getErrCode(), "E", null)));
         }
+        response.getWriter().write(new ObjectMapper().writeValueAsString(responseObject));
     }
 }
