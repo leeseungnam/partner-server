@@ -10,7 +10,6 @@ import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.TokenUtil;
 import kr.wrightbrothers.apps.sign.dto.UserDetailDto;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
-import kr.wrightbrothers.apps.sign.service.WBUserDetailService;
 import kr.wrightbrothers.apps.token.dto.RefreshTokenDto;
 import kr.wrightbrothers.apps.token.service.RefreshTokenService;
 import kr.wrightbrothers.apps.user.dto.UserAuthDto;
@@ -41,15 +40,18 @@ public class JwtTokenProvider implements InitializingBean {
     private final String secretKey;
     private final long accessTokenMin;
     private final long refreshTokenMin;
+    private final long refreshTokenCookieMin;
     private final RefreshTokenService refreshTokenService;
 
     public JwtTokenProvider(@Value("${jwt.secret-key}") String secretKey,
                             @Value("${jwt.validation-time.access-token-min}") long accessTokenMin,
                             @Value("${jwt.validation-time.refresh-token-min}") long refreshTokenMin,
+                            @Value("${jwt.validation-time.refresh-token-cookie-min}") long refreshTokenCookieMin,
                             RefreshTokenService refreshTokenService) {
         this.secretKey = secretKey;
         this.accessTokenMin = accessTokenMin;
         this.refreshTokenMin = refreshTokenMin;
+        this.refreshTokenCookieMin = refreshTokenCookieMin;
         this.refreshTokenService = refreshTokenService;
     }
     private Key key;
@@ -122,7 +124,7 @@ public class JwtTokenProvider implements InitializingBean {
     }
 
     public Cookie createRefreshTokenCookie(String cookieName, String value) {
-        return TokenUtil.createCookie(cookieName, value, 60 * refreshTokenMin);
+        return TokenUtil.createCookie(cookieName, value, 60 * refreshTokenCookieMin);
     }
 
     public PartnerKey.JwtCode validateToken(String token) {

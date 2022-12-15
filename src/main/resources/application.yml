@@ -51,4 +51,5 @@ jwt:
   validation-time:
     access-token-min: 5 #MIN(분)
     refresh-token-min: 60 #MIN(분)
+    refresh-token-cookie-min: 600 #MIN(분)
 
