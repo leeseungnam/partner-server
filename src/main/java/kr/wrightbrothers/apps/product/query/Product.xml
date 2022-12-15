@@ -5,9 +5,9 @@
 	
 	<select id="isNonInspectionReject" parameterType="kr.wrightbrothers.apps.product.dto.ProductDeleteDto" resultType="boolean">
 		select
-			if(count(prdt_cd) > 0, false, true) as isNonInspectionReject
+			if(count(prdt_cd) > 0, true, false) as isNonInspectionReject
 		  from prdt_sell_info
-		 where prdt_stus_cd = 'S10'
+		 where prdt_stus_cd != 'S10'
 		<foreach collection="productCodeList" item="item" index="index" open="and prdt_cd in (" separator="," close=")">
 			#{item}
 		</foreach>
@@ -800,6 +800,9 @@
 		 where prdt_cd = #{productCode};
 		delete
 		  from prdt_emrk_age
+		 where prdt_cd = #{productCode};
+		delete
+		  from prdt_fram_spec_info
 		 where prdt_cd = #{productCode}
 	</delete>
 	<delete id="deleteDelivery" parameterType="java.lang.String">
