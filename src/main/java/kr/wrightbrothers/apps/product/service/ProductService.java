@@ -278,21 +278,24 @@ public class ProductService {
     }
 
     @Transactional(transactionManager = TransactionManager.Global)
-    public void deleteProduct(ProductParamDto paramDto) {
-        if (dao.selectOne(namespace + "isNonInspectionReject", paramDto.getProductCode(), Alias.Admin))
+    public void deleteProduct(ProductDeleteDto paramDto) {
+        if (dao.selectOne(namespace + "isNonInspectionReject", paramDto, Alias.Admin))
             throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_DELETE.getErrCode());
 
-        // 상품테이블 삭제
-        dao.delete(namespace + "deleteSellInfo", paramDto.getProductCode(), Alias.Admin);
-        dao.delete(namespace + "deleteInfoNotice", paramDto.getProductCode(), Alias.Admin);
-        dao.delete(namespace + "deleteGuide", paramDto.getProductCode(), Alias.Admin);
-        dao.delete(namespace + "deleteBasicSpec", paramDto.getProductCode(), Alias.Admin);
-        dao.delete(namespace + "deleteDelivery", paramDto.getProductCode(), Alias.Admin);
-        dao.delete(namespace + "deleteOption", paramDto.getProductCode(), Alias.Admin);
-        dao.delete(namespace + "deleteProduct", paramDto.getProductCode(), Alias.Admin);
-        // 검수테이블 삭제
-        dao.delete(namespace + "deleteProductRequest", paramDto.getProductCode(), Alias.Admin);
-        dao.delete(namespace + "deleteProductRequestHistory", paramDto.getProductCode(), Alias.Admin);
+        // 주문상품 삭제
+        Arrays.stream(paramDto.getProductCodeArray()).forEach(productCode -> {
+            // 상품테이블 삭제
+            dao.delete(namespace + "deleteSellInfo", productCode, Alias.Admin);
+            dao.delete(namespace + "deleteInfoNotice", productCode, Alias.Admin);
+            dao.delete(namespace + "deleteGuide", productCode, Alias.Admin);
+            dao.delete(namespace + "deleteBasicSpec", productCode, Alias.Admin);
+            dao.delete(namespace + "deleteDelivery", productCode, Alias.Admin);
+            dao.delete(namespace + "deleteOption", productCode, Alias.Admin);
+            dao.delete(namespace + "deleteProduct", productCode, Alias.Admin);
 
+            // 검수테이블 삭제
+            dao.delete(namespace + "deleteProductRequest", productCode, Alias.Admin);
+            dao.delete(namespace + "deleteProductRequestHistory", productCode, Alias.Admin);
+        });
     }
 }

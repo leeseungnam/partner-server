@@ -7,12 +7,12 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class ProductParamDto {
+public class ProductDeleteDto {
     /** 파트너 코드 */
     private String partnerCode;
 
     /** 상품 코드 */
-    private String productCode;
+    private String[] productCodeArray;
 
     public void setAopPartnerCode(String partnerCode) {
         this.partnerCode = partnerCode;
