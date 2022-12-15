@@ -21,7 +21,6 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
-    private final static long REFRESH_TOKEN_VALIDATION_SECOND = 60 * 60 * 1;
     private final SignService signService;
     private final JwtTokenProvider jwtTokenProvider;
 
