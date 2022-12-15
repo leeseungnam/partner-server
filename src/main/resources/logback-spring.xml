@@ -74,7 +74,7 @@
 		</springProfile>
 	</logger>
 
-	<root level="debug">
+	<root level="info">
 		<springProfile name="dev,stag,prod">
 			<appender-ref ref="error" />
 			<appender-ref ref="server" />
