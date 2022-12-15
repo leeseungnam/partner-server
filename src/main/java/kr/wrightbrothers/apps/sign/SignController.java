@@ -33,7 +33,6 @@ public class SignController extends WBController {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final static long REFRESH_TOKEN_VALIDATION_SECOND = 60 * 60 * 2;
     private final UserService userService;
 
     @ApiOperation(value = "로그인", notes = "로그인 요청 API 입니다.")
@@ -58,7 +57,7 @@ public class SignController extends WBController {
         log.debug("refresh token={}",refreshToken);
 
         response.setHeader(PartnerKey.Jwt.Header.AUTHORIZATION, PartnerKey.Jwt.Type.BEARER + accessToken);
-        response.addCookie(TokenUtil.createCookie(PartnerKey.Jwt.Alias.REFRESH_TOKEN, refreshToken, REFRESH_TOKEN_VALIDATION_SECOND));
+        response.addCookie(jwtTokenProvider.createRefreshTokenCookie(PartnerKey.Jwt.Alias.REFRESH_TOKEN, refreshToken));
 
         user.changePwd(null);
 

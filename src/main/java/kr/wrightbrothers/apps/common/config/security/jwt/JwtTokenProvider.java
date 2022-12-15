@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import javax.servlet.http.Cookie;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
@@ -118,6 +119,10 @@ public class JwtTokenProvider implements InitializingBean {
                 .build(), authorities);
 
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+    }
+
+    public Cookie createRefreshTokenCookie(String cookieName, String value) {
+        return TokenUtil.createCookie(cookieName, value, 60 * refreshTokenMin);
     }
 
     public PartnerKey.JwtCode validateToken(String token) {
