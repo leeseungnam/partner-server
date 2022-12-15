@@ -173,10 +173,10 @@ public class ProductController extends WBController {
     }
 
     @DeleteMapping("/products")
-    public WBModel deleteProduct(@RequestParam String[] productCodeArray,
+    public WBModel deleteProduct(@RequestParam String[] productCodeList,
                                  @AuthenticationPrincipal UserPrincipal user) {
         // 검수대기 상품 삭제
-        productService.deleteProduct(new ProductDeleteDto(user.getUserAuth().getPartnerCode(), productCodeArray));
+        productService.deleteProduct(new ProductDeleteDto(user.getUserAuth().getPartnerCode(), productCodeList));
 
         return noneMgsResponse(messageSourceAccessor);
     }

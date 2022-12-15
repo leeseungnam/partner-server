@@ -815,7 +815,7 @@ class ProductControllerTest extends BaseControllerTests {
         mockMvc.perform(delete("/v1/products")
                         .header(AUTH_HEADER, JWT_TOKEN)
                         .contentType(MediaType.TEXT_HTML)
-                        .queryParam("productCode", productDto.getProduct().getProductCode())
+                        .queryParam("productCodeList", productDto.getProduct().getProductCode())
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -828,7 +828,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         headerWithName(AUTH_HEADER).description("JWT 토큰")
                                 ),
                                 requestParameters(
-                                        parameterWithName("productCode").description("상품 코드").attributes(key("etc").value(""))
+                                        parameterWithName("productCodeList").description("상품 코드").attributes(key("etc").value(""))
                                 ),
                                 responseFields(
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),

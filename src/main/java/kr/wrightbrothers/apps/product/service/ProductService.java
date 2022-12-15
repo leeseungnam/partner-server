@@ -283,7 +283,7 @@ public class ProductService {
             throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_DELETE.getErrCode());
 
         // 주문상품 삭제
-        Arrays.stream(paramDto.getProductCodeArray()).forEach(productCode -> {
+        Arrays.stream(paramDto.getProductCodeList()).forEach(productCode -> {
             // 상품테이블 삭제
             dao.delete(namespace + "deleteSellInfo", productCode, Alias.Admin);
             dao.delete(namespace + "deleteInfoNotice", productCode, Alias.Admin);
