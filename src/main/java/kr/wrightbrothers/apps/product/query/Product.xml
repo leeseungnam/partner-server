@@ -67,7 +67,7 @@
 	<select id="findProductList" parameterType="kr.wrightbrothers.apps.product.dto.ProductListDto$Param" resultType="kr.wrightbrothers.apps.product.dto.ProductListDto$Response">
 		select
 		    p.prdt_cd product_code,
-		    p.brd_nm brand_name,
+		    ifnull(p.brd_nm, cb.brd_eng_nm) brand_name,
 		    co.cagy_nm category_one_name,
 		    ct.cagy_nm category_two_name,
 		    cr.cagy_nm category_thr_name,
@@ -92,6 +92,8 @@
 			on p.cagy_dpth_two = ct.cagy_cd
 		  left join com_cagy cr
 			on p.cagy_dpth_thr = cr.cagy_cd
+		  left join com_brd cb
+		  	on p.brd_no = cb.brd_no
 		 where p.pur_rq_no = #{partnerCode}
 		<choose>
 		   <when test="keywordValueList != null and keywordValueList.length != 0">
@@ -537,9 +539,9 @@
             cr.cagy_nm category_thr_name,
             p.prdt_nm product_name,
             p.brd_no brand_no,
-            p.brd_nm brand_name,
+            ifnull(p.brd_nm, cb.brd_eng_nm) brand_name,
             p.mdl_no model_code,
-            p.mdl_nm model_name,
+            ifnull(p.mdl_nm, cm.mdl_nm) model_name,
             p.mdl_year model_year,
             p.ytb_url youtube_url,
             p.prdt_barcd product_barcode,
@@ -553,6 +555,10 @@
 			on p.cagy_dpth_two = ct.cagy_cd
 		  left join com_cagy cr
 			on p.cagy_dpth_thr = cr.cagy_cd
+		  left join com_brd cb
+		    on p.brd_no = cb.brd_no
+		  left join com_brd_mdl cm
+		  	on p.mdl_no = cm.mdl_cd
 		 where p.prdt_cd = #{productCode}
 	</select>
 
