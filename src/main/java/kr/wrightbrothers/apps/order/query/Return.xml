@@ -35,7 +35,7 @@
 			if(p.cnc_rsn_cd = 'C99', p.cnc_rsn, c.intg_cd_val_nm) as return_reason,
 			s.ord_amt as order_amount,
 			p.fnl_sell_amt as final_sell_amount,
-			d.rtn_chg as return_delivery_charge_amount
+			if(p.ord_prdt_stus in ('R05', 'R06'), p.rtn_chg, null) as return_delivery_charge_amount
 		  from ord_prnr_info s
 		 inner join ord_info o
 		    on o.ord_no = s.ord_no
@@ -48,7 +48,7 @@
 		    on o.ord_usr_id = m.usr_id
 		  left join com_intg_cd_dtl c
 			on p.cnc_rsn_cd = c.intg_cd_val
-		   and c.intg_cd_id = '000084'
+		   and c.intg_cd_id = '000074'
 		 where s.prnr_cd = #{partnerCode}
 		<choose>
 			<when test="keywordValue != null and keywordValue != ''">

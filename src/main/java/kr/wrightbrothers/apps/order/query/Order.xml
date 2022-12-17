@@ -374,6 +374,11 @@
 		                          rcpnt_adrs,
 		                          rcpnt_adrs_sub,
 		                          rcpnt_adrs_zip_cd,
+								  rtrn_rcpnt_nm,
+								  rtrn_rcpnt_usr_phn,
+								  rtrn_rcpnt_adrs,
+								  rtrn_rcpnt_adrs_sub,
+								  rtrn_rcpnt_adrs_zip_cd,
 		                          cre_usr_id,
 		                          upd_usr_id)
 		select
@@ -386,6 +391,11 @@
 		    o.rcpnt_adrs,
 		    o.rcpnt_adrs_sub,
 		    o.rcpnt_adrs_zip_cd,
+			o.rcpnt_nm,
+			o.rcpnt_usr_phn,
+			o.rcpnt_adrs,
+			o.rcpnt_adrs_sub,
+			o.rcpnt_adrs_zip_cd,
 		    #{userId},
 		    #{userId}
 		  from ord_prdt_info p

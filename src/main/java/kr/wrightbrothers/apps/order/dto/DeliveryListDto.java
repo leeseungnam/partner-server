@@ -1,7 +1,7 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import kr.wrightbrothers.apps.common.AbstractPageDto;
-import kr.wrightbrothers.apps.common.constants.DeliveryConst;
+import kr.wrightbrothers.apps.common.constants.OrderConst;
 import kr.wrightbrothers.apps.common.constants.PaymentConst;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -97,7 +97,7 @@ public class DeliveryListDto {
 
         // 주문 상태 ENUM 처리
         public void setDeliveryStatusName(String deliveryStatusName) {
-            this.deliveryStatusName = DeliveryConst.Status.of(deliveryStatusName).getName();
+            this.deliveryStatusName = OrderConst.Status.of(deliveryStatusName).getName();
         }
         // 결제 수단 ENUM 처리
         public void setPaymentMethodName(String paymentMethodCode) {
