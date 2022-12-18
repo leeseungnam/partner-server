@@ -101,7 +101,7 @@ public class ReturnControllerTest extends BaseControllerTests {
                                         fieldWithPath("data[].returnReason").type(JsonFieldType.STRING).optional().description("반품 사유"),
                                         fieldWithPath("data[].orderAmount").type(JsonFieldType.NUMBER).description("주문 금액"),
                                         fieldWithPath("data[].finalSellAmount").type(JsonFieldType.NUMBER).description("반품 금액"),
-                                        fieldWithPath("data[].returnDeliveryChargeAmount").type(JsonFieldType.NUMBER).description("반품 배송 금액"),
+                                        fieldWithPath("data[].returnDeliveryChargeAmount").type(JsonFieldType.NUMBER).optional().description("반품 배송 금액"),
                                         fieldWithPath("totalItems").type(JsonFieldType.NUMBER).description("전체 조회 건수"),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
                                 )

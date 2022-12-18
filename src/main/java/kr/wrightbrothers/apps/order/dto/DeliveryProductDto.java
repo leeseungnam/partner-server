@@ -58,6 +58,18 @@ public class DeliveryProductDto {
     /** 배송 상태 명 */
     private String deliveryStatusName;
 
+    /** 배송비 타입(유, 무료, 조건) */
+    private String deliveryChargeType;
+
+    /** 배송비 타입 명 */
+    private String deliveryChargeName;
+
+    /** 배송비 결제(선, 착불) 타입 */
+    private String deliveryPaymentType;
+
+    /** 배송비 결제 타입 명 */
+    private String deliveryPaymentName;
+
     public void setDeliveryStatusName(String deliveryStatusCode) {
         this.deliveryStatusName = DeliveryConst.Status.of(deliveryStatusCode).getName();
     }
@@ -65,4 +77,9 @@ public class DeliveryProductDto {
     public void setDeliveryName(String deliveryName) {
         this.deliveryName = DeliveryConst.Type.of(deliveryName).getName();
     }
+
+    public void setDeliveryChargeName(String deliveryChargeName) {
+        this.deliveryChargeName = DeliveryConst.Charge.of(deliveryChargeName).getName();
+    }
+
 }

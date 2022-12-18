@@ -95,6 +95,9 @@ public class DeliveryListDto {
         /** 반품여부 */
         private String returnFlag;
 
+        /** 배송비 결제방법 */
+       private String deliveryPaymentType;
+
         // 주문 상태 ENUM 처리
         public void setDeliveryStatusName(String deliveryStatusName) {
             this.deliveryStatusName = OrderConst.Status.of(deliveryStatusName).getName();

@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.transaction.annotation.Transactional;
+import springfox.documentation.spring.web.json.Json;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -113,6 +114,7 @@ class DeliveryControllerTest extends BaseControllerTests {
                                         fieldWithPath("data[].recipientAddress").type(JsonFieldType.STRING).description("주소"),
                                         fieldWithPath("data[].recipientAddressDetail").type(JsonFieldType.STRING).description("상세주소"),
                                         fieldWithPath("data[].returnFlag").type(JsonFieldType.STRING).description("반품여부"),
+                                        fieldWithPath("data[].deliveryPaymentType").type(JsonFieldType.STRING).description("배송비 결제방법"),
                                         fieldWithPath("totalItems").type(JsonFieldType.NUMBER).description("전체 조회 건수"),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
                                 )
@@ -196,6 +198,10 @@ class DeliveryControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.deliveryList[].deliveryEndDay").type(JsonFieldType.STRING).optional().description("배송 완료일"),
                                         fieldWithPath("data.deliveryList[].deliveryStatusCode").type(JsonFieldType.STRING).optional().description("택배 진행 상태 코드"),
                                         fieldWithPath("data.deliveryList[].deliveryStatusName").type(JsonFieldType.STRING).optional().description("택배 진행 상태 이름"),
+                                        fieldWithPath("data.deliveryList[].deliveryChargeType").type(JsonFieldType.STRING).optional().description("배송비 구분 타입"),
+                                        fieldWithPath("data.deliveryList[].deliveryChargeName").type(JsonFieldType.STRING).optional().description("배송비 구분 이름"),
+                                        fieldWithPath("data.deliveryList[].deliveryPaymentType").type(JsonFieldType.STRING).optional().description("배송비 결제 타입"),
+                                        fieldWithPath("data.deliveryList[].deliveryPaymentName").type(JsonFieldType.STRING).optional().description("배송비 결제 이름"),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
                                 )
                         ))
