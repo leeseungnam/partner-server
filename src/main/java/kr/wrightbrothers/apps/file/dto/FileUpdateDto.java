@@ -10,6 +10,8 @@ import org.springframework.util.ObjectUtils;
 @Jacksonized
 @SuperBuilder
 public class FileUpdateDto extends FileUploadDto {
+
+    /** 사용자 아이디 */
     @JsonIgnore
     private String userId;
 

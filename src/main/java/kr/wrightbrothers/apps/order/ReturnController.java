@@ -1,10 +1,8 @@
 package kr.wrightbrothers.apps.order;
 
-import io.swagger.annotations.*;
 import kr.wrightbrothers.apps.common.annotation.UserPrincipalScope;
-import kr.wrightbrothers.apps.common.type.OrderProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.OrderConst;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
-import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.*;
 import kr.wrightbrothers.apps.order.service.ReturnService;
 import kr.wrightbrothers.apps.sign.dto.UserPrincipal;
@@ -12,7 +10,6 @@ import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.WBController;
 import kr.wrightbrothers.framework.support.WBKey;
 import kr.wrightbrothers.framework.support.WBModel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,7 +23,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Api(tags = {"반품"})
 @RestController
 @RequestMapping("/v1")
 @RequiredArgsConstructor
@@ -35,22 +31,18 @@ public class ReturnController extends WBController {
     private final MessageSourceAccessor messageSourceAccessor;
     private final ReturnService returnService;
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
-    })
-    @ApiOperation(value = "반품내역 목록 조회", notes = "반품 정보의 목록 조회")
     @GetMapping(value = {
             "/returns"
     })
-    public WBModel findReturnList(@ApiParam(value = "반품상태") @RequestParam String[] returnStatus,
-                                  @ApiParam(value = "조회기간 구분") @RequestParam String rangeType,
-                                  @ApiParam(value = "조회기간 시작일") @RequestParam String startDay,
-                                  @ApiParam(value = "조회기간 종료일") @RequestParam String endDay,
-                                  @ApiParam(value = "키워드 구분") @RequestParam String keywordType,
-                                  @ApiParam(value = "키워드 값") @RequestParam(required = false) String keywordValue,
-                                  @ApiParam(value = "페이지 행 수") @RequestParam int count,
-                                  @ApiParam(value = "현재 페이지") @RequestParam int page,
-                                  @ApiIgnore @AuthenticationPrincipal UserPrincipal user
+    public WBModel findReturnList(@RequestParam String[] returnStatus,
+                                  @RequestParam String rangeType,
+                                  @RequestParam String startDay,
+                                  @RequestParam String endDay,
+                                  @RequestParam String keywordType,
+                                  @RequestParam(required = false) String keywordValue,
+                                  @RequestParam int count,
+                                  @RequestParam int page,
+                                  @AuthenticationPrincipal UserPrincipal user
     ) {
         WBModel response = new WBModel();
         ReturnListDto.Param paramDto = ReturnListDto.Param.builder()
@@ -75,16 +67,16 @@ public class ReturnController extends WBController {
     }
 
     @GetMapping("/returns/excel")
-    public void returnExcelDownload(@ApiParam(value = "반품상태") @RequestParam String[] returnStatus,
-                                    @ApiParam(value = "조회기간 구분") @RequestParam String rangeType,
-                                    @ApiParam(value = "조회기간 시작일") @RequestParam String startDay,
-                                    @ApiParam(value = "조회기간 종료일") @RequestParam String endDay,
-                                    @ApiParam(value = "키워드 구분") @RequestParam String keywordType,
-                                    @ApiParam(value = "키워드 값") @RequestParam(required = false) String keywordValue,
-                                    @ApiParam(value = "페이지 행 수") @RequestParam int count,
-                                    @ApiParam(value = "현재 페이지") @RequestParam int page,
-                                    @ApiIgnore @AuthenticationPrincipal UserPrincipal user,
-                                    @ApiIgnore HttpServletResponse response
+    public void returnExcelDownload(@RequestParam String[] returnStatus,
+                                    @RequestParam String rangeType,
+                                    @RequestParam String startDay,
+                                    @RequestParam String endDay,
+                                    @RequestParam String keywordType,
+                                    @RequestParam(required = false) String keywordValue,
+                                    @RequestParam int count,
+                                    @RequestParam int page,
+                                    @AuthenticationPrincipal UserPrincipal user,
+                                    HttpServletResponse response
     ) throws IOException {
         ReturnListDto.Param paramDto = ReturnListDto.Param.builder()
                 .partnerCode(user.getUserAuth().getPartnerCode())
@@ -118,13 +110,9 @@ public class ReturnController extends WBController {
         );
     }
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
-    })
-    @ApiOperation(value = "반품내역 조회", notes = "반품내역 상세 정보 조회")
     @GetMapping("/returns/{orderNo}")
-    public WBModel findReturn(@ApiParam(value = "주문 번호") @PathVariable String orderNo,
-                              @ApiIgnore @AuthenticationPrincipal UserPrincipal user) {
+    public WBModel findReturn(@PathVariable String orderNo,
+                              @AuthenticationPrincipal UserPrincipal user) {
         return defaultResponse(returnService.findReturn(
                 ReturnFindDto.Param.builder()
                         .partnerCode(user.getUserAuth().getPartnerCode())
@@ -134,12 +122,8 @@ public class ReturnController extends WBController {
     }
 
     @UserPrincipalScope
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
-    })
-    @ApiOperation(value = "반품메모 수정", notes = "반품 메모의 내용을 수정")
     @PatchMapping("/returns")
-    public WBModel updateReturnMemo(@ApiParam(value = "반품 메모 수정 데이터") @Valid @RequestBody ReturnMemoUpdateDto paramDto) {
+    public WBModel updateReturnMemo(@Valid @RequestBody ReturnMemoUpdateDto paramDto) {
         // 반품관리 정보 수정
         returnService.updateReturnMemo(paramDto);
 
@@ -147,10 +131,6 @@ public class ReturnController extends WBController {
     }
 
     @UserPrincipalScope
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
-    })
-    @ApiOperation(value = "반품승인 처리", notes = "고객 반품 요청에 대한 승인 처리")
     @PutMapping("/returns/{orderNo}/approval-return")
     public WBModel updateApprovalReturn(@Valid @RequestBody ApprovalReturnDto paramDto) {
         // 반품 요청에 대한 승인
@@ -160,39 +140,27 @@ public class ReturnController extends WBController {
     }
 
     @UserPrincipalScope
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
-    })
-    @ApiOperation(value = "반품취소 처리", notes = "고객 반품 요청에 대한 취소 처리")
     @PutMapping("/returns/{orderNo}/cancel-return")
     public WBModel updateCancelReturn(@Valid @RequestBody CancelReturnDto paramDto) {
         // 반품 취소에 대한 처리
-        returnService.updateRequestReturn(paramDto.toRequestReturnUpdateDto(OrderProductStatusCode.WITHDRAWAL_RETURN.getCode()));
+        returnService.updateRequestReturn(paramDto.toRequestReturnUpdateDto(OrderConst.ProductStatus.WITHDRAWAL_RETURN.getCode()));
 
         return noneMgsResponse(messageSourceAccessor);
     }
 
     @UserPrincipalScope
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
-    })
-    @ApiOperation(value = "반품완료 처리", notes = "고객 반품 요청에 대한 완료 처리")
     @PutMapping("/returns/{orderNo}/complete-return")
     public WBModel updateCompleteReturn(@Valid @RequestBody RequestReturnDto paramDto) {
         // 유효성 체크
         paramDto.valid();
 
         // 반품 완료에 대한 처리
-        returnService.updateRequestReturn(paramDto.toRequestReturnUpdateDto(OrderProductStatusCode.REQUEST_COMPLETE_RETURN.getCode()));
+        returnService.updateRequestReturn(paramDto.toRequestReturnUpdateDto(OrderConst.ProductStatus.REQUEST_COMPLETE_RETURN.getCode()));
 
         return noneMgsResponse(messageSourceAccessor);
     }
 
     @UserPrincipalScope
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = PartnerKey.Jwt.Header.AUTHORIZATION, value = "토큰", required = true, dataType = "string", dataTypeClass = String.class, paramType = "header")
-    })
-    @ApiOperation(value = "반품불가 처리", notes = "고객 반품 요청에 대한 불가 처리")
     @PutMapping("/returns/{orderNo}/non-return")
     public WBModel updateNonReturn(@Valid @RequestBody NonReturnDto paramDto) {
         // 반품 불가 처리

@@ -2,7 +2,7 @@ package kr.wrightbrothers.apps.common.util;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.wrightbrothers.apps.common.type.ProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.ProductConst;
 import kr.wrightbrothers.apps.product.dto.*;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
@@ -113,10 +113,10 @@ public class ProductUtil {
     public void updateProductStatusStock(ProductUpdateDto paramDto) {
         String currentStatus = dao.selectOne(namespace + "findProductStatus", paramDto.getProductCode(), PartnerKey.WBDataBase.Alias.Admin);
         // 판매완료 상태시 재고 0 이상일 경우 판매중 상태변경
-        if (ProductStatusCode.SOLD_OUT.getCode().equals(currentStatus) && paramDto.getSellInfo().getProductStockQty() > 0)
-            paramDto.getSellInfo().setProductStatusCode(ProductStatusCode.SALE.getCode());
-        else if (!ProductStatusCode.SOLD_OUT.getCode().equals(currentStatus)
-                && ProductStatusCode.SOLD_OUT.getCode().equals(paramDto.getSellInfo().getProductStatusCode())){
+        if (ProductConst.Status.SOLD_OUT.getCode().equals(currentStatus) && paramDto.getSellInfo().getProductStockQty() > 0)
+            paramDto.getSellInfo().setProductStatusCode(ProductConst.Status.SALE.getCode());
+        else if (!ProductConst.Status.SOLD_OUT.getCode().equals(currentStatus)
+                && ProductConst.Status.SOLD_OUT.getCode().equals(paramDto.getSellInfo().getProductStatusCode())){
             // 상품 판매완료 상태는 기존 재구 무시하고 상품 재고 0개 처리(기획 장석민 협의 완료)
             paramDto.getSellInfo().setProductStockQty(0);
             if ("Y".equals(paramDto.getSellInfo().getProductOptionFlag()))
@@ -134,14 +134,14 @@ public class ProductUtil {
         // 상태 변경 아닐 시 종료
         if (currentStatusCode.equals(changeStatusCode)) return;
 
-        switch (ProductStatusCode.of(changeStatusCode)) {
+        switch (ProductConst.Status.of(changeStatusCode)) {
             case SALE:
                 if (
                         // 검수 요청 대기
-                        currentStatusCode.equals(ProductStatusCode.PRODUCT_INSPECTION.getCode())
+                        currentStatusCode.equals(ProductConst.Status.PRODUCT_INSPECTION.getCode())
                         ||
                         // 불가
-                        currentStatusCode.equals(ProductStatusCode.REJECT_INSPECTION.getCode())
+                        currentStatusCode.equals(ProductConst.Status.REJECT_INSPECTION.getCode())
                 )
                     dao.update(namespace + "updateProductSellDate",
                             SellInfoDto.ReqBody.builder()

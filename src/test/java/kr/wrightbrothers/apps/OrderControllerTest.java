@@ -2,9 +2,8 @@ package kr.wrightbrothers.apps;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.BaseControllerTests;
-import kr.wrightbrothers.apps.common.type.OrderStatusCode;
-import kr.wrightbrothers.apps.common.type.PaymentMethodCode;
-import kr.wrightbrothers.apps.common.type.PaymentStatusCode;
+import kr.wrightbrothers.apps.common.constants.OrderConst;
+import kr.wrightbrothers.apps.common.constants.PaymentConst;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.DeliveryPreparingDto;
 import kr.wrightbrothers.apps.order.dto.OrderFindDto;
@@ -50,30 +49,30 @@ public class OrderControllerTest extends BaseControllerTests {
         OrderListDto.Param paramDto = OrderListDto.Param.builder()
                 .orderStatus(
                         new String[]{
-                                OrderStatusCode.COMPLETE_ORDER.getCode(),
-                                OrderStatusCode.READY_PRODUCT.getCode(),
-                                OrderStatusCode.CONFIRM_PURCHASE.getCode(),
-                                OrderStatusCode.CANCEL_ORDER.getCode(),
-                                OrderStatusCode.REQUEST_CANCEL.getCode(),
-                                OrderStatusCode.COMPLETE_CANCEL.getCode(),
-                                OrderStatusCode.START_DELIVERY.getCode(),
-                                OrderStatusCode.PARTIAL_DELIVERY.getCode(),
-                                OrderStatusCode.FINISH_DELIVERY.getCode()
+                                OrderConst.Status.COMPLETE_ORDER.getCode(),
+                                OrderConst.Status.READY_PRODUCT.getCode(),
+                                OrderConst.Status.CONFIRM_PURCHASE.getCode(),
+                                OrderConst.Status.CANCEL_ORDER.getCode(),
+                                OrderConst.Status.REQUEST_CANCEL.getCode(),
+                                OrderConst.Status.COMPLETE_CANCEL.getCode(),
+                                OrderConst.Status.START_DELIVERY.getCode(),
+                                OrderConst.Status.PARTIAL_DELIVERY.getCode(),
+                                OrderConst.Status.FINISH_DELIVERY.getCode()
                         }
                 )
                 .paymentStatus(
                         new String[]{
-                                PaymentStatusCode.WAIT_DEPOSIT.getCode(),
-                                PaymentStatusCode.COMPLETE_PAYMENT.getCode(),
-                                PaymentStatusCode.CANCEL_PAYMENT.getCode()
+                                PaymentConst.Status.WAIT_DEPOSIT.getCode(),
+                                PaymentConst.Status.COMPLETE_PAYMENT.getCode(),
+                                PaymentConst.Status.CANCEL_PAYMENT.getCode()
                         }
                 )
                 .paymentMethod(
                         new String[]{
-                                PaymentMethodCode.CARD.getCode(),
-                                PaymentMethodCode.BANK.getCode(),
-                                PaymentMethodCode.NON_BANK.getCode(),
-                                PaymentMethodCode.PAYCO.getCode()
+                                PaymentConst.Method.CARD.getCode(),
+                                PaymentConst.Method.BANK.getCode(),
+                                PaymentConst.Method.NON_BANK.getCode(),
+                                PaymentConst.Method.PAYCO.getCode()
                         }
                 )
                 .rangeType("PAYMENT")
@@ -146,31 +145,31 @@ public class OrderControllerTest extends BaseControllerTests {
         OrderListDto.Param paramDto = OrderListDto.Param.builder()
                 .orderStatus(
                         new String[]{
-                                OrderStatusCode.COMPLETE_ORDER.getCode(),
-                                OrderStatusCode.READY_PRODUCT.getCode(),
-                                OrderStatusCode.CONFIRM_PURCHASE.getCode(),
-                                OrderStatusCode.CANCEL_ORDER.getCode(),
-                                OrderStatusCode.REQUEST_CANCEL.getCode(),
-                                OrderStatusCode.COMPLETE_CANCEL.getCode(),
-                                OrderStatusCode.START_DELIVERY.getCode(),
-                                OrderStatusCode.PARTIAL_DELIVERY.getCode(),
-                                OrderStatusCode.FINISH_DELIVERY.getCode(),
+                                OrderConst.Status.COMPLETE_ORDER.getCode(),
+                                OrderConst.Status.READY_PRODUCT.getCode(),
+                                OrderConst.Status.CONFIRM_PURCHASE.getCode(),
+                                OrderConst.Status.CANCEL_ORDER.getCode(),
+                                OrderConst.Status.REQUEST_CANCEL.getCode(),
+                                OrderConst.Status.COMPLETE_CANCEL.getCode(),
+                                OrderConst.Status.START_DELIVERY.getCode(),
+                                OrderConst.Status.PARTIAL_DELIVERY.getCode(),
+                                OrderConst.Status.FINISH_DELIVERY.getCode(),
                                 "O10"
                         }
                 )
                 .paymentStatus(
                         new String[]{
-                                PaymentStatusCode.WAIT_DEPOSIT.getCode(),
-                                PaymentStatusCode.COMPLETE_PAYMENT.getCode(),
-                                PaymentStatusCode.CANCEL_PAYMENT.getCode()
+                                PaymentConst.Status.WAIT_DEPOSIT.getCode(),
+                                PaymentConst.Status.COMPLETE_PAYMENT.getCode(),
+                                PaymentConst.Status.CANCEL_PAYMENT.getCode()
                         }
                 )
                 .paymentMethod(
                         new String[]{
-                                PaymentMethodCode.CARD.getCode(),
-                                PaymentMethodCode.BANK.getCode(),
-                                PaymentMethodCode.NON_BANK.getCode(),
-                                PaymentMethodCode.PAYCO.getCode()
+                                PaymentConst.Method.CARD.getCode(),
+                                PaymentConst.Method.BANK.getCode(),
+                                PaymentConst.Method.NON_BANK.getCode(),
+                                PaymentConst.Method.PAYCO.getCode()
                         }
                 )
                 .rangeType("PAYMENT")
@@ -289,10 +288,12 @@ public class OrderControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.payment").type(JsonFieldType.OBJECT).description("결제 정보"),
                                         fieldWithPath("data.payment.orderAmount").type(JsonFieldType.NUMBER).description("주문 금액"),
                                         fieldWithPath("data.payment.deliveryChargeAmount").type(JsonFieldType.NUMBER).description("배송 금액"),
+                                        fieldWithPath("data.payment.sspPoint").type(JsonFieldType.NUMBER).description("배송 금액"),
+                                        fieldWithPath("data.payment.saleAmount").type(JsonFieldType.NUMBER).description("배송 금액"),
                                         fieldWithPath("data.payment.paymentAmount").type(JsonFieldType.NUMBER).description("결제 금액"),
                                         fieldWithPath("data.payment.paymentDate").type(JsonFieldType.STRING).optional().description("결제 일시"),
-                                        fieldWithPath("data.payment.approvalNo").type(JsonFieldType.STRING).optional().description("* PG 승인번호"),
-                                        fieldWithPath("data.payment.rentalAmount").type(JsonFieldType.NUMBER).optional().description("* 월 렌탈료"),
+                                        fieldWithPath("data.payment.approvalNo").type(JsonFieldType.STRING).optional().description("PG 승인번호"),
+                                        fieldWithPath("data.payment.rentalAmount").type(JsonFieldType.NUMBER).optional().description("월 렌탈료"),
                                         fieldWithPath("data.payment.paymentMethodCode").type(JsonFieldType.STRING).description("결제 수단 코드"),
                                         fieldWithPath("data.payment.paymentMethodName").type(JsonFieldType.STRING).description("결제 수단 이름"),
                                         fieldWithPath("data.payment.paymentStatusCode").type(JsonFieldType.STRING).description("결제 상태 코드"),
@@ -307,14 +308,16 @@ public class OrderControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.productList[].optionName").type(JsonFieldType.STRING).description("옵션 명"),
                                         fieldWithPath("data.productList[].optionSurcharge").type(JsonFieldType.NUMBER).description("옵션 변동 금액"),
                                         fieldWithPath("data.productList[].productQty").type(JsonFieldType.NUMBER).description("구매 수량"),
-                                        fieldWithPath("data.productList[].deliveryType").type(JsonFieldType.STRING).description("* 배송 구분 타입"),
-                                        fieldWithPath("data.productList[].deliveryName").type(JsonFieldType.STRING).description("* 배송 구분 명"),
-                                        fieldWithPath("data.productList[].deliveryChargeAmount").type(JsonFieldType.NUMBER).description("* 배송료"),
-                                        fieldWithPath("data.productList[].cancelDay").type(JsonFieldType.STRING).description("* 취소일자").optional(),
-                                        fieldWithPath("data.productList[].cancelReason").type(JsonFieldType.STRING).description("* 취소사유").optional(),
-                                        fieldWithPath("data.productList[].returnDeliveryCompany").type(JsonFieldType.STRING).description("** 반품 택배 회사").optional(),
-                                        fieldWithPath("data.productList[].returnDeliveryEndDay").type(JsonFieldType.STRING).description("** 반품완료일자").optional(),
-                                        fieldWithPath("data.productList[].returnInvoiceNo").type(JsonFieldType.STRING).description("** 반품배송번호").optional(),
+                                        fieldWithPath("data.productList[].deliveryType").type(JsonFieldType.STRING).description("배송 구분 타입"),
+                                        fieldWithPath("data.productList[].deliveryName").type(JsonFieldType.STRING).description("배송 구분 명"),
+                                        fieldWithPath("data.productList[].deliveryChargeAmount").type(JsonFieldType.NUMBER).description("배송료"),
+                                        fieldWithPath("data.productList[].cancelDay").type(JsonFieldType.STRING).description("취소일자").optional(),
+                                        fieldWithPath("data.productList[].cancelReason").type(JsonFieldType.STRING).description("취소사유").optional(),
+                                        fieldWithPath("data.productList[].returnDeliveryCompany").type(JsonFieldType.STRING).description("반품 택배 회사").optional(),
+                                        fieldWithPath("data.productList[].returnDeliveryEndDay").type(JsonFieldType.STRING).description("반품완료일자").optional(),
+                                        fieldWithPath("data.productList[].returnInvoiceNo").type(JsonFieldType.STRING).description("반품배송번호").optional(),
+                                        fieldWithPath("data.productList[].sspPoint").type(JsonFieldType.NUMBER).description("포인트").optional(),
+                                        fieldWithPath("data.productList[].saleAmount").type(JsonFieldType.NUMBER).description("판매대금").optional(),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
                                 )
                 ))
@@ -409,9 +412,9 @@ public class OrderControllerTest extends BaseControllerTests {
                         .build()
         );
 
-        assertEquals(nowDto.getOrder().getOrderStatusCode(), OrderStatusCode.READY_PRODUCT.getCode());
+        assertEquals(nowDto.getOrder().getOrderStatusCode(), OrderConst.Status.READY_PRODUCT.getCode());
         nowDto.getProductList().forEach(productDto -> {
-            assertEquals(productDto.getOrderProductStatusCode(), OrderStatusCode.READY_PRODUCT.getCode());
+            assertEquals(productDto.getOrderProductStatusCode(), OrderConst.Status.READY_PRODUCT.getCode());
         });
     }
 

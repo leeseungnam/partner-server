@@ -1,7 +1,7 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import kr.wrightbrothers.apps.common.type.OrderProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.OrderConst;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,21 +15,26 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ApprovalReturnDto {
+    /** 주문번호 */
     @NotBlank(message = "주문 번호")
-    private String orderNo;                 // 주문 번호
+    private String orderNo;
 
+    /** 주문 상품 SEQ */
     @NotNull(message = "주문 상품 SEQ")
-    private Integer[] orderProductSeqArray; // 주문 상품 SEQ
+    private Integer[] orderProductSeqArray;
 
-    @NotBlank(message = "택배사")
-    private String deliveryCompanyCode;     // 택배 회사 코드
+    /** 택배 회사 코드 */
+    private String deliveryCompanyCode;
 
-    @NotBlank(message = "송장번호")
-    private String invoiceNo;               // 운송장 번호
+    /** 운송장 번호 */
+    private String invoiceNo;
 
-    private String partnerCode;             // 파트너 코드
+    /** 파트너 코드 */
+    private String partnerCode;
+
+    /** 사용자 아이디 */
     @JsonIgnore
-    private String userId;                  // 사용자 아이디
+    private String userId;
 
     public void setAopPartnerCode(String partnerCode) {
         this.partnerCode = partnerCode;
@@ -42,7 +47,7 @@ public class ApprovalReturnDto {
         return RequestReturnUpdateDto.builder()
                 .orderNo(this.orderNo)
                 .orderProductSeqArray(this.orderProductSeqArray)
-                .returnProcessCode(OrderProductStatusCode.START_RETURN.getCode())
+                .returnProcessCode(OrderConst.ProductStatus.START_RETURN.getCode())
                 .requestCode(this.deliveryCompanyCode)
                 .requestValue(this.invoiceNo)
                 .partnerCode(this.partnerCode)

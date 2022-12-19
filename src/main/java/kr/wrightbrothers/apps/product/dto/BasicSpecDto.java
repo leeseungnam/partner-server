@@ -1,72 +1,70 @@
 package kr.wrightbrothers.apps.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class BasicSpecDto {
 
-    @Getter
-    @Setter
+    @Getter @Setter
     @Jacksonized
     @SuperBuilder
     @AllArgsConstructor
     @NoArgsConstructor
     @EqualsAndHashCode
     public static class BasicSpec {
-        @ApiModelProperty(value = "완차구분")
+        /** 완차구분 */
         private String salesCategoryCode;
 
-        @ApiModelProperty(value = "구동계")
+        /** 구동계 */
         private String drivetrainTypeCode;
 
-        @ApiModelProperty(value = "프레임 소재")
+        /** 프레임 소재 */
         private String frameMaterialCode;
 
-        @ApiModelProperty(value = "프레임 사이즈")
+        /** 프레임 사이즈 */
         private String frameSizeCode;
 
-        @ApiModelProperty(value = "브레이크 타입")
+        /** 브레이크 타입 */
         private String brakeTypeCode;
 
-        @ApiModelProperty(value = "용도 테마")
+        /** 용도 테마 */
         private String purposeThemeCode;
 
-        @ApiModelProperty(value = "휠 사이즈")
+        /** 휠 사이즈 */
         private String wheelSizeCode;
 
-        @ApiModelProperty(value = "서스팬션")
+        /** 서스펜션 */
         private String suspensionTypeCode;
 
-        @ApiModelProperty(value = "호환키(최소)")
+        /** 호환키(최소) */
         private String minHeightPerson;
 
-        @ApiModelProperty(value = "호환키(최대)")
+        /** 호환키(최대) */
         private String maxHeightPerson;
 
-        @ApiModelProperty(value = "무게")
+        /** 무게 */
         private String bikeWeight;
 
-        @ApiModelProperty(value = "탑승 연령대")
+        /** 탑승 연령대 */
         private List<String> ageList;
     }
 
     @Data
     @Jacksonized
     @SuperBuilder
-    @ApiModel(value = "상품 기본 스펙")
     @EqualsAndHashCode(callSuper = false)
     public static class ReqBody extends BasicSpec {
+        /** 상품 코드 */
         @JsonIgnore
-        private String productCode;     // 파트너 코드
+        private String productCode;
+
+        /** 사용자 아이디 */
         @JsonIgnore
-        private String userId;          // 사용자 아이디
+        private String userId;
     }
 
     @Getter

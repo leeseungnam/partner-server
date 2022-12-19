@@ -1,6 +1,6 @@
 package kr.wrightbrothers.apps.aop;
 
-import kr.wrightbrothers.apps.common.type.DocumentSNS;
+import kr.wrightbrothers.apps.common.constants.DocumentSNS;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.queue.HistoryQueue;
 import kr.wrightbrothers.framework.util.JsonUtil;
@@ -32,7 +32,7 @@ public class OrderAfterAop {
 
         if (!object.has("orderNo")) return;
 
-        log.debug("Order History Send SNS. Order No::{},", object.getString("orderNo"));
+        log.info("Order History Send SNS. Order No::{},", object.getString("orderNo"));
         historyQueue.sendToAdmin(
                 DocumentSNS.UPDATE_HISTORY,
                 HistoryMessages.builder()

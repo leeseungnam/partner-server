@@ -1,8 +1,6 @@
 package kr.wrightbrothers.apps.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
@@ -12,86 +10,90 @@ import javax.validation.constraints.Size;
 
 public class ProductDto {
 
-    @Getter
-    @Setter
+    @Getter @Setter
     @Jacksonized
     @SuperBuilder
     @AllArgsConstructor
     @NoArgsConstructor
     @EqualsAndHashCode
     public static class Product {
-        @ApiModelProperty(value = "대 카테고리 코드", required = true)
+        /** 대 카테고리 코드 */
         @NotBlank(message = "대 카테고리")
-        private String categoryOneCode;     // 대 카테고리 코드
+        private String categoryOneCode;
 
-        @ApiModelProperty(value = "대 카테고리 이름", required = true)
+        /** 대 카테고리 이름 */
         @NotBlank(message = "대 카테고리")
-        private String categoryOneName;     // 대 카테고리 이름
+        private String categoryOneName;
 
-        @ApiModelProperty(value = "중 카테고리 코드", required = true)
+        /** 중 카테고리 코드 */
         @NotBlank(message = "중 카테고리")
-        private String categoryTwoCode;     // 중 카테고리 코드
+        private String categoryTwoCode;
 
-        @ApiModelProperty(value = "중 카테고리 이름", required = true)
+        /** 중 카테고리 이름 */
         @NotBlank(message = "중 카테고리")
-        private String categoryTwoName;     // 중 카테고리 이름
+        private String categoryTwoName;
 
-        @ApiModelProperty(value = "소 카테고리 코드", required = true)
+        /** 소 카테고리 코드 */
         @NotBlank(message = "소 카테고리")
-        private String categoryThrCode;     // 소 카테고리 코드
+        private String categoryThrCode;
 
-        @ApiModelProperty(value = "소 카테고리 이름", required = true)
+        /** 소 카테고리 이름 */
         @NotBlank(message = "소 카테고리")
-        private String categoryThrName;     // 소 카테고리 이름
+        private String categoryThrName;
 
-        @ApiModelProperty(value = "상품명", required = true)
+        /** 싱픔먕 */
         @NotBlank(message = "상품명")
         @Size(min = 2, max = 50, message = "상품명")
-        private String productName;         // 상품 이름
+        private String productName;
 
-        @ApiModelProperty(value = "브랜드 번호", required = true)
-        private String brandNo;             // 브랜드 번호
+        /** 브랜드 번호 */
+        private String brandNo;
 
-        @ApiModelProperty(value = "브랜드 이름", required = true)
+        /** 브랜드 이름 */
         @NotBlank(message = "브랜드")
-        private String brandName;           // 브랜드 이름
+        private String brandName;
 
-        @ApiModelProperty(value = "모델 코드")
-        private String modelCode;           // 모델 코드
+        /** 모델 코드 */
+        private String modelCode;
 
-        @ApiModelProperty(value = "모델 이름")
-        private String modelName;           // 모델 이름
+        /** 모델 이름 */
+        private String modelName;
 
-        @ApiModelProperty(value = "모델 연식")
-        private String modelYear;           // 모델 연식
+        /** 모델 연식 */
+        private String modelYear;
 
-        @ApiModelProperty(value = "유튜브 주소")
+        /** 유튜브 주소 */
         @Size(min = 0, max = 200, message = "Youtube Url")
-        private String youtubeUrl;          // 유튜브 주소
+        private String youtubeUrl;
 
-        @ApiModelProperty(value = "상품 바코드")
+        /** 상품 바코드 */
         @Size(min = 0, max = 200, message = "상품 바코드")
-        private String productBarcode;      // 상품 바코드
+        private String productBarcode;
 
-        @ApiModelProperty(value = "상품 이미지 파일 번호", required = true)
+        /** 상품 이미지 파일 번호 */
         @NotBlank(message = "상품 이미지")
-        private String productFileNo;       // 상품 파일 번호
+        private String productFileNo;
     }
 
     @Data
     @Jacksonized
     @SuperBuilder
-    @ApiModel(value = "상품 기본 정보")
     @NoArgsConstructor
     @EqualsAndHashCode(callSuper = false)
     public static class ReqBody extends Product {
-        private String partnerCode;         // 파트너 코드
-        private String productCode;         // 상품 코드
+        /** 파트너 코드 */
+        private String partnerCode;
 
+        /** 상품 코드 */
+        private String productCode;
+
+        /** 상품 유형 */
         @JsonIgnore
-        private String productType;         // 상품 유형
+        private String productType;
+
+        /** 작성자 아이디 */
         @JsonIgnore
-        private String userId;              // 작성자 아이디
+        private String userId;
     }
 
     @Getter
@@ -100,7 +102,10 @@ public class ProductDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ResBody extends Product {
-        private String productType;         // 상품 유형
-        private String productCode;         // 상품 코드
+        /** 상품 유형 */
+        private String productType;
+
+        /** 상품 코드 */
+        private String productCode;
     }
 }

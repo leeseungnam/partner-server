@@ -16,6 +16,20 @@
          where order_no = #{orderNo}
     </select>
 
+    <select id="findPartnerName" parameterType="java.lang.String" resultType="java.lang.String">
+        select
+            partner_name
+          from partner
+         where partner_code = #{partnerCode}
+    </select>
+
+    <select id="findNotificationList" parameterType="java.lang.String" resultType="java.lang.String">
+        select
+            notification_phone
+          from partner_notification
+         where partner_code = #{partnerCode}
+    </select>
+
     <select id="findAddressList" parameterType="java.lang.String" resultMap="findAddressListMap">
         select
             p.partner_name,

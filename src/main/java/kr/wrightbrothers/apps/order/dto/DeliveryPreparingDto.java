@@ -1,7 +1,7 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import kr.wrightbrothers.apps.common.type.OrderStatusCode;
+import kr.wrightbrothers.apps.common.constants.OrderConst;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,21 +11,28 @@ import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Getter
-@Builder
+@Getter @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class DeliveryPreparingDto {
+    /** 주문번호 */
     @NotBlank(message = "주문번호")
     private String orderNo;
 
-    private String partnerCode;             // 파트너 코드
+    /** 파트너 코드 */
+    private String partnerCode;
+
+    /** 사용자 아이디 */
     @JsonIgnore
-    private String userId;                  // 사용자 아이디
+    private String userId;
+
+    /** 데이터1 */
     @JsonIgnore
-    private String value1;                  // 데이터1
+    private String value1;
+
+    /** 데이터2 */
     @JsonIgnore
-    private String value2;                  // 데이터2
+    private String value2;
 
     public void setAopPartnerCode(String partnerCode) {
         this.partnerCode = partnerCode;
@@ -38,7 +45,7 @@ public class DeliveryPreparingDto {
         return Queue.builder()
                 .ordNo(this.orderNo)
                 .prnrCd(this.partnerCode)
-                .stusCd(OrderStatusCode.READY_PRODUCT.getCode())
+                .stusCd(OrderConst.Status.READY_PRODUCT.getCode())
                 .ordPrdtIdx(ordPrdtIdx.stream().map(String::valueOf).collect(Collectors.toList()))
                 .rsnCd(this.value1)
                 .rsnNm(this.value2)
@@ -50,7 +57,7 @@ public class DeliveryPreparingDto {
         return Queue.builder()
                 .ordNo(this.orderNo)
                 .prnrCd(this.partnerCode)
-                .stusCd(OrderStatusCode.READY_PRODUCT.getCode())
+                .stusCd(OrderConst.Status.READY_PRODUCT.getCode())
                 .ordPrdtIdx(ordPrdtIdx.stream().map(String::valueOf).collect(Collectors.toList()))
                 .dlvrCmpnyCd(this.value1)
                 .invcNo(this.value2)
@@ -61,15 +68,32 @@ public class DeliveryPreparingDto {
     @Getter
     @Builder
     public static class Queue {
-        private String ordNo;               // 주문번호
-        private String prnrCd;              // 파트너코드
-        private String stusCd;              // 상태코드
-        private List<String> ordPrdtIdx;    // 주문상품 IDX 배열
-        private String rsnCd;               // 반품불가 코드
-        private String rsnNm;               // 반품불가 이름
-        private String dlvrCmpnyCd;         // 배송사 코드
-        private String invcNo;              // 송장번호
-        private String usrId;               // 로그인 아이디
+        /** 주문 번호 */
+        private String ordNo;
+
+        /** 파트너 코드 */
+        private String prnrCd;
+
+        /** 상태 코드 */
+        private String stusCd;
+
+        /** 주문상품 IDX LIST */
+        private List<String> ordPrdtIdx;
+
+        /** 반품불가 사유 코드 */
+        private String rsnCd;
+
+        /** 반품불가 사유 명 */
+        private String rsnNm;
+
+        /** 택배사 코드 */
+        private String dlvrCmpnyCd;
+
+        /** 송장번호 */
+        private String invcNo;
+
+        /** 사용자 아이디 */
+        private String usrId;
     }
 
 }

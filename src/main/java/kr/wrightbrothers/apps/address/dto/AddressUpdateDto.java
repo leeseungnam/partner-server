@@ -1,7 +1,6 @@
 package kr.wrightbrothers.apps.address.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,20 +10,22 @@ import lombok.extern.jackson.Jacksonized;
 
 import javax.validation.constraints.NotNull;
 
-@Getter
-@Setter
+@Getter @Setter
 @Jacksonized
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddressUpdateDto extends AddressDto {
-    @ApiModelProperty(value = "주소록 번호", required = true)
+    /** 주소록 번호 */
     @NotNull(message = "주소록 번호")
     private Long addressNo;
 
-    private String partnerCode;     // 파트너 코드
+    /** 파트너 코드 */
+    private String partnerCode;
+
+    /** 사용자 아이디 */
     @JsonIgnore
-    private String userId;          // 사용자 아이디
+    private String userId;
 
     public void setAopUserId(String userId) {
         this.userId = userId;

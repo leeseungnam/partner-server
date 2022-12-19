@@ -1,9 +1,7 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import kr.wrightbrothers.apps.common.type.OrderStatusCode;
+import kr.wrightbrothers.apps.common.constants.OrderConst;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,41 +15,46 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@ApiModel(value = "송장번호 입력")
-@Getter
-@Builder
+@Getter @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeliveryInvoiceUpdateDto {
-    @ApiModelProperty(value = "주문 번호", required = true)
+    /** 주문 번호 */
     @NotBlank(message = "주문 번호")
     private String orderNo;
 
-    @ApiModelProperty(value = "주문 상품 SEQ", required = true)
+    /** 주문상품 SEQ Array */
     @NotNull(message = "주문 상품 SEQ")
-    private Integer[] orderProductSeqArray; // 주문 상품 SEQ Array
+    private Integer[] orderProductSeqArray;
 
-    @ApiModelProperty(value = "택배사 코드", required = true)
+    /** 택배사 코드 */
     @NotBlank(message = "택배사 코드")
-    private String deliveryCompanyCode;     // 택배사 코드
+    private String deliveryCompanyCode;
 
-    @ApiModelProperty(value = "택배사 이름", required = true)
+    /** 택배사 이름 */
     @NotBlank(message = "택배사 이름")
-    private String deliveryCompanyName;     // 택배사 이름
+    private String deliveryCompanyName;
 
-    @ApiModelProperty(value = "송장번호", required = true)
+    /** 송장번호 */
     @NotBlank(message = "송장번호")
     @Size(min = 2, max = 50, message = "송장번호")
     @Pattern(regexp = "^\\d+$", message = "송장번호는 숫자만 입력 가능 합니다.")
-    private String invoiceNo;               // 택배 송장번호
+    private String invoiceNo;
 
-    private String partnerCode;             // 파트너 코드
+    /** 파트너 코드 */
+    private String partnerCode;
+
+    /** 사용자 아이디 */
     @JsonIgnore
-    private String userId;                  // 사용자 아이디
+    private String userId;
+
+    /** 주문 상품 SEQ */
     @JsonIgnore
-    private Integer orderProductSeq;        // 주문 상품 SEQ
+    private Integer orderProductSeq;
+
+    /** 반품불가 여부 */
     @JsonIgnore
-    private String nonReturnFlag;           // 반품불가여부
+    private String nonReturnFlag;
 
     public void setAopPartnerCode(String partnerCode) {
         this.partnerCode = partnerCode;
@@ -69,24 +72,38 @@ public class DeliveryInvoiceUpdateDto {
         this.nonReturnFlag = nonReturnFlag;
     }
 
+    public DeliveryUpdateDto toDeliveryUpdateDto() {
+        return DeliveryUpdateDto.builder()
+                .orderNo(this.orderNo)
+                .orderProductSeqArray(this.orderProductSeqArray)
+                .build();
+    }
+
     public Queue toQueueDto() {
         return Queue.builder()
                 .ordNo(this.orderNo)
                 .prnrCd(this.partnerCode)
-                .stusCd(OrderStatusCode.START_DELIVERY.getCode())
+                .stusCd(OrderConst.Status.START_DELIVERY.getCode())
                 .ordPrdtIdx(Arrays.stream(this.orderProductSeqArray).map(String::valueOf).collect(Collectors.toList()))
                 .usrId(this.userId)
                 .build();
     }
 
-
-    @Getter
-    @Builder
+    @Getter @Builder
     public static class Queue {
-        private String ordNo;               // 주문번호
-        private String prnrCd;              // 파트너코드
-        private String stusCd;              // 상태코드
-        private List<String> ordPrdtIdx; // 주문상품 IDX 배열
-        private String usrId;               // 로그인 아이디
+        /** 주문번호 */
+        private String ordNo;
+
+        /** 파트너 코드 */
+        private String prnrCd;
+
+        /** 상태 코드 */
+        private String stusCd;
+
+        /** 주문상품 IDX LIST */
+        private List<String> ordPrdtIdx;
+
+        /** 사용자 아이디 */
+        private String usrId;
     }
 }

@@ -1,10 +1,6 @@
 package kr.wrightbrothers.apps.product.dto;
 
-import io.swagger.annotations.ApiModelProperty;
-import kr.wrightbrothers.apps.common.type.CategoryCode;
-import kr.wrightbrothers.apps.common.type.ProductLogCode;
-import kr.wrightbrothers.apps.common.type.ProductStatusCode;
-import kr.wrightbrothers.apps.common.type.ProductType;
+import kr.wrightbrothers.apps.common.constants.ProductConst;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.file.dto.FileUpdateDto;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
@@ -22,7 +18,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 @Getter
 @Jacksonized
@@ -30,39 +25,36 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductInsertDto {
-    @ApiModelProperty(value = "상품 정보", required = true)
+
+    /** 상품 정보 */
+    @Valid @NotNull(message = "상품 정보")
+    private ProductDto.ReqBody product;
+
+    /** 기본 스펙 정보 */
+    private BasicSpecDto.ReqBody basicSpec;
+
+    /** 판매 정보 */
+    @Valid @NotNull(message = "판매 정보")
+    private SellInfoDto.ReqBody sellInfo;
+
+    /** 옵션 정보 */
     @Valid
-    @NotNull(message = "상품 정보")
-    private ProductDto.ReqBody product;         // 상품 기본 정보
+    private List<OptionDto.ReqBody> optionList;
 
-    @ApiModelProperty(value = "기본 스펙")
-    private BasicSpecDto.ReqBody basicSpec;     // 기본 스펙 정보
+    /** 배송 정보 */
+    private DeliveryDto.ReqBody delivery;
 
-    @ApiModelProperty(value = "판매 정보", required = true)
-    @Valid
-    @NotNull(message = "판매 정보")
-    private SellInfoDto.ReqBody sellInfo;       // 판매 정보
+    /** 상품 정보 고시 */
+    @Valid @NotNull(message = "상품 정보 고시")
+    private InfoNoticeDto.ReqBody infoNotice;
 
-    @ApiModelProperty(value = "옵션 정보")
-    @Valid
-    private List<OptionDto.ReqBody> optionList; // 옵션 정보
+    /** 안내 사항 */
+    @Valid @NotNull(message = "안내 사항 정보")
+    private GuideDto.ReqBody guide;
 
-    @ApiModelProperty(value = "배송 정보")
-    private DeliveryDto.ReqBody delivery;       // 배송 정보
-
-    @ApiModelProperty(value = "상품 정보 고시", required = true)
-    @Valid
-    @NotNull(message = "상품 정보 고시")
-    private InfoNoticeDto.ReqBody infoNotice;   // 상품 정보 고시
-
-    @ApiModelProperty(value = "안내 사항", required = true)
-    @Valid
-    @NotNull(message = "안내 사항 정보")
-    private GuideDto.ReqBody guide;             // 안내사항 정보
-
-    @ApiModelProperty(value = "상품 이미지 목록", required = true)
+    /** 상품 등록 이미지 */
     @NotNull(message = "상품 이미지 파일 목록")
-    private List<FileUpdateDto> fileList;       // 상품 등록 이미지
+    private List<FileUpdateDto> fileList;
 
     public void setBasicSpec(BasicSpecDto.ReqBody paramDto) {
         this.basicSpec = paramDto;
@@ -74,8 +66,7 @@ public class ProductInsertDto {
     // 자전거 상품 추가 유효성 검사
     private void validBike() {
         // 자전거 상품이 아닐경우 제외
-        if (!CategoryCode.BIKE.getCode().equals(this.product.getCategoryOneCode()))
-            return;
+        if (!ProductConst.Category.BIKE.getCode().equals(this.product.getCategoryOneCode())) return;
 
         // 브랜드 압력요청 처리
         if (ObjectUtils.isEmpty(this.product.getBrandNo()) && ObjectUtils.isEmpty(this.product.getBrandName()))
@@ -200,19 +191,19 @@ public class ProductInsertDto {
             throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"상품 진행 상태"});
 
         // 예약중 상태일 경우 판매재고 0 이상의 유효성 체크
-        if (ProductStatusCode.RESERVATION.getCode().equals(this.sellInfo.getProductStatusCode())) {
+        if (ProductConst.Status.RESERVATION.getCode().equals(this.sellInfo.getProductStatusCode())) {
             if (this.sellInfo.getProductStockQty() == 0)
                 throw new WBBusinessException(ErrorCode.INVALID_NUMBER_MIN.getErrCode(), new String[]{"판매재고", "1"});
         }
 
         // 판매중 상태에서의 재고 0일경우 판매완료 상태변경
-        if (ProductStatusCode.SALE.getCode().equals(this.sellInfo.getProductStatusCode()) && this.sellInfo.getProductStockQty() == 0)
-            this.sellInfo.setProductStatusCode(ProductStatusCode.SOLD_OUT.getCode());
+        if (ProductConst.Status.SALE.getCode().equals(this.sellInfo.getProductStatusCode()) && this.sellInfo.getProductStockQty() == 0)
+            this.sellInfo.setProductStatusCode(ProductConst.Status.SOLD_OUT.getCode());
 
         // 상품 판매 옵션 유효성 검사
         validOption();
         // 재생자전거 유효성 검사 제외
-        if (ProductType.RECYCLING.getType().equals(this.product.getProductType())) {
+        if (ProductConst.Type.RECYCLING.getType().equals(this.product.getProductType())) {
             if (ObjectUtils.isEmpty(this.guide.getQnaGuide()))
                 throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"자주 묻는 질문"});
             if (this.guide.getQnaGuide().length() < 30)
@@ -307,7 +298,7 @@ public class ProductInsertDto {
         return ChangeInfoDto.ReqBody.builder()
                 .productCode(this.getProduct().getProductCode())
                 .productStatusCode(this.sellInfo.getProductStatusCode())
-                .productLogCode(ProductLogCode.REGISTER.getCode())
+                .productLogCode(ProductConst.Log.REGISTER.getCode())
                 .productLog("상품 등록")
                 .userId(this.getProduct().getUserId())
                 .build();

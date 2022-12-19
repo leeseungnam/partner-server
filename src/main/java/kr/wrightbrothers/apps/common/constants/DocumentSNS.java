@@ -1,4 +1,4 @@
-package kr.wrightbrothers.apps.common.type;
+package kr.wrightbrothers.apps.common.constants;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;

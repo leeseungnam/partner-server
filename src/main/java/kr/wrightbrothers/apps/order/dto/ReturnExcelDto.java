@@ -1,9 +1,9 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import kr.wrightbrothers.apps.common.annotation.ExcelBody;
-import kr.wrightbrothers.apps.common.type.DeliveryType;
-import kr.wrightbrothers.apps.common.type.ExcelBodyType;
-import kr.wrightbrothers.apps.common.type.OrderProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.DeliveryConst;
+import kr.wrightbrothers.apps.common.constants.ExcelConst;
+import kr.wrightbrothers.apps.common.constants.OrderConst;
 import kr.wrightbrothers.apps.common.util.MaskingUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,23 +31,23 @@ public class ReturnExcelDto {
         private String orderNo;
         @ExcelBody(colIndex = 3)
         private String orderDay;
-        @ExcelBody(colIndex = 4, bodyType = ExcelBodyType.LONG_TEXT)
+        @ExcelBody(colIndex = 4, bodyType = ExcelConst.Type.LONG_TEXT)
         private String orderName;
         @ExcelBody(colIndex = 5)
         private String productCode;
-        @ExcelBody(colIndex = 6, bodyType = ExcelBodyType.LONG_TEXT)
+        @ExcelBody(colIndex = 6, bodyType = ExcelConst.Type.LONG_TEXT)
         private String productName;
-        @ExcelBody(colIndex = 7, bodyType = ExcelBodyType.LONG_TEXT)
+        @ExcelBody(colIndex = 7, bodyType = ExcelConst.Type.LONG_TEXT)
         private String productOption;
-        @ExcelBody(colIndex = 8, bodyType = ExcelBodyType.NUMBER)
+        @ExcelBody(colIndex = 8, bodyType = ExcelConst.Type.NUMBER)
         private Integer productQty;
-        @ExcelBody(colIndex = 9, bodyType = ExcelBodyType.NUMBER)
+        @ExcelBody(colIndex = 9, bodyType = ExcelConst.Type.NUMBER)
         private Long productSellAmount;
-        @ExcelBody(colIndex = 10, bodyType = ExcelBodyType.NUMBER)
+        @ExcelBody(colIndex = 10, bodyType = ExcelConst.Type.NUMBER)
         private Long productAmount;
-        @ExcelBody(colIndex = 11, bodyType = ExcelBodyType.NUMBER)
+        @ExcelBody(colIndex = 11, bodyType = ExcelConst.Type.NUMBER)
         private Long productDeliveryChargeAmount;
-        @ExcelBody(colIndex = 12, bodyType = ExcelBodyType.NUMBER)
+        @ExcelBody(colIndex = 12, bodyType = ExcelConst.Type.NUMBER)
         private Long paymentAmount;
         @ExcelBody(colIndex = 13)
         private String orderUserName;
@@ -65,19 +65,19 @@ public class ReturnExcelDto {
         private String recipientName;
         @ExcelBody(colIndex = 20)
         private String recipientUserPhone;
-        @ExcelBody(colIndex = 21, bodyType = ExcelBodyType.LONG_TEXT)
+        @ExcelBody(colIndex = 21, bodyType = ExcelConst.Type.LONG_TEXT)
         private String recipientAddress;
-        @ExcelBody(colIndex = 22, bodyType = ExcelBodyType.LONG_TEXT)
+        @ExcelBody(colIndex = 22, bodyType = ExcelConst.Type.LONG_TEXT)
         private String recipientAddressDetail;
-        @ExcelBody(colIndex = 23, bodyType = ExcelBodyType.LONG_TEXT)
+        @ExcelBody(colIndex = 23, bodyType = ExcelConst.Type.LONG_TEXT)
         private String reason;
 
         public void setDeliveryType(String deliveryType) {
-            this.deliveryType = DeliveryType.of(deliveryType).getName();
+            this.deliveryType = DeliveryConst.Type.of(deliveryType).getName();
         }
 
         public void setReturnStatus(String returnStatus) {
-            this.returnStatus = OrderProductStatusCode.of(returnStatus).getName();
+            this.returnStatus = OrderConst.ProductStatus.of(returnStatus).getName();
         }
 
         public void setRecipientName(String recipientName) {

@@ -1,6 +1,6 @@
 package kr.wrightbrothers.apps.queue;
 
-import kr.wrightbrothers.apps.common.type.DocumentSNS;
+import kr.wrightbrothers.apps.common.constants.DocumentSNS;
 import kr.wrightbrothers.framework.support.WBSQS;
 import kr.wrightbrothers.framework.support.dto.WBSnsDTO;
 import kr.wrightbrothers.framework.util.WBAwsSns;

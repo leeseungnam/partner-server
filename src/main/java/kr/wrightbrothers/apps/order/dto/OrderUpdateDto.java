@@ -1,8 +1,6 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
@@ -15,42 +13,46 @@ import javax.validation.constraints.Size;
 @Getter
 @Jacksonized
 @SuperBuilder
-@ApiModel(value = "주문내역 수정 데이터")
 public class OrderUpdateDto {
-    @ApiModelProperty(value = "주문 번호", required = true)
+    /** 주문 번호 */
     @NotBlank(message = "주문 번호")
-    private String orderNo;                 // 주문 번호
+    private String orderNo;
 
-    @ApiModelProperty(value = "수령자 명", required = true)
+    /** 수령자 명 */
     @NotBlank(message = "수령자명")
     @Size(min = 2, max = 20, message = "수령자 명")
-    private String recipientName;           // 수령자 이름
+    private String recipientName;
 
-    @ApiModelProperty(value = "휴대전화", required = true)
+    /** 휴대전화 */
     @NotBlank(message = "휴대전화")
     @Size(min = 10, max = 11, message = "휴대전화")
     @Pattern(regexp = "^\\d+$", message = "휴대전화는 숫자만 입력 가능 합니다.")
-    private String recipientPhone;          // 수령자 휴대전화
+    private String recipientPhone;
 
-    @ApiModelProperty(value = "우편번호", required = true)
+    /** 우편번호 */
     @NotBlank(message = "우편번호")
     @Size(min = 5, max = 5, message = "우편번호")
-    private String recipientAddressZipCode; // 수령자 우편번호
+    private String recipientAddressZipCode;
 
-    @ApiModelProperty(value = "주소", required = true)
+    /** 주소 */
     @NotBlank(message = "주소")
-    private String recipientAddress;        // 수령자 주소
+    private String recipientAddress;
 
-    @ApiModelProperty(value = "상세주소", required = true)
+    /** 상세주소 */
     @NotBlank(message = "상세주소")
     @Size(min = 2, max = 100, message = "상세주소")
-    private String recipientAddressDetail;  // 수령자 상세주소
+    private String recipientAddressDetail;
 
-    private String partnerCode;             // 파트너 코드
+    /** 파트너 코드 */
+    private String partnerCode;
+
+    /** 사용자 아이디 */
     @JsonIgnore
-    private String userId;                  // 사용자 아이디
+    private String userId;
+
+    /** 택배 송장번호 등록 여부 */
     @JsonIgnore
-    private boolean isInvoiceNo;            // 택배 송장번호 등록 여부
+    private boolean isInvoiceNo;
 
     public void setAopPartnerCode(String partnerCode) {
         this.partnerCode = partnerCode;
@@ -59,12 +61,16 @@ public class OrderUpdateDto {
         this.userId = userId;
     }
 
-    @Getter
-    @Builder
+    @Getter @Builder
     public static class Status {
-        private String orderNo;                 // 주문 번호
-        private String orderStatusCode;         // 주문 진행 코드
-        private String userId;                  // 사용자 아이디
+        /** 주문 번호 */
+        private String orderNo;
+
+        /** 주문 진행 코드 */
+        private String orderStatusCode;
+
+        /** 사용자 아이디 */
+        private String userId;
     }
 
 }

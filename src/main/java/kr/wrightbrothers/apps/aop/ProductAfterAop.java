@@ -1,8 +1,8 @@
 package kr.wrightbrothers.apps.aop;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.wrightbrothers.apps.common.type.DocumentSNS;
-import kr.wrightbrothers.apps.common.type.ProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.ProductConst;
+import kr.wrightbrothers.apps.common.constants.DocumentSNS;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.product.dto.StatusUpdateDto;
 import kr.wrightbrothers.apps.queue.ProductQueue;
@@ -69,14 +69,14 @@ public class ProductAfterAop {
                                 productCode,
                                 PartnerKey.TransactionType.Update
                         );
-                        log.debug("Product Batch Update Send SNS. ProductCode::{}", productCode);
+                        log.info("Product Batch Update Send SNS. ProductCode::{}, PartnerCode::{}", productCode, object.getString("partnerCode"));
                     });
         else if (object.has("product")) {
             // 상품 등록 / 변경에 따른 SNS 발송 처리
             productQueue.sendToAdmin(
                     // 검수대기, 검수반려 수정 시 검수요청 Document 구분
-                    ProductStatusCode.PRODUCT_INSPECTION.getCode().equals(object.getJSONObject("sellInfo").getString("productStatusCode"))
-                            || ProductStatusCode.REJECT_INSPECTION.getCode().equals(object.getJSONObject("sellInfo").getString("productStatusCode")) ?
+                    ProductConst.Status.PRODUCT_INSPECTION.getCode().equals(object.getJSONObject("sellInfo").getString("productStatusCode"))
+                            || ProductConst.Status.REJECT_INSPECTION.getCode().equals(object.getJSONObject("sellInfo").getString("productStatusCode")) ?
                             DocumentSNS.REQUEST_INSPECTION : DocumentSNS.UPDATE_PRODUCT,
                     object.getJSONObject("product").getString("partnerCode"),
                     object.getJSONObject("product").getString("productCode"),
@@ -84,7 +84,7 @@ public class ProductAfterAop {
                     methodSignature.getMethod().getName().contains("update") ?
                             PartnerKey.TransactionType.Update : PartnerKey.TransactionType.Insert
             );
-            log.debug("Product Send SNS. ProductCode::{}", object.getJSONObject("product").getString("productCode"));
+            log.info("Product Send SNS. ProductCode::{}, PartnerCode::{}", object.getJSONObject("product").getString("productCode"), object.getJSONObject("product").getString("partnerCode"));
         }
     }
 

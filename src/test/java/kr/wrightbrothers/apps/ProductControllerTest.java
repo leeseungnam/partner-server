@@ -2,7 +2,7 @@ package kr.wrightbrothers.apps;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.BaseControllerTests;
-import kr.wrightbrothers.apps.common.type.ProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.ProductConst;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.ProductUtil;
 import kr.wrightbrothers.apps.common.util.RandomUtil;
@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
@@ -124,7 +125,7 @@ class ProductControllerTest extends BaseControllerTests {
                         .displayFlag("N")
                         .productOptionFlag("Y")
                         .finalSellAmount(2900000L)
-                        .productStatusCode(ProductStatusCode.SALE.getCode())
+                        .productStatusCode(ProductConst.Status.SALE.getCode())
                         .productStockQty(1)
                         .supplyAmount(0L)
                         .build())
@@ -198,12 +199,12 @@ class ProductControllerTest extends BaseControllerTests {
         ProductListDto.Param paramDto = ProductListDto.Param.builder()
                 .displayFlag(new String[]{"Y", "N"})
                 .status(new String[]{
-                        ProductStatusCode.PRODUCT_INSPECTION.getCode(),
-                        ProductStatusCode.SALE.getCode(),
-                        ProductStatusCode.RESERVATION.getCode(),
-                        ProductStatusCode.SOLD_OUT.getCode(),
-                        ProductStatusCode.END_OF_SALE.getCode(),
-                        ProductStatusCode.REJECT_INSPECTION.getCode()
+                        ProductConst.Status.PRODUCT_INSPECTION.getCode(),
+                        ProductConst.Status.SALE.getCode(),
+                        ProductConst.Status.RESERVATION.getCode(),
+                        ProductConst.Status.SOLD_OUT.getCode(),
+                        ProductConst.Status.END_OF_SALE.getCode(),
+                        ProductConst.Status.REJECT_INSPECTION.getCode()
                 })
                 .rangeType("PRODUCT")
                 .startDay(new SimpleDateFormat("yyyyMMdd").format(new Date()))
@@ -348,7 +349,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("optionList[].optionSurcharge").type(JsonFieldType.NUMBER).description("변동 금액").optional().attributes(key("etc").value("")),
                                         fieldWithPath("optionList[].optionStockQty").type(JsonFieldType.NUMBER).description("옵션 재고 수량").optional().attributes(key("etc").value("")),
                                         fieldWithPath("delivery").type(JsonFieldType.OBJECT).description("배송 정보").attributes(key("etc").value("")),
-                                        fieldWithPath("delivery.deliveryType").type(JsonFieldType.STRING).description("배송방법").attributes(key("etc").value("D01 택배/소포/등기, D07 직접배송(화물배달)")),
+                                        fieldWithPath("delivery.deliveryType").type(JsonFieldType.STRING).description("배송방법").attributes(key("etc").value("D01 택배/소포/등기, D07 직접배송(화물배달), D06 방문수령")),
                                         fieldWithPath("delivery.deliveryBundleFlag").type(JsonFieldType.STRING).description("묶음배송").attributes(key("etc").value("Y 가능, N 불가")),
                                         fieldWithPath("delivery.chargeType").type(JsonFieldType.STRING).description("배송비 설정").attributes(key("etc").value("공통코드 000023")),
                                         fieldWithPath("delivery.chargeBase").type(JsonFieldType.NUMBER).description("기본 배송비").attributes(key("etc").value("")),
@@ -607,7 +608,7 @@ class ProductControllerTest extends BaseControllerTests {
                                         fieldWithPath("optionList[].optionSurcharge").type(JsonFieldType.NUMBER).description("변동 금액").optional().attributes(key("etc").value("")),
                                         fieldWithPath("optionList[].optionStockQty").type(JsonFieldType.NUMBER).description("옵션 재고 수량").optional().attributes(key("etc").value("")),
                                         fieldWithPath("delivery").type(JsonFieldType.OBJECT).description("배송 정보").attributes(key("etc").value("")),
-                                        fieldWithPath("delivery.deliveryType").type(JsonFieldType.STRING).description("배송방법").attributes(key("etc").value("D01 택배/소포/등기, D07 직접배송(화물배달)")),
+                                        fieldWithPath("delivery.deliveryType").type(JsonFieldType.STRING).description("배송방법").attributes(key("etc").value("D01 택배/소포/등기, D07 직접배송(화물배달), D06 방문수령")),
                                         fieldWithPath("delivery.deliveryBundleFlag").type(JsonFieldType.STRING).description("묶음배송").attributes(key("etc").value("Y 가능, N 불가")),
                                         fieldWithPath("delivery.chargeType").type(JsonFieldType.STRING).description("배송비 설정").attributes(key("etc").value("공통코드 000023")),
                                         fieldWithPath("delivery.chargeBase").type(JsonFieldType.NUMBER).description("기본 배송비").attributes(key("etc").value("")),
@@ -710,7 +711,7 @@ class ProductControllerTest extends BaseControllerTests {
                         .displayFlag("N")
                         .productOptionFlag("Y")
                         .finalSellAmount(2900000L)
-                        .productStatusCode(ProductStatusCode.PRODUCT_INSPECTION.getCode())
+                        .productStatusCode(ProductConst.Status.PRODUCT_INSPECTION.getCode())
                         .productStockQty(1)
                         .build())
                 .optionList(List.of(OptionDto.ReqBody.builder()
@@ -759,7 +760,6 @@ class ProductControllerTest extends BaseControllerTests {
                 .build();
     }
 
-
     @Test
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     @DisplayName("상품 상태 일괄 변경")
@@ -798,6 +798,49 @@ class ProductControllerTest extends BaseControllerTests {
                                 )
                 ))
         ;
+    }
+
+    @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @DisplayName("상품(검수) 삭제")
+    void deleteProduct() throws Exception {
+        // 상품 등록
+        productDto.setProductCode(
+                productUtil.generateProductCode(productDto.getProduct().getCategoryTwoCode())
+        );
+        productDto.getSellInfo().setProductStatusCode(ProductConst.Status.REJECT_INSPECTION.getCode());
+        productService.insertProduct(productDto);
+
+        // 삭제 API 테스트
+        mockMvc.perform(delete("/v1/products")
+                        .header(AUTH_HEADER, JWT_TOKEN)
+                        .contentType(MediaType.TEXT_HTML)
+                        .queryParam("productCodeList", productDto.getProduct().getProductCode())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.WBCommon.state").value("S"))
+                .andDo(
+                        document("product-delete",
+                                requestDocument(),
+                                responseDocument(),
+                                requestHeaders(
+                                        headerWithName(AUTH_HEADER).description("JWT 토큰")
+                                ),
+                                requestParameters(
+                                        parameterWithName("productCodeList").description("상품 코드").attributes(key("etc").value(""))
+                                ),
+                                responseFields(
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
+                                        fieldWithPath("WBCommon.message").type(JsonFieldType.STRING).description("메시지")
+                                )
+                        )
+                )
+                ;
+
+        // 검증
+        ProductDto.ResBody findProduct = dao.selectOne("kr.wrightbrothers.apps.product.query.Product.findProduct", productDto.getProduct().getProductCode(), PartnerKey.WBDataBase.Alias.Admin);
+        assertNull(findProduct);
     }
 
 }

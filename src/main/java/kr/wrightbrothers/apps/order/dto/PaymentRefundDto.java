@@ -13,11 +13,15 @@ import javax.validation.constraints.NotNull;
 
 public class PaymentRefundDto {
 
-    @Getter
-    @Builder
+    @Getter @Builder
     public static class Param {
+        /** 파트너 코드 */
         private String partnerCode;         // 파트너 코드
+
+        /** 주문 번호 */
         private String orderNo;             // 주문 번호
+
+        /** 주문 상품 번호 */
         private Integer orderProductSeq;     // 주문 상품 번호
     }
 
@@ -27,14 +31,23 @@ public class PaymentRefundDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Reason {
+        /** 주문번호 */
         @NotBlank(message = "주문번호")
         private String orderNo;             // 주문 번호
+
+        /** 주문상품 SEQ */
         @NotNull(message = "주문상품 SEQ")
         private Integer orderProductSeq;    // 주문 상품 SEQ
+
+        /** 환불은행 코드 */
         @NotBlank(message = "환불 은행")
         private String refundBankCode;      // 환불 은행 코드
+
+        /** 환불 계좌번호 */
         @NotBlank(message = "환불 계좌 번호")
         private String refundBankAccountNo; // 환불 계좌 번호
+
+        /**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     */
         @NotBlank(message = "예금주")
         private String refundDepositorName; // 환불 계좌 예금주
     }

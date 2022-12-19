@@ -2,8 +2,7 @@ package kr.wrightbrothers.apps;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.BaseControllerTests;
-import kr.wrightbrothers.apps.common.type.DeliveryStatusCode;
-import kr.wrightbrothers.apps.common.type.DeliveryType;
+import kr.wrightbrothers.apps.common.constants.DeliveryConst;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.*;
 import kr.wrightbrothers.apps.order.service.OrderService;
@@ -15,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.transaction.annotation.Transactional;
+import springfox.documentation.spring.web.json.Json;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -47,16 +47,16 @@ class DeliveryControllerTest extends BaseControllerTests {
         DeliveryListDto.Param paramDto = DeliveryListDto.Param.builder()
                 .deliveryType(
                         new String[]{
-                                DeliveryType.PARCEL.getType(),
-                                DeliveryType.FREIGHT.getType()
+                                DeliveryConst.Type.PARCEL.getType(),
+                                DeliveryConst.Type.FREIGHT.getType()
                         }
                 )
                 .deliveryStatus(
                         new String[]{
-                                DeliveryStatusCode.READY_PRODUCT.getCode(),
-                                DeliveryStatusCode.START_DELIVERY.getCode(),
-                                DeliveryStatusCode.FINISH_DELIVERY.getCode(),
-                                DeliveryStatusCode.PARTIAL_DELIVERY.getCode()
+                                DeliveryConst.Status.READY_PRODUCT.getCode(),
+                                DeliveryConst.Status.START_DELIVERY.getCode(),
+                                DeliveryConst.Status.FINISH_DELIVERY.getCode(),
+                                DeliveryConst.Status.PARTIAL_DELIVERY.getCode()
                         }
                 )
                 .startDay("2022-01-01")
@@ -103,8 +103,8 @@ class DeliveryControllerTest extends BaseControllerTests {
                                         fieldWithPath("data[].paymentDay").type(JsonFieldType.STRING).description("결제일자"),
                                         fieldWithPath("data[].orderNo").type(JsonFieldType.STRING).description("주문번호"),
                                         fieldWithPath("data[].orderUserName").type(JsonFieldType.STRING).description("주문자"),
-                                        fieldWithPath("data[].deliveryStatusCode").type(JsonFieldType.STRING).description("* 배송상태 코드"),
-                                        fieldWithPath("data[].deliveryStatusName").type(JsonFieldType.STRING).description("* 배송상태 이름"),
+                                        fieldWithPath("data[].deliveryStatusCode").type(JsonFieldType.STRING).description("배송상태 코드"),
+                                        fieldWithPath("data[].deliveryStatusName").type(JsonFieldType.STRING).description("배송상태 이름"),
                                         fieldWithPath("data[].paymentMethodCode").type(JsonFieldType.STRING).description("결제수단 코드"),
                                         fieldWithPath("data[].paymentMethodName").type(JsonFieldType.STRING).description("결제수단 이름"),
                                         fieldWithPath("data[].orderName").type(JsonFieldType.STRING).description("주문명"),
@@ -113,7 +113,8 @@ class DeliveryControllerTest extends BaseControllerTests {
                                         fieldWithPath("data[].recipientPhone").type(JsonFieldType.STRING).description("휴대전화"),
                                         fieldWithPath("data[].recipientAddress").type(JsonFieldType.STRING).description("주소"),
                                         fieldWithPath("data[].recipientAddressDetail").type(JsonFieldType.STRING).description("상세주소"),
-                                        fieldWithPath("data[].returnFlag").type(JsonFieldType.STRING).description("**** 반품여부"),
+                                        fieldWithPath("data[].returnFlag").type(JsonFieldType.STRING).description("반품여부"),
+                                        fieldWithPath("data[].deliveryPaymentType").type(JsonFieldType.STRING).description("배송비 결제방법"),
                                         fieldWithPath("totalItems").type(JsonFieldType.NUMBER).description("전체 조회 건수"),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
                                 )
@@ -150,7 +151,7 @@ class DeliveryControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.order").type(JsonFieldType.OBJECT).description("주문 정보"),
                                         fieldWithPath("data.order.orderNo").type(JsonFieldType.STRING).description("주문 번호"),
                                         fieldWithPath("data.order.orderDate").type(JsonFieldType.STRING).description("주문 일시"),
-                                        fieldWithPath("data.order.orderStatusCode").type(JsonFieldType.STRING).description("* 주문 상태 코드"),
+                                        fieldWithPath("data.order.orderStatusCode").type(JsonFieldType.STRING).description("주문 상태 코드"),
                                         fieldWithPath("data.order.orderStatusName").type(JsonFieldType.STRING).description("주문 상태 이름"),
                                         fieldWithPath("data.order.orderQty").type(JsonFieldType.NUMBER).description("주문 수량"),
                                         fieldWithPath("data.order.orderUserCode").type(JsonFieldType.STRING).description("회원 코드"),
@@ -169,10 +170,12 @@ class DeliveryControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.payment").type(JsonFieldType.OBJECT).description("결제 정보"),
                                         fieldWithPath("data.payment.orderAmount").type(JsonFieldType.NUMBER).description("주문 금액"),
                                         fieldWithPath("data.payment.deliveryChargeAmount").type(JsonFieldType.NUMBER).description("배송 금액"),
+                                        fieldWithPath("data.payment.sspPoint").type(JsonFieldType.NUMBER).description("배송 금액"),
+                                        fieldWithPath("data.payment.saleAmount").type(JsonFieldType.NUMBER).description("배송 금액"),
                                         fieldWithPath("data.payment.paymentAmount").type(JsonFieldType.NUMBER).description("결제 금액"),
                                         fieldWithPath("data.payment.paymentDate").type(JsonFieldType.STRING).optional().description("결제 일시"),
-                                        fieldWithPath("data.payment.approvalNo").type(JsonFieldType.STRING).optional().description("* PG 승인번호"),
-                                        fieldWithPath("data.payment.rentalAmount").type(JsonFieldType.NUMBER).optional().description("* 월 렌탈료"),
+                                        fieldWithPath("data.payment.approvalNo").type(JsonFieldType.STRING).optional().description("PG 승인번호"),
+                                        fieldWithPath("data.payment.rentalAmount").type(JsonFieldType.NUMBER).optional().description("월 렌탈료"),
                                         fieldWithPath("data.payment.paymentMethodCode").type(JsonFieldType.STRING).description("결제 수단 코드"),
                                         fieldWithPath("data.payment.paymentMethodName").type(JsonFieldType.STRING).description("결제 수단 이름"),
                                         fieldWithPath("data.payment.paymentStatusCode").type(JsonFieldType.STRING).description("결제 상태 코드"),
@@ -183,18 +186,22 @@ class DeliveryControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.deliveryList[].productName").type(JsonFieldType.STRING).description("상품 이름"),
                                         fieldWithPath("data.deliveryList[].optionName").type(JsonFieldType.STRING).description("옵션 이름"),
                                         fieldWithPath("data.deliveryList[].productQty").type(JsonFieldType.NUMBER).description("상품 수량"),
-                                        fieldWithPath("data.deliveryList[].deliveryType").type(JsonFieldType.STRING).description("**** 배송 방법 타입"),
-                                        fieldWithPath("data.deliveryList[].deliveryName").type(JsonFieldType.STRING).description("**** 배송 방법 이름"),
+                                        fieldWithPath("data.deliveryList[].deliveryType").type(JsonFieldType.STRING).description("배송 방법 타입"),
+                                        fieldWithPath("data.deliveryList[].deliveryName").type(JsonFieldType.STRING).description("배송 방법 이름"),
                                         fieldWithPath("data.deliveryList[].deliveryCompanyCode").type(JsonFieldType.STRING).optional().description("택배사 코드"),
                                         fieldWithPath("data.deliveryList[].deliveryCompanyName").type(JsonFieldType.STRING).optional().description("택배사 이름"),
                                         fieldWithPath("data.deliveryList[].invoiceNo").type(JsonFieldType.STRING).optional().description("송장번호"),
-                                        fieldWithPath("data.deliveryList[].recipientName").type(JsonFieldType.STRING).optional().description("* 수령자 명"),
-                                        fieldWithPath("data.deliveryList[].recipientPhone").type(JsonFieldType.STRING).optional().description("* 수령자 휴대전화"),
-                                        fieldWithPath("data.deliveryList[].recipientAddress").type(JsonFieldType.STRING).optional().description("* 수령자 주소"),
+                                        fieldWithPath("data.deliveryList[].recipientName").type(JsonFieldType.STRING).optional().description("수령자 명"),
+                                        fieldWithPath("data.deliveryList[].recipientPhone").type(JsonFieldType.STRING).optional().description("수령자 휴대전화"),
+                                        fieldWithPath("data.deliveryList[].recipientAddress").type(JsonFieldType.STRING).optional().description("수령자 주소"),
                                         fieldWithPath("data.deliveryList[].deliveryStartDay").type(JsonFieldType.STRING).optional().description("배송 시작일"),
                                         fieldWithPath("data.deliveryList[].deliveryEndDay").type(JsonFieldType.STRING).optional().description("배송 완료일"),
                                         fieldWithPath("data.deliveryList[].deliveryStatusCode").type(JsonFieldType.STRING).optional().description("택배 진행 상태 코드"),
                                         fieldWithPath("data.deliveryList[].deliveryStatusName").type(JsonFieldType.STRING).optional().description("택배 진행 상태 이름"),
+                                        fieldWithPath("data.deliveryList[].deliveryChargeType").type(JsonFieldType.STRING).optional().description("배송비 구분 타입"),
+                                        fieldWithPath("data.deliveryList[].deliveryChargeName").type(JsonFieldType.STRING).optional().description("배송비 구분 이름"),
+                                        fieldWithPath("data.deliveryList[].deliveryPaymentType").type(JsonFieldType.STRING).optional().description("배송비 결제 타입"),
+                                        fieldWithPath("data.deliveryList[].deliveryPaymentName").type(JsonFieldType.STRING).optional().description("배송비 결제 이름"),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
                                 )
                         ))
@@ -378,6 +385,46 @@ class DeliveryControllerTest extends BaseControllerTests {
                                 )
                 ))
                 ;
+    }
+
+    @Test
+    @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
+    @DisplayName("직접수령 완료")
+    void updateDeliveryPickup() throws Exception {
+        DeliveryPickupUpdateDto updateDto = DeliveryPickupUpdateDto.builder()
+                .orderNo("192211151341424534")
+                .orderProductSeqArray(new Integer[]{1})
+                .build();
+
+        // 화물배송 완료 API 테스트
+        mockMvc.perform(RestDocumentationRequestBuilders.put("/v1/deliveries/{orderNo}/pickup", updateDto.getOrderNo())
+                        .header(AUTH_HEADER, JWT_TOKEN)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(updateDto))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.WBCommon.state").value("S"))
+                .andDo(
+                        document("delivery-pickup-update",
+                                requestDocument(),
+                                responseDocument(),
+                                requestHeaders(
+                                        headerWithName(AUTH_HEADER).description("JWT 토큰")
+                                ),
+                                pathParameters(
+                                        parameterWithName("orderNo").description("주문 번호")
+                                ),
+                                relaxedRequestFields(
+                                        fieldWithPath("orderNo").type(JsonFieldType.STRING).description("주문 번호").attributes(key("etc").value("")),
+                                        fieldWithPath("orderProductSeqArray").type(JsonFieldType.ARRAY).description("주문 상품 SEQ").attributes(key("etc").value(""))
+                                ),
+                                responseFields(
+                                        fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드"),
+                                        fieldWithPath("WBCommon.message").type(JsonFieldType.STRING).description("메시지")
+                                )
+                        ))
+        ;
     }
 
     @Test

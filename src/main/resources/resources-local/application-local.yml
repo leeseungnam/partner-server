@@ -34,6 +34,7 @@ cloud:
       auto: false
       product: DEV-PARTNER-PRODUCT.fifo
       partner: DEV-PARTNER-STORE.fifo
+      order: DEV-PARTNER-ORDER.fifo
     sns:
       arn: 'arn:aws:sns:ap-northeast-2:094301229591:'
       auto: false

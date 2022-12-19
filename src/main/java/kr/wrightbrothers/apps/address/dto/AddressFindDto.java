@@ -9,11 +9,13 @@ import lombok.extern.jackson.Jacksonized;
 
 public class AddressFindDto {
 
-    @Getter
-    @Builder
+    @Getter @Builder
     public static class Param {
-        private String partnerCode;     // 파트너 코드
-        private Long addressNo;         // 주소록 번호
+        /** 파트너 코드 */
+        private String partnerCode;
+
+        /** 주소록 번호 */
+        private Long addressNo;
     }
 
     @Getter
@@ -22,7 +24,8 @@ public class AddressFindDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Response extends AddressDto {
-        private Long addressNo;         // 주소록 번호
+        /** 주소록 번호 */
+        private Long addressNo;
     }
 
 }

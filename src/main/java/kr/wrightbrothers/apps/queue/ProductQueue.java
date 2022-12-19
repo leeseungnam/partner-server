@@ -2,8 +2,8 @@ package kr.wrightbrothers.apps.queue;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.wrightbrothers.apps.common.type.DocumentSNS;
-import kr.wrightbrothers.apps.common.type.ProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.ProductConst;
+import kr.wrightbrothers.apps.common.constants.DocumentSNS;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.product.dto.ProductUpdateDto;
 import kr.wrightbrothers.apps.queue.service.ProductQueueService;
@@ -103,7 +103,7 @@ public class ProductQueue extends WBSQS {
                 productUpdateDto.setSqsProductCode(productUpdateDto.getProduct().getProductCode());
 
                 // 검수반려 처리
-                if (ProductStatusCode.REJECT_INSPECTION.getCode().equals(productUpdateDto.getSellInfo().getProductStatusCode())) {
+                if (ProductConst.Status.REJECT_INSPECTION.getCode().equals(productUpdateDto.getSellInfo().getProductStatusCode())) {
                     String log = "검수 반려\n(" + body.get("rejectReason") + ")";
                     productUpdateDto.setSqsLog(new String[]{log});
                 }

@@ -1,7 +1,7 @@
 package kr.wrightbrothers.apps.aop;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.wrightbrothers.apps.common.type.ProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.ProductConst;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.product.dto.ProductAuthDto;
@@ -51,7 +51,7 @@ public class ProductBeforeAop {
         // 현재 상품 상태 코드
         String currentStatusCode = dao.selectOne(namespace + "findProductStatus", productNo, PartnerKey.WBDataBase.Alias.Admin);
         // 판매완료 수정 불가
-        if (ProductStatusCode.END_OF_SALE.getCode().equals(currentStatusCode))
+        if (ProductConst.Status.END_OF_SALE.getCode().equals(currentStatusCode))
             throw new WBBusinessException(ErrorCode.END_OF_SALE.getErrCode(), new String[]{"판매 완료"});
 
         if (changeDisplayFlag.equals(dao.selectOne(namespace + "findProductDisplayFlag", productNo, PartnerKey.WBDataBase.Alias.Admin))) {
@@ -85,29 +85,30 @@ public class ProductBeforeAop {
         log.debug("Product Change Log::{}", changeLog);
 
         // 판매완료 수정 불가
-        if (ProductStatusCode.END_OF_SALE.getCode().equals(currentStatusCode))
+        if (ProductConst.Status.END_OF_SALE.getCode().equals(currentStatusCode))
             throw new WBBusinessException(ErrorCode.END_OF_SALE.getErrCode(), new String[]{"판매 완료"});
 
         // 상태 변경 아닐 시 종료
         if (currentStatusCode.equals(changeStatusCode)) return;
 
-        switch (ProductStatusCode.of(changeStatusCode)) {
+        switch (ProductConst.Status.of(changeStatusCode)) {
             case SALE:
-                if (!ProductStatusCode.RESERVATION.getCode().equals(currentStatusCode)
-                        && !(ProductStatusCode.PRODUCT_INSPECTION.getCode().equals(currentStatusCode) & changeLog.contains("검수 완료"))
-                        && !ProductStatusCode.SOLD_OUT.getCode().equals(currentStatusCode))
+                if (!ProductConst.Status.RESERVATION.getCode().equals(currentStatusCode)
+                        && !(ProductConst.Status.PRODUCT_INSPECTION.getCode().equals(currentStatusCode) & changeLog.contains("검수 완료"))
+                        && !ProductConst.Status.SOLD_OUT.getCode().equals(currentStatusCode))
                     throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"예약중/판매완료"});
                 break;
             case END_OF_SALE:
             case RESERVATION:
-                if (!ProductStatusCode.SALE.getCode().equals(currentStatusCode))
+                if (!ProductConst.Status.SALE.getCode().equals(currentStatusCode))
                     throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"판매중인"});
                 break;
         }
     }
 
     @Before(value =
-            "execution(* kr.wrightbrothers.apps.product.service.*Service.update*(..)) ||" +
+            "execution(* kr.wrightbrothers.apps.product.service.*Service.delete*(..)) || " +
+            "execution(* kr.wrightbrothers.apps.product.service.*Service.update*(..)) || " +
             "execution(* kr.wrightbrothers.apps.product.service.*Service.findProduct(..))"
     )
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)

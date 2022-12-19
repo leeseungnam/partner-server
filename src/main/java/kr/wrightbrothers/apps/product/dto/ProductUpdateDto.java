@@ -1,8 +1,6 @@
 package kr.wrightbrothers.apps.product.dto;
 
-import io.swagger.annotations.ApiModelProperty;
-import kr.wrightbrothers.apps.common.type.ProductLogCode;
-import kr.wrightbrothers.apps.common.type.ProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.ProductConst;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,12 +17,12 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductUpdateDto extends ProductInsertDto {
-    @ApiModelProperty(value = "상품 코드", required = true)
+    /** 상품 코드 */
     @NotNull(message = "상품 코드")
-    private String productCode;     // 상품 코드
+    private String productCode;
 
-    @ApiModelProperty(value = "변경 로그")
-    private String[] changeLogList; // 변경 로그
+    /** 변경 로그 */
+    private String[] changeLogList;
 
     /**
      * 상품 수정 시 상품 변경이력 정보에 변경 정보를 등록한다.
@@ -33,13 +31,13 @@ public class ProductUpdateDto extends ProductInsertDto {
      * @return 상품 변경 이력 DTO
      */
     public ChangeInfoDto.ReqBody toChangeInfo() {
-        String productLogCode = ProductLogCode.MODIFY.getCode();
+        String productLogCode = ProductConst.Log.MODIFY.getCode();
 
-        if (ProductStatusCode.REJECT_INSPECTION.getCode().equals(this.getSellInfo().getProductStatusCode()))
-            productLogCode = ProductLogCode.REJECT.getCode();
+        if (ProductConst.Status.REJECT_INSPECTION.getCode().equals(this.getSellInfo().getProductStatusCode()))
+            productLogCode = ProductConst.Log.REJECT.getCode();
 
         if (!ObjectUtils.isEmpty(changeLogList) && StringUtils.join(changeLogList, ", ").contains("검수 완료"))
-            productLogCode = ProductLogCode.INSPECTION.getCode();
+            productLogCode = ProductConst.Log.INSPECTION.getCode();
 
         return ChangeInfoDto.ReqBody.builder()
                 .productCode(this.productCode)
@@ -57,5 +55,9 @@ public class ProductUpdateDto extends ProductInsertDto {
     public void setSqsProductCode(String productCode) {
         this.productCode = productCode;
         this.setProductCode(productCode);
+    }
+
+    public ProductFindDto.Param toProductFindParam() {
+        return new ProductFindDto.Param(this.getProduct().getPartnerCode(), this.productCode);
     }
 }

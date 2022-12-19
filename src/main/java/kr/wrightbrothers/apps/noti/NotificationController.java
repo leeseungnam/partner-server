@@ -2,7 +2,7 @@ package kr.wrightbrothers.apps.noti;
 
 import io.swagger.annotations.*;
 import kr.wrightbrothers.apps.common.constants.Notification;
-import kr.wrightbrothers.apps.common.type.DocumentSNS;
+import kr.wrightbrothers.apps.common.constants.DocumentSNS;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.RandomUtil;
 import kr.wrightbrothers.apps.noti.dto.AuthPhoneDto;

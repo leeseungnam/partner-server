@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.wrightbrothers.apps.common.constants.Email;
-import kr.wrightbrothers.apps.common.type.ProductStatusCode;
+import kr.wrightbrothers.apps.common.constants.ProductConst;
 import kr.wrightbrothers.apps.common.util.AwsSesUtil;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.ProductUtil;
@@ -146,8 +146,8 @@ public class ProductQueueService {
     public void updateInspectionSqsData(ProductUpdateDto productUpdateDto) {
         // SQS 검수 승인 상태가 없으므로 해당 상태코드는 판매 중으로 상태 변경.
         // Admin 검수 승인시 상품 이관 후 SQS 전송 하기에 데이터 정합성 문제 없음.
-        if (ProductStatusCode.APPROVAL_INSPECTION.getCode().equals(productUpdateDto.getSellInfo().getProductStatusCode()))
-            productUpdateDto.getSellInfo().setProductStatusCode(ProductStatusCode.SALE.getCode());
+        if (ProductConst.Status.APPROVAL_INSPECTION.getCode().equals(productUpdateDto.getSellInfo().getProductStatusCode()))
+            productUpdateDto.getSellInfo().setProductStatusCode(ProductConst.Status.SALE.getCode());
 
         log.info("Product Inspection Result From Admin. Partner Code::{}, Product Code::{}, ResultLog::{}",
                 productUpdateDto.getProduct().getPartnerCode(), productUpdateDto.getProduct().getProductCode(), Arrays.toString(productUpdateDto.getChangeLogList()));

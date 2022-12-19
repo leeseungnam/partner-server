@@ -1,7 +1,6 @@
 package kr.wrightbrothers.apps.order.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,41 +9,43 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-@Getter
-@Builder
+@Getter @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class DeliveryUpdateDto {
-    @ApiModelProperty(value = "주문 번호", required = true)
+    /** 주문 번호 */
     @NotBlank(message = "주문 번호")
     private String orderNo;
 
-    @ApiModelProperty(value = "주문 상품 SEQ", required = true)
+    /** 주문 상품 SEQ Array */
     @NotNull(message = "주문 상품 SEQ")
-    private Integer[] orderProductSeqArray; // 주문 상품 SEQ Array
+    private Integer[] orderProductSeqArray;
 
-    @ApiModelProperty(value = "수령자명", required = true)
+    /** 수령자 명 */
     @NotBlank(message = "수령자명")
-    private String recipientName;           // 수령자 명
+    private String recipientName;
 
-    @ApiModelProperty(value = "수령자 연락처", required = true)
+    /** 수령자 연락처 */
     @NotBlank(message = "수령자 연락처")
-    private String recipientPhone;          // 수령자 연락처
+    private String recipientPhone;
 
-    @ApiModelProperty(value = "수령자 우편번호", required = true)
+    /** 수령자 우편번호 */
     @NotBlank(message = "수령자 우편번호")
-    private String recipientAddressZipCode; // 수령자 우편번호
+    private String recipientAddressZipCode;
 
-    @ApiModelProperty(value = "수령자 주소", required = true)
+    /** 수령자 주소 */
     @NotBlank(message = "수령자 주소")
-    private String recipientAddress;        // 수령자 주소
+    private String recipientAddress;
 
-    @ApiModelProperty(value = "수령자 상세주소")
-    private String recipientAddressDetail;  // 수령자 상세주소
+    /** 수령자 상세주소 */
+    private String recipientAddressDetail;
 
-    private String partnerCode;             // 파트너 코드
+    /** 파트너 코드 */
+    private String partnerCode;
+
+    /** 사용자 아이디 */
     @JsonIgnore
-    private String userId;                  // 사용자 아이디
+    private String userId;
 
     public void setAopPartnerCode(String partnerCode) {
         this.partnerCode = partnerCode;
