@@ -154,7 +154,7 @@ public class DeliveryController extends WBController {
         // 배송정보 수정
         deliveryService.updateDelivery(paramDto);
 
-        return noneMgsResponse(messageSourceAccessor);
+        return defaultMsgResponse(messageSourceAccessor, "order.save.success", null);
     }
 
 
