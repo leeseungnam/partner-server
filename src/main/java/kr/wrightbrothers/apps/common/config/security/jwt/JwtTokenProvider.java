@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -122,9 +123,12 @@ public class JwtTokenProvider implements InitializingBean {
 
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
-
     public Cookie createRefreshTokenCookie(String cookieName, String value) {
         return TokenUtil.createCookie(cookieName, value, 60 * refreshTokenCookieMin);
+    }
+
+    public ResponseCookie createRefreshTokenResponseCookie(String cookieName, String value) {
+        return TokenUtil.createResponseCookie(cookieName, value, 60 * refreshTokenCookieMin);
     }
 
     public PartnerKey.JwtCode validateToken(String token) {

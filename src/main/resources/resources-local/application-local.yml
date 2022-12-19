@@ -52,3 +52,7 @@ system:
 app:
   client:
     host: http://localhost:3300
+  cookie:
+    httpOnly: true
+    secure: false
+    sameSite: Lax

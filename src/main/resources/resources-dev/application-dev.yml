@@ -47,3 +47,7 @@ system:
 app:
   client:
     host: https://dev.partner.wrightbrothers.kr
+  cookie:
+    httpOnly: true
+    secure: false
+    sameSite: Lax

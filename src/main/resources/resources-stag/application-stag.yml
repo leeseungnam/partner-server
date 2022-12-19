@@ -47,3 +47,7 @@ system:
 app:
   client:
     host: https://stag.partner.wrightbrothers.kr
+  cookie:
+    httpOnly: true
+    secure: true
+    sameSite: Lax
