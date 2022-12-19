@@ -58,6 +58,14 @@
 					#{item}
 				</foreach>
 			</if>
+			<if test="keywordValue != null and keywordValue != ''">
+				<if test="keywordType == 'MODEL'">
+				-- 모델 조회
+				<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
+					_p.prdt_nm like #{item} '%'
+				</foreach>
+				</if>
+			</if>
 		      group by _p.ord_no
 		) g on o.ord_no = g.ord_no
 		 where s.prnr_cd = #{partnerCode}

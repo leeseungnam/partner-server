@@ -68,6 +68,11 @@
 							m.usr_nm like #{item} '%'
 						</foreach>
 					</when>
+					<when test="keywordType == 'MODEL'">
+						<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
+							p.prdt_nm like #{item} '%'
+						</foreach>
+					</when>
 				</choose>
 		 		order by p.cnc_rq_dt desc
 			</when>
