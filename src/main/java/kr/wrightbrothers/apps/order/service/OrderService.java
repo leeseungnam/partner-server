@@ -13,6 +13,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -54,6 +55,11 @@ public class OrderService {
                 resourceLoader.getResource("classpath:templates/excel/orderList.xlsx").getInputStream(),
                 1
         );
+
+        if (ObjectUtils.isEmpty(paramDto.getOrderNoList())) {
+            excel.excelWrite("주문목록리스트.xlsx", response);
+            return;
+        }
 
         List<OrderExcelDto.Response> orderList = dao.selectList(namespace + "findExcelOrderList", paramDto, PartnerKey.WBDataBase.Alias.Admin);
         excel.sheet = excel.workbook.getSheetAt(0);

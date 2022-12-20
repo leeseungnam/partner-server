@@ -95,9 +95,6 @@ public class ReturnController extends WBController {
         // 반품 내역 목록 조회
         List<ReturnListDto.Response> returnList = returnService.findReturnList(paramDto);
 
-        if (ObjectUtils.isEmpty(returnList))
-            throw new WBBusinessException(ErrorCode.NO_CONTENT.getErrCode(), new String[]{"반품 목록"});
-
         // 엑셀 다운로드
         returnService.makeExcelFile(
                 ReturnExcelDto.Param.builder()
