@@ -63,6 +63,7 @@
 		 where s.prnr_cd = #{partnerCode}
 		<choose>
 			<when test="keywordValue != null and keywordValue != ''">
+		   and s.ord_stus in ('D01', 'D02', 'D03', 'D05', 'R04')
 				<choose>
 					<when test="keywordType == 'NO'">
 						<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">

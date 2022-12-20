@@ -145,7 +145,7 @@ public class ReturnController extends WBController {
         // 반품 취소에 대한 처리
         returnService.updateRequestReturn(paramDto.toRequestReturnUpdateDto(OrderConst.ProductStatus.WITHDRAWAL_RETURN.getCode()));
 
-        return noneMgsResponse(messageSourceAccessor);
+        return defaultMsgResponse(messageSourceAccessor, "return.cancel", null);
     }
 
     @UserPrincipalScope
