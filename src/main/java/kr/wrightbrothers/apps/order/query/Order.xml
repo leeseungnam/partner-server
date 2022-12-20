@@ -318,7 +318,7 @@
 		    s.pay_stus as payment_status,
 		    ifnull(date_format(p.cnc_cplt_dt, '%Y-%m-%d'), '') as cancel_day,
 			ifnull(if(c.intg_cd_val_nm is null or c.intg_cd_val = 'C99', p.cnc_rsn, c.intg_cd_val_nm), '') as cancel_reason,
-		    ifnull(concat('(', d.rcpnt_adrs_zip_cd, ') ', d.rcpnt_adrs, ', ', d.rcpnt_adrs_sub), '') as address,
+		    if(d.rcpnt_adrs_zip_cd is null , '', concat('(', d.rcpnt_adrs_zip_cd, ') ', d.rcpnt_adrs, ', ', d.rcpnt_adrs_sub)) as address,
 		    ifnull(o.rqst_dtls, '') as request_detail,
 		    ifnull(s.ord_memo, '') as order_memo
 		  from ord_info o
@@ -327,7 +327,7 @@
 		   and s.prnr_cd = #{partnerCode}
 		 inner join ord_prdt_info p
 			on o.ord_no = p.ord_no
-		 inner join ord_shpn_info d
+		  left join ord_shpn_info d
 		    on p.ord_no = d.ord_no
 		   and p.ord_prdt_idx = d.ord_prdt_idx
 		  left join com_intg_cd_dtl c
