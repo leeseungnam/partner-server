@@ -62,7 +62,7 @@ public class ProductController extends WBController {
         paramDto.splitKeywordValue();
 
         // 상품 목록 조회
-        res.addObject(WBKey.WBModel.DefaultDataKey, productService.findProductList(paramDto));
+        res.addObject(WBKey.WBModel.DefaultDataKey, productService.findProductList(paramDto, true));
         res.addObject(WBKey.WBModel.DefaultDataTotalCountKey, paramDto.getTotalItems());
 
         return res;
@@ -99,7 +99,7 @@ public class ProductController extends WBController {
         paramDto.splitKeywordValue();
 
         // 상품 목록 조회
-        List<ProductListDto.Response> productList = productService.findProductList(paramDto);
+        List<ProductListDto.Response> productList = productService.findProductList(paramDto, false);
 
         // 엑셀 다운로드
         productService.makeExcelFile(
