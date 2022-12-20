@@ -45,15 +45,16 @@ public class ProductService {
     private final ResourceLoader resourceLoader;
     private final ChangeInfoService changeInfoService;
 
-    public List<ProductListDto.Response> findProductList(ProductListDto.Param paramDto) {
-        return dao.selectList(namespace + "findProductList" ,paramDto, paramDto.getRowBounds(), Alias.Admin)
+    public List<ProductListDto.Response> findProductList(ProductListDto.Param paramDto,
+                                                         boolean isRowBounds) {
+        return isRowBounds ? dao.selectList(namespace + "findProductList" ,paramDto, paramDto.getRowBounds(), Alias.Admin)
                 .stream()
                 .map(product -> (ProductListDto.Response) product)
                 // 회원 정보는 RDS 나눠진 관계로 따로 회원명 처리
                 .peek(product -> product.setCreateUserName(
                         dao.selectOne(namespace + "findProductCreateUser", product.getCreateUserId())
                 ))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()) : dao.selectList(namespace + "findProductList" ,paramDto, Alias.Admin);
     }
 
     @Transactional(transactionManager = TransactionManager.Global)
