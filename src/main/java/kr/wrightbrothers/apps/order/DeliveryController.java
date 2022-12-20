@@ -53,7 +53,7 @@ public class DeliveryController extends WBController {
         paramDto.splitKeywordValue();
 
        // 배송 내역 목록 조회
-        response.addObject(WBKey.WBModel.DefaultDataKey, deliveryService.findDeliveryList(paramDto));
+        response.addObject(WBKey.WBModel.DefaultDataKey, deliveryService.findDeliveryList(paramDto, true));
         response.addObject(WBKey.WBModel.DefaultDataTotalCountKey, paramDto.getTotalItems());
 
         return response;
@@ -86,7 +86,7 @@ public class DeliveryController extends WBController {
         paramDto.splitKeywordValue();
 
         // 배송 내역 목록 조회
-        List<DeliveryListDto.Response> deliveryList = deliveryService.findDeliveryList(paramDto);
+        List<DeliveryListDto.Response> deliveryList = deliveryService.findDeliveryList(paramDto, false);
 
         // 엑셀 다운로드
         deliveryService.makeExcelFile(

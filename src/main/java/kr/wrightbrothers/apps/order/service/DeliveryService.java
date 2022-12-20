@@ -32,8 +32,10 @@ public class DeliveryService {
     private final String namespace = "kr.wrightbrothers.apps.order.query.Delivery.";
     private final String namespaceOrder = "kr.wrightbrothers.apps.order.query.Order.";
 
-    public List<DeliveryListDto.Response> findDeliveryList(DeliveryListDto.Param paramDto) {
-        return dao.selectList(namespace + "findDeliveryList", paramDto, paramDto.getRowBounds(), Alias.Admin);
+    public List<DeliveryListDto.Response> findDeliveryList(DeliveryListDto.Param paramDto,
+                                                           boolean isRowBounds) {
+        return isRowBounds ? dao.selectList(namespace + "findDeliveryList", paramDto, paramDto.getRowBounds(), Alias.Admin)
+                : dao.selectList(namespace + "findDeliveryList", paramDto, Alias.Admin);
     }
 
     public DeliveryFindDto.Response findDelivery(DeliveryFindDto.Param paramDto) {

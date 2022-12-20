@@ -69,7 +69,7 @@ public class OrderController extends WBController {
         }
 
         // 주문 내역 목록 조회
-        response.addObject(WBKey.WBModel.DefaultDataKey, orderService.findOrderList(paramDto));
+        response.addObject(WBKey.WBModel.DefaultDataKey, orderService.findOrderList(paramDto, true));
         response.addObject(WBKey.WBModel.DefaultDataTotalCountKey, paramDto.getTotalItems());
 
         return response;
@@ -108,7 +108,7 @@ public class OrderController extends WBController {
         paramDto.parameterInit();
 
         // 주문 내역 목록 조회
-        List<OrderListDto.Response> orderList = orderService.findOrderList(paramDto);
+        List<OrderListDto.Response> orderList = orderService.findOrderList(paramDto, false);
 
         // 엑셀 다운로드
         orderService.makeExcelFile(

@@ -29,8 +29,10 @@ public class OrderService {
     private final ResourceLoader resourceLoader;
     private final String namespace = "kr.wrightbrothers.apps.order.query.Order.";
 
-    public List<OrderListDto.Response> findOrderList(OrderListDto.Param paramDto) {
-        return dao.selectList(namespace + "findOrderList", paramDto, paramDto.getRowBounds(), PartnerKey.WBDataBase.Alias.Admin);
+    public List<OrderListDto.Response> findOrderList(OrderListDto.Param paramDto,
+                                                     boolean isRowBounds) {
+        return isRowBounds ? dao.selectList(namespace + "findOrderList", paramDto, paramDto.getRowBounds(), PartnerKey.WBDataBase.Alias.Admin)
+                : dao.selectList(namespace + "findOrderList", paramDto, PartnerKey.WBDataBase.Alias.Admin);
     }
 
     public OrderListDto.Statistics findOrderStatusStatistics(OrderListDto.Param paramDto) {
