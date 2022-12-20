@@ -60,7 +60,7 @@ public class ReturnController extends WBController {
         paramDto.splitKeywordValue();
 
         // 반품 내역 목록 조회
-        response.addObject(WBKey.WBModel.DefaultDataKey, returnService.findReturnList(paramDto));
+        response.addObject(WBKey.WBModel.DefaultDataKey, returnService.findReturnList(paramDto, true));
         response.addObject(WBKey.WBModel.DefaultDataTotalCountKey, paramDto.getTotalItems());
 
         return response;
@@ -93,7 +93,7 @@ public class ReturnController extends WBController {
         paramDto.splitKeywordValue();
 
         // 반품 내역 목록 조회
-        List<ReturnListDto.Response> returnList = returnService.findReturnList(paramDto);
+        List<ReturnListDto.Response> returnList = returnService.findReturnList(paramDto, false);
 
         // 엑셀 다운로드
         returnService.makeExcelFile(

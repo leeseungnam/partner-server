@@ -33,8 +33,10 @@ public class ReturnService {
     private final String namespace = "kr.wrightbrothers.apps.order.query.Return.";
     private final String namespaceOrder = "kr.wrightbrothers.apps.order.query.Order.";
 
-    public List<ReturnListDto.Response> findReturnList(ReturnListDto.Param paramDto) {
-        return dao.selectList(namespace + "findReturnList", paramDto, paramDto.getRowBounds(), PartnerKey.WBDataBase.Alias.Admin);
+    public List<ReturnListDto.Response> findReturnList(ReturnListDto.Param paramDto,
+                                                       boolean isRowBounds) {
+        return isRowBounds ? dao.selectList(namespace + "findReturnList", paramDto, paramDto.getRowBounds(), PartnerKey.WBDataBase.Alias.Admin)
+                : dao.selectList(namespace + "findReturnList", paramDto, PartnerKey.WBDataBase.Alias.Admin);
     }
 
     public ReturnFindDto.Response findReturn(ReturnFindDto.Param paramDto) {
