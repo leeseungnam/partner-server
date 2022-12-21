@@ -52,6 +52,9 @@
 				and _p.ord_prdt_idx = _d.ord_prdt_idx
 				and _p.prdt_cd = _d.prdt_cd
 			  where _p.prnr_cd = #{partnerCode}
+			<if test="keywordValue != null and keywordValue != ''">
+			    and _p.dlvr_tp in ('D01', 'D07', 'D06')
+			</if>
 			<if test="keywordValue == null or keywordValue == ''">
 				-- 배송 방법
 				<foreach collection="deliveryType" item="item" index="index" open="and _p.dlvr_tp in (" separator="," close=")">
