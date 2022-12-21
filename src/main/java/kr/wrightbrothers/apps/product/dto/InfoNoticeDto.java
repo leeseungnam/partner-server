@@ -21,45 +21,41 @@ public class InfoNoticeDto {
         @NotBlank(message = "상품구분")
         private String categoryCode;
 
-        /** 픔명/모델명 */
-        @NotBlank(message = "품명/모델명")
-        private String modelName;
+        /** 정보고시 가변필드 1 */
+        private String productAttribute1;
 
-        /** 크기 */
-        private String productSize;
+        /** 정보고시 가변필드 2 */
+        private String productAttribute2;
 
-        /** 중량 */
-        private String productWeight;
+        /** 정보고시 가변필드 3 */
+        private String productAttribute3;
 
-        /** 재질 */
-        private String productMaterial;
+        /** 정보고시 가변필드 4 */
+        private String productAttribute4;
 
-        /** 제품구성 */
-        private String productComponent;
+        /** 정보고시 가변필드 5 */
+        private String productAttribute5;
 
-        /** 출시 연도 */
-        @NotBlank(message = "출시 연도")
-        private String modelYear;
+        /** 정보고시 가변필드 6 */
+        private String productAttribute6;
 
-        /** 출시 월 */
-        @NotBlank(message = "출시 월")
-        private String modelMonth;
+        /** 정보고시 가변필드 7 */
+        private String productAttribute7;
 
-        /** 제조자(사) */
-        @Size(min = 2, max = 50, message = "제조자(사)")
-        @NotBlank(message = "제조자(사)")
-        private String productMfr;
+        /** 정보고시 가변필드 8 */
+        private String productAttribute8;
 
-        /** 세부사양 */
-        private String detailSpec;
+        /** 정보고시 가변필드 9 */
+        private String productAttribute9;
 
-        /** 품질보증기준 */
-        private String qaStandard;
+        /** 정보고시 가변필드 10 */
+        private String productAttribute10;
 
-        /** AS 연락처 */
-        @Size(min = 2, max = 20, message = "AS 연락처")
-        @NotBlank(message = "AS 연락처")
-        private String asPhone;
+        /** 정보고시 가변필드 11 */
+        private String productAttribute11;
+
+        /** 정보고시 가변필드 12 */
+        private String productAttribute12;
     }
 
     @Data
