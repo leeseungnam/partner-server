@@ -272,13 +272,14 @@
 		    p.dlvr_tp as delivery_type,
 		    p.dlvr_tp as delivery_name,
 		    p.dlvr_chrg_amt as delivery_charge_amount,
-			date_format(p.cnc_cplt_dt, '%Y-%m-%d') as cancel_day,
-		    if(p.cnc_rsn_cd = 'C99', p.cnc_rsn, c.intg_cd_val_nm) as cancel_reason,
+			if(ord_prdt_stus not in ('R01', 'R02', 'R03', 'R05', 'R06'), date_format(p.cnc_cplt_dt, '%Y-%m-%d'), null) as cancel_day,
+			if(ord_prdt_stus not in ('R01', 'R02', 'R03', 'R05', 'R06'), if(p.cnc_rsn is not null and p.cnc_rsn != '', p.cnc_rsn, c.intg_cd_val_nm), null) as cancel_reason,
 			date_format(s.rtrn_dlvry_end_dt, '%Y-%m-%d') as return_delivery_endDay,
 			if(ord_prdt_stus in ('R01', 'R02', 'R03', 'R05', 'R06'), s.rtrn_dlvry_cmpny, s.dlvry_cmpny) as returnDeliveryCompany,
 			if(ord_prdt_stus in ('R01', 'R02', 'R03', 'R05', 'R06'), s.rtrn_invc_no, s.invc_no) as returnInvoiceNo,
 			o.ssp_pnt as ssp_point,
-			o.sls_amt as sale_amount
+			o.sls_amt as sale_amount,
+			if(ord_prdt_stus = 'R05', date_format(p.cnc_cplt_dt, '%Y-%m-%d'), null) as return_complete_day
 		  from ord_prdt_info p
 		 inner join ord_info o on p.ord_no = o.ord_no
 		  left join ord_shpn_info s
