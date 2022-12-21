@@ -67,7 +67,7 @@
 	<select id="findProductList" parameterType="kr.wrightbrothers.apps.product.dto.ProductListDto$Param" resultType="kr.wrightbrothers.apps.product.dto.ProductListDto$Response">
 		select
 		    p.prdt_cd product_code,
-		    p.brd_nm brand_name,
+		    ifnull(p.brd_nm, cb.brd_eng_nm) brand_name,
 		    co.cagy_nm category_one_name,
 		    ct.cagy_nm category_two_name,
 		    cr.cagy_nm category_thr_name,
@@ -92,6 +92,8 @@
 			on p.cagy_dpth_two = ct.cagy_cd
 		  left join com_cagy cr
 			on p.cagy_dpth_thr = cr.cagy_cd
+		  left join com_brd cb
+		  	on p.brd_no = cb.brd_no
 		 where p.pur_rq_no = #{partnerCode}
 		<choose>
 		   <when test="keywordValueList != null and keywordValueList.length != 0">
@@ -456,37 +458,40 @@
 								   prdt_atte9,
 								   prdt_atte10,
 								   prdt_atte11,
+		                           prdt_atte12,
 		                           cre_usr_id,
 		                           upd_usr_id)
 		values(#{productCode},
 			   #{categoryCode},
-			   #{modelName},
-			   #{productSize},
-			   #{productWeight},
-			   #{productMaterial},
-			   #{productComponent},
-			   #{modelYear},
-			   #{modelMonth},
-			   #{productMfr},
-			   #{detailSpec},
-			   #{qaStandard},
-			   #{asPhone},
+			   #{productAttribute1},
+			   #{productAttribute2},
+			   #{productAttribute3},
+			   #{productAttribute4},
+			   #{productAttribute5},
+			   #{productAttribute6},
+			   #{productAttribute7},
+			   #{productAttribute8},
+			   #{productAttribute9},
+			   #{productAttribute10},
+			   #{productAttribute11},
+		       #{productAttribute12},
 			   #{userId},
 			   #{userId})
 		on duplicate key
 		update
 			cagy_cd			= #{categoryCode},
-			prdt_atte1		= #{modelName},
-			prdt_atte2		= #{productSize},
-			prdt_atte3		= #{productWeight},
-			prdt_atte4		= #{productMaterial},
-			prdt_atte5		= #{productComponent},
-			prdt_atte6		= #{modelYear},
-			prdt_atte7		= #{modelMonth},
-			prdt_atte8		= #{productMfr},
-			prdt_atte9		= #{detailSpec},
-			prdt_atte10		= #{qaStandard},
-			prdt_atte11		= #{asPhone},
+			prdt_atte1		= #{productAttribute1},
+			prdt_atte2		= #{productAttribute2},
+			prdt_atte3		= #{productAttribute3},
+			prdt_atte4		= #{productAttribute4},
+			prdt_atte5		= #{productAttribute5},
+			prdt_atte6		= #{productAttribute6},
+			prdt_atte7		= #{productAttribute7},
+			prdt_atte8		= #{productAttribute8},
+			prdt_atte9		= #{productAttribute9},
+			prdt_atte10		= #{productAttribute10},
+			prdt_atte11		= #{productAttribute11},
+			prdt_atte12		= #{productAttribute12},
 		    upd_usr_id		= #{userId},
 		    upd_dt			= now()
 	</insert>
@@ -534,9 +539,9 @@
             cr.cagy_nm category_thr_name,
             p.prdt_nm product_name,
             p.brd_no brand_no,
-            p.brd_nm brand_name,
+            ifnull(p.brd_nm, cb.brd_eng_nm) brand_name,
             p.mdl_no model_code,
-            p.mdl_nm model_name,
+            ifnull(p.mdl_nm, cm.mdl_nm) model_name,
             p.mdl_year model_year,
             p.ytb_url youtube_url,
             p.prdt_barcd product_barcode,
@@ -550,6 +555,10 @@
 			on p.cagy_dpth_two = ct.cagy_cd
 		  left join com_cagy cr
 			on p.cagy_dpth_thr = cr.cagy_cd
+		  left join com_brd cb
+		    on p.brd_no = cb.brd_no
+		  left join com_brd_mdl cm
+		  	on p.mdl_no = cm.mdl_cd
 		 where p.prdt_cd = #{productCode}
 	</select>
 
@@ -648,17 +657,18 @@
 	<select id="findInfoNotice" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.product.dto.InfoNoticeDto$ResBody">
 		select
 			cagy_cd category_code,
-			prdt_atte1 model_name,
-			prdt_atte2 product_size,
-            prdt_atte3 product_weight,
-            prdt_atte4 product_material,
-            prdt_atte5 product_component,
-            prdt_atte6 model_year,
-            prdt_atte7 model_month,
-            prdt_atte8 product_mfr,
-            prdt_atte9 detail_spec,
-            prdt_atte10 qa_standard,
-            prdt_atte11 as_phone
+			prdt_atte1 product_attribute1,
+			prdt_atte2 product_attribute2,
+            prdt_atte3 product_attribute3,
+            prdt_atte4 product_attribute4,
+            prdt_atte5 product_attribute5,
+            prdt_atte6 product_attribute6,
+            prdt_atte7 product_attribute7,
+            prdt_atte8 product_attribute8,
+            prdt_atte9 product_attribute9,
+            prdt_atte10 product_attribute10,
+            prdt_atte11 product_attribute11,
+			prdt_atte12 product_attribute12
 		  from prdt_info_bltn
 		 where prdt_cd = #{productCode}
 	</select>

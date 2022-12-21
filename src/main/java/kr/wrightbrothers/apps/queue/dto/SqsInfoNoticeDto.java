@@ -8,38 +8,41 @@ import lombok.Setter;
 @Setter
 public class SqsInfoNoticeDto {
     @JsonProperty("CategoryCode")
-    private String categoryCode;    // 카테고리 코드
+    private String categoryCode;        // 카테고리 코드
 
     @JsonProperty("ProductAttribute1")
-    private String modelName;       // 품명/모데리명
+    private String productAttribute1;   // 정보고시 가변필드1
 
     @JsonProperty("ProductAttribute2")
-    private String productSize;     // 크기
+    private String productAttribute2;   // 정보고시 가변필드2
 
     @JsonProperty("ProductAttribute3")
-    private String productWeight;   // 중량
+    private String productAttribute3;   // 정보고시 가변필드3
 
     @JsonProperty("ProductAttribute4")
-    private String productMaterial; // 재질
+    private String productAttribute4;   // 정보고시 가변필드4
 
     @JsonProperty("ProductAttribute5")
-    private String productComponent;// 제품구성
+    private String productAttribute5;   // 정보고시 가변필드5
 
     @JsonProperty("ProductAttribute6")
-    private String modelYear;       // 출시연도
+    private String productAttribute6;   // 정보고시 가변필드6
 
     @JsonProperty("ProductAttribute7")
-    private String modelMonth;      // 출시월
+    private String productAttribute7;   // 정보고시 가변필드7
 
     @JsonProperty("ProductAttribute8")
-    private String productMfr;      // 제조자(사)
+    private String productAttribute8;   // 정보고시 가변필드8
 
     @JsonProperty("ProductAttribute9")
-    private String detailSpec;      // 세부사양
+    private String productAttribute9;   // 정보고시 가변필드9
 
     @JsonProperty("ProductAttribute10")
-    private String qaStandard;      // 품질보증기준
+    private String productAttribute10;   // 정보고시 가변필드10
 
     @JsonProperty("ProductAttribute11")
-    private String asPhone;         // AS 연락처
+    private String productAttribute11;   // 정보고시 가변필드11
+
+    @JsonProperty("ProductAttribute12")
+    private String productAttribute12;   // 정보고시 가변필드12
 }
