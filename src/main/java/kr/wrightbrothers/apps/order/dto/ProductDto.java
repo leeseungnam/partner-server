@@ -65,6 +65,10 @@ public class ProductDto {
     /** 판매대금 */
     private Long saleAmount;
 
+    /** 반품완료일자 */
+    private String returnCompleteDay;
+
+
     public void setOrderProductStatusName(String productStatusCode) {
         this.orderProductStatusName = OrderConst.ProductStatus.of(productStatusCode).getName();
     }

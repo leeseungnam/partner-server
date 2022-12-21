@@ -318,6 +318,7 @@ public class OrderControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.productList[].returnInvoiceNo").type(JsonFieldType.STRING).description("반품배송번호").optional(),
                                         fieldWithPath("data.productList[].sspPoint").type(JsonFieldType.NUMBER).description("포인트").optional(),
                                         fieldWithPath("data.productList[].saleAmount").type(JsonFieldType.NUMBER).description("판매대금").optional(),
+                                        fieldWithPath("data.productList[].returnCompleteDay").type(JsonFieldType.STRING).description("반품완료일자").optional(),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
                                 )
                 ))
