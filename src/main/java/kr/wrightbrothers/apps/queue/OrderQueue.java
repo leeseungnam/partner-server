@@ -34,7 +34,7 @@ public class OrderQueue extends WBSQS {
     private String queueName;
 
     private final OrderQueueService orderQueueService;
-    private final PaymentService paymentService;
+    //private final PaymentService paymentService;
 
     /**
      * 입점몰 API -> ADMIN 2.0 API
@@ -89,16 +89,16 @@ public class OrderQueue extends WBSQS {
                     break;
                 case REQUEST_CANCEL:
                     // 주문취소 요청
-                    PaymentDto paymentDto = paymentService.findPaymentToOrder(
-                            new OrderFindDto.Param(String.valueOf(body.get("prnrCd")), String.valueOf(body.get("ordNo")))
-                    );
-
-                    // 무통장 아닐경우 종료
-                    if (!PaymentConst.Method.NON_BANK.getCode().equals(paymentDto.getPaymentMethodCode())) break;
-
-                    // 알림톡 전송
-                    orderQueueService.sendNotificationKakao(String.valueOf(body.get("prnrCd")), Notification.REQUEST_CANCEL_ORDER);
-                    log.info("Order Request Cancel Notification. PartnerCode::{}, OrderNo::{}", body.get("prnrCd"), body.get("ordNo"));
+//                    PaymentDto paymentDto = paymentService.findPaymentToOrder(
+//                            new OrderFindDto.Param(String.valueOf(body.get("prnrCd")), String.valueOf(body.get("ordNo")))
+//                    );
+//
+//                    // 무통장 아닐경우 종료
+//                    if (!PaymentConst.Method.NON_BANK.getCode().equals(paymentDto.getPaymentMethodCode())) break;
+//
+//                    // 알림톡 전송
+//                    orderQueueService.sendNotificationKakao(String.valueOf(body.get("prnrCd")), Notification.REQUEST_CANCEL_ORDER);
+//                    log.info("Order Request Cancel Notification. PartnerCode::{}, OrderNo::{}", body.get("prnrCd"), body.get("ordNo"));
                     break;
             }
 
