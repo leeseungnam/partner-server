@@ -606,7 +606,7 @@
 			dscnt_tp discount_type,
             dscnt_amt discount_amount,
             dp_flg display_flag,
-            prdt_optn_flg product_option_flag,
+            ifnull(prdt_optn_flg, 'N') product_option_flag,
             pur_amt supply_amount,
             fnl_sell_amt final_sell_amount,
             prdt_stus_cd product_status_code,

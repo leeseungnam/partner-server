@@ -1,8 +1,13 @@
 package kr.wrightbrothers.apps.queue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kr.wrightbrothers.apps.common.constants.Notification;
 import kr.wrightbrothers.apps.common.constants.OrderConst;
 import kr.wrightbrothers.apps.common.constants.DocumentSNS;
+import kr.wrightbrothers.apps.common.constants.PaymentConst;
+import kr.wrightbrothers.apps.order.dto.OrderFindDto;
+import kr.wrightbrothers.apps.order.dto.PaymentDto;
+import kr.wrightbrothers.apps.order.service.PaymentService;
 import kr.wrightbrothers.apps.queue.service.OrderQueueService;
 import kr.wrightbrothers.framework.support.WBSQS;
 import kr.wrightbrothers.framework.support.dto.WBSnsDTO;
@@ -29,6 +34,7 @@ public class OrderQueue extends WBSQS {
     private String queueName;
 
     private final OrderQueueService orderQueueService;
+    private final PaymentService paymentService;
 
     /**
      * 입점몰 API -> ADMIN 2.0 API
@@ -70,15 +76,31 @@ public class OrderQueue extends WBSQS {
 
             // 관련 키 포함여부 체크
             if (!body.containsKey("ordNo") & !body.containsKey("prnrCd") & !body.containsKey("ordPrdtStus")) return;
-            // 반품요청 여부 확인
-            if (!OrderConst.ProductStatus.REQUEST_RETURN.getCode().equals(body.get("ordPrdtStus"))) return;
 
-            // 반품요청 푸시알림 처리
-            log.info("Order SQS Receiver. OrderNo::{}, PartnerCode::{}, Order Product Status::{}",
-                    body.get("ordNo"), body.get("prnrCd"), body.get("ordPrdtStus"));
+            switch (OrderConst.ProductStatus.of(body.get("ordPrdtStus").toString())) {
+                case REQUEST_RETURN:
+                    // 반품요청 푸시알림 처리
+                    log.info("Order SQS Receiver. OrderNo::{}, PartnerCode::{}, Order Product Status::{}",
+                            body.get("ordNo"), body.get("prnrCd"), body.get("ordPrdtStus"));
 
-            // 알림톡 전송
-            orderQueueService.sendNotificationRequestReturn(String.valueOf(body.get("prnrCd")));
+                    // 알림톡 전송
+                    orderQueueService.sendNotificationKakao(String.valueOf(body.get("prnrCd")), Notification.REQUEST_RETURN_ORDER);
+                    log.info("Order Request Return Notification. PartnerCode::{}", body.get("prnrCd"));
+                    break;
+                case REQUEST_CANCEL:
+                    // 주문취소 요청
+                    PaymentDto paymentDto = paymentService.findPaymentToOrder(
+                            new OrderFindDto.Param(String.valueOf(body.get("prnrCd")), String.valueOf(body.get("ordNo")))
+                    );
+
+                    // 무통장 아닐경우 종료
+                    if (!PaymentConst.Method.NON_BANK.getCode().equals(paymentDto.getPaymentMethodCode())) break;
+
+                    // 알림톡 전송
+                    orderQueueService.sendNotificationKakao(String.valueOf(body.get("prnrCd")), Notification.REQUEST_CANCEL_ORDER);
+                    log.info("Order Request Cancel Notification. PartnerCode::{}, OrderNo::{}", body.get("prnrCd"), body.get("ordNo"));
+                    break;
+            }
 
             ackMessage(snsDto);
         } catch (Exception e) {

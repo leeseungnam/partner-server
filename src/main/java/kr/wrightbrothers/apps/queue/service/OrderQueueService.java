@@ -25,7 +25,8 @@ public class OrderQueueService {
         return dao.selectList(namespace + "findOrderDeliverySnsData", orderNo);
     }
 
-    public void sendNotificationRequestReturn(String partnerCode) {
+    public void sendNotificationKakao(String partnerCode,
+                                      Notification noti) {
         // 파트너 이름 조회
         String partnerName = dao.selectOne(namespace + "findPartnerName", partnerCode);
         List<String> notificationList = dao.selectList(namespace + "findNotificationList", partnerCode);
@@ -33,12 +34,11 @@ public class OrderQueueService {
         // 파트너 알림톡 수신등록 X
         if (ObjectUtils.isEmpty(notificationList)) log.info("Notification Target Empty. PartnerName::{}", partnerName);
 
-        log.info("Order Request Return Notification. PartnerName::{}", partnerName);
         notificationList.forEach(notification -> {
             // 카카오 푸시알림 전송
             notificationQueue.sendPushToAdmin(
                     DocumentSNS.NOTI_KAKAO_SINGLE,
-                    Notification.REQUEST_RETURN_ORDER,
+                    noti,
                     notification,
                     partnerName);
         });

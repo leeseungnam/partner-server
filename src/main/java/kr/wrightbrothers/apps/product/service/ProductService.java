@@ -97,6 +97,9 @@ public class ProductService {
                 .guide(dao.selectOne(namespace + "findGuide", paramDto.getProductCode(), Alias.Admin))
                 .build();
 
+        if (!ObjectUtils.isEmpty(findDto.getOptionList()) && "N".equals(findDto.getSellInfo().getProductOptionFlag()))
+            findDto.getSellInfo().setProductOptionFlag("Y");
+
         if (ProductConst.Status.REJECT_INSPECTION.getCode().equals(findDto.getSellInfo().getProductStatusCode()))
             findDto.setRejectReason(dao.selectOne(namespace + "findProductRejectReason", paramDto.getProductCode()));
 
