@@ -65,8 +65,6 @@
 			<choose>
 				<when test="keywordValue != null and keywordValue != ''">
 		   and s.ord_stus in ('O05', 'D01', 'C05', 'O06', 'O07', 'D02', 'D03', 'D05', 'R01', 'R03', 'R05', 'R04')
-		   and s.pay_stus in ('S01', 'S10', 'S08')
-		   and o.pay_meth in ('P01', 'P02', 'P03', 'P06')
 					<choose>
 						<when test="keywordType == 'NO'">
 							<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
@@ -172,8 +170,6 @@
 			<choose>
 				<when test="keywordValue != null and keywordValue != ''">
 		and s.ord_stus in ('O05', 'D01', 'C05', 'O06', 'O07', 'D02', 'D03', 'D05', 'R01', 'R03', 'R05', 'R04')
-		and s.pay_stus in ('S01', 'S10', 'S08')
-		and o.pay_meth in ('P01', 'P02', 'P03', 'P06')
 					<choose>
 						<when test="keywordType == 'NO'">
 							<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
