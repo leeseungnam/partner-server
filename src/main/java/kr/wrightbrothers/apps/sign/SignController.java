@@ -57,7 +57,8 @@ public class SignController extends WBController {
         log.debug("refresh token={}",refreshToken);
 
         response.setHeader(PartnerKey.Jwt.Header.AUTHORIZATION, PartnerKey.Jwt.Type.BEARER + accessToken);
-        response.addHeader("Set-Cookie", jwtTokenProvider.createRefreshTokenResponseCookie(PartnerKey.Jwt.Alias.REFRESH_TOKEN, refreshToken).toString());
+        response.addCookie(jwtTokenProvider.createRefreshTokenCookie(PartnerKey.Jwt.Alias.REFRESH_TOKEN, refreshToken));
+//        response.addHeader("Set-Cookie", jwtTokenProvider.createRefreshTokenResponseCookie(PartnerKey.Jwt.Alias.REFRESH_TOKEN, refreshToken).toString());
 
         user.changePwd(null);
 
