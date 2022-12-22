@@ -141,7 +141,8 @@
 		    ifnull(sum(if(s.pay_stus = 'S06', 1, 0)), 0) as requestCancelCount,		-- 취소요청 건수
 		    ifnull(sum(if(s.ord_stus = 'C05', 1, 0)), 0) as confirmPurchaseCount,	-- 구매확정 건수
 		    ifnull(sum(if(s.ord_stus = 'R05', 1, 0)), 0) as completeReturnCount,	-- 반품완료 건수
-			ifnull(sum(if(s.pay_stus = 'S09', 1, 0)), 0) as failCancelCount			-- 취소실패 건수
+			ifnull(sum(if(s.pay_stus = 'S09', 1, 0)), 0) as failCancelCount,		-- 취소실패 건수
+			ifnull(sum(if(s.ord_stus = 'R01', 1, 0)), 0) as requestReturnCount		-- 반품요청 건수
 		  from ord_info o
 		  left join com_mbr_info m
 			on o.ord_usr_id = m.usr_id

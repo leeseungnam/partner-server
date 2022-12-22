@@ -131,6 +131,7 @@ public class OrderControllerTest extends BaseControllerTests {
                                         fieldWithPath("data.confirmPurchaseCount").type(JsonFieldType.NUMBER).description("구매 확정 건수"),
                                         fieldWithPath("data.completeReturnCount").type(JsonFieldType.NUMBER).description("반품 완료 건수"),
                                         fieldWithPath("data.failCancelCount").type(JsonFieldType.NUMBER).description("취소 실패 건수"),
+                                        fieldWithPath("data.requestReturnCount").type(JsonFieldType.NUMBER).description("반품 요청 건수"),
                                         fieldWithPath("WBCommon.state").type(JsonFieldType.STRING).description("상태코드")
                                 )
                         ))

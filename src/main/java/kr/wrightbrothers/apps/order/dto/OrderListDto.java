@@ -146,6 +146,9 @@ public class OrderListDto {
 
         /** 취소실패 건수 */
         private long failCancelCount;
+
+        /** 반품요청 건수 */
+        private long requestReturnCount;
     }
 
 }
