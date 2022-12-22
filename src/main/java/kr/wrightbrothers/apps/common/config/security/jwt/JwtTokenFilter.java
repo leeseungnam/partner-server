@@ -48,7 +48,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
                     if(newRefreshToken != null){
 //                    response.setHeader(REFRESH_HEADER, "Bearer " + newRefreshToken);
-                        response.addHeader("Set-Cookie", jwtTokenProvider.createRefreshTokenResponseCookie(PartnerKey.Jwt.Alias.REFRESH_TOKEN, refreshToken).toString());
+//                        response.addHeader("Set-Cookie", jwtTokenProvider.createRefreshTokenResponseCookie(PartnerKey.Jwt.Alias.REFRESH_TOKEN, refreshToken).toString());
+                        response.addCookie(jwtTokenProvider.createRefreshTokenCookie(PartnerKey.Jwt.Alias.REFRESH_TOKEN, newRefreshToken));
 
                         // access token 생성
                         Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
