@@ -97,6 +97,9 @@ public class ProductService {
                 .guide(dao.selectOne(namespace + "findGuide", paramDto.getProductCode(), Alias.Admin))
                 .build();
 
+        if (Objects.requireNonNull(optionList).size() == 1 && optionList.get(0).getOptionName().contains("임시"))
+            optionList.clear();
+
         if (!ObjectUtils.isEmpty(findDto.getOptionList()) && "N".equals(findDto.getSellInfo().getProductOptionFlag()))
             findDto.getSellInfo().setProductOptionFlag("Y");
 
