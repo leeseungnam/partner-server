@@ -2,6 +2,8 @@ package kr.wrightbrothers.apps.product.dto;
 
 import kr.wrightbrothers.apps.common.AbstractPageDto;
 import kr.wrightbrothers.apps.common.constants.ProductConst;
+import kr.wrightbrothers.apps.common.util.ErrorCode;
+import kr.wrightbrothers.framework.lang.WBBusinessException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -49,8 +51,18 @@ public class ProductListDto {
 
         // 여러 상품 검색을 위해 구분자인 ; Split 처리
         public void splitKeywordValue() {
-            if (ObjectUtils.isEmpty(this.keywordValue))
+            if (ObjectUtils.isEmpty(this.keywordValue)) {
+                if (ObjectUtils.isEmpty(this.displayFlag))
+                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"전시상태"});
+                if (ObjectUtils.isEmpty(this.status))
+                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"상품상태"});
+                if (ObjectUtils.isEmpty(this.startDay))
+                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"시작일자"});
+                if (ObjectUtils.isEmpty(this.endDay))
+                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"종료일자"});
                 return;
+            }
+
 
             this.keywordValueList = this.keywordValue.split(",");
         }

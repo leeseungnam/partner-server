@@ -27,10 +27,10 @@ public class DeliveryController extends WBController {
     private final DeliveryService deliveryService;
 
     @GetMapping("/deliveries")
-    public WBModel findDeliveryList(@RequestParam String[] deliveryStatus,
-                                    @RequestParam String[] deliveryType,
-                                    @RequestParam String startDay,
-                                    @RequestParam String endDay,
+    public WBModel findDeliveryList(@RequestParam(required = false) String[] deliveryStatus,
+                                    @RequestParam(required = false) String[] deliveryType,
+                                    @RequestParam(required = false) String startDay,
+                                    @RequestParam(required = false) String endDay,
                                     @RequestParam String keywordType,
                                     @RequestParam(required = false) String keywordValue,
                                     @RequestParam int count,
@@ -60,10 +60,10 @@ public class DeliveryController extends WBController {
     }
 
     @GetMapping("/deliveries/excel")
-    public void deliveryExcelDownload(@RequestParam String[] deliveryStatus,
-                                      @RequestParam String[] deliveryType,
-                                      @RequestParam String startDay,
-                                      @RequestParam String endDay,
+    public void deliveryExcelDownload(@RequestParam(required = false) String[] deliveryStatus,
+                                      @RequestParam(required = false) String[] deliveryType,
+                                      @RequestParam(required = false) String startDay,
+                                      @RequestParam(required = false) String endDay,
                                       @RequestParam String keywordType,
                                       @RequestParam(required = false) String keywordValue,
                                       @RequestParam int count,

@@ -31,12 +31,12 @@ public class OrderController extends WBController {
             "/orders",
             "/orders/status-statistics"
     })
-    public WBModel findOrderList(@RequestParam String[] orderStatus,
-                                 @RequestParam String[] paymentStatus,
-                                 @RequestParam String[] paymentMethod,
-                                 @RequestParam String rangeType,
-                                 @RequestParam String startDay,
-                                 @RequestParam String endDay,
+    public WBModel findOrderList(@RequestParam(required = false) String[] orderStatus,
+                                 @RequestParam(required = false) String[] paymentStatus,
+                                 @RequestParam(required = false) String[] paymentMethod,
+                                 @RequestParam(required = false) String rangeType,
+                                 @RequestParam(required = false) String startDay,
+                                 @RequestParam(required = false) String endDay,
                                  @RequestParam String keywordType,
                                  @RequestParam(required = false) String keywordValue,
                                  @RequestParam String sortType,
@@ -76,12 +76,12 @@ public class OrderController extends WBController {
     }
 
     @GetMapping("/orders/excel")
-    public void orderExcelDownload(@RequestParam String[] orderStatus,
-                                   @RequestParam String[] paymentStatus,
-                                   @RequestParam String[] paymentMethod,
-                                   @RequestParam String rangeType,
-                                   @RequestParam String startDay,
-                                   @RequestParam String endDay,
+    public void orderExcelDownload(@RequestParam(required = false) String[] orderStatus,
+                                   @RequestParam(required = false) String[] paymentStatus,
+                                   @RequestParam(required = false) String[] paymentMethod,
+                                   @RequestParam(required = false) String rangeType,
+                                   @RequestParam(required = false) String startDay,
+                                   @RequestParam(required = false) String endDay,
                                    @RequestParam String keywordType,
                                    @RequestParam(required = false) String keywordValue,
                                    @RequestParam String sortType,

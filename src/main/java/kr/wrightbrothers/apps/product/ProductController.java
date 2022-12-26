@@ -32,11 +32,11 @@ public class ProductController extends WBController {
     private final ProductUtil productUtil;
 
     @GetMapping("/products")
-    public WBModel findProductList(@RequestParam String[] displayFlag,
-                                   @RequestParam String[] status,
-                                   @RequestParam String rangeType,
-                                   @RequestParam String startDay,
-                                   @RequestParam String endDay,
+    public WBModel findProductList(@RequestParam(required = false) String[] displayFlag,
+                                   @RequestParam(required = false) String[] status,
+                                   @RequestParam(required = false) String rangeType,
+                                   @RequestParam(required = false) String startDay,
+                                   @RequestParam(required = false) String endDay,
                                    @RequestParam String keywordType,
                                    @RequestParam(required = false) String keywordValue,
                                    @RequestParam String sortType,
@@ -69,11 +69,11 @@ public class ProductController extends WBController {
     }
 
     @GetMapping("/products/excel")
-    public void productExcelDownload(@RequestParam String[] displayFlag,
-                                     @RequestParam String[] status,
-                                     @RequestParam String rangeType,
-                                     @RequestParam String startDay,
-                                     @RequestParam String endDay,
+    public void productExcelDownload(@RequestParam(required = false) String[] displayFlag,
+                                     @RequestParam(required = false) String[] status,
+                                     @RequestParam(required = false) String rangeType,
+                                     @RequestParam(required = false) String startDay,
+                                     @RequestParam(required = false) String endDay,
                                      @RequestParam String keywordType,
                                      @RequestParam(required = false) String keywordValue,
                                      @RequestParam String sortType,

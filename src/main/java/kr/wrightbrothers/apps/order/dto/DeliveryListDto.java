@@ -3,6 +3,8 @@ package kr.wrightbrothers.apps.order.dto;
 import kr.wrightbrothers.apps.common.AbstractPageDto;
 import kr.wrightbrothers.apps.common.constants.OrderConst;
 import kr.wrightbrothers.apps.common.constants.PaymentConst;
+import kr.wrightbrothers.apps.common.util.ErrorCode;
+import kr.wrightbrothers.framework.lang.WBBusinessException;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -43,8 +45,17 @@ public class DeliveryListDto {
 
         // 여러 상품 검색을 위해 구분자인 ; Split 처리
         public void splitKeywordValue() {
-            if (ObjectUtils.isEmpty(this.keywordValue))
+            if (ObjectUtils.isEmpty(this.keywordValue)) {
+                if (ObjectUtils.isEmpty(this.deliveryStatus))
+                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"배송상태"});
+                if (ObjectUtils.isEmpty(this.deliveryType))
+                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"배송방법"});
+                if (ObjectUtils.isEmpty(this.startDay))
+                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"시작일자"});
+                if (ObjectUtils.isEmpty(this.endDay))
+                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"종료일자"});
                 return;
+            }
 
             this.keywordValueList = this.keywordValue.split(",");
         }

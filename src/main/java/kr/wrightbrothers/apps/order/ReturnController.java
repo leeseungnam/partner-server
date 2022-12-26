@@ -34,10 +34,10 @@ public class ReturnController extends WBController {
     @GetMapping(value = {
             "/returns"
     })
-    public WBModel findReturnList(@RequestParam String[] returnStatus,
-                                  @RequestParam String rangeType,
-                                  @RequestParam String startDay,
-                                  @RequestParam String endDay,
+    public WBModel findReturnList(@RequestParam(required = false) String[] returnStatus,
+                                  @RequestParam(required = false) String rangeType,
+                                  @RequestParam(required = false) String startDay,
+                                  @RequestParam(required = false) String endDay,
                                   @RequestParam String keywordType,
                                   @RequestParam(required = false) String keywordValue,
                                   @RequestParam int count,
@@ -67,10 +67,10 @@ public class ReturnController extends WBController {
     }
 
     @GetMapping("/returns/excel")
-    public void returnExcelDownload(@RequestParam String[] returnStatus,
-                                    @RequestParam String rangeType,
-                                    @RequestParam String startDay,
-                                    @RequestParam String endDay,
+    public void returnExcelDownload(@RequestParam(required = false) String[] returnStatus,
+                                    @RequestParam(required = false) String rangeType,
+                                    @RequestParam(required = false) String startDay,
+                                    @RequestParam(required = false) String endDay,
                                     @RequestParam String keywordType,
                                     @RequestParam(required = false) String keywordValue,
                                     @RequestParam int count,
