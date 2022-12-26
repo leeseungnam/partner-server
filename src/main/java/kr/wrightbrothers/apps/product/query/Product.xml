@@ -100,12 +100,12 @@
 			   <choose>
 				   <when test="keywordType == 'NAME'.toString()">
 					   <foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-						   p.prdt_nm like #{item} '%'
+						   p.prdt_nm like concat(trim(#{item}), '%')
 					   </foreach>
 				   </when>
 				   <when test="keywordType == 'CODE'.toString()">
 					   <foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-						   p.prdt_cd like #{item} '%'
+						   p.prdt_cd like concat(trim(#{item}), '%')
 					   </foreach>
 				   </when>
 			   </choose>

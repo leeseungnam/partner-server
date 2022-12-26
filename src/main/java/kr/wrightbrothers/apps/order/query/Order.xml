@@ -68,17 +68,17 @@
 					<choose>
 						<when test="keywordType == 'NO'">
 							<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-								o.ord_no like #{item} '%'
+								o.ord_no like concat(trim(#{item}), '%')
 							</foreach>
 						</when>
 						<when test="keywordType == 'NAME'">
 							<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-								s.ord_nm like #{item} '%'
+								s.ord_nm like concat(trim(#{item}), '%')
 							</foreach>
 						</when>
 						<when test="keywordType == 'USER'">
 							<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-								m.usr_nm like #{item} '%'
+								m.usr_nm like concat(trim(#{item}), '%')
 							</foreach>
 						</when>
 					</choose>
@@ -174,17 +174,17 @@
 					<choose>
 						<when test="keywordType == 'NO'">
 							<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-								o.ord_no like #{item} '%'
+								o.ord_no like concat(trim(#{item}), '%')
 							</foreach>
 						</when>
 						<when test="keywordType == 'NAME'">
 							<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-								s.ord_nm like #{item} '%'
+								s.ord_nm like concat(trim(#{item}), '%')
 							</foreach>
 						</when>
 						<when test="keywordType == 'USER'">
 							<foreach collection="keywordValueList" item="item" index="index" open="and (" separator="OR" close=")">
-								m.usr_nm like #{item} '%'
+								m.usr_nm like concat(trim(#{item}), '%')
 							</foreach>
 						</when>
 					</choose>
