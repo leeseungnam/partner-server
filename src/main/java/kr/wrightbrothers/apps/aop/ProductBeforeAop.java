@@ -106,6 +106,16 @@ public class ProductBeforeAop {
         }
     }
 
+    /**
+     * <pre>
+     *     상폼의 정보 검색 / 수정 / 삭제에 대해 소유 권한에 대해 체크 합니다.
+     *
+     *     현재는 해당 상품 정보의 수정, 삭제, 조회에 대한 공통적인 파라미터에 대해 JSON 형식으로
+     *     검증 처리를 하고 있으나 이후 확장에 대해서는 아래 구조 조건을 참고하여 Body 데이터 구조를 설계합니다.
+     *
+     *     Object 필수 데이터 : partnerCode, productCode
+     * </pre>
+     */
     @Before(value =
             "execution(* kr.wrightbrothers.apps.product.service.*Service.delete*(..)) || " +
             "execution(* kr.wrightbrothers.apps.product.service.*Service.update*(..)) || " +

@@ -80,6 +80,12 @@ public class PartnerKey {
 		}
 	}
 
+	public static class Const {
+		public static final String Y = "Y";
+		public static final String N = "N";
+		public static final String DP = "DP";
+	}
+
 	public static class WBDataBase {
 
 		public static class Alias {

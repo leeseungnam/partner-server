@@ -3,6 +3,7 @@ package kr.wrightbrothers.apps.product.service;
 import kr.wrightbrothers.apps.common.constants.ProductConst;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.ExcelUtil;
+import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.PartnerKey.WBDataBase.*;
 import kr.wrightbrothers.apps.common.util.ProductUtil;
 import kr.wrightbrothers.apps.file.dto.FileListDto;
@@ -100,8 +101,8 @@ public class ProductService {
         if (Objects.requireNonNull(optionList).size() == 1 && optionList.get(0).getOptionName().contains("임시"))
             optionList.clear();
 
-        if (!ObjectUtils.isEmpty(findDto.getOptionList()) && "N".equals(findDto.getSellInfo().getProductOptionFlag()))
-            findDto.getSellInfo().setProductOptionFlag("Y");
+        if (!ObjectUtils.isEmpty(findDto.getOptionList()) && PartnerKey.Const.N.equals(findDto.getSellInfo().getProductOptionFlag()))
+            findDto.getSellInfo().setProductOptionFlag(PartnerKey.Const.Y);
 
         if (ProductConst.Status.REJECT_INSPECTION.getCode().equals(findDto.getSellInfo().getProductStatusCode()))
             findDto.setRejectReason(dao.selectOne(namespace + "findProductRejectReason", paramDto.getProductCode()));
@@ -163,7 +164,7 @@ public class ProductService {
 
         // 판매종료 시 노출 N 변경
         if (ProductConst.Status.END_OF_SALE.getCode().equals(paramDto.getSellInfo().getProductStatusCode()))
-            paramDto.getSellInfo().setDisplayFlag("N");
+            paramDto.getSellInfo().setDisplayFlag(PartnerKey.Const.N);
 
         // 상품 데이터 수정
         dao.update(namespace + "updateProduct", paramDto.getProduct(), Alias.Admin);
@@ -173,7 +174,7 @@ public class ProductService {
         dao.delete(namespace + "deleteOption", paramDto.getProductCode(), Alias.Admin);
 
         // 필수 데이터가 아닌 관계로 널체크 후 데이터 처리
-        if ("Y".equals(paramDto.getSellInfo().getProductOptionFlag())) {
+        if (PartnerKey.Const.Y.equals(paramDto.getSellInfo().getProductOptionFlag())) {
             Optional.ofNullable(paramDto.getOptionList()).orElseGet(Collections::emptyList)
                     .forEach(option -> dao.insert(namespace + "insertOption", option, Alias.Admin));
         }
@@ -195,7 +196,8 @@ public class ProductService {
 
     @Transactional(transactionManager = TransactionManager.Global)
     public void updateProductStatus(StatusUpdateDto paramDto) {
-        // 이력정보 등록
+        // 변경될 상품의 이력 정보에 대한 등록
+        // 유효성에 위반 될 경우 예외처리 롤백
         Arrays.stream(paramDto.getProductCodeList())
                 .forEach(productCode -> {
                     String currentStatus = dao.selectOne(namespace + "findProductStatus", productCode, Alias.Admin);
@@ -203,12 +205,12 @@ public class ProductService {
                     changeInfoService.insertChangeInfo(
                             paramDto.toChangeInfo(
                                     productCode,
-                                    "DP".equals(paramDto.getStatusType()) ? currentStatus : paramDto.getStatusValue()
+                                    PartnerKey.Const.DP.equals(paramDto.getStatusType()) ? currentStatus : paramDto.getStatusValue()
                             )
                     );
 
                     // 판매시작, 예약중 변경에 대한 재고 파악 체크
-                    if (!"DP".equals(paramDto.getStatusType()) &&
+                    if (!PartnerKey.Const.DP.equals(paramDto.getStatusType()) &&
                             (
                                 ProductConst.Status.SALE.getCode().equals(paramDto.getStatusValue())
                                 ||
@@ -220,7 +222,7 @@ public class ProductService {
                             throw new WBBusinessException(ErrorCode.INVALID_NUMBER_MIN.getErrCode(), new String[]{"판매재고", "1"});
                     }
 
-                    if (!"DP".equals(paramDto.getStatusType()) && currentStatus.equals(paramDto.getStatusValue())) {
+                    if (!PartnerKey.Const.DP.equals(paramDto.getStatusType()) && currentStatus.equals(paramDto.getStatusValue())) {
                         switch (ProductConst.Status.of(paramDto.getStatusValue())) {
                             case SALE:
                                 throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"예약중/판매완료"});
@@ -232,7 +234,7 @@ public class ProductService {
                 });
 
         // 상태값 변경
-        if ("DP".equals(paramDto.getStatusType())) {
+        if (PartnerKey.Const.DP.equals(paramDto.getStatusType())) {
             dao.update(namespace + "bulkUpdateProductDisplay", paramDto, Alias.Admin);
             return;
         }

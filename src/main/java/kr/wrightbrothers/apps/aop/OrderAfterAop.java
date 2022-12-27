@@ -54,6 +54,20 @@ public class OrderAfterAop {
 
     }
 
+    /**
+     * <pre>
+     *     주문, 배송, 반품 서비스의 수정 로직이 구현되어 있는 해당 함수가 정상적으로 실행된 후
+     *     아래 구현된 로직이 실행 됩니다.
+     *
+     *     해당 로직은 현재 등록 되어있는 스토어 주문 정보를 조회하여 Admin 2.0 API 서버에 변동 된
+     *     주문 정보를 명세서에 맞게 조합 후 Message Queue 전송 처리를 하여 주문 이력을 등록하게 합니다.
+     *
+     *     해당 전송 결과 로그는 Admin 2.0 모니터링 테이블에 결과가 수신되고 있으니 해당 테이블을 통하여
+     *     결과를 참고하면 됩니다.
+     *
+     *     현재 PointCut 영역은 패키지 order -> service -> *Service.java -> update* method
+     * </pre>
+     */
     @AfterReturning(value =
             "execution(* kr.wrightbrothers.apps.order.service.*Service.update*(..)))"
     )
