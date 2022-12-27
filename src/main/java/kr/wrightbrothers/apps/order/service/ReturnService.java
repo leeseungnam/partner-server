@@ -151,7 +151,7 @@ public class ReturnService {
 
         // 엑셀 생성
         returnList.forEach(returns -> {
-            int colIndex = 23;
+            int colIndex = 26;
             // 병합 사용 처리에 대한 카운트 처리
             ++excel.mergeCount;
             ++excel.subMergeCount;
@@ -163,7 +163,7 @@ public class ReturnService {
             if (excel.mergeCount == returns.getOrderProductCount()) {
                 if (excel.mergeCount > 1)
                     for (int col = 0; col <= colIndex; col++) {
-                        if ((col > 0 & col < 4) | (col > 10 & col < 13) | (col > 17 & col < 22))
+                        if ((col > 0 & col < 4) | (col > 10 & col < 13) | (col > 14 & col < 17))
                             excel.sheet.addMergedRegion(new CellRangeAddress(excel.rowNumber - excel.mergeCount, excel.rowNumber - 1, col, col));
                     }
 

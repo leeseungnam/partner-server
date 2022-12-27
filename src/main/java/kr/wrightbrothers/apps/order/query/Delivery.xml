@@ -387,13 +387,14 @@
 			s.pay_amt as payment_amount,
 			m.usr_nm as order_user_name,
 			p.dlvr_tp as delivery_type,
+			ifnull(cp.intg_cd_val_nm, '') as delivery_payment_type,
 			ifnull(d.ord_dlvr_stus, '') as delivery_status,
 			ifnull(c.intg_cd_val_nm, '') as delivery_company,
 			ifnull(d.invc_no, '') as invoice_no,
-			d.rcpnt_nm as recipient_name,
-			d.rcpnt_usr_phn as recipient_user_phone,
+			ifnull(d.rcpnt_nm, '') as recipient_name,
+			ifnull(d.rcpnt_usr_phn, '') as recipient_user_phone,
 			ifnull(concat('(', d.rcpnt_adrs_zip_cd, ') ', d.rcpnt_adrs), '') as recipient_address,
-			d.rcpnt_adrs_sub as recipient_address_detail,
+			ifnull(d.rcpnt_adrs_sub, '') as recipient_address_detail,
 			ifnull(o.rqst_dtls, '') as request_detail,
 			ifnull(s.dlvry_memo, '') as delivery_memo
 		  from ord_info o
@@ -410,6 +411,9 @@
 		  left join com_intg_cd_dtl c
 		  	on d.dlvry_cmpny = c.intg_cd_val
 		   and c.intg_cd_id = '000044'
+		  left join com_intg_cd_dtl cp
+			on p.dlvr_pay_tp = cp.intg_cd_val
+		   and cp.intg_cd_id = '000024'
 		 where o.ord_no in
 		<foreach collection="deliveryList" item="item" index="index" open="(" separator="," close=")">
 			#{item}

@@ -54,22 +54,28 @@ public class ReturnExcelDto {
         @ExcelBody(colIndex = 14)
         private String deliveryType;
         @ExcelBody(colIndex = 15)
-        private String completeReturnDay;
-        @ExcelBody(colIndex = 16)
-        private String returnStatus;
-        @ExcelBody(colIndex = 17)
-        private String deliveryCompany;
+        private String returnReason;
+        @ExcelBody(colIndex = 16, bodyType = ExcelConst.Type.NUMBER)
+        private Long returnDeliveryCharge_amount;
+        @ExcelBody(colIndex = 17, bodyType = ExcelConst.Type.NUMBER)
+        private Long cancelPayment;
         @ExcelBody(colIndex = 18)
-        private String invoiceNo;
+        private String completeReturnDay;
         @ExcelBody(colIndex = 19)
-        private String recipientName;
+        private String returnStatus;
         @ExcelBody(colIndex = 20)
+        private String deliveryCompany;
+        @ExcelBody(colIndex = 21)
+        private String invoiceNo;
+        @ExcelBody(colIndex = 22)
+        private String recipientName;
+        @ExcelBody(colIndex = 23)
         private String recipientUserPhone;
-        @ExcelBody(colIndex = 21, bodyType = ExcelConst.Type.LONG_TEXT)
+        @ExcelBody(colIndex = 24, bodyType = ExcelConst.Type.LONG_TEXT)
         private String recipientAddress;
-        @ExcelBody(colIndex = 22, bodyType = ExcelConst.Type.LONG_TEXT)
+        @ExcelBody(colIndex = 25, bodyType = ExcelConst.Type.LONG_TEXT)
         private String recipientAddressDetail;
-        @ExcelBody(colIndex = 23, bodyType = ExcelConst.Type.LONG_TEXT)
+        @ExcelBody(colIndex = 26, bodyType = ExcelConst.Type.LONG_TEXT)
         private String reason;
 
         public void setDeliveryType(String deliveryType) {
