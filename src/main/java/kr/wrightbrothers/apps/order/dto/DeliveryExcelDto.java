@@ -2,6 +2,7 @@ package kr.wrightbrothers.apps.order.dto;
 
 import kr.wrightbrothers.apps.common.annotation.ExcelBody;
 import kr.wrightbrothers.apps.common.constants.DeliveryConst;
+import kr.wrightbrothers.apps.common.constants.ExcelConst;
 import kr.wrightbrothers.apps.common.util.MaskingUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,45 +30,47 @@ public class DeliveryExcelDto {
         private String orderNo;
         @ExcelBody(colIndex = 3)
         private String orderDay;
-        @ExcelBody(colIndex = 4)
+        @ExcelBody(colIndex = 4, bodyType = ExcelConst.Type.LONG_TEXT)
         private String orderName;
         @ExcelBody(colIndex = 5)
         private String productCode;
-        @ExcelBody(colIndex = 6)
+        @ExcelBody(colIndex = 6, bodyType = ExcelConst.Type.LONG_TEXT)
         private String productName;
-        @ExcelBody(colIndex = 7)
+        @ExcelBody(colIndex = 7, bodyType = ExcelConst.Type.LONG_TEXT)
         private String productOption;
-        @ExcelBody(colIndex = 8)
+        @ExcelBody(colIndex = 8, bodyType = ExcelConst.Type.NUMBER)
         private Integer productQty;
-        @ExcelBody(colIndex = 9)
+        @ExcelBody(colIndex = 9, bodyType = ExcelConst.Type.NUMBER)
         private Long productSellAmount;
-        @ExcelBody(colIndex = 10)
+        @ExcelBody(colIndex = 10, bodyType = ExcelConst.Type.NUMBER)
         private Long productAmount;
-        @ExcelBody(colIndex = 11)
+        @ExcelBody(colIndex = 11, bodyType = ExcelConst.Type.NUMBER)
         private Long productDeliveryChargeAmount;
-        @ExcelBody(colIndex = 12)
+        @ExcelBody(colIndex = 12, bodyType = ExcelConst.Type.NUMBER)
         private Long paymentAmount;
         @ExcelBody(colIndex = 13)
         private String orderUserName;
         @ExcelBody(colIndex = 14)
         private String deliveryType;
         @ExcelBody(colIndex = 15)
-        private String deliveryStatus;
+        private String deliveryPaymentType;
         @ExcelBody(colIndex = 16)
-        private String deliveryCompany;
+        private String deliveryStatus;
         @ExcelBody(colIndex = 17)
-        private String invoiceNo;
+        private String deliveryCompany;
         @ExcelBody(colIndex = 18)
-        private String recipientName;
+        private String invoiceNo;
         @ExcelBody(colIndex = 19)
-        private String recipientUserPhone;
+        private String recipientName;
         @ExcelBody(colIndex = 20)
+        private String recipientUserPhone;
+        @ExcelBody(colIndex = 21, bodyType = ExcelConst.Type.LONG_TEXT)
         private String recipientAddress;
-        @ExcelBody(colIndex = 21)
+        @ExcelBody(colIndex = 22, bodyType = ExcelConst.Type.LONG_TEXT)
         private String recipientAddressDetail;
-        @ExcelBody(colIndex = 22)
+        @ExcelBody(colIndex = 23, bodyType = ExcelConst.Type.LONG_TEXT)
         private String requestDetail;
-        @ExcelBody(colIndex = 23)
+        @ExcelBody(colIndex = 24, bodyType = ExcelConst.Type.LONG_TEXT)
         private String deliveryMemo;
 
         public void setDeliveryStatus(String deliveryStatus) {

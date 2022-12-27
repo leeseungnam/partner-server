@@ -43,25 +43,35 @@ public class OrderExcelDto {
         private Long productSellAmount;
         @ExcelBody(colIndex = 10, bodyType = ExcelConst.Type.NUMBER)
         private Long productAmount;
-        @ExcelBody(colIndex = 12, bodyType = ExcelConst.Type.NUMBER)
-        private Long paymentAmount;
         @ExcelBody(colIndex = 11, bodyType = ExcelConst.Type.NUMBER)
         private Long productDeliveryChargeAmount;
-        @ExcelBody(colIndex = 13)
-        private String paymentMethod;
+        @ExcelBody(colIndex = 12, bodyType = ExcelConst.Type.NUMBER)
+        private Long point;
+        @ExcelBody(colIndex = 13, bodyType = ExcelConst.Type.NUMBER)
+        private Long salesAmount;
         @ExcelBody(colIndex = 14)
-        private String paymentDay;
-        @ExcelBody(colIndex = 15)
-        private String paymentStatus;
+        private String rentalFlag;
+        @ExcelBody(colIndex = 15, bodyType = ExcelConst.Type.NUMBER)
+        private Long paymentAmount;
         @ExcelBody(colIndex = 16)
-        private String cancelDay;
+        private String paymentMethod;
         @ExcelBody(colIndex = 17)
-        private String cancelReason;
-        @ExcelBody(colIndex = 18, bodyType = ExcelConst.Type.LONG_TEXT)
-        private String address;
-        @ExcelBody(colIndex = 19, bodyType = ExcelConst.Type.LONG_TEXT)
-        private String requestDetail;
+        private String paymentDay;
+        @ExcelBody(colIndex = 18)
+        private String paymentStatus;
+        @ExcelBody(colIndex = 19)
+        private String cancelDay;
         @ExcelBody(colIndex = 20, bodyType = ExcelConst.Type.LONG_TEXT)
+        private String cancelReason;
+        @ExcelBody(colIndex = 21)
+        private String recipientName;
+        @ExcelBody(colIndex = 22)
+        private String recipientUserPhone;
+        @ExcelBody(colIndex = 23, bodyType = ExcelConst.Type.LONG_TEXT)
+        private String address;
+        @ExcelBody(colIndex = 24, bodyType = ExcelConst.Type.LONG_TEXT)
+        private String requestDetail;
+        @ExcelBody(colIndex = 25, bodyType = ExcelConst.Type.LONG_TEXT)
         private String orderMemo;
 
         public void setOrderStatus(String orderStatus) {

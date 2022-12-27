@@ -67,7 +67,7 @@ public class OrderService {
         excel.sheet = excel.workbook.getSheetAt(0);
 
         orderList.forEach(order -> {
-            int colIndex = 20;
+            int colIndex = 25;
             // 병합 사용 처리에 대한 카운트 처리
             ++excel.mergeCount;
 
@@ -78,7 +78,7 @@ public class OrderService {
             if (excel.mergeCount == order.getProductCount()) {
                 if (excel.mergeCount > 1)
                     for (int col = 0; col <= colIndex; col++) {
-                        if (col < 5 | (col > 10 & col < 15) | (col > 16 & col < 20))
+                        if (col < 5 | (col > 9 & col < 18))
                             excel.sheet.addMergedRegion(new CellRangeAddress(excel.rowNumber - excel.mergeCount, excel.rowNumber - 1, col, col));
                     }
 
