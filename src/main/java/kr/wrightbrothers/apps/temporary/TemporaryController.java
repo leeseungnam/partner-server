@@ -42,8 +42,7 @@ public class TemporaryController extends WBController {
     public WBModel mergeTemporary(@Valid @RequestBody TemporaryDto.ReqBody paramDto) throws JsonProcessingException {
         // 임시데이터 저장 처리
         temporaryService.mergeTemporary(paramDto);
-
-        return noneMgsResponse(messageSourceAccessor);
+        return defaultMsgResponse(messageSourceAccessor, "temporary.save.success", null);
     }
 
     @DeleteMapping("/temporaries")

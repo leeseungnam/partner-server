@@ -36,7 +36,7 @@ public class TemporaryService {
                     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                     .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
                     .readValue(paramDto.getStorageData(), ProductInsertDto.class);
-
+            product.setAopUserId(paramDto.getUserId());
             // AWS 처리
             fileService.s3FileUpload(product.getFileList(), WBKey.Aws.A3.Product_Img_Path + "0000000000", true);
         }
