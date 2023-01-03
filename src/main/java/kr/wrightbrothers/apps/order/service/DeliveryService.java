@@ -48,9 +48,9 @@ public class DeliveryService {
 
     @Transactional(transactionManager = TransactionManager.Global)
     public void updateDeliveryFreight(DeliveryFreightUpdateDto paramDto) {
-        if (dao.selectOne(namespace + "isDeliveryComplete", paramDto, Alias.Admin))
+        if ((boolean) dao.selectOne(namespace + "isDeliveryComplete", paramDto, Alias.Admin))
             throw new WBBusinessException(ErrorCode.COMPLETE_DELIVERY.getErrCode(), new String[]{"화물배송"});
-        if (dao.selectOne(namespace + "isDeliveryParcel", paramDto, Alias.Admin))
+        if ((boolean) dao.selectOne(namespace + "isDeliveryParcel", paramDto, Alias.Admin))
             throw new WBBusinessException(ErrorCode.INVALID_DELIVERY_TYPE.getErrCode(), new String[]{"택배배송"});
 
         // MultiQuery
@@ -69,7 +69,7 @@ public class DeliveryService {
 
     @Transactional(transactionManager = TransactionManager.Global)
     public void updateDeliveryPickup(DeliveryPickupUpdateDto paramDto) {
-        if (dao.selectOne(namespace + "isDeliveryComplete", paramDto.toDeliveryInvoiceUpdateDto(), Alias.Admin))
+        if ((boolean) dao.selectOne(namespace + "isDeliveryComplete", paramDto.toDeliveryInvoiceUpdateDto(), Alias.Admin))
             throw new WBBusinessException(ErrorCode.COMPLETE_DELIVERY.getErrCode(), new String[]{"방문수령"});
 
         // MultiQuery
@@ -87,9 +87,9 @@ public class DeliveryService {
 
     @Transactional(transactionManager = TransactionManager.Global)
     public void updateDeliveryInvoice(DeliveryInvoiceUpdateDto paramDto) {
-        if (dao.selectOne(namespace + "isDeliveryStart", paramDto.toDeliveryUpdateDto(), Alias.Admin))
+        if ((boolean) dao.selectOne(namespace + "isDeliveryStart", paramDto.toDeliveryUpdateDto(), Alias.Admin))
             throw new WBBusinessException(ErrorCode.INVALID_DELIVERY_PREPARING.getErrCode(), new String[]{"상품준비중"});
-        if (dao.selectOne(namespace + "isDeliveryFreight", paramDto, Alias.Admin))
+        if ((boolean) dao.selectOne(namespace + "isDeliveryFreight", paramDto, Alias.Admin))
             throw new WBBusinessException(ErrorCode.INVALID_DELIVERY_TYPE.getErrCode(), new String[]{"화물배송"});
 
         // MultiQuery
@@ -110,7 +110,7 @@ public class DeliveryService {
     }
 
     public void updateDelivery(DeliveryUpdateDto paramDto) {
-        if (dao.selectOne(namespace + "isDeliveryStart", paramDto, Alias.Admin))
+        if ((boolean) dao.selectOne(namespace + "isDeliveryStart", paramDto, Alias.Admin))
             throw new WBBusinessException(ErrorCode.COMPLETE_DELIVERY.getErrCode(), new String[]{"배송정보"});
 
         dao.update(namespace + "updateDelivery", paramDto, Alias.Admin);

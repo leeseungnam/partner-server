@@ -49,7 +49,7 @@ public class ProductUtil {
         String generateProductCode;
         do {
             generateProductCode = productCode + RandomStringUtils.randomAlphanumeric(6).toUpperCase();
-        } while (dao.selectOne(namespace + "isProductCode", generateProductCode, PartnerKey.WBDataBase.Alias.Admin));
+        } while ((boolean) dao.selectOne(namespace + "isProductCode", generateProductCode, PartnerKey.WBDataBase.Alias.Admin));
 
         return generateProductCode;
     }

@@ -42,7 +42,7 @@ public class TemplateBeforeAop {
     public void ownTemplateCheck(JoinPoint joinPoint) throws Exception {
         JSONObject object = new JSONObject(JsonUtil.ToString(Arrays.stream(joinPoint.getArgs()).findFirst().orElseThrow()));
 
-        if (dao.selectOne(namespace + "isTemplateAuth", TemplateAuthDto.builder()
+        if ((boolean) dao.selectOne(namespace + "isTemplateAuth", TemplateAuthDto.builder()
                 .partnerCode(object.getString("partnerCode"))
                 .templateNo(object.getLong("templateNo"))
                 .build())) {
