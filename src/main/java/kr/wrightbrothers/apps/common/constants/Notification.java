@@ -181,6 +181,7 @@ public enum Notification {
                     "\n" +
                     "'파트너센터 > 반품관리'에서 반품 요청 주문 건을 확인하시어 처리 부탁드립니다.\n" +
                     "다른 문의 사항 있으면, 파트너 고객센터로 문의하세요.", ""),
+    CONFIRM_RETURN_ORDER("KA01TP230103100346231IvgjdzrxpTP", "ATA","", ""),
     REQUEST_CANCEL_ORDER("KA01TP221221071445546IUnUstCSVNm", "ATA",
             "[라이트브라더스] 주문 취소 요청 안내\n" +
                     "안녕하세요 #{스토어명}님,\n" +
