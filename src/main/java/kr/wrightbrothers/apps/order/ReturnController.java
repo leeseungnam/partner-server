@@ -132,7 +132,6 @@ public class ReturnController extends WBController {
     public WBModel updateApprovalReturn(@Valid @RequestBody ApprovalReturnDto paramDto) {
         // 반품 요청에 대한 승인
         returnService.updateRequestReturn(paramDto.toRequestReturnUpdateDto());
-        returnService.sendNotice(paramDto.toRequestReturnUpdateDto());
 
         return noneMgsResponse(messageSourceAccessor);
     }
