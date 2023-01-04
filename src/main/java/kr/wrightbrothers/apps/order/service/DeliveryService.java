@@ -102,18 +102,20 @@ public class DeliveryService {
 
         // 송장번호 입력 알림톡 발송
         if (paramDto.getOrderProductSeqArray().length > 0) {
-            DeliveryAddressDto.Param deliveryParam = DeliveryAddressDto.Param.builder().orderNo(paramDto.getInvoiceNo()).orderProductSeq(1).build();
+            DeliveryAddressDto.Param deliveryParam = DeliveryAddressDto.Param.builder().orderNo(paramDto.getOrderNo()).orderProductSeq(1).build();
             DeliveryAddressDto.Response delivery = dao.selectOne(namespace + "findDeliveryAddresses", deliveryParam, Alias.Admin);
 
-            StringBuffer title = new StringBuffer();
-            title.append(paramDto.getProductName());
-            title = paramDto.getOrderProductSeqArray().length > 1 ? title.append(" 외 ").append(paramDto.getOrderProductSeqArray().length - 1).append("건") : title;
-            notificationQueue.sendPushToAdmin(
-                    DocumentSNS.NOTI_KAKAO_SINGLE
-                    , Notification.DELIVERY_START
-                    , delivery.getRecipientPhone()
-                    , new String[]{delivery.getRecipientName(), paramDto.getOrderNo(), title.toString(),
-                            paramDto.getDeliveryCompanyName(), paramDto.getInvoiceNo()});
+            if (!ObjectUtils.isEmpty(delivery)) {
+                StringBuffer title = new StringBuffer();
+                title.append(paramDto.getProductName());
+                title = paramDto.getOrderProductSeqArray().length > 1 ? title.append(" 외 ").append(paramDto.getOrderProductSeqArray().length - 1).append("건") : title;
+                notificationQueue.sendPushToAdmin(
+                        DocumentSNS.NOTI_KAKAO_SINGLE
+                        , Notification.DELIVERY_START
+                        , delivery.getRecipientPhone()
+                        , new String[]{delivery.getRecipientName(), paramDto.getOrderNo(), title.toString(),
+                                paramDto.getDeliveryCompanyName(), paramDto.getInvoiceNo()});
+            }
         }
 
         // 상태 변경에 따른 SNS 전송
