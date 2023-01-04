@@ -95,6 +95,13 @@ public class DeliveryService {
         if ((boolean) dao.selectOne(namespace + "isDeliveryFreight", paramDto, Alias.Admin))
             throw new WBBusinessException(ErrorCode.INVALID_DELIVERY_TYPE.getErrCode(), new String[]{"화물배송"});
 
+        DeliveryAddressDto.Response invoiceChk = DeliveryAddressDto.Response.builder().build();
+        if (paramDto.getOrderProductSeqArray().length > 0) {
+            Integer[] seq = paramDto.getOrderProductSeqArray();
+            DeliveryAddressDto.Param param = DeliveryAddressDto.Param.builder().orderNo(paramDto.getOrderNo()).orderProductSeq(seq[0]).build();
+            invoiceChk = dao.selectOne(namespace + "findDeliveryAddresses", param, Alias.Admin);
+        }
+
         // MultiQuery
         // 택배배송의 필요 정보인 택배사, 송장번호 변경 처리
         // 반품불가에 따른 배송 시 필요 주문상품 상태 변경 처리
@@ -105,8 +112,8 @@ public class DeliveryService {
             DeliveryAddressDto.Param deliveryParam = DeliveryAddressDto.Param.builder().orderNo(paramDto.getOrderNo()).orderProductSeq(1).build();
             DeliveryAddressDto.Response delivery = dao.selectOne(namespace + "findDeliveryAddresses", deliveryParam, Alias.Admin);
 
-            if (!ObjectUtils.isEmpty(delivery)) {
-                if(delivery.getInvoiceNo() == null || "".equals(delivery.getInvoiceNo())) {
+            if (!ObjectUtils.isEmpty(delivery) && !ObjectUtils.isEmpty(invoiceChk)) {
+                if(ObjectUtils.isEmpty(invoiceChk.getInvoiceNo()) || invoiceChk.getInvoiceNo() == null) {
                     StringBuffer title = new StringBuffer();
                     title.append(paramDto.getProductName());
                     title = paramDto.getOrderProductSeqArray().length > 1 ? title.append(" 외 ").append(paramDto.getOrderProductSeqArray().length - 1).append("건") : title;
@@ -155,7 +162,7 @@ public class DeliveryService {
 
         // 엑셀 생성
         deliveryList.forEach(delivery -> {
-            int colIndex = 23;
+            int colIndex = 24;
             // 병합 사용 처리에 대한 카운트 처리
             ++excel.mergeCount;
             ++excel.subMergeCount;
@@ -168,7 +175,7 @@ public class DeliveryService {
             if (excel.mergeCount == delivery.getOrderProductCount()) {
                 if (excel.mergeCount > 1)
                     for (int col = 0; col <= colIndex; col++) {
-                        if (col < 4 | (col > 10 & col < 13) | col > 16)
+                        if (col < 4 | (col > 9 & col < 13))
                             excel.sheet.addMergedRegion(new CellRangeAddress(excel.rowNumber - excel.mergeCount, excel.rowNumber - 1, col, col));
                     }
 

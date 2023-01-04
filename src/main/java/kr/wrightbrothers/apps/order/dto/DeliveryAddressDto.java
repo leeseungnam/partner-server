@@ -30,7 +30,7 @@ public class DeliveryAddressDto {
         }
     }
 
-    @Getter
+    @Getter @Builder
     @AllArgsConstructor
     public static class Response {
         /** 이름 */
