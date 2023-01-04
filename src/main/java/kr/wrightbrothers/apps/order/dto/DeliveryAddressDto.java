@@ -47,6 +47,9 @@ public class DeliveryAddressDto {
 
         /** 상세주소 */
         private String recipientAddressDetail;
+
+        /** 송장번호 */
+        private String invoiceNo;
     }
 
 }

@@ -122,13 +122,15 @@ public class ReturnService {
                             returnDelivery.getPartnerCode(), PartnerKey.WBDataBase.Alias.Admin);
                 }
 
-                notificationQueue.sendPushToAdmin(
-                        DocumentSNS.NOTI_KAKAO_SINGLE
-                        , Notification.CONFIRM_RETURN_ORDER
-                        , returnDelivery.getRecipientPhone()
-                        , new String[]{returnDelivery.getRecipientName(), paramDto.getOrderNo()+"-"+orderProductSeq, returnDelivery.getProductName(),
-                                returnDelivery.getRecipientAddress() + " " + returnDelivery.getRecipientAddressDetail(),
-                                partnerDto.getPrnrNm(), partnerDto.getCsPhn()});
+                if (!ObjectUtils.isEmpty(partnerDto)) {
+                    notificationQueue.sendPushToAdmin(
+                            DocumentSNS.NOTI_KAKAO_SINGLE
+                            , Notification.CONFIRM_RETURN_ORDER
+                            , returnDelivery.getRecipientPhone()
+                            , new String[]{returnDelivery.getRecipientName(), paramDto.getOrderNo() + "-" + orderProductSeq, returnDelivery.getProductName(),
+                                    returnDelivery.getRecipientAddress() + " " + returnDelivery.getRecipientAddressDetail(),
+                                    partnerDto.getPrnrNm(), partnerDto.getCsPhn()});
+                }
             });
         }
 
