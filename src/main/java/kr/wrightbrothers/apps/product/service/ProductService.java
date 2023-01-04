@@ -217,7 +217,8 @@ public class ProductService {
                                 ProductConst.Status.RESERVATION.getCode().equals(paramDto.getStatusValue())
                             )
                     ) {
-                        if (dao.selectOne(namespace + "isZeroStock", productCode, Alias.Admin))
+                        // 판매 재고 0일 경우 예외처리 발생
+                        if ((boolean) dao.selectOne(namespace + "isZeroStock", productCode, Alias.Admin))
                             throw new WBBusinessException(ErrorCode.INVALID_NUMBER_MIN.getErrCode(), new String[]{"판매재고", "1"});
                     }
 
@@ -287,7 +288,7 @@ public class ProductService {
 
     @Transactional(transactionManager = TransactionManager.Global)
     public void deleteProduct(ProductDeleteDto paramDto) {
-        if (dao.selectOne(namespace + "isNonInspectionReject", paramDto, Alias.Admin))
+        if ((boolean) dao.selectOne(namespace + "isNonInspectionReject", paramDto, Alias.Admin))
             throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_DELETE.getErrCode());
 
         // 주문상품 삭제
