@@ -34,7 +34,7 @@ public class ProductBeforeAop {
      * 스토어 소유의 등록된 상품인지 유효성 체크
      */
     private void ownCheck(ProductAuthDto paramDto) {
-        if (dao.selectOne(namespace + "isProductAuth", paramDto, PartnerKey.WBDataBase.Alias.Admin)) {
+        if ((boolean) dao.selectOne(namespace + "isProductAuth", paramDto, PartnerKey.WBDataBase.Alias.Admin)) {
             log.error("Product Auth Error.");
             log.error("PartnerCode::{}, ProductCode::{}", paramDto.getPartnerCode(), paramDto.getProductCode());
             throw new WBBusinessException(ErrorCode.FORBIDDEN.getErrCode());
@@ -182,7 +182,7 @@ public class ProductBeforeAop {
                     )
                     .forEach(productCode -> {
                         // 검수단계 예외처리
-                        if (dao.selectOne(namespace + "isProductInspection", productCode, PartnerKey.WBDataBase.Alias.Admin))
+                        if ((boolean) dao.selectOne(namespace + "isProductInspection", productCode, PartnerKey.WBDataBase.Alias.Admin))
                             throw new WBBusinessException(ErrorCode.INVALID_PRODUCT_STATUS.getErrCode(), new String[]{"검수단계의 상품은 검수 승인 후 판매중/예약중/판매완료/판매종료"});
 
                         // 노출 상태 변경

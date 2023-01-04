@@ -356,7 +356,9 @@
 		    s.rtrn_rcpnt_usr_phn as recipientPhone,
 		    s.rtrn_rcpnt_adrs_zip_cd as recipientAddressZipCode,
 		    s.rtrn_rcpnt_adrs as recipientAddress,
-		    s.rtrn_rcpnt_adrs_sub as recipientAddressDetail
+		    s.rtrn_rcpnt_adrs_sub as recipientAddressDetail,
+		    p.prnr_cd as partnerCode,
+			p.prdt_nm as productName
 		  from ord_prdt_info p
 		  left join ord_shpn_info s
 			on p.ord_no = s.ord_no
@@ -364,6 +366,17 @@
 		 where p.ord_no = #{orderNo}
 		   and p.ord_prdt_idx = #{orderProductSeq}
 		   and p.prnr_cd = #{partnerCode}
+	</select>
+
+	<select id="findReturnPartner" parameterType="kr.wrightbrothers.apps.order.dto.ReturnPartnerDto$ReqBody" resultType="kr.wrightbrothers.apps.order.dto.ReturnPartnerDto$Response">
+		select
+			prnr_nm,
+		    cs_phn
+		from prnr_info
+		where 1 = 1
+		  and prnr_cd = #{prnrCd}
+		  and ctrt_stus = 'C02'
+		  limit 1
 	</select>
 
 	<update id="updateReturnDelivery" parameterType="kr.wrightbrothers.apps.order.dto.ReturnDeliveryDto$ReqBody">

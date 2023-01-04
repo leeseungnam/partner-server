@@ -1,12 +1,14 @@
 package kr.wrightbrothers.apps.order.service;
 
 import kr.wrightbrothers.apps.common.constants.DocumentSNS;
+import kr.wrightbrothers.apps.common.constants.Notification;
 import kr.wrightbrothers.apps.common.util.ErrorCode;
 import kr.wrightbrothers.apps.common.util.ExcelUtil;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.PartnerKey.WBDataBase.Alias;
 import kr.wrightbrothers.apps.common.util.PartnerKey.WBDataBase.TransactionManager;
 import kr.wrightbrothers.apps.order.dto.*;
+import kr.wrightbrothers.apps.queue.NotificationQueue;
 import kr.wrightbrothers.apps.queue.OrderQueue;
 import kr.wrightbrothers.framework.lang.WBBusinessException;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
@@ -27,6 +29,7 @@ public class DeliveryService {
 
     private final WBCommonDao dao;
     private final OrderQueue orderQueue;
+    private final NotificationQueue notificationQueue;
     private final PaymentService paymentService;
     private final ResourceLoader resourceLoader;
     private final String namespace = "kr.wrightbrothers.apps.order.query.Delivery.";
@@ -48,9 +51,9 @@ public class DeliveryService {
 
     @Transactional(transactionManager = TransactionManager.Global)
     public void updateDeliveryFreight(DeliveryFreightUpdateDto paramDto) {
-        if (dao.selectOne(namespace + "isDeliveryComplete", paramDto, Alias.Admin))
+        if ((boolean) dao.selectOne(namespace + "isDeliveryComplete", paramDto, Alias.Admin))
             throw new WBBusinessException(ErrorCode.COMPLETE_DELIVERY.getErrCode(), new String[]{"화물배송"});
-        if (dao.selectOne(namespace + "isDeliveryParcel", paramDto, Alias.Admin))
+        if ((boolean) dao.selectOne(namespace + "isDeliveryParcel", paramDto, Alias.Admin))
             throw new WBBusinessException(ErrorCode.INVALID_DELIVERY_TYPE.getErrCode(), new String[]{"택배배송"});
 
         // MultiQuery
@@ -69,7 +72,7 @@ public class DeliveryService {
 
     @Transactional(transactionManager = TransactionManager.Global)
     public void updateDeliveryPickup(DeliveryPickupUpdateDto paramDto) {
-        if (dao.selectOne(namespace + "isDeliveryComplete", paramDto.toDeliveryInvoiceUpdateDto(), Alias.Admin))
+        if ((boolean) dao.selectOne(namespace + "isDeliveryComplete", paramDto.toDeliveryInvoiceUpdateDto(), Alias.Admin))
             throw new WBBusinessException(ErrorCode.COMPLETE_DELIVERY.getErrCode(), new String[]{"방문수령"});
 
         // MultiQuery
@@ -87,15 +90,31 @@ public class DeliveryService {
 
     @Transactional(transactionManager = TransactionManager.Global)
     public void updateDeliveryInvoice(DeliveryInvoiceUpdateDto paramDto) {
-        if (dao.selectOne(namespace + "isDeliveryStart", paramDto.toDeliveryUpdateDto(), Alias.Admin))
+        if ((boolean) dao.selectOne(namespace + "isDeliveryStart", paramDto.toDeliveryUpdateDto(), Alias.Admin))
             throw new WBBusinessException(ErrorCode.INVALID_DELIVERY_PREPARING.getErrCode(), new String[]{"상품준비중"});
-        if (dao.selectOne(namespace + "isDeliveryFreight", paramDto, Alias.Admin))
+        if ((boolean) dao.selectOne(namespace + "isDeliveryFreight", paramDto, Alias.Admin))
             throw new WBBusinessException(ErrorCode.INVALID_DELIVERY_TYPE.getErrCode(), new String[]{"화물배송"});
 
         // MultiQuery
         // 택배배송의 필요 정보인 택배사, 송장번호 변경 처리
         // 반품불가에 따른 배송 시 필요 주문상품 상태 변경 처리
         dao.update(namespace + "updateDeliveryInvoice", paramDto, Alias.Admin);
+
+        // 송장번호 입력 알림톡 발송
+        if (paramDto.getOrderProductSeqArray().length > 0) {
+            DeliveryAddressDto.Param deliveryParam = DeliveryAddressDto.Param.builder().orderNo(paramDto.getInvoiceNo()).orderProductSeq(1).build();
+            DeliveryAddressDto.Response delivery = dao.selectOne(namespace + "findDeliveryAddresses", deliveryParam, Alias.Admin);
+
+            StringBuffer title = new StringBuffer();
+            title.append(paramDto.getProductName());
+            title = paramDto.getOrderProductSeqArray().length > 1 ? title.append(" 외 ").append(paramDto.getOrderProductSeqArray().length - 1).append("건") : title;
+            notificationQueue.sendPushToAdmin(
+                    DocumentSNS.NOTI_KAKAO_SINGLE
+                    , Notification.DELIVERY_START
+                    , delivery.getRecipientPhone()
+                    , new String[]{delivery.getRecipientName(), paramDto.getOrderNo(), title.toString(),
+                            paramDto.getDeliveryCompanyName(), paramDto.getInvoiceNo()});
+        }
 
         // 상태 변경에 따른 SNS 전송
         orderQueue.sendToAdmin(
@@ -110,7 +129,7 @@ public class DeliveryService {
     }
 
     public void updateDelivery(DeliveryUpdateDto paramDto) {
-        if (dao.selectOne(namespace + "isDeliveryStart", paramDto, Alias.Admin))
+        if ((boolean) dao.selectOne(namespace + "isDeliveryStart", paramDto, Alias.Admin))
             throw new WBBusinessException(ErrorCode.COMPLETE_DELIVERY.getErrCode(), new String[]{"배송정보"});
 
         dao.update(namespace + "updateDelivery", paramDto, Alias.Admin);

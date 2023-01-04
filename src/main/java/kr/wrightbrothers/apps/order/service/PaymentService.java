@@ -36,10 +36,10 @@ public class PaymentService {
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void updateCancelPayment(PaymentCancelDto paramDto) {
-        if (dao.selectOne(namespace + "isCancelPartialPayment", paramDto, PartnerKey.WBDataBase.Alias.Admin)) {
+        if ((boolean) dao.selectOne(namespace + "isCancelPartialPayment", paramDto, PartnerKey.WBDataBase.Alias.Admin)) {
             throw new WBBusinessException(ErrorCode.UNABLE_CANCEL_PARTIAL_PAYMENT.getErrCode());
         }
-        if (dao.selectOne(namespace + "isAfterOrderComplete", paramDto, PartnerKey.WBDataBase.Alias.Admin)) {
+        if ((boolean) dao.selectOne(namespace + "isAfterOrderComplete", paramDto, PartnerKey.WBDataBase.Alias.Admin)) {
             throw new WBBusinessException(ErrorCode.UNABLE_CANCEL_PAYMENT.getErrCode(), new String[]{"주문완료"});
         }
 

@@ -64,7 +64,7 @@ public class TemplateService {
         Arrays.stream(paramDto.getTemplateNoList()).forEach(
                 templateNo -> {
                     // 입점몰 등록 템플릿 여부 확인
-                    if (dao.selectOne(namespace + "isTemplateAuth",
+                    if ((boolean) dao.selectOne(namespace + "isTemplateAuth",
                             TemplateAuthDto.builder()
                                     .partnerCode(paramDto.getPartnerCode())
                                     .templateNo(templateNo)

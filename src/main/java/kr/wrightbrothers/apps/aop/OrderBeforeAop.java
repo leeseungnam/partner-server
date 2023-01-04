@@ -46,7 +46,7 @@ public class OrderBeforeAop {
     public void ownOrderCheck(JoinPoint joinPoint) throws Exception {
         JSONObject object = new JSONObject(JsonUtil.ToString(Arrays.stream(joinPoint.getArgs()).findFirst().orElseThrow()));
 
-        if (dao.selectOne(namespace + "isOrderAuth",
+        if ((boolean) dao.selectOne(namespace + "isOrderAuth",
                 OrderAuthDto.builder()
                         .partnerCode(object.getString("partnerCode"))
                         .orderNo(object.getString("orderNo"))

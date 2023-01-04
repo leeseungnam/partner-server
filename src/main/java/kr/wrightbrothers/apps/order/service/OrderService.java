@@ -91,7 +91,7 @@ public class OrderService {
 
     @Transactional(transactionManager = PartnerKey.WBDataBase.TransactionManager.Global)
     public void updatePreparingDelivery(DeliveryPreparingDto paramDto) {
-        if (dao.selectOne(namespace + "isNonOrderComplete", paramDto, PartnerKey.WBDataBase.Alias.Admin))
+        if ((boolean) dao.selectOne(namespace + "isNonOrderComplete", paramDto, PartnerKey.WBDataBase.Alias.Admin))
             throw new WBBusinessException(ErrorCode.INVALID_DELIVERY_PREPARING.getErrCode(), new String[]{"주문완료(결제완료)"});
 
         // MultiQuery
