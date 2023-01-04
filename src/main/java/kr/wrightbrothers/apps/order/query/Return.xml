@@ -352,6 +352,7 @@
 		    s.rtrn_rcpnt_adrs as recipientAddress,
 		    s.rtrn_rcpnt_adrs_sub as recipientAddressDetail,
 		    p.prnr_cd as partnerCode,
+		    p.prdt_cd as productCode,
 			p.prdt_nm as productName
 		  from ord_prdt_info p
 		  left join ord_shpn_info s
@@ -371,6 +372,16 @@
 		  and prnr_cd = #{prnrCd}
 		  and ctrt_stus = 'C02'
 		  limit 1
+	</select>
+
+	<select id="findReturnAddress" parameterType="kr.wrightbrothers.apps.order.dto.ReturnPartnerDto$ReqBody" resultType="kr.wrightbrothers.apps.order.dto.ReturnPartnerDto$Address">
+		select
+			rtn_addr,
+			rtn_addr_dtl
+		from prdt_dlvr_dtl
+		where 1 = 1
+		  and prnr_cd = #{prdtCd}
+			limit 1
 	</select>
 
 	<update id="updateReturnDelivery" parameterType="kr.wrightbrothers.apps.order.dto.ReturnDeliveryDto$ReqBody">
