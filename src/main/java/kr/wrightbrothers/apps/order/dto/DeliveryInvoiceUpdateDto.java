@@ -44,6 +44,9 @@ public class DeliveryInvoiceUpdateDto {
     /** 파트너 코드 */
     private String partnerCode;
 
+    /** 상품명 */
+    private String productName;
+
     /** 사용자 아이디 */
     @JsonIgnore
     private String userId;
