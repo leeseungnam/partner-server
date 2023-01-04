@@ -102,7 +102,8 @@
 			rcpnt_usr_phn recipientPhone,
 			rcpnt_adrs_zip_cd recipientAddressZipCode,
 			rcpnt_adrs recipientAddress,
-			rcpnt_adrs_sub recipientAddressDetail
+			rcpnt_adrs_sub recipientAddressDetail,
+		    invc_no invoiceNo
 		  from ord_shpn_info
 		 where ord_no = #{orderNo}
 		   and ord_prdt_idx = #{orderProductSeq}

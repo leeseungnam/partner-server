@@ -106,15 +106,17 @@ public class DeliveryService {
             DeliveryAddressDto.Response delivery = dao.selectOne(namespace + "findDeliveryAddresses", deliveryParam, Alias.Admin);
 
             if (!ObjectUtils.isEmpty(delivery)) {
-                StringBuffer title = new StringBuffer();
-                title.append(paramDto.getProductName());
-                title = paramDto.getOrderProductSeqArray().length > 1 ? title.append(" 외 ").append(paramDto.getOrderProductSeqArray().length - 1).append("건") : title;
-                notificationQueue.sendPushToAdmin(
-                        DocumentSNS.NOTI_KAKAO_SINGLE
-                        , Notification.DELIVERY_START
-                        , delivery.getRecipientPhone()
-                        , new String[]{delivery.getRecipientName(), paramDto.getOrderNo(), title.toString(),
-                                paramDto.getDeliveryCompanyName(), paramDto.getInvoiceNo()});
+                if(delivery.getInvoiceNo() == null || "".equals(delivery.getInvoiceNo())) {
+                    StringBuffer title = new StringBuffer();
+                    title.append(paramDto.getProductName());
+                    title = paramDto.getOrderProductSeqArray().length > 1 ? title.append(" 외 ").append(paramDto.getOrderProductSeqArray().length - 1).append("건") : title;
+                    notificationQueue.sendPushToAdmin(
+                            DocumentSNS.NOTI_KAKAO_SINGLE
+                            , Notification.DELIVERY_START
+                            , delivery.getRecipientPhone()
+                            , new String[]{delivery.getRecipientName(), paramDto.getOrderNo(), title.toString(),
+                                    paramDto.getDeliveryCompanyName(), paramDto.getInvoiceNo()});
+                }
             }
         }
 
