@@ -109,7 +109,8 @@ public class DeliveryService {
 
         // 송장번호 입력 알림톡 발송
         if (paramDto.getOrderProductSeqArray().length > 0) {
-            DeliveryAddressDto.Param deliveryParam = DeliveryAddressDto.Param.builder().orderNo(paramDto.getOrderNo()).orderProductSeq(1).build();
+            Integer[] seq = paramDto.getOrderProductSeqArray();
+            DeliveryAddressDto.Param deliveryParam = DeliveryAddressDto.Param.builder().orderNo(paramDto.getOrderNo()).orderProductSeq(seq[0]).build();
             DeliveryAddressDto.Response delivery = dao.selectOne(namespace + "findDeliveryAddresses", deliveryParam, Alias.Admin);
 
             if (!ObjectUtils.isEmpty(delivery) && !ObjectUtils.isEmpty(invoiceChk)) {
