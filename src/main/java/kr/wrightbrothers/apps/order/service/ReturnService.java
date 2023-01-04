@@ -116,19 +116,24 @@ public class ReturnService {
                                 .build()
                 );
 
+
                 ReturnPartnerDto.Response partnerDto = ReturnPartnerDto.Response.builder().build();
                 if (!"".equals(returnDelivery.getPartnerCode())) {
+                    ReturnPartnerDto.ReqBody reqBody = ReturnPartnerDto.ReqBody.builder().prnrCd(returnDelivery.getPartnerCode()).build();
                     partnerDto = dao.selectOne(namespace + "findReturnPartner",
-                            returnDelivery.getPartnerCode(), PartnerKey.WBDataBase.Alias.Admin);
+                            reqBody, PartnerKey.WBDataBase.Alias.Admin);
                 }
 
-                if (!ObjectUtils.isEmpty(partnerDto)) {
+                ReturnPartnerDto.Address address = dao.selectOne(namespace + "findReturnAddress",
+                        ReturnPartnerDto.ReqBody.builder().prdtCd(returnDelivery.getProductCode()).build());
+
+                if (!ObjectUtils.isEmpty(partnerDto) && !ObjectUtils.isEmpty(address)) {
                     notificationQueue.sendPushToAdmin(
                             DocumentSNS.NOTI_KAKAO_SINGLE
                             , Notification.CONFIRM_RETURN_ORDER
                             , returnDelivery.getRecipientPhone()
                             , new String[]{returnDelivery.getRecipientName(), paramDto.getOrderNo() + "-" + orderProductSeq, returnDelivery.getProductName(),
-                                    returnDelivery.getRecipientAddress() + " " + returnDelivery.getRecipientAddressDetail(),
+                                    address.getRtnAddr() + " " + address.getRtnAddrDtl(),
                                     partnerDto.getPrnrNm(), partnerDto.getCsPhn()});
                 }
             });

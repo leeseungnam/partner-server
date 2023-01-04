@@ -13,6 +13,8 @@ public class ReturnPartnerDto {
     public static class ReqBody {
         /** 파트너 코드 */
         private String prnrCd;
+        /** 상품코드 */
+        private String prdtCd;
     }
 
     @Getter @Builder
@@ -22,6 +24,16 @@ public class ReturnPartnerDto {
         private String prnrNm;
         /** 고객센터 전화번호 */
         private String csPhn;
+
+    }
+
+    @Getter @Builder
+    @AllArgsConstructor
+    public static class Address {
+        /** 반품지 주소 */
+        private String rtnAddr;
+        /** 반품지 상세주소 */
+        private String rtnAddrDtl;
 
     }
 
