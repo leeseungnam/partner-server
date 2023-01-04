@@ -18,6 +18,7 @@ public class ReturnPartnerDto {
     }
 
     @Getter @Builder
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class Response {
         /** 파트너 명 */
@@ -28,6 +29,7 @@ public class ReturnPartnerDto {
     }
 
     @Getter @Builder
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class Address {
         /** 반품지 주소 */
