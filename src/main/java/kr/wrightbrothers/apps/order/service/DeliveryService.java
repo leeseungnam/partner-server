@@ -95,6 +95,13 @@ public class DeliveryService {
         if ((boolean) dao.selectOne(namespace + "isDeliveryFreight", paramDto, Alias.Admin))
             throw new WBBusinessException(ErrorCode.INVALID_DELIVERY_TYPE.getErrCode(), new String[]{"화물배송"});
 
+        DeliveryAddressDto.Response invoiceChk = DeliveryAddressDto.Response.builder().build();
+        if (paramDto.getOrderProductSeqArray().length > 0) {
+            Integer[] seq = paramDto.getOrderProductSeqArray();
+            DeliveryAddressDto.Param param = DeliveryAddressDto.Param.builder().orderNo(paramDto.getOrderNo()).orderProductSeq(seq[0]).build();
+            invoiceChk = dao.selectOne(namespace + "findDeliveryAddresses", param, Alias.Admin);
+        }
+
         // MultiQuery
         // 택배배송의 필요 정보인 택배사, 송장번호 변경 처리
         // 반품불가에 따른 배송 시 필요 주문상품 상태 변경 처리
@@ -105,8 +112,8 @@ public class DeliveryService {
             DeliveryAddressDto.Param deliveryParam = DeliveryAddressDto.Param.builder().orderNo(paramDto.getOrderNo()).orderProductSeq(1).build();
             DeliveryAddressDto.Response delivery = dao.selectOne(namespace + "findDeliveryAddresses", deliveryParam, Alias.Admin);
 
-            if (!ObjectUtils.isEmpty(delivery)) {
-                if(delivery.getInvoiceNo() == null || "".equals(delivery.getInvoiceNo())) {
+            if (!ObjectUtils.isEmpty(delivery) && !ObjectUtils.isEmpty(invoiceChk)) {
+                if(ObjectUtils.isEmpty(invoiceChk.getInvoiceNo()) || invoiceChk.getInvoiceNo() == null) {
                     StringBuffer title = new StringBuffer();
                     title.append(paramDto.getProductName());
                     title = paramDto.getOrderProductSeqArray().length > 1 ? title.append(" 외 ").append(paramDto.getOrderProductSeqArray().length - 1).append("건") : title;
