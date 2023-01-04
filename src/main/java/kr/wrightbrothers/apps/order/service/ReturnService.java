@@ -125,7 +125,7 @@ public class ReturnService {
                 }
 
                 ReturnPartnerDto.Address address = dao.selectOne(namespace + "findReturnAddress",
-                        ReturnPartnerDto.ReqBody.builder().prdtCd(returnDelivery.getProductCode()).build());
+                        ReturnPartnerDto.ReqBody.builder().prdtCd(returnDelivery.getProductCode()).build(), PartnerKey.WBDataBase.Alias.Admin);
 
                 if (!ObjectUtils.isEmpty(partnerDto) && !ObjectUtils.isEmpty(address)) {
                     notificationQueue.sendPushToAdmin(
