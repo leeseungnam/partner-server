@@ -138,9 +138,9 @@
 	<select id="isDeliveryComplete" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryInvoiceUpdateDto" resultType="boolean">
 		select
 		    if(count(ord_prdt_idx) > 0, true, false) as isDeliveryComplete
-		  from ord_shpn_info
+		  from ord_prdt_info
 		 where ord_no = #{orderNo}
-		   and ord_dlvr_stus = 'D05'	-- 배송완료
+		   and ord_prdt_stus = 'D05'	-- 배송완료
 		-- 주문상품 SEQ
 		<foreach collection="orderProductSeqArray" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
 			#{item}
@@ -150,9 +150,9 @@
 	<select id="isDeliveryStart" parameterType="kr.wrightbrothers.apps.order.dto.DeliveryUpdateDto" resultType="boolean">
 		select
 		    if(count(ord_prdt_idx) > 0, true, false) as isDeliveryStart
-		  from ord_shpn_info
+		  from ord_prdt_info
 		 where ord_no = #{orderNo}
-		   and ord_dlvr_stus in ('D02', 'D05')	-- 배송시작, 배송완료
+		   and ord_prdt_stus in ('D02', 'D05')	-- 배송시작, 배송완료
 		-- 주문상품 SEQ
 		<foreach collection="orderProductSeqArray" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
 			#{item}
@@ -309,7 +309,6 @@
 		       upd_usr_id = #{userId},
 		       upd_dt = now()
 		 where ord_no = #{orderNo}
-		   and ord_dlvr_stus = 'D01'
 		<foreach collection="orderProductSeqArray" item="item" index="index" open="and ord_prdt_idx in (" separator="," close=")">
 			#{item}
 		</foreach>
