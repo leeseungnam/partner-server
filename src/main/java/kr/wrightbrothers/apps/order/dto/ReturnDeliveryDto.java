@@ -92,6 +92,15 @@ public class ReturnDeliveryDto {
 
         /** 수령자 상세주소 */
         private String recipientAddressDetail;
+
+        /** 파트너코드 */
+        private String partnerCode;
+
+        /** 상품코드 */
+        private String productCode;
+
+        /** 상품명 */
+        private String productName;
     }
 
 }

@@ -1,11 +1,13 @@
 package kr.wrightbrothers.apps.order.service;
 
+import kr.wrightbrothers.apps.common.constants.Notification;
 import kr.wrightbrothers.apps.common.constants.OrderConst;
 import kr.wrightbrothers.apps.common.constants.ReasonConst;
 import kr.wrightbrothers.apps.common.constants.DocumentSNS;
 import kr.wrightbrothers.apps.common.util.ExcelUtil;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.order.dto.*;
+import kr.wrightbrothers.apps.queue.NotificationQueue;
 import kr.wrightbrothers.apps.queue.OrderQueue;
 import kr.wrightbrothers.framework.support.dao.WBCommonDao;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,7 @@ public class ReturnService {
     private final PaymentService paymentService;
     private final ResourceLoader resourceLoader;
     private final OrderQueue orderQueue;
+    private final NotificationQueue notificationQueue;
     private final String namespace = "kr.wrightbrothers.apps.order.query.Return.";
     private final String namespaceOrder = "kr.wrightbrothers.apps.order.query.Order.";
 
@@ -101,6 +104,40 @@ public class ReturnService {
         if (OrderConst.ProductStatus.REQUEST_COMPLETE_RETURN.getCode().equals(paramDto.getReturnProcessCode()) &
                 (boolean) dao.selectOne(namespace + "isPayMethodBank", paramDto.getOrderNo(), PartnerKey.WBDataBase.Alias.Admin))
             return;
+
+        // 반품승인 알림톡 전송
+        if (OrderConst.ProductStatus.START_RETURN.getCode().equals(paramDto.getReturnProcessCode())) {
+            Arrays.stream(paramDto.getOrderProductSeqArray()).forEach(orderProductSeq -> {
+                ReturnDeliveryDto.Response returnDelivery = findReturnDelivery(
+                        ReturnDeliveryDto.Param.builder()
+                                .partnerCode(paramDto.getPartnerCode())
+                                .orderNo(paramDto.getOrderNo())
+                                .orderProductSeq(orderProductSeq)
+                                .build()
+                );
+
+
+                ReturnPartnerDto.Response partnerDto = ReturnPartnerDto.Response.builder().build();
+                if (!"".equals(returnDelivery.getPartnerCode())) {
+                    ReturnPartnerDto.ReqBody reqBody = ReturnPartnerDto.ReqBody.builder().prnrCd(returnDelivery.getPartnerCode()).build();
+                    partnerDto = dao.selectOne(namespace + "findReturnPartner",
+                            reqBody, PartnerKey.WBDataBase.Alias.Admin);
+                }
+
+                ReturnPartnerDto.Address address = dao.selectOne(namespace + "findReturnAddress",
+                        ReturnPartnerDto.ReqBody.builder().prdtCd(returnDelivery.getProductCode()).build(), PartnerKey.WBDataBase.Alias.Admin);
+
+                if (!ObjectUtils.isEmpty(partnerDto) && !ObjectUtils.isEmpty(address)) {
+                    notificationQueue.sendPushToAdmin(
+                            DocumentSNS.NOTI_KAKAO_SINGLE
+                            , Notification.CONFIRM_RETURN_ORDER
+                            , returnDelivery.getRecipientPhone()
+                            , new String[]{returnDelivery.getRecipientName(), paramDto.getOrderNo() + "-" + orderProductSeq, returnDelivery.getProductName(),
+                                    address.getRtnAddr() + " " + address.getRtnAddrDtl(),
+                                    partnerDto.getPrnrNm(), partnerDto.getCsPhn()});
+                }
+            });
+        }
 
         // 주문 Queue 전송
         orderQueue.sendToAdmin(
