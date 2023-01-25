@@ -122,6 +122,9 @@ public class OrderListDto {
         /** 결제상태 명 */
         private String paymentStatusName;
 
+        /** 렌탈여부 */
+        private String rntlFlg;
+
         // 주문 상태 ENUM 처리
         public void setOrderStatusName(String orderStatusCode) {
             this.orderStatusName = OrderConst.Status.of(orderStatusCode).getName();

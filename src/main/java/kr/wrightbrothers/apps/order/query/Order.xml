@@ -36,7 +36,8 @@
 			s.pay_amt as payment_amount,
 			date_format(o.pym_dt, '%Y-%m-%d') as payment_day,
 			s.pay_stus as payment_status_code,
-			s.pay_stus as payment_status_name
+			s.pay_stus as payment_status_name,
+		    o.rntl_flg
 		  from ord_info o
 		  left join com_mbr_info m
 			on o.ord_usr_id = m.usr_id
