@@ -73,6 +73,9 @@ public class ProductDto {
         /** 상품 이미지 파일 번호 */
         @NotBlank(message = "상품 이미지")
         private String productFileNo;
+
+        /** 렌탈여부 */
+        private String rntlFlg;
     }
 
     @Data

@@ -32,6 +32,9 @@ public class ProductFindDto {
         /** 옵션 정보 */
         private List<OptionDto.ResBody> optionList;
 
+        /** 렌탈 정보 */
+        private RentalDto.ResBody rental;
+
         /** 배송 정보 */
         private DeliveryDto.ResBody delivery;
 

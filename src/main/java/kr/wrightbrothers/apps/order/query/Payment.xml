@@ -67,6 +67,8 @@
 		    o.pym_dt as payment_date,
 		    (select max(trsctn_id) from ord_trsctn_info where ord_no = o.ord_no) as approval_no,
 		    null as rental_amount,
+			o.tol_rntl_mon as totalRentalMonth,
+			o.rntl_flg,
 		    o.pay_meth as payment_method_code,
 		    o.pay_meth as payment_method_name,
 		    s.pay_stus as payment_status_code,

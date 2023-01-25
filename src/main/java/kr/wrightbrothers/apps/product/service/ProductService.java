@@ -93,6 +93,7 @@ public class ProductService {
                 .basicSpec(dao.selectOne(namespace + "findBasicSpec", paramDto.getProductCode(), Alias.Admin))
                 .sellInfo(dao.selectOne(namespace + "findSellInfo", paramDto.getProductCode(), Alias.Admin))
                 .optionList(Optional.ofNullable(optionList).orElseGet(Collections::emptyList))
+                .rental(dao.selectOne(namespace + "findRental", paramDto.getProductCode(), Alias.Admin))
                 .delivery(dao.selectOne(namespace + "findDelivery", paramDto.getProductCode(), Alias.Admin))
                 .infoNotice(dao.selectOne(namespace + "findInfoNotice", paramDto.getProductCode(), Alias.Admin))
                 .guide(dao.selectOne(namespace + "findGuide", paramDto.getProductCode(), Alias.Admin))

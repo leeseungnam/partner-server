@@ -31,6 +31,12 @@ public class PaymentDto {
     /** 렌탈 금액 */
     private Long rentalAmount;
 
+    /** 렌탈 개월수 */
+    private Long totalRentalMonth;
+    
+    /** 렌탈 여부 */
+    private String rntlFlg;
+    
     /** 결제 방법 코드 */
     private String paymentMethodCode;
 

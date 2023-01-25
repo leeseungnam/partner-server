@@ -545,7 +545,8 @@
             p.mdl_year model_year,
             p.ytb_url youtube_url,
             p.prdt_barcd product_barcode,
-            p.prdt_file_no product_file_no
+            p.prdt_file_no product_file_no,
+		    p.rntl_flg
 		  from prdt_main p
 		  left join prdt_gud_ctnt g
 		    on p.prdt_cd = g.prdt_cd
@@ -626,6 +627,20 @@
             invty_qty option_stock_qty
 		  from prdt_optn
 		 where prdt_cd = #{productCode}
+	</select>
+
+	<select id="findRental" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.product.dto.RentalDto$ResBody">
+		select
+			twlv_bse_amt,
+			twfo_bse_amt,
+			thsi_bse_amt,
+			foei_bse_amt,
+			twlv_mon_amt,
+			twfo_mon_amt,
+			thsi_mon_amt,
+			foei_mon_amt
+		from prdt_rntl
+		where prdt_cd = #{productCode}
 	</select>
 
 	<select id="findDelivery" parameterType="java.lang.String" resultType="kr.wrightbrothers.apps.product.dto.DeliveryDto$ResBody">
