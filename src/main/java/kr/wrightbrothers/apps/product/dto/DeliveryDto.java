@@ -144,7 +144,7 @@ public class DeliveryDto {
                     throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"권역 구분"});
                 if (ObjectUtils.isEmpty(this.surchargeIsolated))
                     throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"제주 외 도서산간 추가 배송비"});
-                if ("2".equals(this.areaCode))
+                if ("3".equals(this.areaCode))
                     if (ObjectUtils.isEmpty(this.surchargeJejudo))
                         throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"제주 추가 배송비"});
             }
