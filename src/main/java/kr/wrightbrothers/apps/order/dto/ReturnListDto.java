@@ -12,6 +12,8 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 import org.springframework.util.ObjectUtils;
 
+import java.util.List;
+
 public class ReturnListDto {
 
     @Getter
@@ -23,7 +25,7 @@ public class ReturnListDto {
         private String partnerCode;
 
         /** 반품 상태 */
-        private String[] returnStatus;
+        private List<String> returnStatus;
 
         /** 검색기간 구분 */
         private String rangeType;
@@ -40,23 +42,23 @@ public class ReturnListDto {
         /** 키워드 값 */
         private String keywordValue;
 
-        /** 다중검색 */
+//        /** 다중검색 */
         private String[] keywordValueList;
-
-        // 여러 상품 검색을 위해 구분자인 ; Split 처리
-        public void splitKeywordValue() {
-            if (ObjectUtils.isEmpty(this.keywordValue)) {
-                if (ObjectUtils.isEmpty(this.returnStatus))
-                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"반품상태"});
-                if (ObjectUtils.isEmpty(this.startDay))
-                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"시작일자"});
-                if (ObjectUtils.isEmpty(this.endDay))
-                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"종료일자"});
-                return;
-            }
-
-            this.keywordValueList = this.keywordValue.split(",");
-        }
+//
+//        // 여러 상품 검색을 위해 구분자인 ; Split 처리
+//        public void splitKeywordValue() {
+//            if (ObjectUtils.isEmpty(this.keywordValue)) {
+//                if (ObjectUtils.isEmpty(this.returnStatus))
+//                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"반품상태"});
+//                if (ObjectUtils.isEmpty(this.startDay))
+//                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"시작일자"});
+//                if (ObjectUtils.isEmpty(this.endDay))
+//                    throw new WBBusinessException(ErrorCode.INVALID_PARAM.getErrCode(), new String[]{"종료일자"});
+//                return;
+//            }
+//
+//            this.keywordValueList = this.keywordValue.split(",");
+//        }
     }
 
     @Getter
@@ -105,14 +107,18 @@ public class ReturnListDto {
         private Long returnDeliveryChargeAmount;
 
         // 반품 상태 ENUM 처리
+        /*
         public void setReturnStatusName(String returnStatusName) {
             this.returnStatusName = OrderConst.Status.of(returnStatusName).getName();
         }
+         */
 
         // 결제 수단 ENUM 처리
+        /*
         public void setPaymentMethodName(String paymentMethodCode) {
             this.paymentMethodName = PaymentConst.Method.of(paymentMethodCode).getName();
         }
+         */
 
     }
 

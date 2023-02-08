@@ -14,6 +14,8 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.util.Arrays;
+
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -40,11 +42,10 @@ public class ReturnControllerTest extends BaseControllerTests {
     void findReturnList() throws Exception {
         // 조회 파라미터 필드
         ReturnListDto.Param paramDto = ReturnListDto.Param.builder()
-                .returnStatus(
-                        new String[]{
+                .returnStatus(Arrays.asList(new String[]{
                                 OrderConst.ProductStatus.REQUEST_RETURN.getCode(),
                                 OrderConst.ProductStatus.START_RETURN.getCode()
-                        }
+                        })
                 )
                 .rangeType("PAYMENT")
                 .startDay("2020-01-01")
@@ -57,7 +58,7 @@ public class ReturnControllerTest extends BaseControllerTests {
         mockMvc.perform(get("/v1/returns")
                     .header(AUTH_HEADER, JWT_TOKEN)
                     .contentType(MediaType.TEXT_HTML)
-                        .queryParam("returnStatus", paramDto.getReturnStatus())
+                        .queryParam("returnStatus", paramDto.getReturnStatus().toArray(new String[0]))
                         .queryParam("rangeType", paramDto.getRangeType())
                         .queryParam("startDay", paramDto.getStartDay())
                         .queryParam("endDay", paramDto.getEndDay())

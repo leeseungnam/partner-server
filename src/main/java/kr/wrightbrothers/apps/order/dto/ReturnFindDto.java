@@ -30,5 +30,8 @@ public class ReturnFindDto {
 
         /** 반품요청 상품 */
         List<ReturnProductDto> returnProductList;
+
+        /** 주문 상품 목록 */
+        List<ProductDto> productList;
     }
 }

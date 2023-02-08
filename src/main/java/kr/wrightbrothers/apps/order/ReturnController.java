@@ -34,7 +34,7 @@ public class ReturnController extends WBController {
     @GetMapping(value = {
             "/returns"
     })
-    public WBModel findReturnList(@RequestParam(required = false) String[] returnStatus,
+    public WBModel findReturnList(@RequestParam(required = false) List<String> returnStatus,
                                   @RequestParam(required = false) String rangeType,
                                   @RequestParam(required = false) String startDay,
                                   @RequestParam(required = false) String endDay,
@@ -57,7 +57,7 @@ public class ReturnController extends WBController {
                 .page(page)
                 .build();
         // 다건 검색조회 split 처리
-        paramDto.splitKeywordValue();
+        //paramDto.splitKeywordValue();
 
         // 반품 내역 목록 조회
         response.addObject(WBKey.WBModel.DefaultDataKey, returnService.findReturnList(paramDto, true));
@@ -67,7 +67,7 @@ public class ReturnController extends WBController {
     }
 
     @GetMapping("/returns/excel")
-    public void returnExcelDownload(@RequestParam(required = false) String[] returnStatus,
+    public void returnExcelDownload(@RequestParam(required = false) List<String> returnStatus,
                                     @RequestParam(required = false) String rangeType,
                                     @RequestParam(required = false) String startDay,
                                     @RequestParam(required = false) String endDay,
@@ -90,7 +90,7 @@ public class ReturnController extends WBController {
                 .page(page)
                 .build();
         // 다건 검색조회 split 처리
-        paramDto.splitKeywordValue();
+        //paramDto.splitKeywordValue();
 
         // 반품 내역 목록 조회
         List<ReturnListDto.Response> returnList = returnService.findReturnList(paramDto, false);
@@ -110,12 +110,15 @@ public class ReturnController extends WBController {
     @GetMapping("/returns/{orderNo}")
     public WBModel findReturn(@PathVariable String orderNo,
                               @AuthenticationPrincipal UserPrincipal user) {
-        return defaultResponse(returnService.findReturn(
+        ReturnFindDto.Response resultData = returnService.findReturn(
                 ReturnFindDto.Param.builder()
                         .partnerCode(user.getUserAuth().getPartnerCode())
                         .orderNo(orderNo)
                         .build()
-        ));
+        );
+
+
+        return defaultResponse(resultData);
     }
 
     @UserPrincipalScope

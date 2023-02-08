@@ -43,10 +43,13 @@ public class ReturnService {
     }
 
     public ReturnFindDto.Response findReturn(ReturnFindDto.Param paramDto) {
+
+        OrderFindDto.Param orderParam = OrderFindDto.Param.builder().orderNo(paramDto.getOrderNo()).partnerCode(paramDto.getPartnerCode()).build();
         return ReturnFindDto.Response.builder()
                 .order(dao.selectOne(namespaceOrder + "findOrder", paramDto.toOrderFindParam(), PartnerKey.WBDataBase.Alias.Admin))
                 .payment(paymentService.findPaymentToOrder(paramDto.toOrderFindParam()))
                 .returnProductList(dao.selectList(namespace + "findReturnProductList", paramDto, PartnerKey.WBDataBase.Alias.Admin))
+                .productList(dao.selectList(namespaceOrder + "findOrderProduct", orderParam, PartnerKey.WBDataBase.Alias.Admin))
                 .build();
     }
 
