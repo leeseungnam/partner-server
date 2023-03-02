@@ -3,8 +3,8 @@ server:
 spring:
   servlet:
     multipart:
-      maxFileSize: 3MB
-      maxRequestSize: 3MB
+      maxFileSize: 50MB
+      maxRequestSize: 50MB
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
