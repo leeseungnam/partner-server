@@ -369,6 +369,6 @@ public class ProductService {
                 .usrId(usrId)
                 .build();
 
-        dao.update(namespace + "updatePrdtList", viewDto);
+        dao.update(namespace + "updatePrdtList", viewDto, Alias.Admin);
     }
 }
