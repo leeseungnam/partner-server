@@ -853,8 +853,6 @@
 		update prdt_list set
 			 prdt_tp = #{prdtTp},
 			 prdt_list_tp = #{prdtListTp},
-			 pur_rq_no = #{purRqNo},
-			 sell_usr_cd = #{sellUsrCd},
 			 cagy_dpth_one = #{cagyDpthOne},
 			 cagy_dpth_two = #{cagyDpthTwo},
 			 cagy_dpth_thr = #{cagyDpthThr},
