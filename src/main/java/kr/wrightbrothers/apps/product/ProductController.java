@@ -158,7 +158,7 @@ public class ProductController extends WBController {
         // 상품정보 수정
         productService.updateProduct(paramDto);
         // 상품리스트 수정
-        productService.updateProductList(paramDto.getProductCode(), user.getUsername());
+        productService.productListUpdate(paramDto.getProductCode(), user.getUsername());
 
         log.info("Product Edit Complete. Product Code::{}", paramDto.getProductCode());
 
@@ -174,7 +174,7 @@ public class ProductController extends WBController {
 
         // 상품리스트 수정
         for (String prdtCd : paramDto.getProductCodeList()) {
-            productService.updateProductList(prdtCd, user.getUsername());
+            productService.productListUpdate(prdtCd, user.getUsername());
         }
         log.info("Product Status Edit Complete. Status Type::{}, Status Value::{}", paramDto.getStatusType(), paramDto.getStatusValue());
 

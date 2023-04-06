@@ -311,7 +311,7 @@ public class ProductService {
     }
 
     @Transactional(transactionManager = TransactionManager.Global)
-    public void updateProductList(String prdtCd, String usrId) {
+    public void productListUpdate(String prdtCd, String usrId) {
         ProductFindDto.Param paramDto = ProductFindDto.Param.builder().productCode(prdtCd).build();
         ProductFindDto.ResBody receiptDto = findProduct(paramDto);
 
