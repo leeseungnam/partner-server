@@ -26,6 +26,8 @@ public class AwsSesUtil {
     private final SpringTemplateEngine springTemplateEngine;
     @Value("${system.mail.sender}")
     private String sender;
+    @Value("${system.email.enabled}")
+    private boolean enabled;
 
     /**
      * 단건 메일 발송
@@ -79,23 +81,25 @@ public class AwsSesUtil {
                       String template,
                       Context context,
                       Collection<String> to) {
-        String html = springTemplateEngine.process(template, context);
+        if (enabled) {
+            String html = springTemplateEngine.process(template, context);
 
-        final Builder sendEmailRequestBuilder = SendEmailRequest.builder();
-        sendEmailRequestBuilder.destination(Destination.builder().toAddresses(to).build());
-        sendEmailRequestBuilder.message(Message.builder()
-                .subject(Content.builder().data(subject).build())
-                .body(Body.builder().html(body -> body.data(html)).build())
-                .build()
-        ).source(sender).build();
+            final Builder sendEmailRequestBuilder = SendEmailRequest.builder();
+            sendEmailRequestBuilder.destination(Destination.builder().toAddresses(to).build());
+            sendEmailRequestBuilder.message(Message.builder()
+                    .subject(Content.builder().data(subject).build())
+                    .body(Body.builder().html(body -> body.data(html)).build())
+                    .build()
+            ).source(sender).build();
 
-        sesAsyncClient.sendEmail(sendEmailRequestBuilder.build());
+            sesAsyncClient.sendEmail(sendEmailRequestBuilder.build());
 
-        log.info("===================================================");
-        log.info("WB Email Send Complete.");
-        log.info("Subject, {}", subject);
-        log.info("Template, {}", template);
-        log.info("ToAddresses, {}", to.toString());
-        log.info("===================================================");
+            log.info("===================================================");
+            log.info("WB Email Send Complete.");
+            log.info("Subject, {}", subject);
+            log.info("Template, {}", template);
+            log.info("ToAddresses, {}", to.toString());
+            log.info("===================================================");
+        }
     }
 }

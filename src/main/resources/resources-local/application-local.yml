@@ -49,6 +49,8 @@ system:
     temp:
       # 임시 파일 저장 위치
       path: /Users/chals/partner_project/file_temp
+  email:
+    enabled: false
 app:
   client:
     host: http://localhost:3300
