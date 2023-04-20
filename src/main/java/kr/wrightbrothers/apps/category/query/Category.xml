@@ -10,6 +10,7 @@
 		  from com_cagy
 		 where prnt_cagy_cd = #{categoryGroup}
 		   and use_flg = 'Y'
+		   and cagy_cd != 'F0001'
 		 order by cagy_dp_seq
 	</select>
 
