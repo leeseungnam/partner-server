@@ -849,4 +849,42 @@
 		 where prdt_cd = #{productCode}
 	</delete>
 
+	<update id="updatePrdtList" parameterType="kr.wrightbrothers.apps.product.dto.ProductListViewDto">
+		update prdt_list set
+			 prdt_tp = #{prdtTp},
+			 prdt_list_tp = #{prdtListTp},
+			 cagy_dpth_one = #{cagyDpthOne},
+			 cagy_dpth_two = #{cagyDpthTwo},
+			 cagy_dpth_thr = #{cagyDpthThr},
+			 prdt_nm = #{prdtNm},
+			 brd_no = #{brdNo},
+			 mdl_no = #{mdlNo},
+			 mdl_year = #{mdlYear},
+			 prdt_stus_cd = #{prdtStusCd},
+			 prdt_file_no = #{prdtFileNo},
+			 file_src = #{fileSrc},
+			 dp_flg = #{dpFlg},
+			 rntl_flg = #{rntlFlg},
+			 fram_mtrl_cd = #{framMtrlCd},
+			 fram_sz_cd = #{framSzCd},
+			 dti_tp_cd = #{dtiTpCd},
+			 minim_hgt_pn = #{minimHgtPn},
+			 maxum_hgt_pn = #{maxumHgtPn},
+			 thsi_bse_amt = #{thsiBseAmt},
+			 thsi_mon_amt = #{thsiMonAmt},
+			 prdt_sell_chnl_cd = #{prdtSellChnlCd},
+			 prdt_amt = #{prdtAmt},
+			 fnl_sell_amt = #{fnlSellAmt},
+			 dscnt_flg = #{dscntFlg},
+			 dscnt_tp = #{dscntTp},
+			 dscnt_amt = #{dscntAmt},
+			 invty_qty = #{invtyQty},
+			 prdt_sale_stus = #{prdtSaleStus},
+			 prdt_sz = #{prdtSz},
+			 fosl_use = #{foslUse},
+			 upd_usr_id = #{usrId},
+			 upd_dt = current_timestamp
+		where prdt_cd = #{prdtCd}
+	</update>
+
 </mapper>

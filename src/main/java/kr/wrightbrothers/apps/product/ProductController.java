@@ -157,6 +157,9 @@ public class ProductController extends WBController {
         paramDto.validProduct();
         // 상품정보 수정
         productService.updateProduct(paramDto);
+        // 상품리스트 수정
+        productService.productListUpdate(paramDto.getProductCode(), user.getUsername());
+
         log.info("Product Edit Complete. Product Code::{}", paramDto.getProductCode());
 
         return noneMgsResponse(messageSourceAccessor);
@@ -164,9 +167,15 @@ public class ProductController extends WBController {
 
     @UserPrincipalScope
     @PatchMapping("/products")
-    public WBModel updateProductStatus(@Valid @RequestBody StatusUpdateDto paramDto) {
+    public WBModel updateProductStatus(@Valid @RequestBody StatusUpdateDto paramDto,
+                                       @AuthenticationPrincipal UserPrincipal user) {
         // 상품 일괄 상태 변경
         productService.updateProductStatus(paramDto);
+
+        // 상품리스트 수정
+        for (String prdtCd : paramDto.getProductCodeList()) {
+            productService.productListUpdate(prdtCd, user.getUsername());
+        }
         log.info("Product Status Edit Complete. Status Type::{}, Status Value::{}", paramDto.getStatusType(), paramDto.getStatusValue());
 
         return noneMgsResponse(messageSourceAccessor);

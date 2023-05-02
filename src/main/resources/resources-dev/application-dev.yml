@@ -44,6 +44,8 @@ system:
     temp:
       # 임시 파일 저장 위치
       path: /app/partner/files/
+  email:
+    enabled: false
 app:
   client:
     host: https://dev.partner.wrightbrothers.kr

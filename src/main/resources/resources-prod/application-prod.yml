@@ -44,6 +44,8 @@ system:
     temp:
       # 임시 파일 저장 위치 nfs mount
       path: /app/partner/files/
+  email:
+    enabled: true
 app:
   client:
     host: https://partner.wrightbrothers.kr

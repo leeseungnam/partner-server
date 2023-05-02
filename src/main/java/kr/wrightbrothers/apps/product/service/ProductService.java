@@ -6,6 +6,7 @@ import kr.wrightbrothers.apps.common.util.ExcelUtil;
 import kr.wrightbrothers.apps.common.util.PartnerKey;
 import kr.wrightbrothers.apps.common.util.PartnerKey.WBDataBase.*;
 import kr.wrightbrothers.apps.common.util.ProductUtil;
+import kr.wrightbrothers.apps.file.dto.FileDto;
 import kr.wrightbrothers.apps.file.dto.FileListDto;
 import kr.wrightbrothers.apps.file.dto.FileUpdateDto;
 import kr.wrightbrothers.apps.file.service.FileService;
@@ -307,5 +308,67 @@ public class ProductService {
             dao.delete(namespace + "deleteProductRequest", productCode, Alias.Admin);
             dao.delete(namespace + "deleteProductRequestHistory", productCode, Alias.Admin);
         });
+    }
+
+    @Transactional(transactionManager = TransactionManager.Global)
+    public void productListUpdate(String prdtCd, String usrId) {
+        ProductFindDto.Param paramDto = ProductFindDto.Param.builder().productCode(prdtCd).build();
+        ProductFindDto.ResBody receiptDto = findProduct(paramDto);
+
+        /** prdtListTp */
+        String prdtListTp = "";
+        if(receiptDto.getProduct().getProductType().equals("P05")) {
+            prdtListTp = "P01";
+        } else if (receiptDto.getProduct().getProductType().equals("P06")) {
+            prdtListTp = "P02";
+        }
+
+        /** file_src */
+        String fileSrc = null;
+        List<FileListDto> fileList = fileService.findFileList(receiptDto.getProduct().getProductFileNo());
+        if (fileList.size() > 0)
+            fileSrc = fileList.get(0).getFileSource();
+
+        /** rental */
+        String thsiBseAmt = null;
+        String thsiMonAmt = null;
+        if (receiptDto.getRental() != null) {
+            thsiBseAmt = receiptDto.getRental().getThsiBseAmt();
+            thsiMonAmt = receiptDto.getRental().getThsiMonAmt();
+        }
+
+        ProductListViewDto viewDto = ProductListViewDto.builder()
+                .prdtCd(prdtCd)
+                .prdtTp(receiptDto.getProduct().getProductType())
+                .prdtListTp(prdtListTp)
+                .cagyDpthOne(receiptDto.getProduct().getCategoryOneCode())
+                .cagyDpthTwo(receiptDto.getProduct().getCategoryTwoCode())
+                .cagyDpthThr(receiptDto.getProduct().getCategoryThrCode())
+                .prdtNm(receiptDto.getProduct().getProductName())
+                .brdNo(receiptDto.getProduct().getBrandNo())
+                .mdlNo(receiptDto.getProduct().getModelCode())
+                .mdlYear(receiptDto.getProduct().getModelYear())
+                .prdtStusCd(receiptDto.getSellInfo().getProductStatusCode())
+                .prdtFileNo(receiptDto.getProduct().getProductFileNo())
+                .fileSrc(fileSrc)
+                .dpFlg(receiptDto.getSellInfo().getDisplayFlag())
+                .rntlFlg(receiptDto.getProduct().getRntlFlg())
+                .framMtrlCd(receiptDto.getBasicSpec().getFrameMaterialCode())
+                .framSzCd(receiptDto.getBasicSpec().getFrameSizeCode())
+                .dtiTpCd(receiptDto.getBasicSpec().getDrivetrainTypeCode())
+                .minimHgtPn(receiptDto.getBasicSpec().getMinHeightPerson())
+                .maxumHgtPn(receiptDto.getBasicSpec().getMaxHeightPerson())
+                .thsiBseAmt(thsiBseAmt)
+                .thsiMonAmt(thsiMonAmt)
+                .prdtAmt(String.valueOf(receiptDto.getSellInfo().getProductAmount()))
+                .fnlSellAmt(String.valueOf(receiptDto.getSellInfo().getFinalSellAmount()))
+                .dscntFlg(receiptDto.getSellInfo().getDiscountFlag())
+                .dscntTp(receiptDto.getSellInfo().getDiscountType())
+                .dscntAmt(receiptDto.getSellInfo().getDiscountAmount())
+                .invtyQty(String.valueOf(receiptDto.getSellInfo().getProductStockQty().intValue()))
+                .usrId(usrId)
+                .build();
+
+        dao.update(namespace + "updatePrdtList", viewDto, Alias.Admin);
     }
 }
