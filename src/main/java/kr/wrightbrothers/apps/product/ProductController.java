@@ -122,7 +122,6 @@ public class ProductController extends WBController {
         );
         // 검수대기 상태 변경
         paramDto.getSellInfo().setProductStatusCode(ProductConst.Status.PRODUCT_INSPECTION.getCode());
-        paramDto.getSellInfo().setDisplayFlag("N");
         // 추가 유효성 검사
         paramDto.validProduct();
 
