@@ -21,6 +21,9 @@ public class ProductUpdateDto extends ProductInsertDto {
     @NotNull(message = "상품 코드")
     private String productCode;
 
+    /** 렌탈 정보 */
+    private RentalDto.ReqBody rental;
+
     /** 변경 로그 */
     private String[] changeLogList;
 

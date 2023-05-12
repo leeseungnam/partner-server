@@ -638,7 +638,11 @@
 			twlv_mon_amt,
 			twfo_mon_amt,
 			thsi_mon_amt,
-			foei_mon_amt
+			foei_mon_amt,
+			twlv_rtn_flg,
+			twfo_rtn_flg,
+			thsi_rtn_flg,
+			foei_rtn_flg
 		from prdt_rntl
 		where prdt_cd = #{productCode}
 	</select>
@@ -885,6 +889,21 @@
 			 upd_usr_id = #{usrId},
 			 upd_dt = current_timestamp
 		where prdt_cd = #{prdtCd}
+	</update>
+
+	<update id="updateProductRental" parameterType="kr.wrightbrothers.apps.product.dto.RentalDto$ReqBody">
+		update prdt_rntl
+		set twlv_bse_amt = #{twlvBseAmt},
+			twfo_bse_amt = #{twfoBseAmt},
+			thsi_bse_amt = #{thsiBseAmt},
+			foei_bse_amt = #{foeiBseAmt},
+			twlv_mon_amt = #{twfoMonAmt},
+			twfo_mon_amt = #{twfoMonAmt},
+			thsi_mon_amt = #{thsiMonAmt},
+			foei_mon_amt = #{foeiMonAmt},
+			upd_usr_id = #{userId},
+			upd_dt = current_timestamp
+		where prdt_cd = #{productCode}
 	</update>
 
 </mapper>
