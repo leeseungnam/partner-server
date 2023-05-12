@@ -24,6 +24,8 @@ public class NotificationQueue extends WBSQS {
     private final NotificationQueueService notificationQueueService;
     @Value("${cloud.aws.sns.noti}")
     private String topic;
+    @Value("${system.email.enabled}")
+    private boolean enabled;
 
     /**
      * 입점몰 API -> ADMIN 2.0 API
@@ -39,22 +41,24 @@ public class NotificationQueue extends WBSQS {
 
     ) {
         try {
-            log.info("Notification SNS Sender Start");
-            // AWS SNS 전송
-            sender.send(
-                    topic,
-                    Header.builder()
-                            .docuNm(documentSNS.getName())
-                            .trsctnTp(PartnerKey.TransactionType.Insert)
-                            .build(),
-                    // Notification SNS 전송 데이터
-                    NotificationSmsSendDto.builder()
-                            .toPhone(phone)
-                            .text(text)
-                            .snsDesc(notification.getDesc())
-                            .build()
-            );
-            log.info("Notification SNS Sender END");
+            if (enabled) {
+                log.info("Notification SNS Sender Start");
+                // AWS SNS 전송
+                sender.send(
+                        topic,
+                        Header.builder()
+                                .docuNm(documentSNS.getName())
+                                .trsctnTp(PartnerKey.TransactionType.Insert)
+                                .build(),
+                        // Notification SNS 전송 데이터
+                        NotificationSmsSendDto.builder()
+                                .toPhone(phone)
+                                .text(text)
+                                .snsDesc(notification.getDesc())
+                                .build()
+                );
+                log.info("Notification SNS Sender END");
+            }
         } catch (Exception e) {
             log.error("Notification SNS Sender Error. {}", e.getMessage());
         }
@@ -100,21 +104,23 @@ public class NotificationQueue extends WBSQS {
                                 String... messageValue) {
         try {
             // 카카오 푸시알림 전송
-            sender.send(
-                    topic,
-                    Header.builder()
-                            .docuNm(documentSNS.getName())
-                            .trsctnTp(PartnerKey.TransactionType.Insert)
-                            .build(),
-                    // Notification Kakao 전송 데이터
-                    NotificationSendDto.builder()
-                            .toPhone(to)
-                            .templateId(notification.getMessageId())
-                            .templateValue(messageValue)
-                            .snsDesc(notification.getDesc())
-                            .build()
-            );
-            log.info("Notification Kakao Push Sender Complete. MessageId::{}, To::{}", notification.getMessageId(), to);
+            if (enabled) {
+                sender.send(
+                        topic,
+                        Header.builder()
+                                .docuNm(documentSNS.getName())
+                                .trsctnTp(PartnerKey.TransactionType.Insert)
+                                .build(),
+                        // Notification Kakao 전송 데이터
+                        NotificationSendDto.builder()
+                                .toPhone(to)
+                                .templateId(notification.getMessageId())
+                                .templateValue(messageValue)
+                                .snsDesc(notification.getDesc())
+                                .build()
+                );
+                log.info("Notification Kakao Push Sender Complete. MessageId::{}, To::{}", notification.getMessageId(), to);
+            }
         } catch (Exception e) {
             log.error("Notification Kakao Push Sender Error. {}", ExceptionUtils.getStackTrace(e));
         }
