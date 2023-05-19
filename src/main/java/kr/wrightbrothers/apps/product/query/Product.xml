@@ -897,7 +897,7 @@
 			twfo_bse_amt = #{twfoBseAmt},
 			thsi_bse_amt = #{thsiBseAmt},
 			foei_bse_amt = #{foeiBseAmt},
-			twlv_mon_amt = #{twfoMonAmt},
+			twlv_mon_amt = #{twlvMonAmt},
 			twfo_mon_amt = #{twfoMonAmt},
 			thsi_mon_amt = #{thsiMonAmt},
 			foei_mon_amt = #{foeiMonAmt},
