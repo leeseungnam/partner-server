@@ -175,6 +175,13 @@ public class ProductService {
         dao.update(namespace + "mergeGuide", paramDto.getGuide(), Alias.Admin);
         dao.delete(namespace + "deleteOption", paramDto.getProductCode(), Alias.Admin);
 
+        // 렌탈 정보
+        if (WBKey.Y.equals(paramDto.getProduct().getRntlFlg())) {
+            paramDto.getRental().setProductCode(paramDto.getProductCode());
+            paramDto.getRental().setUserId(paramDto.getProduct().getUserId());
+            dao.update(namespace + "updateProductRental", paramDto.getRental(), Alias.Admin);
+        }
+
         // 필수 데이터가 아닌 관계로 널체크 후 데이터 처리
         if (PartnerKey.Const.Y.equals(paramDto.getSellInfo().getProductOptionFlag())) {
             Optional.ofNullable(paramDto.getOptionList()).orElseGet(Collections::emptyList)

@@ -30,6 +30,14 @@ public class RentalDto {
         private String thsiMonAmt;
         /** 48개월렌탈료 */
         private String foeiMonAmt;
+        /** 12개월 렌탈 반납여부 */
+        private String twlvRtnFlg;
+        /** 24개월 렌탈 반납여부 */
+        private String twfoRtnFlg;
+        /** 36개월 렌탈 반납여부 */
+        private String thsiRtnFlg;
+        /** 48개월 렌탈 반납여부 */
+        private String foeiRtnFlg;
     }
 
     @Data
