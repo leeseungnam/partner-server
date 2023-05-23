@@ -36,6 +36,12 @@ public class PaymentDto {
     
     /** 렌탈 여부 */
     private String rntlFlg;
+
+    /** 렌탈반납가능여부 */
+    private String rntlRtnFlg;
+
+    /** 렌탈반납가능개월 */
+    private String rntlRtnMon;
     
     /** 결제 방법 코드 */
     private String paymentMethodCode;
