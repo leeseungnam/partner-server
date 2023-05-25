@@ -69,6 +69,8 @@
 		    o.mnt_rnt_amt as rental_amount,
 			o.tol_rntl_mon as totalRentalMonth,
 			o.rntl_flg,
+			o.rntl_rtn_flg,
+			o.rntl_rtn_mon,
 		    o.pay_meth as payment_method_code,
 		    o.pay_meth as payment_method_name,
 		    s.pay_stus as payment_status_code,
