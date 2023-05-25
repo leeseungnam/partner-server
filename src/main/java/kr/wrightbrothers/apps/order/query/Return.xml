@@ -71,7 +71,7 @@
 					</if>
 					<!-- 주문자 -->
 					<if test="keywordType == 'USER'">
-						and EXISTS (SELECT 1 FROM com_mbr_info u WHERE u.usr_id = o.ord_usr_id and u.usr_nm LIKE #{keywordValue} '%')
+						and EXISTS (SELECT 1 FROM mbr_main u WHERE u.usr_id = o.ord_usr_id and u.usr_nm LIKE #{keywordValue} '%')
 					</if>
 				</if>
 			</otherwise>
@@ -94,7 +94,7 @@
 		SELECT date_format(a.cnc_rq_dt,'%Y-%m-%d') as return_request_day	/* 반품요청일 */
 		, a.ord_no
 		, date_format(a.ord_dt,'%Y-%m-%d') as order_day				        /* 주문일자 */
-		, (SELECT b.usr_nm from com_mbr_info b where a.ord_usr_id = b.usr_id) AS order_user_name /* 주문자명 */
+		, (SELECT b.usr_nm from mbr_main b where a.ord_usr_id = b.usr_id) AS order_user_name /* 주문자명 */
 		, a.ord_prdt_stus as return_status_code
 		, (SELECT c.intg_cd_val_nm from com_intg_cd_dtl c where a.ord_prdt_stus = c.intg_cd_val and c.intg_cd_id = 000065) as return_status_name /* 반품상태 */
 		, a.pay_meth as payment_method_code
@@ -351,7 +351,7 @@
 		left join ord_shpn_info d
 		on p.ord_no = d.ord_no
 		and p.ord_prdt_idx = d.ord_prdt_idx
-		left join com_mbr_info m
+		left join mbr_main m
 		on o.ord_usr_id = m.usr_id
 		left join com_intg_cd_dtl c
 		on d.rtrn_dlvry_cmpny = c.intg_cd_val

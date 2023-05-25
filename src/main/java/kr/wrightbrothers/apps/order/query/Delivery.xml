@@ -24,7 +24,7 @@
 		  from ord_info o
 		 inner join ord_prnr_info s
 		    on o.ord_no = s.ord_no
-		  left join com_mbr_info m
+		  left join mbr_main m
 		    on o.ord_usr_id = m.usr_id
 		 inner join (
 		     select
@@ -406,7 +406,7 @@
 		  left join ord_shpn_info d
 			on p.ord_no = d.ord_no
 		   and p.ord_prdt_idx = d.ord_prdt_idx
-		  left join com_mbr_info m
+		  left join mbr_main m
 		  	on o.ord_usr_id = m.usr_id
 		  left join com_intg_cd_dtl c
 		  	on d.dlvry_cmpny = c.intg_cd_val
