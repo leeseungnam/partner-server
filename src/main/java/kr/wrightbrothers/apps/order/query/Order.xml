@@ -39,7 +39,7 @@
 			s.pay_stus as payment_status_name,
 		    o.rntl_flg
 		  from ord_info o
-		  left join com_mbr_info m
+		  left join mbr_main m
 			on o.ord_usr_id = m.usr_id
 		 inner join ord_prnr_info s
 			on o.ord_no = s.ord_no
@@ -145,7 +145,7 @@
 			ifnull(sum(if(s.pay_stus = 'S09', 1, 0)), 0) as failCancelCount,		-- 취소실패 건수
 			ifnull(sum(if(s.ord_stus = 'R01', 1, 0)), 0) as requestReturnCount		-- 반품요청 건수
 		  from ord_info o
-		  left join com_mbr_info m
+		  left join mbr_main m
 			on o.ord_usr_id = m.usr_id
 		 inner join ord_prnr_info s
 		    on o.ord_no = s.ord_no
@@ -249,7 +249,7 @@
 		  from ord_prnr_info s
 		 inner join ord_info o
 			on s.ord_no = o.ord_no
-		  left join com_mbr_info m
+		  left join mbr_main m
 		    on o.ord_usr_id = m.usr_id
 		 where s.ord_no = #{orderNo}
 		   and s.prnr_cd = #{partnerCode}
@@ -343,7 +343,7 @@
 		  left join com_intg_cd_dtl c
 		    on p.cnc_rsn_cd = c.intg_cd_val
 		   and c.intg_cd_id = '000074'
-		  left join com_mbr_info m
+		  left join mbr_main m
 			on o.ord_usr_id = m.usr_id
 		 where o.ord_no in
 		<foreach collection="orderNoList" item="item" index="index" open="(" separator="," close=")">
