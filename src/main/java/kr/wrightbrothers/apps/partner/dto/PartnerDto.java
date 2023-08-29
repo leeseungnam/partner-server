@@ -88,7 +88,7 @@ public class PartnerDto {
     @ApiModel(value = "파트너 요청 데이터")
     @NoArgsConstructor
     @EqualsAndHashCode(callSuper = false)
-    public static class ReqBody extends Partner{
+    public static class ReqBody extends Partner {
         @ApiModelProperty(value = "작성자 아이디")
         @JsonIgnore
         private String userId;
